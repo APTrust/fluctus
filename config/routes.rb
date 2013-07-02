@@ -1,4 +1,6 @@
 Fluctus::Application.routes.draw do
+  resources :institutions
+
   root :to => "catalog#index"
   Blacklight.add_routes(self)
   HydraHead.add_routes(self)
