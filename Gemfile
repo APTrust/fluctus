@@ -56,4 +56,6 @@ group :development, :test do
   gem "jettywrapper"
 end
 
-gem 'pg', group: production #Necessary for heroku
+group :production do
+  gem 'pg' #Necessary for heroku
+end
