@@ -55,3 +55,5 @@ group :development, :test do
   gem "rspec-rails"
   gem "jettywrapper"
 end
+
+gem 'pg', group: production #Necessary for heroku
