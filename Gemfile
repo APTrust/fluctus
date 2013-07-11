@@ -48,6 +48,8 @@ gem 'hydra-head', '~> 6.3.0'
 gem "devise", github: "plataformatec/devise", branch: "rails4"
 gem "devise-guests", "~> 0.3"
 gem "bootstrap-sass"
+gem 'figaro'
+
 group :development, :test do
   gem "rspec-rails"
   gem "jettywrapper"
@@ -56,4 +58,5 @@ end
 
 group :production do
   gem 'pg' #Necessary for heroku
+  gem "rails_12factor" # Necessary for heroku
 end
