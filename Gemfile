@@ -49,6 +49,7 @@ gem "devise", github: "plataformatec/devise", branch: "rails4"
 gem "devise-guests", "~> 0.3"
 gem "bootstrap-sass"
 gem 'figaro'
+gem 'omniauth-google-oauth2'
 
 group :development, :test do
   gem "rspec-rails"
