@@ -51,6 +51,7 @@ gem 'figaro'
 gem 'omniauth-google-oauth2'
 
 group :development, :test do
+  gem 'meta_request'
   gem "rspec-rails"
   gem "jettywrapper"
   gem 'sqlite3'
