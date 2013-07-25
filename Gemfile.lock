@@ -76,8 +76,6 @@ GEM
     daemons (1.1.9)
     deprecation (0.0.5)
       activesupport
-    devise-guests (0.3.1)
-      devise
     diff-lcs (1.2.4)
     equivalent-xml (0.3.0)
       nokogiri (>= 1.4.3)
@@ -282,7 +280,6 @@ DEPENDENCIES
   bootstrap-sass
   coffee-rails (~> 4.0.0)
   devise!
-  devise-guests (~> 0.3)
   figaro
   hydra-head (~> 6.3.0)
   jbuilder (~> 1.2)
