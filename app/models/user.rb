@@ -23,6 +23,10 @@ class User < ActiveRecord::Base
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account. 
+  # Custom format validations.  See app/validators
+  validates :name, person_name_format: true
+  validates :email, email: true
+  validates :phone_number, phone_format: true
   def to_s
     name.nil? ? email : name
   end
