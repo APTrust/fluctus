@@ -1,0 +1,28 @@
+<%= simple_form_for(@user) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :name, autofocus: true %>
+    <%= f.input :email %>    
+    <%= f.input :phone_number %>
+    
+    <% if can? :manage_institution, User %>
+      <%= f.input :institution_name, collection: Institution.all.map(&:name), as: :select %>
+    <% else %>
+      <%= f.input :institution_name, collection: [current_user.institution], as: :select, include_blank: false %>
+    <% end %>
+
+    <% if can? :manage_role, User %>
+      <% if can? :assign_admin, User %>
+        <%= f.association :roles %>
+      <% else %>
+        <%= f.input :roles, collection: (Role.all - ['admin']).sort.map { |r| [r.titleize, r] } %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit, "Submit", {class: "btn btn-success"} %>
+    <%= show_link @user, "Cancel" %>
+  </div>
+<% end %>
