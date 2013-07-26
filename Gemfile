@@ -46,14 +46,18 @@ gem 'blacklight'
 gem 'hydra-head', '~> 6.3.0'
 
 gem "devise", github: "plataformatec/devise", branch: "rails4"
-gem "devise-guests", "~> 0.3"
 gem "bootstrap-sass"
 gem 'figaro'
+gem 'omniauth-google-oauth2'
+gem 'simple_form'
+gem 'hydra-role-management', github: 'acurley/hydra-role-management'
 
 group :development, :test do
+  gem 'meta_request'
   gem "rspec-rails"
   gem "jettywrapper"
   gem 'sqlite3'
+  gem 'quiet_assets'
 end
 
 group :production do

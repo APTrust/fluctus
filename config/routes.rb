@@ -1,10 +1,22 @@
 Fluctus::Application.routes.draw do
   resources :institutions
+  resources :users
 
   root :to => "catalog#index"
+
   Blacklight.add_routes(self)
+
   HydraHead.add_routes(self)
-  devise_for :users
+
+  devise_for :users, path_names: {sign_in: "login", sign_out: "logout"}, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+
+  mount Hydra::RoleManagement::Engine => '/'
+
+  devise_scope :user do
+    # root to: "home#index"
+    delete 'sign_out', :to => 'devise/sessions#destroy', as: :destroy_user_session
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
