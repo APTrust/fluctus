@@ -15,14 +15,20 @@ class User < ActiveRecord::Base
   # :lockable, :timeoutable and :omniauthable
   devise :omniauthable, :registerable, :omniauth_providers => [:google_oauth2]
 
+  validates :email, :phone_number, presence: true
+  validates :email, uniqueness: true
+
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account. 
   def to_s
-    email
+    name.nil? ? email : name
+  end
+
   def is?(role)
     self.roles.include?(role.to_s)
   end
+
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
   # which is not bundled with this app.  hydra-roles-management gem requires a guest boolean, so we must provide it here.
   def guest?
