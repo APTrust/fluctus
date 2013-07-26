@@ -1,6 +1,9 @@
 class User < ActiveRecord::Base
   # Connects this user object to Hydra behaviors. 
   include Hydra::User
+ 
+  # Connects this user object to Role-management behaviors. 
+  include Hydra::RoleManagement::UserRoles
 
   # Connects this user object to Blacklights Bookmarks. 
   include Blacklight::User
@@ -17,6 +20,9 @@ class User < ActiveRecord::Base
   # the account. 
   def to_s
     email
+  def is?(role)
+    self.roles.include?(role.to_s)
+  end
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
   # which is not bundled with this app.  hydra-roles-management gem requires a guest boolean, so we must provide it here.
   def guest?

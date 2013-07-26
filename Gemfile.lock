@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/acurley/hydra-role-management.git
+  revision: 4c4f0abb3175b61b0f5899772c71f49309e6f3d1
+  specs:
+    hydra-role-management (0.0.2)
+      bootstrap_forms
+      cancan
+
+GIT
   remote: git://github.com/plataformatec/devise.git
   revision: 6b5988d756d780903bf8c9ccb3e2b3b724ccebe8
   branch: rails4
@@ -62,7 +70,9 @@ GEM
       activesupport (>= 2.0)
     bootstrap-sass (2.3.2.0)
       sass (~> 3.2)
+    bootstrap_forms (4.0.0)
     builder (3.1.4)
+    callsite (0.0.11)
     cancan (1.6.10)
     childprocess (0.3.9)
       ffi (~> 1.0, >= 1.0.11)
@@ -136,6 +146,10 @@ GEM
       treetop (~> 1.4.8)
     marc (0.5.0)
     mediashelf-loggable (0.4.9)
+    meta_request (0.2.7)
+      callsite
+      rack-contrib
+      railties
     mime-types (1.23)
     mini_portile (0.5.0)
     minitest (4.7.5)
@@ -173,6 +187,8 @@ GEM
     pg (0.15.1)
     polyglot (0.3.3)
     rack (1.5.2)
+    rack-contrib (1.1.0)
+      rack (>= 0.9.1)
     rack-test (0.6.2)
       rack (>= 1.0)
     rails (4.0.0)
@@ -282,9 +298,11 @@ DEPENDENCIES
   devise!
   figaro
   hydra-head (~> 6.3.0)
+  hydra-role-management!
   jbuilder (~> 1.2)
   jettywrapper
   jquery-rails
+  meta_request
   omniauth-google-oauth2
   pg
   rails (= 4.0.0)
