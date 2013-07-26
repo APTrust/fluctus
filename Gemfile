@@ -57,6 +57,7 @@ group :development, :test do
   gem "rspec-rails"
   gem "jettywrapper"
   gem 'sqlite3'
+  gem 'quiet_assets'
 end
 
 group :production do
