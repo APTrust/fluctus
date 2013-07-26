@@ -15,7 +15,7 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
     config.default_solr_params = {
-      :qf => 'name_tesim',
+      :qf => 'institution_name_tesim title_tesim',
       :qt => 'search',
       :rows => 10
     }
@@ -55,6 +55,7 @@ class CatalogController < ApplicationController
     config.add_facet_field solr_name('lc1_letter', :facetable), :label => 'Call Number'
     config.add_facet_field solr_name('subject_geo', :facetable), :label => 'Region'
     config.add_facet_field solr_name('subject_era', :facetable), :label => 'Era'
+    config.add_facet_field solr_name('institution', :facetable), :label => 'Institution'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -66,6 +67,8 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
+    config.add_index_field solr_name('name', :stored_searchable, type: :string), :label => 'Name:'
+    config.add_index_field solr_name('institution_name', :stored_searchable, type: :string), :label => 'Institution:'
     config.add_index_field solr_name('title', :stored_searchable, type: :string), :label => 'Title:'
     config.add_index_field solr_name('title_vern', :stored_searchable, type: :string), :label => 'Title:'
     config.add_index_field solr_name('author', :stored_searchable, type: :string), :label => 'Author:'
