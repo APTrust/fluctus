@@ -1,5 +1,6 @@
 Fluctus::Application.routes.draw do
   resources :institutions
+  resources :users
 
   root :to => "catalog#index"
 

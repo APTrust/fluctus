@@ -17,6 +17,8 @@ class User < ActiveRecord::Base
 
   validates :email, :phone_number, presence: true
   validates :email, uniqueness: true
+  validates :institution_name, presence: true
+  validates_inclusion_of :institution_name, in: Institution.all.map(&:name)
 
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
@@ -27,6 +29,10 @@ class User < ActiveRecord::Base
 
   def is?(role)
     self.roles.pluck(:name).include?(role.to_s)
+  end
+
+  def institution
+    return Institution.where(name: self.institution_name).first
   end
 
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
