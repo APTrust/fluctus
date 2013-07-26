@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
   end
 
   def is?(role)
-    self.roles.include?(role.to_s)
+    self.roles.pluck(:name).include?(role.to_s)
   end
 
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
