@@ -31,8 +31,10 @@ class Ability
 
     cannot :manage, :all
 
-    if user.is? :superuser
-
+    if user.is? :admin
+      can :manage, :all
+      can :manage_institution
+      can :assign_admin
     end
 
     # if user.admin?
