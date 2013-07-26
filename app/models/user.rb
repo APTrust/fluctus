@@ -40,7 +40,8 @@ class User < ActiveRecord::Base
     user = User.where(:email => data["email"]).first
 
     unless user
-      user = User.create(name: data["name"], email: data["email"])
+      # Return a new user rather than create one since Users should not be able to create their own accounts.
+      user = User.new
     end
     user
   end
