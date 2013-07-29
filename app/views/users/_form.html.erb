@@ -7,7 +7,7 @@
     <%= f.input :phone_number %>
     
     <% if can? :manage_user_institution, User %>
-      <%= f.input :institution_name, collection: Institution.all.map(&:name), as: :select %>
+      <%= f.input :institution_name, collection: Institution.all.sort.map(&:name), as: :select %>
     <% else %>
       <%= f.input :institution_name, collection: [current_user.institution], as: :select, include_blank: false %>
     <% end %>
