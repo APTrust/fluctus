@@ -33,8 +33,16 @@ class Ability
 
     if user.is? :admin
       can :manage, :all
-      can :manage_institution
-      can :assign_admin
+      can :manage_user_roles, User
+      can :manage_user_institution, User
+      can :assign_admin_user, User
+    end
+
+    if user.is? :institutional_admin
+      can :manage, User
+      can :manage_user_institution, User
+      can :manage_user_roles, User
+      cannot :assign_admin_user, User
     end
 
     # if user.admin?

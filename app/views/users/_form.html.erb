@@ -1,4 +1,4 @@
-<%= simple_form_for(@user) do |f| %>
+<%= simple_form_for(@user, html: {class: 'form-horizontal'}) do |f| %>
   <%= f.error_notification %>
 
   <div class="form-inputs">
@@ -6,17 +6,17 @@
     <%= f.input :email %>    
     <%= f.input :phone_number %>
     
-    <% if can? :manage_institution, User %>
+    <% if can? :manage_user_institution, User %>
       <%= f.input :institution_name, collection: Institution.all.map(&:name), as: :select %>
     <% else %>
       <%= f.input :institution_name, collection: [current_user.institution], as: :select, include_blank: false %>
     <% end %>
 
-    <% if can? :manage_role, User %>
-      <% if can? :assign_admin, User %>
-        <%= f.association :roles %>
+    <% if can? :manage_user_roles, User %>
+      <% if can? :assign_admin_user, User %>
+        <%= f.association :roles, collection: Role.all.sort.map {|r| [r.name.titleize, r.id] }, as: :check_boxes %>
       <% else %>
-        <%= f.input :roles, collection: (Role.all - ['admin']).sort.map { |r| [r.titleize, r] } %>
+        <%= f.association :roles, collection: Role.all.where('name is not "admin"').sort.map { |r| [r.name.titleize, r.id] }, as: :check_boxes %>
       <% end %>
     <% end %>
   </div>
