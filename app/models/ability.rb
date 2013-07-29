@@ -45,6 +45,11 @@ class Ability
       cannot :assign_admin_user, User
     end
 
+    if user.is? :institutional_user
+      cannot :manage, User
+      can :read, Institution
+    end
+
     # if user.admin?
     #   can [:create, :show, :add_user, :remove_user, :index], Role
     # end
