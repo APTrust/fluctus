@@ -20,4 +20,7 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  blacklight:
+    application_name: 'APTrust'
+    header_links:
+      login: "Google Login"
