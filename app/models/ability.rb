@@ -40,8 +40,8 @@ class Ability
 
     if user.is? :institutional_admin
       can :manage, User
-      cannot :manage_user_institution, User
       can :manage_user_roles, User
+      cannot :manage_user_institution, User
       cannot :assign_admin_user, User
     end
 
