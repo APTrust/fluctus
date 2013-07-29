@@ -41,7 +41,7 @@ class InstitutionsController < ApplicationController
   # PATCH/PUT /institutions/1.json
   def update
     respond_to do |format|
-      if @institution.update(institution_params)
+      if @institution.update_attributes(institution_params)
         format.html { redirect_to @institution, notice: 'Institution was successfully updated.' }
         format.json { head :no_content }
       else
