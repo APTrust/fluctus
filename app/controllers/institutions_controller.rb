@@ -1,4 +1,6 @@
 class InstitutionsController < ApplicationController
+  load_and_authorize_resource
+  before_filter :authenticate_user!
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
 
   # GET /institutions
@@ -41,7 +43,7 @@ class InstitutionsController < ApplicationController
   # PATCH/PUT /institutions/1.json
   def update
     respond_to do |format|
-      if @institution.update(institution_params)
+      if @institution.update_attributes(institution_params)
         format.html { redirect_to @institution, notice: 'Institution was successfully updated.' }
         format.json { head :no_content }
       else
@@ -54,9 +56,10 @@ class InstitutionsController < ApplicationController
   # DELETE /institutions/1
   # DELETE /institutions/1.json
   def destroy
+    name = @institution.name
     @institution.destroy
     respond_to do |format|
-      format.html { redirect_to institutions_url }
+      format.html { redirect_to institutions_url, notice: "#{name} was successfully destroyed." }
       format.json { head :no_content }
     end
   end
