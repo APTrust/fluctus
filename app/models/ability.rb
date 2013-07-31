@@ -1,44 +1,35 @@
 class Ability
-  include CanCan::Ability
+  # CanCan::Ability is included in Hydra::Ability so no need to include it here
+  # include CanCan::Ability
+  include Hydra::Ability
+  include Hydra::PolicyAwareAbility
 
-  def initialize(user)
-    # Define abilities for the passed in user here. For example:
-    #
-    # user ||= User.new # guest user (not logged in)
-    #   if user.admin?
-    #     can :manage, :all
-    #   else
-    #     can :read, :all
-    #   end
-    #
-    # The first argument to `can` is the action you are giving the user 
-    # permission to do.
-    # If you pass :manage it will apply to every action. Other common actions
-    # here are :read, :create, :update and :destroy.
-    #
-    # The second argument is the resource the user can perform the action on. 
-    # If you pass :all it will apply to every resource. Otherwise pass a Ruby
-    # class of the resource.
-    #
-    # The third argument is an optional hash of conditions to further filter the
-    # objects.
-    # For example, here the user can only update published articles.
-    #
-    #   can :update, Article, :published => true
-    #
-    # See the wiki for details:
-    # https://github.com/ryanb/cancan/wiki/Defining-Abilities
+  # customizing permissions as directed:
+  # https://github.com/projecthydra/hydra-head/blob/master/hydra-access-controls/lib/hydra/ability.rb
+  self.ability_logic +=[:admin_permissions, :institutional_admin_permissions, :institutional_user_permissions]
 
-    cannot :manage, :all
-
-    if user.is? :admin
-      can :manage, :all
-      can :manage_institution
-      can :assign_admin
+  def admin_permissions
+    if current_user.is? :admin
+      can :manage, :all 
+      can :manage_user_roles, User
+      can :manage_user_institution, User
+      can :assign_admin_user, User
     end
+  end
 
-    # if user.admin?
-    #   can [:create, :show, :add_user, :remove_user, :index], Role
-    # end
+  def institutional_admin_permissions
+    if current_user.is? :institutional_admin
+      can [:create, :read, :update, :destroy, :manage_user_roles], User, institution_name: current_user.institution_name
+      cannot [:manage_user_institution, :assign_admin_user], User
+    end
+  end
+  
+  def institutional_user_permissions
+    if current_user.is? :institutional_user
+      can :manage, User, id: current_user.id
+      cannot [:manage_user_roles, :manage_user_institution], User
+      can :read, Institution, name: current_user.institution_name
+      cannot :create, Institution
+    end
   end
 end

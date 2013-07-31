@@ -1,6 +1,8 @@
-<h1>Listing institutions</h1>
+<div class="page-header">
+  <h1>Institutions</h1>
+</div>
 
-<table class="table table-condensed" data-provides="rowlink">
+<table class="table table-condensed table-hover">
   <thead>
     <tr>
       <th>Name</th>
@@ -10,12 +12,11 @@
   <tbody>
     <% @institutions.each do |institution| %>
       <tr>
-        <td><%= link_to institution.name, institution_path(institution) %></td>
+        <td><%= institution.name %></td>
+        <td><%= show_link institution %> <%= edit_link institution %> <%= destroy_link institution %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<br>
-
-<%= link_to 'New Institution', new_institution_path %>
+<%= create_link(Institution) %>

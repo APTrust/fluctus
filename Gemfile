@@ -54,6 +54,8 @@ gem 'hydra-role-management', github: 'acurley/hydra-role-management'
 
 group :development, :test do
   gem 'meta_request'
+  gem 'better_errors'
+  gem 'binding_of_caller'
   gem "rspec-rails"
   gem "jettywrapper"
   gem 'sqlite3'
