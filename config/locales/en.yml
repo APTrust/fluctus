@@ -24,4 +24,6 @@ en:
     application_name: 'APTrust'
     header_links:
       login: "Google Login"
-      register_user: "Register a New User"
+      manage_users: "Manage Users"
+      new_institution: "New Institution"
+      new_user: "New User"

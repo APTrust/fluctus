@@ -1,11 +1,22 @@
-<ul class="nav pull-right">
+<% if current_user.is? :admin or current_user.is? :institutional_admin %>
+<ul class="nav">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin</strong> <b class="caret"></b></a>
+    <ul class="dropdown-menu">
+      <% if current_user.is? :admin %>
+        <li><%= link_to t('blacklight.header_links.new_institution'), new_institution_path %></li>
+      <% end %>
+      <li><%= link_to t('blacklight.header_links.manage_users'), users_path %></li>
+      <li><%= link_to t('blacklight.header_links.new_user'), new_user_path %></li>
+    </ul>
+  </li>
+</ul>
+<% end %>
+
+<ul class="nav">
   <li class="dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= current_user.to_s %></strong> <b class="caret"></b></a>
       <ul class="dropdown-menu">
-        <% if current_user.is? :admin or current_user.is? :institutional_admin %>
-          <li><%= link_to t('blacklight.header_links.register_user'), new_user_path %></li>
-          <li class="divider"></li>
-        <% end %>
         <li><%= link_to t('blacklight.header_links.bookmarks'), bookmarks_path %></li>
         <li><%= link_to t('blacklight.header_links.saved_searches'), saved_searches_path %></li>
         <li><%= link_to t('blacklight.header_links.search_history'), search_history_path %></li>
