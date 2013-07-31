@@ -19,9 +19,12 @@
         </div>
 
         <div class="span3 nav-collapse">
-          <%= render :partial=>'/user_util_links' %>
+          <% if user_signed_in? %>
+            <%= render partial: '/user_util_links' %>
+          <% else %>
+            <%= render partial: '/user_sign_in_links' %>
+          <% end %>
         </div>
-
       </div>
     </div>
   </div>
