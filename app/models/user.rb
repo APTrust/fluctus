@@ -18,7 +18,7 @@ class User < ActiveRecord::Base
   validates :email, :phone_number, presence: true
   validates :email, uniqueness: true
   validates :institution_name, presence: true
-  validates_inclusion_of :institution_name, in: Institution.all.map(&:name)
+  validates_inclusion_of :institution_name, in: -> (institution) {Institution.all.map(&:name)}
 
   # Custom format validations.  See app/validators
   validates :name, person_name_format: true
