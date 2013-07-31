@@ -5,6 +5,8 @@
     <ul class="dropdown-menu">
       <% if current_user.is? :admin %>
         <li><%= link_to t('blacklight.header_links.new_institution'), new_institution_path %></li>
+        <li><%= link_to t('blacklight.header_links.manage_insitutions'), institutions_path %></li>
+        <li class="divider"></li>
       <% end %>
       <li><%= link_to t('blacklight.header_links.manage_users'), users_path %></li>
       <li><%= link_to t('blacklight.header_links.new_user'), new_user_path %></li>
