@@ -4,7 +4,6 @@ class Datastream::DescriptionObjectMetadata < ActiveFedora::OmDatastream
     t.root(path: 'object')
     t.title(index_as: :stored_searchable)
     t.dpn_status(index_as: :stored_searchable)
-    t.institution.name(index_as: :facetable)
   end
 
   def self.xml_template

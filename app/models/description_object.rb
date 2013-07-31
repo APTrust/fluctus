@@ -1,6 +1,7 @@
 class DescriptionObject < ActiveFedora::Base
 
   include Hydra::ModelMixins::RightsMetadata
+
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
   has_metadata 'descMetadata', type: Datastream::DescriptionObjectMetadata
 
@@ -8,7 +9,8 @@ class DescriptionObject < ActiveFedora::Base
 
   delegate :title, to: 'descMetadata', unique: true
   delegate :dpn_status, to: 'descMetadata', unique: true
+  # delegate :institution_name, to: 'descMetadata', unique: true
 
-  validates :institution_id, :title, :dpn_status, presence: true
+  validates :title, :dpn_status, presence: true
 
 end
