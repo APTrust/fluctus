@@ -2,7 +2,7 @@
   <h1>Users</h1>
 </div>
 
-<table class="table table-condensed table-hover">
+<table class="table table-condensed">
   <thead>
     <tr>
       <th>Name</th>
@@ -19,7 +19,7 @@
         <td><%= user.email %></td>
         <td><%= user.institution_name %></td>
         <td><%= user.groups.sort.map(&:titleize).join(", ") %> </td>
-        <td><%= show_link user %> <%= edit_link user %></td>
+        <td><%= show_link user %> <%= edit_link user %> <%= destroy_link user %></td>
       </tr>
     <% end %>
   </tbody>
