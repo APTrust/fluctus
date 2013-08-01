@@ -2,6 +2,7 @@
 require 'blacklight/catalog'
 
 class CatalogController < ApplicationController
+  before_filter :authenticate_user!
 
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
@@ -14,11 +15,16 @@ class CatalogController < ApplicationController
 
   # This filters out objects that you want to exclude from search results, like FileAssets
   CatalogController.solr_search_params_logic += [:exclude_unwanted_models]
+  CatalogController.solr_search_params_logic += [:filter_on_institution]
 
-  # Add institutional permissions
-  # CatalogController.solr_access_filters_logic += [:apply_institutional_permissions]
+  def filter_on_institution(solr_parameters, user_parameters)
+    if !current_user.is? :admin
+      solr_parameters[:fq] ||= []
+      solr_parameters[:fq] << '+is_part_of_ssim:' + "\"" + "info:fedora/#{current_user.institution.pid}" + "\""
+    end
+  end
 
-    configure_blacklight do |config|
+  configure_blacklight do |config|
     config.default_solr_params = {
       :qf => 'institution_name_tesim title_tesim',
       :qt => 'search',
@@ -168,7 +174,4 @@ class CatalogController < ApplicationController
     # mean") suggestion is offered.
     config.spell_max = 5
   end
-
-
-
 end
