@@ -12,6 +12,7 @@ class DescriptionObject < ActiveFedora::Base
   delegate :dpn_status, to: 'descMetadata', unique: true
 
   validates :title, :dpn_status, presence: true
+  validates :institution, presence: true
 
   private
   def set_permissions
