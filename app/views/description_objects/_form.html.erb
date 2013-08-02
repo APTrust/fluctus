@@ -1,0 +1,17 @@
+<%= form_for(@description_object) do |f| %>
+  <% if @description_object.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@description_object.errors.count, "error") %> prohibited this description_object from being saved:</h2>
+
+      <ul>
+      <% @description_object.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
