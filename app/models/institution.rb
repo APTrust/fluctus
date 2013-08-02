@@ -1,5 +1,6 @@
 class Institution < ActiveFedora::Base
   include Hydra::ModelMixins::RightsMetadata
+
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
 
   has_metadata 'adminMetadata', type: Datastream::InstitutionMetadata
@@ -10,7 +11,8 @@ class Institution < ActiveFedora::Base
 
   validates :name, presence: true
   validate :name_is_unique
-  validate :check_for_users, on: :delete
+
+  before_destroy :check_for_associations
 
   private
 
@@ -21,8 +23,22 @@ class Institution < ActiveFedora::Base
     errors.add(:name, "must be unique") unless !Institution.all.reject{|r| r == self}.map(&:name).include?(self.name)
   end
 
-  def check_for_users
-    count = User.where(institution_name: self.name).count
-    errors.add(:name, "cannot be deleted because #{count} users are associated with this insitution.") unless count == 0
+  def check_for_associations
+    # Check for related Users
+    #
+    # This is a relationship with an ActiveRecord object, so we must ask the ActiveRecord object about the relationship.
+    if User.where(institution_name: self.name).count != 0
+      errors[:base] << "Cannot delete #{self.name} because some Users are associated with this Insitution"
+    end
+
+    # Check for related DescriptionObjects
+    #
+    # This is a relationship with another ActiveFedora object, so the traditional .where method won't work.
+    # We must rely upon the ActiveFedora object reporting the relationship count information.
+    if self.description_objects.count != 0
+      errors[:base] << "Cannot delete #{self.name} because Description Objects are associated with it"
+    end
+
+    return false if !errors[:base].empty?
   end
 end

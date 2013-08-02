@@ -27,4 +27,12 @@ module ApplicationHelper
       link_to(content, [:new, object_class.name.underscore.to_sym], options)
     end
   end
+
+  def format_boolean_as_yes_no(boolean)
+    if boolean
+      return 'Yes'
+    else
+      return 'No'
+    end
+  end
 end

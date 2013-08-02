@@ -57,10 +57,14 @@ class InstitutionsController < ApplicationController
   # DELETE /institutions/1.json
   def destroy
     name = @institution.name
-    @institution.destroy
     respond_to do |format|
-      format.html { redirect_to institutions_url, notice: "#{name} was successfully destroyed." }
-      format.json { head :no_content }
+      if @institution.destroy
+        format.html { redirect_to institutions_url, notice: "#{name} was successfully destroyed." }
+        format.json { head :no_content }
+      else
+        format.html { redirect_to institutions_url, flash: {error: @institution.errors[:base].join("<br/>").html_safe }}
+        format.json { render json: @institution.errors, status: :unprocessable_entity }
+      end
     end
   end
 

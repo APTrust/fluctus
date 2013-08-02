@@ -29,5 +29,5 @@ end
 * Setup First User Account with <strong>your</strong> Google Email.
 
 ````
-User.create!(name: <your name>, email: <your Google Email>, phone_number: <Your phone number>, institution_name: i.name)
+User.create!(name: <your name>, email: <your Google Email>, phone_number: <Your phone number>, institution_name: i.name, role_ids: [Role.first.id])
 ````
