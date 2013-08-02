@@ -14,6 +14,13 @@ class DescriptionObject < ActiveFedora::Base
   validates :title, :dpn_status, presence: true
   validates :institution, presence: true
 
+  def to_solr(solr_doc=Hash.new)
+    super(solr_doc)
+    solr_doc[ActiveFedora::SolrService.solr_name('institution_name', :stored_searchable)] = self.institution.name
+    solr_doc[ActiveFedora::SolrService.solr_name('institution_name', :facetable)] = self.institution.name
+    return solr_doc
+  end
+
   private
   def set_permissions
     self.edit_groups = ['admin', 'institutional_admin']

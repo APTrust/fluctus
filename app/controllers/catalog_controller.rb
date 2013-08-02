@@ -62,12 +62,16 @@ class CatalogController < ApplicationController
     # config.add_facet_field solr_name('lc1_letter', :facetable), :label => 'Call Number'
     # config.add_facet_field solr_name('subject_geo', :facetable), :label => 'Region'
     # config.add_facet_field solr_name('subject_era', :facetable), :label => 'Era'
-    config.add_facet_field solr_name('dpn_status', :facetable), :label => 'DPN Status'
+    
+    config.add_facet_field solr_name('dpn_status', :facetable), :label => 'DPN Status', :helper_method => :format_boolean_as_yes_no
+    config.add_facet_field solr_name('institution_name', :facetable), :sort => 'index', :label => "Institution"
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.
     config.default_solr_params[:'facet.field'] = config.facet_fields.keys
+    config.add_facet_fields_to_solr_request!
+
     #use this instead if you don't want to query facets marked :show=>false
     #config.default_solr_params[:'facet.field'] = config.facet_fields.select{ |k, v| v[:show] != false}.keys
 
@@ -76,7 +80,7 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display
     config.add_index_field solr_name('title', :stored_searchable, type: :string), :label => 'Title:'
     config.add_index_field solr_name('name', :stored_searchable, type: :string), :label => 'Name:'
-    config.add_index_field solr_name('dpn_status', :stored_searchable, type: :string), :label => 'DPN Status'
+    config.add_index_field solr_name('institution_name', :stored_searchable, type: :string), :label => 'Institution:'
 
     # config.add_index_field solr_name('title_vern', :stored_searchable, type: :string), :label => 'Title:'
     # config.add_index_field solr_name('author', :stored_searchable, type: :string), :label => 'Author:'
