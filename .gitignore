@@ -17,3 +17,8 @@
 /jetty
 # Ignore application configuration
 /config/application.yml
+
+# IDE filies
+.idea
+.project
+*.sublime-text.*
