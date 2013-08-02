@@ -5,6 +5,7 @@ class CatalogController < ApplicationController
 
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
+  include Aptrust::SolrHelper
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, :only=>:show
@@ -14,14 +15,10 @@ class CatalogController < ApplicationController
 
   # This filters out objects that you want to exclude from search results, like FileAssets
   CatalogController.solr_search_params_logic += [:exclude_unwanted_models]
-  CatalogController.solr_search_params_logic += [:filter_on_institution]
 
-  def filter_on_institution(solr_parameters, user_parameters)
-    if current_user and !current_user.is? :admin
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << '+is_part_of_ssim:' + "\"" + "info:fedora/#{current_user.institution.pid}" + "\""
-    end
-  end
+  # Added by APTrust.  Filter results based on User's insitutional affilation.  Superusers
+  # are not constrained in the same way, however.
+  CatalogController.solr_search_params_logic += [:filter_on_institution]
 
   configure_blacklight do |config|
     config.default_solr_params = {
