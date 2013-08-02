@@ -2,7 +2,6 @@
 require 'blacklight/catalog'
 
 class CatalogController < ApplicationController
-  before_filter :authenticate_user!
 
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
@@ -18,7 +17,7 @@ class CatalogController < ApplicationController
   CatalogController.solr_search_params_logic += [:filter_on_institution]
 
   def filter_on_institution(solr_parameters, user_parameters)
-    if !current_user.is? :admin
+    if current_user and !current_user.is? :admin
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << '+is_part_of_ssim:' + "\"" + "info:fedora/#{current_user.institution.pid}" + "\""
     end
