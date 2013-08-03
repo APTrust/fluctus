@@ -29,7 +29,7 @@ module ApplicationHelper
   end
 
   def format_boolean_as_yes_no(boolean)
-    if boolean
+    if boolean == 'true'
       return 'Yes'
     else
       return 'No'
