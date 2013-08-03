@@ -1,6 +1,6 @@
 Fluctus::Application.routes.draw do
   resources :institutions
-  resources :description_objects
+  resources :description_objects, except: [:destroy, :index, :new]
   resources :users
 
   root :to => "catalog#index"
