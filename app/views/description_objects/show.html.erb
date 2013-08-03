@@ -1,4 +1,11 @@
-<p id="notice"><%= notice %></p>
+<p>
+  <strong>Title:</strong>
+  <%= @description_object.title %>
+</p>
 
-<%= link_to 'Edit', edit_description_object_path(@description_object) %> |
-<%= link_to 'Back', description_objects_path %>
+<p>
+  <strong>DPN Status:</strong>
+  <%= format_boolean_as_yes_no(@description_object.dpn_status) %>
+</p>
+
+<%= edit_link(@description_object) %>
