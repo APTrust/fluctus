@@ -58,6 +58,11 @@ group :development, :test do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem "rspec-rails"
+  gem 'capybara'
+  # gem 'factory_girl_rails'
+  gem 'shoulda-matchers'
+  gem 'coveralls'
+  gem 'faker'
   gem "jettywrapper"
   gem 'sqlite3'
   gem 'quiet_assets'
