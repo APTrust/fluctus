@@ -23,7 +23,11 @@ class User < ActiveRecord::Base
   # Custom format validations.  See app/validators
   validates :name, person_name_format: true
   validates :email, email: true
-  validates :phone_number, phone_format: true
+
+  # Handle and normalize phone numbers
+  phony_normalize :phone_number, :default_country_code => 'US'
+
+  validates :phone_number, :phony_plausible => true
 
   # Blacklight uses #to_s on youruser class to get a user-displayable 
   # login/identifier for the account. 

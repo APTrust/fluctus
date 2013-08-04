@@ -192,6 +192,11 @@ GEM
       omniauth (~> 1.0)
     orm_adapter (0.4.0)
     pg (0.15.1)
+    phony (1.9.0)
+    phony_rails (0.4.0)
+      activesupport (>= 3.0)
+      countries (>= 0.8.2)
+      phony (>= 1.7.7)
     polyglot (0.3.3)
     quiet_assets (1.0.2)
       railties (>= 3.1, < 5.0)
@@ -319,6 +324,7 @@ DEPENDENCIES
   meta_request
   omniauth-google-oauth2
   pg
+  phony_rails
   quiet_assets
   rails (= 4.0.0)
   rails_12factor

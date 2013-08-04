@@ -51,6 +51,7 @@ gem 'figaro'
 gem 'omniauth-google-oauth2'
 gem 'simple_form'
 gem 'hydra-role-management', github: 'acurley/hydra-role-management'
+gem 'phony_rails'
 
 group :development, :test do
   gem 'meta_request'
