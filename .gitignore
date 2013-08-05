@@ -22,3 +22,6 @@
 .idea
 .project
 *.sublime-text.*
+
+# OS Files
+.DS_Store

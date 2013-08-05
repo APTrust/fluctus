@@ -27,4 +27,13 @@ module ApplicationHelper
       link_to(content, [:new, object_class.name.underscore.to_sym], options)
     end
   end
+
+  def header_title
+    base_title = "APTrust"
+    if !current_user
+      base_title
+    else
+      "#{current_user.institution.name} | #{base_title}"
+    end
+  end
 end
