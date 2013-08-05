@@ -29,5 +29,40 @@ end
 * Setup First User Account with <strong>your</strong> Google Email.
 
 ````
-User.create!(name: <your name>, email: <your Google Email>, phone_number: <Your phone number>, institution_name: i.name)
+User.create!(name: <your name>, email: <your Google Email>, phone_number: <Your phone number>, institution_name: i.name, role_ids: [Role.first.id])
 ````
+
+## Heroku Instructions
+[Fluctus on Heroku](http://fluctus.herokuapp.com)
+
+Your Google email address must be added to the DB on heroku by APTrust staff, so contact them if you need to be added.  Otherwise, you will not be an authorized user and will be denied total access to the application.
+
+### Developers
+To setup your own Heroku hosted version:
+
+* Push latest version of master
+
+````
+git push heroku master
+````
+* Update database to ensure DB is up to date.
+
+````
+heroku run rake db:migrate
+````
+* Ensure configuration parameters are up to date on Heroku.  config/application.yml must be present in your local app and have your secret configuration parameters.
+
+````
+rake figaro:heroku
+````
+* Restart application
+
+````
+heroku restart
+````
+* Open application
+
+````
+heroku open
+````
+* Follow setup instructions as above.

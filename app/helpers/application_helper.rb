@@ -48,4 +48,12 @@ module ApplicationHelper
     end
   end
 
+  def format_boolean_as_yes_no(boolean)
+    if boolean == 'true'
+      return 'Yes'
+    else
+      return 'No'
+    end
+  end
+
 end

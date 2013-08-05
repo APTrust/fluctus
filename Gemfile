@@ -51,12 +51,18 @@ gem 'figaro'
 gem 'omniauth-google-oauth2'
 gem 'simple_form'
 gem 'hydra-role-management', github: 'acurley/hydra-role-management'
+gem 'phony_rails'
 
 group :development, :test do
   gem 'meta_request'
   gem 'better_errors'
   gem 'binding_of_caller'
   gem "rspec-rails"
+  gem 'capybara'
+  # gem 'factory_girl_rails'
+  gem 'shoulda-matchers'
+  gem 'coveralls'
+  gem 'faker'
   gem "jettywrapper"
   gem 'sqlite3'
   gem 'quiet_assets'
