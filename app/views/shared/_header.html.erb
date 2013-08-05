@@ -1,0 +1,33 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <%= link_to raw("<em>Red</em>Shift"), root_path, id: "logo", class: "brand" %>
+      <nav>
+
+        <ul class="nav pull-right">
+          <li class="dropdown">
+              <% if user_signed_in? %>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  Welcome <%= current_user.display_name %> <b class="caret"> </b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><%= link_to "API Keys", api_keys_path %></li>
+                    <li><%= link_to "Logout", destroy_user_session_path, :method => :delete %></li>
+                </ul>
+              <% else %>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  Sign in ... <b class="caret"> </b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><%= link_to "Google+", user_omniauth_authorize_path(:google_oauth2) %></li>
+                  <li><%= link_to "Local Account", new_session_path(:user) %></li>
+                  <li><%= link_to "Register", new_registration_path(:user) %></li>
+                </ul>
+
+              <% end %>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
