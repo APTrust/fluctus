@@ -1,9 +1,9 @@
 class Bag < ActiveFedora::Base
   has_metadata 'descMetadata', type: Datastream::BagMetadata
   has_file_datastream 'bagContent'
+  has_metadata 'premisEvents', type: Datastream::PremisEventDatastream
 
   belongs_to :description_object, property: :is_part_of
-  has_many :compressed_bags, property: :is_derivation_of
 
   # This method is being stashed until we determine the relationship 
   # between bags and compressed bags.
