@@ -1,7 +1,7 @@
 class Bag < ActiveFedora::Base
   has_metadata 'descMetadata', type: Datastream::BagMetadata
-  has_file_datastream 'bagContent'
   has_metadata 'premisEvents', type: Datastream::PremisEventDatastream
+  has_metadata 'fileManifest', type: Datastream::BagManifestDatastream
 
   belongs_to :description_object, property: :is_part_of
 
