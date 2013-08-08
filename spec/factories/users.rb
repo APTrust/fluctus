@@ -5,6 +5,6 @@ FactoryGirl.define do
     name Faker::Name.name
     email Faker::Internet.email
     phone_number Faker::PhoneNumber.phone_number
-    institution_name FactoryGirl.create(:institution).name
+    institution_name "APTrust"
   end
 end

@@ -19,7 +19,7 @@ class Institution < ActiveFedora::Base
   # becomes problematic on update because the name exists already and the validation fails.  Therefore
   # we must remove self from the array before testing for uniqueness.
   def name_is_unique
-    errors.add(:name, "must be unique") unless !Institution.all.reject{|r| r == self}.map(&:name).include?(self.name)
+    errors.add(:name, "has already been taken") unless !Institution.all.reject{|r| r == self}.map(&:name).include?(self.name)
   end
 
   def check_for_associations
