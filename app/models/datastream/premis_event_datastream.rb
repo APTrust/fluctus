@@ -1,6 +1,7 @@
 # NOTE example of use https://gist.github.com/no-reply/4151387
 # NOTE vocab link http://multimedialab.elis.ugent.be/users/samcoppe/ontologies/Premis/premis.owl
 
+# Note serialize via obj.serialize
 class EventVocabulary < RDF::Vocabulary("http://multimedialab.elis.ugent.be/users/samcoppe/ontologies/Premis/premis.owl#")
   property :identifier
   property :eventType
@@ -30,7 +31,7 @@ class Event
     map.type(to: :eventType, in: EventVocabulary)
     map.date_time(to: :eventDateTime, in: EventVocabulary)
     map.detail(to: :eventDetail, in: EventVocabulary)
-    map.outcome_detail(to: :eventDetail, in: EventVocabulary)
+    map.outcome_detail(to: :eventOutcomeDetail, in: EventVocabulary)
     map.outcome_information(to: :eventOutcomeInformation, in: EventVocabulary)
     map.object(to: :linkingObject, in: EventVocabulary)
     map.agent(to: :linkingAgent, in: EventVocabulary)
