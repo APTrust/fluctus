@@ -1,4 +1,6 @@
 # Fluctus
+[![Code Climate](https://codeclimate.com/github/APTrust/fluctus.png)](https://codeclimate.com/github/APTrust/fluctus)
+[![Dependency Status](https://gemnasium.com/APTrust/fluctus.png)](https://gemnasium.com/APTrust/fluctus)
 
 ## APTrust Admin Console (Hydra Head)
 
