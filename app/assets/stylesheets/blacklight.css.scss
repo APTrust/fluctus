@@ -1,0 +1,19 @@
+$logo_image: 'aptrust/aptrust_nodes_icon.png';
+
+@import 'bootstrap';
+@import 'bootstrap-responsive';
+
+@import 'blacklight/blacklight';
+
+
+@media (min-width: 768px) and (max-width: 979px) {
+  .logo-text {
+    width: auto;
+  }
+}
+
+@media (min-width: 980px) and (max-width: 1199px) {
+  .logo-text {
+    width: auto;
+  }
+}

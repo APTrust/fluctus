@@ -1,0 +1,31 @@
+/* FOOTER */
+footer {
+  margin-top: 45px;
+  padding-top: 5px;
+  border-top:  1px solid #eaeaea;
+  color: #999;
+  a {
+    color: #555;
+    &:hover {
+      color:  #222;
+    }
+  }
+  small {
+    float: left;
+  }
+  ul {
+    float: right;
+    list-style: none;
+    li {
+      float: left;
+      margin-left: 10px;
+    }
+  }
+}
+
+@mixin fix-title {
+  text-indent: 40px;
+  width: auto;
+}
+
+#header-navbar-fixed-top .brand {@include fix-title}
