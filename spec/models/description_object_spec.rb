@@ -15,4 +15,9 @@ describe DescriptionObject do
   it 'should serialize descMetadata as RDF triples' do 
     desc.descMetadata.serialize.should == "<info:fedora/#{desc.pid}> <http://purl.org/dc/terms/title> \"#{desc.title}\" .\n"
   end
+
+  it 'should retun a proper solr_doc' do
+    desc.to_solr['institution_name_tesim'].should == i.name
+    desc.to_solr['desc_metadata__title_tesim'].should == [desc.title]
+  end
 end
