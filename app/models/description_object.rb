@@ -7,6 +7,7 @@ class DescriptionObject < ActiveFedora::Base
   has_metadata 'descMetadata', type: Datastream::DescriptionObjectMetadata
 
   belongs_to :institution, property: :is_part_of
+  has_many :bags, property: :is_part_of
 
   delegate_to 'descMetadata', [:title], unique: true
 
