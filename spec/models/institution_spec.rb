@@ -17,6 +17,13 @@ describe Institution do
     i.to_solr['desc_metadata__name_tesim'].should == [i.name]
   end
 
+  describe '#where behavior when using RDF' do
+    it 'should return a vailid Institution object' do 
+      returned_institution = Institution.where(desc_metadata__name_tesim: i.name).first
+      returned_institution.should == i
+    end
+  end
+
   describe "#name_is_unique" do
     it { should validate_uniqueness_of(:name) }
   end
