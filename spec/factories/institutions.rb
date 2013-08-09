@@ -5,6 +5,10 @@ FactoryGirl.define do
     name "APTrust"
   end
 
+  factory :fake_university, class: "Institution" do
+    name "Fake University"
+  end
+
   factory :institution do 
     name Faker::Company.name
   end

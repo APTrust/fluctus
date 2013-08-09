@@ -44,8 +44,12 @@ class User < ActiveRecord::Base
 
   # Since an Institution is an ActiveFedora Object, these two objects cannot be related as normal (i.e. belogns_to)
   # They will be connected through the Institution.name which should be unique.
+  #
+  # Given that Institutions have their descMetadata stored as RDF and ActiveFedora indexes that content with a 
+  # datastream prefix, a traditional 'name' attribute cannot be searched upon.  Instead the entire solr field
+  # must be used in a #where method call.
   def institution
-    return Institution.where(name: self.institution_name).first
+    return Institution.where(desc_metadata__name_tesim: self.institution_name).first
   end
 
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
