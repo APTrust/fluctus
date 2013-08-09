@@ -1,12 +1,7 @@
-class Datastream::DescriptionObjectMetadata < ActiveFedora::OmDatastream
-
-  set_terminology do |t|
-    t.root(path: 'object')
-    t.title(index_as: :stored_searchable)
-    t.dpn_status(index_as: [:facetable, :stored_searchable])
-  end
-
-  def self.xml_template
-    Nokogiri::XML.parse("<object/>")
+class Datastream::DescriptionObjectMetadata < ActiveFedora::NtriplesRDFDatastream
+  map_predicates do |map|
+    map.title(in: RDF::DC, to: 'title') do |index|
+      index.as :stored_searchable
+    end
   end
 end

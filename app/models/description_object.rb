@@ -1,17 +1,17 @@
 class DescriptionObject < ActiveFedora::Base
-
   include Hydra::ModelMixins::RightsMetadata
+
   before_save :set_permissions
 
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
   has_metadata 'descMetadata', type: Datastream::DescriptionObjectMetadata
 
   belongs_to :institution, property: :is_part_of
+  has_many :bags, property: :is_part_of
 
-  delegate :title, to: 'descMetadata', unique: true
-  delegate :dpn_status, to: 'descMetadata', unique: true
+  delegate_to 'descMetadata', [:title], unique: true
 
-  validates :title, :dpn_status, presence: true
+  validates :title, presence: true
   validates :institution, presence: true
 
   def to_solr(solr_doc=Hash.new)

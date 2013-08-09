@@ -21,6 +21,8 @@ class Ability
     if current_user.is? :institutional_admin
       can [:create, :read, :update, :destroy, :manage_user_roles], User, institution_name: current_user.institution_name
       cannot [:manage_user_institution, :assign_admin_user], User
+      can [:read, :update], Institution, name: current_user.institution_name
+      cannot :create, Institution
     end
   end
   

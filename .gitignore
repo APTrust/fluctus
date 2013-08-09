@@ -18,7 +18,10 @@
 # Ignore application configuration
 /config/application.yml
 
-# IDE filies
+# IDE files
 .idea
 .project
 *.sublime-text.*
+
+# OS Files
+.DS_Store

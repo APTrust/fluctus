@@ -28,6 +28,26 @@ module ApplicationHelper
     end
   end
 
+  def header_title
+    # TODO put base_title into an ENV
+    base_title = "APTrust"
+    if !current_user
+      base_title
+    else
+      "#{current_user.institution.name} | #{base_title}"
+    end
+  end
+
+  def full_title(page_title)
+    # TODO put the base_title into an ENV
+    base_title = "APTrust"
+    if page_title.empty?
+      base_title
+    else
+      "#{page_title} | #{base_title}"
+    end
+  end
+
   def format_boolean_as_yes_no(boolean)
     if boolean == 'true'
       return 'Yes'
@@ -35,4 +55,5 @@ module ApplicationHelper
       return 'No'
     end
   end
+
 end

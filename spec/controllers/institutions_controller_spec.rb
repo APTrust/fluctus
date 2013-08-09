@@ -23,7 +23,7 @@ describe InstitutionsController do
   # This should return the minimal set of attributes required to create a valid
   # Institution. As you add validations to Institution, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) { { "name" => "MyString" } }
+  let(:institution) { FactoryGirl.create(:institution) }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
@@ -32,9 +32,9 @@ describe InstitutionsController do
 
   describe "GET index" do
     it "assigns all institutions as @institutions" do
-      institution = Institution.create! valid_attributes
+      # institution = Institution.create! valid_attributes
       get :index, {}, valid_session
-      assigns(:institutions).should eq([institution])
+      assigns(:institutions).should eq([:institution])
     end
   end
 

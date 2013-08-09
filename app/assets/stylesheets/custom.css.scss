@@ -1,0 +1,89 @@
+$logo_image: 'aptrust/aptrust_nodes_icon.png';
+
+@import 'bootstrap';
+@import 'bootstrap-responsive';
+
+/* universal */
+
+html {
+  overflow-y: scroll;
+}
+
+section {
+  overflow:  auto;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.center {
+  text-align: center;
+  h1 {
+    margin-bottom: 10px;
+  }
+}
+
+/* HEADER */
+#header-navbar-fixed-top {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  min-width: 395px;
+  /* This ensures that any tool pop-up goes infront of the header */
+  z-index:1000;
+
+  .brand {  /* The main logo image for the site */
+    background:transparent image_url($logo_image) no-repeat top left;
+    text-indent: 40px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-right:20px;
+    color: #222222;
+  }
+
+  .navbar-inner {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+  }
+}
+
+/* FOOTER */
+footer {
+  margin-top: 45px;
+  padding-top: 5px;
+  border-top:  1px solid #eaeaea;
+  color: #999;
+  a {
+    color: #555;
+    &:hover {
+      color:  #222;
+    }
+  }
+  small {
+    float: left;
+  }
+  ul {
+    float: right;
+    list-style: none;
+    li {
+      float: left;
+      margin-left: 10px;
+    }
+  }
+}
+
+/* Mixins */
+@mixin box_sizing {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* Misc */
+.debug_dump {
+  clear: both;
+  float: left;
+  width: 100%;
+  margin-top: 45px;
+  @include box_sizing;
+}
