@@ -22,18 +22,18 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
     config.default_solr_params = {
-      :qf => 'title_tesim dpn_status_tesim',
+      :qf => 'desc_metadata__title_tesim',
       :qt => 'search',
       :rows => 10
     }
 
     # solr field configuration for search results/index views
-    config.index.show_link = 'title_tesim'
+    config.index.show_link = 'desc_metadata__title_tesim'
     config.index.record_display_type = 'has_model_ssim'
 
     # solr field configuration for document/show views
-    config.show.html_title = 'title_tesim'
-    config.show.heading = 'title_tesim'
+    config.show.html_title = 'desc_metadata__title_tesim'
+    config.show.heading = 'desc_metadata__title_tesim'
     config.show.display_type = 'has_model_ssim'
 
     # solr fields that will be treated as facets by the blacklight application
@@ -63,7 +63,6 @@ class CatalogController < ApplicationController
     # config.add_facet_field solr_name('subject_geo', :facetable), :label => 'Region'
     # config.add_facet_field solr_name('subject_era', :facetable), :label => 'Era'
     
-    config.add_facet_field solr_name('dpn_status', :facetable), :label => 'DPN Status', :helper_method => :format_boolean_as_yes_no
     config.add_facet_field solr_name('institution_name', :facetable), :sort => 'index', :label => "Institution"
 
     # Have BL send all facet field names to Solr, which has been the default
@@ -78,8 +77,8 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
-    config.add_index_field solr_name('title', :stored_searchable, type: :string), :label => 'Title:'
-    config.add_index_field solr_name('name', :stored_searchable, type: :string), :label => 'Name:'
+    config.add_index_field solr_name('desc_metadata__title', :stored_searchable, type: :string), :label => 'Title:'
+    config.add_index_field solr_name('desc_metadata__name', :stored_searchable, type: :string), :label => 'Name:'
     config.add_index_field solr_name('institution_name', :stored_searchable, type: :string), :label => 'Institution:'
 
     # config.add_index_field solr_name('title_vern', :stored_searchable, type: :string), :label => 'Title:'
