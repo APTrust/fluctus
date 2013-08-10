@@ -68,6 +68,7 @@ group :development, :test do
   gem 'sqlite3'
   gem 'quiet_assets'
   gem 'selenium-webdriver'
+  gem 'coveralls', require: false
 end
 
 group :production do

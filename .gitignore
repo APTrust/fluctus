@@ -15,8 +15,10 @@
 /log/*.log
 /tmp
 /jetty
+
 # Ignore application configuration
 /config/application.yml
+.coveralls.yml
 
 # IDE files
 .idea
@@ -25,3 +27,6 @@
 
 # OS Files
 .DS_Store
+
+# Coveralls
+/coverage
