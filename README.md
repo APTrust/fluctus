@@ -1,4 +1,6 @@
 # Fluctus
+[![Code Climate](https://codeclimate.com/github/APTrust/fluctus.png)](https://codeclimate.com/github/APTrust/fluctus)
+[![Dependency Status](https://gemnasium.com/APTrust/fluctus.png)](https://gemnasium.com/APTrust/fluctus)
 
 ## APTrust Admin Console (Hydra Head)
 
@@ -7,7 +9,7 @@ This application aims to use the entire Hydra stack to manage all APTrust intera
 ### Requirements
 * Ruby 2.0.0
 * Rails 4.0.0
-* hydra-head 6.3.0
+* hydra-head 6.3.2
 
 ## Setup Instructions
 * Setup APTrust Institution object

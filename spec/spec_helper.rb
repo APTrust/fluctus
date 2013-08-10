@@ -3,6 +3,8 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
+require 'capybara/rails'
+require 'capybara/rspec'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -12,7 +14,35 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.check_pending! if defined?(ActiveRecord::Migration)
 
+# Enable fake google sign_ins
+OmniAuth.config.test_mode = true
+
+# Enable capybara to login and logout users
+include Warden::Test::Helpers
+Warden.test_mode!
+
+# Capybara.default_driver = :selenium
+
 RSpec.configure do |config|
+
+  # Add all fluctus roles before testing.
+  config.before(:all) do 
+    ['admin', 'institutional_admin', 'institutional_user'].each do |role|
+      Role.create!(name: role)
+    end
+
+    # Create our two default institutions
+    FactoryGirl.create(:aptrust)
+    FactoryGirl.create(:fake_university)
+
+  end
+
+  config.after(:all) do 
+    Role.destroy_all
+    User.destroy_all
+    Institution.destroy_all
+  end
+
   # ## Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
@@ -38,7 +68,7 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = "random"
+  config.order = "default"
 
   # config.backtrace_exclusion_patterns = Array.new
 end

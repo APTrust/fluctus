@@ -2,6 +2,6 @@
 
 FactoryGirl.define do
   factory :institution_metadata, class: Datastream::InstitutionMetadata do
-    name Faker::Company.name
+    name { Faker::Company.name }
   end
 end

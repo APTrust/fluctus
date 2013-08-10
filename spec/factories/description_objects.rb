@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :description_object do
-    title Faker::Commerce.product_name
+    title { Faker::Commerce.product_name }
     institution
   end
 end
