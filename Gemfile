@@ -53,6 +53,9 @@ gem 'simple_form'
 gem 'hydra-role-management', github: 'acurley/hydra-role-management'
 gem 'phony_rails'
 
+# S3 connector
+gem 'aws-s3'
+
 group :development, :test do
   gem 'meta_request'
   gem 'better_errors'
