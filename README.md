@@ -2,6 +2,8 @@
 [![Code Climate](https://codeclimate.com/github/APTrust/fluctus.png)](https://codeclimate.com/github/APTrust/fluctus)
 [![Dependency Status](https://gemnasium.com/APTrust/fluctus.png)](https://gemnasium.com/APTrust/fluctus)
 [![Coverage Status](https://coveralls.io/repos/APTrust/fluctus/badge.png)](https://coveralls.io/r/APTrust/fluctus)
+[![Build Status (Master)](https://travis-ci.org/APTrust/fluctus.png?branch=master)](https://travis-ci.org/APTrust/fluctus)
+[![Build Status (Development)](https://travis-ci.org/APTrust/fluctus.png?branch=develop)](https://travis-ci.org/APTrust/fluctus)
 
 ## APTrust Admin Console (Hydra Head)
 
