@@ -69,3 +69,18 @@ heroku restart
 heroku open
 ````
 * Follow setup instructions as above.
+
+# Querying RDF Datastreams
+
+We are making significant use of RDF Datastreams throughout the application.  Querying
+of these is different than traditional rails like model queries and follows a paradim
+more similar to earlier rails model queries.
+
+The format is as follows::
+
+  <Class>.where(<rails cased datastream name>__<field name>_tesim: <value>)
+
+So as an example, if you were to query for "APTrust" in the name field of the descMetadata
+datastream in the Institution model you would search as follows::
+
+  ins = Institution.where(desc_metadata__name_tesim: "APTrust")

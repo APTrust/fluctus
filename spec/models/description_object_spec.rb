@@ -20,4 +20,9 @@ describe DescriptionObject do
     desc.to_solr['institution_name_tesim'].should == i.name
     desc.to_solr['desc_metadata__title_tesim'].should == [desc.title]
   end
+
+  it 'should throw an error if no insitution is assigned.' do
+    desc.institution = nil
+    lambda {desc.save!}.should raise_error
+  end
 end

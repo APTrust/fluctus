@@ -1,6 +1,7 @@
 class Institution < ActiveFedora::Base
   include Hydra::ModelMixins::RightsMetadata
 
+  # NOTE with rdf datastreams must query like so ins = Institution.where(desc_metadata__name_tesim: "APTrust")
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
   has_metadata 'descMetadata', type: Datastream::InstitutionMetadata
 
@@ -40,4 +41,5 @@ class Institution < ActiveFedora::Base
 
     return false if !errors[:base].empty?
   end
+
 end
