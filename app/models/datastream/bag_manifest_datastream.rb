@@ -36,9 +36,7 @@ class BagFile
   include ActiveFedora::RdfObject
 
   map_predicates do |map|
-    #map.creator(in: RDF::DC)
     map.format(in: FileVocabulary)
-    map.type(in: RDF::DC)
     map.uri(to: :absoluteURI, in: RDF::HTTP)
     map.size(in: FileVocabulary)
     map.created(in: FileVocabulary)
