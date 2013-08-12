@@ -1,7 +1,10 @@
+<h4>User Information</h4>
+<%= gravatar_for @user %>
 <address>
-  <strong><%= @user.name %></strong> (<em><%= @user.institution_name %></em>)<br>
+
+  <strong><%= @user.name %></strong> (<em><%= @user.institution_name %></em>)<br />
   <a href="mailto:#"><%= @user.email %></a><br>
-  <abbr title="Phone">P:</abbr><%= @user.phone_number %><br><br>
+  <abbr title="Phone">Phone #: </abbr><%= @user.phone_number %><br><br>
 </address>
 
 <h4>Roles</h4>
@@ -10,6 +13,8 @@
   <li><%= role.name.titleize %></li>
 <% end %>
 </ul>
+
+<hr />
 
 <%= edit_link(@user) %>
 <%= destroy_link(@user) %>
