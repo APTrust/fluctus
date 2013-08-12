@@ -30,7 +30,6 @@ describe Datastream::BagManifestDatastream do
 
   it "should have valid file properties" do
     @fi.format.should == ["text/plain"]
-    @fi.type.should == ["textfile"]
     @fi.uri.should == ["https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365/bagit.txt"]
     @fi.size.should == ["3456"]
     @fi.checksum.count.should == 1
