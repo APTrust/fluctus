@@ -18,4 +18,12 @@ class Bag < ActiveFedora::Base
   #     errors.add('A bag cannot have more than 1 associated CompressedBag.')
   #   end
   # end
+
+  # Parses the original pid value for this object as a convienence method.
+  def parse_pid
+    title = self.fileManifest.title[0]
+    if title
+      URI.unescape(title.gsub(/\w*_/, ""))
+    end
+  end
 end
