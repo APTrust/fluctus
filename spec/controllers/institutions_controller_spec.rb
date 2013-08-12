@@ -6,13 +6,14 @@ describe InstitutionsController do
   # InstitutionsController. Be sure to keep this updated too.
   # let(:valid_session) { {} }
 
-  before(:all) do
-    @institution = FactoryGirl.create(:fake_university)
+  before do
+    @institution = Institution.where(desc_metadata__name_tesim: 'Fake University').first
     @user = FactoryGirl.create(:user)
+    @user.update_attributes(institution_name: @institution.name)
   end
 
-  after(:all) do
-    @user.delete; @institution.delete; Role.destroy_all
+  after do
+    @user.delete
   end
 
   describe "GET #index" do
@@ -40,7 +41,7 @@ describe InstitutionsController do
 
       it "assigns all institutions as @institutions" do
         get :index
-        assigns(:institutions).should eq([@institution])
+        assigns(:institutions).should include(@institution)
       end
     end
   end

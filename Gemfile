@@ -49,7 +49,7 @@ gem "devise", github: "plataformatec/devise", branch: "rails4"
 gem "bootstrap-sass"
 gem 'figaro'
 gem 'omniauth-google-oauth2'
-gem 'simple_form'
+gem 'simple_form', '~> 3.0.0.rc'
 gem 'hydra-role-management', github: 'acurley/hydra-role-management'
 gem 'phony_rails'
 
