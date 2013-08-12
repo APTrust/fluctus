@@ -3,6 +3,11 @@
 [![Dependency Status](https://gemnasium.com/APTrust/fluctus.png)](https://gemnasium.com/APTrust/fluctus)
 [![Coverage Status](https://coveralls.io/repos/APTrust/fluctus/badge.png)](https://coveralls.io/r/APTrust/fluctus)
 
+Build Status | Travis Badge
+--- | ---
+Production | [![Build Status (Master)](https://travis-ci.org/APTrust/fluctus.png?branch=master)](https://travis-ci.org/APTrust/fluctus)
+Development | [![Build Status (Development)](https://travis-ci.org/APTrust/fluctus.png?branch=develop)](https://travis-ci.org/APTrust/fluctus)
+
 ## APTrust Admin Console (Hydra Head)
 
 This application aims to use the entire Hydra stack to manage all APTrust interactions with Fedora.  
