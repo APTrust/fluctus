@@ -3,7 +3,7 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Fluctus::Application.load_tasks
-
-task :ci => ['jetty:clean', 'fluctus:ci']
+task :ci => ['jetty:clean', 'fluctus:travis']
 task :default => [:ci]
+
+Fluctus::Application.load_tasks

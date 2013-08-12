@@ -34,7 +34,7 @@ namespace :fluctus do
   end
 
   desc "Run ci"
-  task :ci do 
+  task :travis do 
     puts "Updating Solr config"
     Rake::Task['jetty:config'].invoke
     
