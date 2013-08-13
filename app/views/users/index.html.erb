@@ -17,7 +17,7 @@
       <tr>
         <td><%= user.name %></td>
         <td><%= user.email %></td>
-        <td><%= user.institution_name %></td>
+        <td><%= user.institution.name %></td>
         <td><%= user.groups.sort.map(&:titleize).join(", ") %> </td>
         <td><%= show_link user %> <%= edit_link user %> <%= destroy_link user %></td>
       </tr>

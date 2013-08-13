@@ -19,8 +19,7 @@ describe Institution do
 
   describe '#where behavior when using RDF' do
     it 'should return a vailid Institution object' do 
-      returned_institution = Institution.where(desc_metadata__name_tesim: i.name).first
-      returned_institution.should == i
+      Institution.where(pid: i.pid).count.should == 1
     end
   end
 
@@ -30,7 +29,7 @@ describe Institution do
 
   describe "#check_for_association" do 
     it 'should not delete if a user is associated' do 
-      user = FactoryGirl.create(:user, institution_name: i.name)
+      user = FactoryGirl.create(:user, institution_pid: i.pid)
       i.destroy.should be_false
       user.destroy
     end

@@ -7,13 +7,8 @@ describe InstitutionsController do
   # let(:valid_session) { {} }
 
   before do
-    @institution = Institution.where(desc_metadata__name_tesim: 'Fake University').first
     @user = FactoryGirl.create(:user)
-    @user.update_attributes(institution_name: @institution.name)
-  end
-
-  after do
-    @user.delete
+    @institution = @user.institution
   end
 
   describe "GET #index" do

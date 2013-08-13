@@ -19,7 +19,7 @@ namespace :fluctus do
     STDOUT.puts "What is your phone number?"
     phone_number = STDIN.gets.strip
    
-    User.create!(name: name, email: email, phone_number: phone_number, institution_name: i.name, role_ids: [Role.where(name: 'admin').first.id])
+    User.create!(name: name, email: email, phone_number: phone_number, institution_pid: i.pid, role_ids: [Role.where(name: 'admin').first.id])
   end
 
   # Restricted only to non-production environments
