@@ -17,6 +17,24 @@ describe Institution do
     i.to_solr['desc_metadata__name_tesim'].should == [i.name]
   end
 
+  describe "#users" do
+    before do
+      @user =  FactoryGirl.create(:user, institution_pid: i.pid) 
+    end
+
+    it "should return an array of users" do 
+      i.users.class.should == [].class
+    end
+
+    it "should contain the appropriate User" do
+      i.users.should include(@user)
+    end
+
+    it 'should only contain one user' do 
+      i.users.count.should == 1
+    end
+  end
+
   describe '#where behavior when using RDF' do
     it 'should return a vailid Institution object' do 
       Institution.where(pid: i.pid).count.should == 1

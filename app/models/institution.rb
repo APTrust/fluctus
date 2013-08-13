@@ -14,6 +14,10 @@ class Institution < ActiveFedora::Base
 
   before_destroy :check_for_associations
 
+  def users
+    return User.where(institution_pid: self.pid).to_a
+  end
+
   private
 
   # To determine uniqueness we must check all name values in all Institution objects.  This
