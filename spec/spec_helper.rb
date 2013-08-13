@@ -35,10 +35,11 @@ RSpec.configure do |config|
 
     # Create our two default institutions
     FactoryGirl.create(:aptrust)
-    FactoryGirl.create(:fake_university)
+    # FactoryGirl.create(:fake_university)
   end
 
   config.after(:all) do 
+    DescriptionObject.destroy_all
     Role.destroy_all
     User.destroy_all
     Institution.destroy_all

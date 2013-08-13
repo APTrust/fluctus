@@ -9,7 +9,7 @@ describe User do
 
   describe "#where method works using RDF indexing uniqueness" do 
     it 'should retrun a valid institution' do 
-      user.institution.should == Institution.where(desc_metadata__name_tesim: user.institution.name).first
+      user.institution.should == Institution.where(pid: user.institution.pid).first
     end
   end
 end

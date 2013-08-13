@@ -14,6 +14,11 @@ class Institution < ActiveFedora::Base
 
   before_destroy :check_for_associations
 
+  # Return the users that belong to this institution.  Sorted by name for display purposes primarily.
+  def users
+    return User.where(institution_pid: self.pid).to_a.sort_by(&:name)
+  end
+
   private
 
   # To determine uniqueness we must check all name values in all Institution objects.  This
@@ -27,7 +32,7 @@ class Institution < ActiveFedora::Base
     # Check for related Users
     #
     # This is a relationship with an ActiveRecord object, so we must ask the ActiveRecord object about the relationship.
-    if User.where(institution_name: self.name).count != 0
+    if User.where(institution_pid: self.pid).count != 0
       errors[:base] << "Cannot delete #{self.name} because some Users are associated with this Insitution"
     end
 

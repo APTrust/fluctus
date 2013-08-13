@@ -19,9 +19,9 @@ class Ability
 
   def institutional_admin_permissions
     if current_user.is? :institutional_admin
-      can [:create, :read, :update, :destroy, :manage_user_roles], User, institution_name: current_user.institution_name
+      can [:create, :read, :update, :destroy, :manage_user_roles], User, institution_pid: current_user.institution_pid
       cannot [:manage_user_institution, :assign_admin_user], User
-      can [:read, :update], Institution, name: current_user.institution_name
+      can [:read, :update], Institution, pid: current_user.institution_pid
       cannot :create, Institution
     end
   end
@@ -30,7 +30,7 @@ class Ability
     if current_user.is? :institutional_user
       can :manage, User, id: current_user.id
       cannot [:manage_user_roles, :manage_user_institution], User
-      can :read, Institution, name: current_user.institution_name
+      can :read, Institution, pid: current_user.institution_pid
       cannot :create, Institution
     end
   end

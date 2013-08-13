@@ -1,6 +1,46 @@
-<p>
-  <strong>Name:</strong>
-  <%= @institution.name %>
-</p>
+<div class="hero-unit">
+  <h1><%= @institution.name %></h1>
 
-<%= edit_link(@institution) %>
+  <dl>
+    <dt>Users</dt>
+    <dd>Total: <%= @institution.users.count %></dd>
+  </dl>
+
+  <table>
+    <tbody>
+      <% @institution.users.each do |user| %>
+        <tr>
+          <td><%= show_link(user) %></td>
+          <td><%= user.name %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <dl>
+    <dt>Objects</dt>
+    <dd>Total: <%= @institution.description_objects.count %></dd>
+  </dl>
+</div>
+
+<h3>Most Recent Objects</h3>
+<% if @description_objects.size > 0 %>
+  <table class="table table-condensed table-hover">
+    <thead>
+      <tr>
+        <th>Title</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @description_objects.each do |description_object| %>
+        <tr>
+          <td><%= description_object.title %></td>
+          <td><%= show_link description_object %> <%= edit_link description_object %> <%= destroy_link description_object %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+<p>No recent objects found.</p>
+<% end %>

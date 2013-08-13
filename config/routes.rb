@@ -3,8 +3,6 @@ Fluctus::Application.routes.draw do
   resources :description_objects, except: [:destroy, :index, :new]
   resources :users
 
-  root :to => "catalog#index"
-
   Blacklight.add_routes(self)
 
   HydraHead.add_routes(self)
@@ -17,6 +15,14 @@ Fluctus::Application.routes.draw do
     # root to: "home#index"
     delete 'sign_out', :to => 'devise/sessions#destroy', as: :destroy_user_session
   end
+
+  authenticated :user do
+    root to: "institutions#show", as: 'authenticated_root'
+    # Rails 4 users must specify the 'as' option to give it a unique name
+    # root :to => "main#dashboard", :as => "authenticated_root"
+  end
+
+  root :to => "catalog#index"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -3,6 +3,6 @@
 FactoryGirl.define do
   factory :description_object do
     title { Faker::Commerce.product_name }
-    institution
+    institution { FactoryGirl.create(:institution) }
   end
 end

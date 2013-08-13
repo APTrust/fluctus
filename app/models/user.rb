@@ -17,8 +17,8 @@ class User < ActiveRecord::Base
 
   validates :email, :phone_number, presence: true
   validates :email, uniqueness: true
-  validates :institution_name, presence: true
-  validates_inclusion_of :institution_name, in: -> (institution) {Institution.all.map(&:name)}
+  validates :institution_pid, presence: true
+  validates_inclusion_of :institution_pid, in: -> (institution) {Institution.all.map(&:pid)}
 
   # Custom format validations.  See app/validators
   validates :name, person_name_format: true
@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
   # datastream prefix, a traditional 'name' attribute cannot be searched upon.  Instead the entire solr field
   # must be used in a #where method call.
   def institution
-    return Institution.where(desc_metadata__name_tesim: self.institution_name).first
+    Institution.where(pid: self.institution_pid).first
   end
 
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
