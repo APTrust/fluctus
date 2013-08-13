@@ -14,8 +14,9 @@ class Institution < ActiveFedora::Base
 
   before_destroy :check_for_associations
 
+  # Return the users that belong to this institution.  Sorted by name for display purposes primarily.
   def users
-    return User.where(institution_pid: self.pid).to_a
+    return User.where(institution_pid: self.pid).to_a.sort_by(&:name)
   end
 
   private

@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
   # datastream prefix, a traditional 'name' attribute cannot be searched upon.  Instead the entire solr field
   # must be used in a #where method call.
   def institution
-    return Institution.where(pid: self.institution_pid).first
+    Institution.where(pid: self.institution_pid).first
   end
 
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests

@@ -33,6 +33,12 @@ describe Institution do
     it 'should only contain one user' do 
       i.users.count.should == 1
     end
+
+    it 'should return users sorted by name' do
+      @user1 = FactoryGirl.create(:user, name: "Zeke", institution_pid: i.pid) 
+      @user2 =  FactoryGirl.create(:user, name: "Andrew", institution_pid: i.pid) 
+      i.users.index(@user1).should > i.users.index(@user2)
+    end
   end
 
   describe '#where behavior when using RDF' do

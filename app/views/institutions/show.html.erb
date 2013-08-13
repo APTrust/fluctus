@@ -1,11 +1,25 @@
 <div class="hero-unit">
   <h1><%= @institution.name %></h1>
 
-  <dl class="dl-horizontal">
+  <dl>
     <dt>Users</dt>
-    <dd><%= @institution.users.count %></dd>
+    <dd>Total: <%= @institution.users.count %></dd>
+  </dl>
+
+  <table>
+    <tbody>
+      <% @institution.users.each do |user| %>
+        <tr>
+          <td><%= show_link(user) %></td>
+          <td><%= user.name %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <dl>
     <dt>Objects</dt>
-    <dd><%= @institution.description_objects.count %></dd>
+    <dd>Total: <%= @institution.description_objects.count %></dd>
   </dl>
 </div>
 
