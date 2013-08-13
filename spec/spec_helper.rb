@@ -39,6 +39,7 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do 
+    DescriptionObject.destroy_all
     Role.destroy_all
     User.destroy_all
     Institution.destroy_all

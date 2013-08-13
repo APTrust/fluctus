@@ -11,7 +11,10 @@ class InstitutionsController < ApplicationController
 
   # GET /institutions/1
   # GET /institutions/1.json
+  #
+  # Return the most recent 50 Description Objects uploaded by an instituion.
   def show
+    @description_objects = DescriptionObject.where(is_part_of_ssim: "info:fedora/#{@institution.pid}").limit(50).to_a
   end
 
   # GET /institutions/new
@@ -69,9 +72,9 @@ class InstitutionsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+    # If an id is passed through params, use it.  Otherwise default to show a current user's institution.
     def set_institution
-      @institution = Institution.find(params[:id])
+      @institution = params[:id].nil? ? Institution.find(current_user.institution_pid) : Institution.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -43,7 +43,8 @@ describe InstitutionsController do
 
   describe "GET #show" do
     describe "for admin user" do 
-      before do 
+      before do
+        @description_object = FactoryGirl.create(:description_object, institution: @institution)
         @user.role_ids = [Role.where(name: 'admin').first.id]
         sign_in @user
       end
@@ -66,6 +67,17 @@ describe InstitutionsController do
       it "assigns the requested institution as @institution" do
         get :show, id: @institution.to_param
         assigns(:institution).should eq(@institution)
+      end
+
+      it "assigns the requested institution description_objects as @description_objects" do
+        get :show, id: @institution.to_param
+        assigns(:descripion_objects).should eq(@description_objects)
+      end
+
+      it "should assign no more than 50 description objects to @description_objects" do
+        51.times { FactoryGirl.create(:description_object, institution: @institution) }
+        get :show, id: @institution.to_param
+        expect(assigns(:description_objects).count).to eq(50)
       end
     end
 
