@@ -44,14 +44,15 @@ namespace :aptrust do
       puts "... saving bag #{key}"
       bag.save!
     end
+
     puts "Finished!"
   end
 
-  # TODO DELETE THIS BEFORE GOING TO ANYTHING RESEMBLING PRODUCTION!
-  desc "Removes all bags from Fedora."
+  desc "Removes all bags from Fedora if env is not production."
   task purge_bags: :environment do
-    count = Bag.destroy_all
-    puts "Destoryed #{count} bags"
+    if !Rails.env.production?
+      count = Bag.destroy_all
+      puts "Destoryed #{count} bags"
+    end
   end
-
 end
