@@ -9,7 +9,6 @@ describe Datastream::BagManifestDatastream do
     @mf.uri = "https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365"
     @fi = @mf.files.build(
       format: "text/plain",
-      type: "textfile",
       uri: "https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365/bagit.txt",
       size: 3456,
       created: "#{Time.now}",
