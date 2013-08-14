@@ -52,6 +52,7 @@ gem 'omniauth-google-oauth2'
 gem 'simple_form', '~> 3.0.0.rc'
 gem 'hydra-role-management', github: 'acurley/hydra-role-management'
 gem 'phony_rails'
+gem 'inherited_resources'
 
 # S3 connector
 gem 'aws-s3'
