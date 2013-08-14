@@ -22,7 +22,7 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
     config.default_solr_params = {
-      :qf => 'desc_metadata__title_tesim',
+      :qf => 'desc_metadata__title_tesim original_pid_tesim institution_name_tesim',
       :qt => 'search',
       :rows => 10
     }
@@ -80,6 +80,7 @@ class CatalogController < ApplicationController
     config.add_index_field solr_name('desc_metadata__title', :stored_searchable, type: :string), :label => 'Title:'
     config.add_index_field solr_name('desc_metadata__name', :stored_searchable, type: :string), :label => 'Name:'
     config.add_index_field solr_name('institution_name', :stored_searchable, type: :string), :label => 'Institution:'
+    config.add_index_field solr_name('original_pid', :stored_searchable, type: :string), :label => 'Origina Pid:'
 
     # config.add_index_field solr_name('title_vern', :stored_searchable, type: :string), :label => 'Title:'
     # config.add_index_field solr_name('author', :stored_searchable, type: :string), :label => 'Author:'
