@@ -18,12 +18,7 @@ class DescriptionObject < ActiveFedora::Base
     super(solr_doc)
     solr_doc[ActiveFedora::SolrService.solr_name('institution_name', :stored_searchable)] = self.institution.name
     solr_doc[ActiveFedora::SolrService.solr_name('institution_name', :facetable)] = self.institution.name
-
-    if self.bags
-      bags.each {|bag|
-        solr_doc[ActiveFedora::SolrService.solr_name('original_pid', :stored_searchable)] = bag.fileManifest.title.first.parse_pid
-      }
-    end
+    solr_doc[ActiveFedora::SolrService.solr_name('original_pid', :stored_searchable)] = self.bags.first.parse_pid unless self.bags(true).empty?
     return solr_doc
   end
 
