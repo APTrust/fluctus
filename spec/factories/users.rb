@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :user, class: "User" do
     name { Faker::Name.name }
     email { Faker::Internet.email }
-    phone_number { Faker::PhoneNumber.phone_number.gsub(/911/, '811') }
+    phone_number { Faker::PhoneNumber.phone_number }
     institution_pid { FactoryGirl.create(:institution).pid }
   
     factory :aptrust_user, class: "User" do

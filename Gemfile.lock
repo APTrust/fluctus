@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/acurley/faker.git
-  revision: 57c543804c8a631ec40948aa2c3367c5b6aabded
+  revision: 7480b422f236214dc2015700b8b57a2e1f4bfde3
+  branch: improve_us_phone_number_creation
   specs:
     faker (1.2.0)
       i18n (~> 0.5)
