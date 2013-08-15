@@ -67,7 +67,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'shoulda-matchers'
   gem 'coveralls'
-  gem 'faker'
+  gem 'faker', github: 'acurley/faker' # temporary until faker merges my pull request.
   gem "jettywrapper"
   gem 'sqlite3'
   gem 'quiet_assets'

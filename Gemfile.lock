@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/acurley/faker.git
+  revision: 57c543804c8a631ec40948aa2c3367c5b6aabded
+  specs:
+    faker (1.2.0)
+      i18n (~> 0.5)
+
+GIT
   remote: git://github.com/acurley/hydra-role-management.git
   revision: 4c4f0abb3175b61b0f5899772c71f49309e6f3d1
   specs:
@@ -124,8 +131,6 @@ GEM
     factory_girl_rails (4.2.1)
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
-    faker (1.2.0)
-      i18n (~> 0.5)
     faraday (0.8.7)
       multipart-post (~> 1.1)
     fastercsv (1.5.5)
@@ -369,7 +374,7 @@ DEPENDENCIES
   coveralls
   devise!
   factory_girl_rails
-  faker
+  faker!
   figaro
   hydra-head (~> 6.3.0)
   hydra-role-management!
