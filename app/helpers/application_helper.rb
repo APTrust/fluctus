@@ -15,7 +15,7 @@ module ApplicationHelper
     content ||= "Delete"
     options[:class] = 'btn btn-danger' if options[:class].nil?
     options[:method] = :delete if options[:method].nil?
-    options[:confirm] = "Are you sure?" if options[:confirm].nil?
+    options[:data] = { confirm: 'Are you sure?' }if options[:confirm].nil?
     link_to(content, object, options) if can?(:destroy, object)
   end
 
