@@ -5,11 +5,11 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'capybara/rails'
 require 'capybara/rspec'
-# require 'coveralls'
+require 'coveralls'
 require 'simplecov'
 
 # push test code to remote and produce locally.
-#Coveralls.wear!
+Coveralls.wear!
 SimpleCov.start 'rails'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
