@@ -1,16 +1,21 @@
 require 'spec_helper'
 
 describe "Institutions" do
-  describe "GET /institutions" do
+  describe "DELETE institutions", :type => :feature do
     before do
       @user = FactoryGirl.create(:user, :admin)
+      @institution = FactoryGirl.create(:institution)
     end
 
-    it "works! (now write some real specs)" do
+    it "should provide message after delete with name of deleted instituion" do
       login_as(@user)
-      # Run the generator again with the --webrat flag if you want to use webrat methods/matchers
-      get institutions_path
-      response.status.should be(200)
+      visit('/institutions')
+      expect {
+        within(:xpath, "//tr[@id='#{@institution.id}']") do
+          click_link "Delete"
+        end
+      }.to change(Institution, :count).by(-1)
+      page.should have_content "#{@institution.name} was successfully destroyed."
     end
   end
 end

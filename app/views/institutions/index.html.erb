@@ -11,7 +11,7 @@
 
   <tbody>
     <% @institutions.each do |institution| %>
-      <tr>
+      <tr id="<%= institution.id %>">
         <td><%= institution.name %></td>
         <td><%= show_link institution %> <%= edit_link institution %> <%= destroy_link institution %></td>
       </tr>

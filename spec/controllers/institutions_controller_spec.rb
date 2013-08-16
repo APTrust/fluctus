@@ -136,6 +136,22 @@ describe InstitutionsController do
     end
   end
 
+  describe "DELETE destroy" do
+    describe "with admin user" do
+      before do
+        @user = FactoryGirl.create(:user, :admin)
+        @institution = FactoryGirl.create(:institution)
+        sign_in(@user)
+      end
+
+      it "should be successful" do
+        @name = @institution.name
+        delete :destroy, {:id => @institution.to_param}
+        response.should redirect_to(institutions_url)
+      end
+    end
+  end
+
   # describe "GET new" do
   #   it "assigns a new institution as @institution" do
   #     get :new, {}, valid_session
