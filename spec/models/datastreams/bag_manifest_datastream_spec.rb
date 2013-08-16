@@ -12,12 +12,12 @@ describe Datastream::BagManifestDatastream do
       uri: "https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365/bagit.txt",
       size: 3456,
       created: "#{Time.now}",
-      modified: "#{Time.now}",
-      checksum_attributes: {
-          algorithm: "md5",
-          datetime: "#{Time.now}",
-          digest: "ada799b7e0f1b7a1dc86d4e99df4b1f4"
-      }
+      modified: "#{Time.now}"
+    )
+    @fi.checksum.build(
+      algorithm: "md5",
+      datetime: "#{Time.now}",
+      digest: "ada799b7e0f1b7a1dc86d4e99df4b1f4"
     )
   end
 
