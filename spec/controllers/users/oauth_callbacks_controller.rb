@@ -34,7 +34,7 @@ describe Users::OmniauthCallbacksController do
       end
       
       it { flash[:notice].should == (I18n.t "devise.omniauth_callbacks.success", :kind => "Google") }
-      
+      it { flash[:notice].should == "Successfully authenticated from Google account."}
       it { response.should redirect_to root_url }
     end
   end
