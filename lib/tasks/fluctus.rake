@@ -24,12 +24,9 @@ namespace :fluctus do
 
   # Restricted only to non-production environments
   desc "Empty the database"
-  task empty_database: :environment do
+  task empty_db: :environment do
     if !Rails.env.production?
-      DescriptionObject.destroy_all
-      User.destroy_all
-      Institution.destroy_all
-      Role.destroy_all
+      [User, DescriptionObject, Institution, Role, Bag].each(&:destroy_all)
     end
   end
 
@@ -47,5 +44,23 @@ namespace :fluctus do
         Rake::Task['spec'].invoke
     end
     raise "test failures: #{error}" if error
+  end
+
+  desc "Empty DB and add dummy information"
+  task populate_db: :environment do
+    Rake::Task['fluctus:empty_db'].invoke
+    Rake::Task['fluctus:setup'].invoke
+
+    puts "Creating 5 Insitutions"
+    5.times { FactoryGirl.create(:institution) }
+
+    puts "Creating Users, DescriptionObjects and Bags for each Insitution"
+    Institution.all.each {|institution|
+      (1..5).to_a.sample.times { FactoryGirl.create(:user, institution_pid: institution.pid) }
+      (1..5).to_a.sample.times { 
+        desc = FactoryGirl.create(:description_object, institution: institution) 
+        FactoryGirl.create(:bag, description_object: desc)
+      }
+    }
   end
 end
