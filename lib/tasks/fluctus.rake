@@ -60,6 +60,7 @@ namespace :fluctus do
       (1..5).to_a.sample.times { 
         desc = FactoryGirl.create(:description_object, institution: institution) 
         FactoryGirl.create(:bag, description_object: desc)
+        desc.save!
       }
     }
   end
