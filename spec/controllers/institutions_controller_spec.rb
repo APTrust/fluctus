@@ -152,6 +152,27 @@ describe InstitutionsController do
     end
   end
 
+  describe "POST create" do
+    describe "with admin user" do
+      before do
+        @user = FactoryGirl.create(:user, :admin)
+        sign_in(@user)
+      end
+
+      it "should reject no parameters" do
+        expect {
+          post :create, {}
+        }.to_not change(Institution, :count)
+      end
+
+      it 'should accept good parameters' do
+        expect {
+          post :create, institution: FactoryGirl.attributes_for(:institution)
+        }.to change(Institution, :count)
+      end
+    end
+  end
+
   # describe "GET new" do
   #   it "assigns a new institution as @institution" do
   #     get :new, {}, valid_session
