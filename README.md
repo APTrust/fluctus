@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/APTrust/fluctus/badge.png)](https://coveralls.io/r/APTrust/fluctus)
 
 Build Status | Continuous Integration | Code Coverate
---- | ---
+--- | --- | ---
 Production | [![Build Status (Master)](https://travis-ci.org/APTrust/fluctus.png?branch=master)](https://travis-ci.org/APTrust/fluctus) | [![Coverage Status](https://coveralls.io/repos/APTrust/fluctus/badge.png?branch=master)](https://coveralls.io/r/APTrust/fluctus?branch=master)
 Development | [![Build Status (Development)](https://travis-ci.org/APTrust/fluctus.png?branch=develop)](https://travis-ci.org/APTrust/fluctus) | [![Coverage Status](https://coveralls.io/repos/APTrust/fluctus/badge.png?branch=develop)](https://coveralls.io/r/APTrust/fluctus?branch=develop)
 
