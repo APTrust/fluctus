@@ -14,7 +14,7 @@
 
   <tbody>
     <% @users.each do |user| %>
-      <tr>
+      <tr id="<%= user.id %>">
         <td><%= user.name %></td>
         <td><%= user.email %></td>
         <td><%= user.institution.name %></td>
