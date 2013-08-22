@@ -1,7 +1,6 @@
 # Fluctus
 [![Code Climate](https://codeclimate.com/github/APTrust/fluctus.png)](https://codeclimate.com/github/APTrust/fluctus)
 [![Dependency Status](https://gemnasium.com/APTrust/fluctus.png)](https://gemnasium.com/APTrust/fluctus)
-[![Coverage Status](https://coveralls.io/repos/APTrust/fluctus/badge.png)](https://coveralls.io/r/APTrust/fluctus)
 
 Build Status | Continuous Integration | Code Coverate
 --- | --- | ---
