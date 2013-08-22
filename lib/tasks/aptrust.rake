@@ -1,7 +1,7 @@
 namespace :aptrust do
 
   desc "Builds fedora bag models from all the bags in the configured S3 bucket."
-  task load_bags: :environment do
+  task load_bags: :environment, :institution do
     AWS::S3::Base.establish_connection!(
       access_key_id: ENV['S3_ACCESS_KEY_ID'],
       secret_access_key: ENV['S3_SECRET_ACCESS_KEY']
