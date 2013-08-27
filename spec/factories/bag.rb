@@ -14,7 +14,7 @@ FactoryGirl.define do
 
         bag.fileManifest.files.build
         bag.fileManifest.files[index - 1].format = "#{format}"
-        bag.fileManifest.files[index - 1].uri = "#{mf.uri}/datastream_#{i}"
+        bag.fileManifest.files[index - 1].uri = "#{mf.uri.first}/datastream_#{i}"
         bag.fileManifest.files[index - 1].size = "#{(0..10000).to_a.sample}"
         bag.fileManifest.files[index - 1].created = "#{Time.now}"
         bag.fileManifest.files[index - 1].modified = "#{Time.now}"
