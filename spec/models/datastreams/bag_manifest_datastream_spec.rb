@@ -8,6 +8,7 @@ describe Datastream::BagManifestDatastream do
     @mf.title = "uva_uva_lib_1229365"
     @mf.uri = "https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365"
     @fi = @mf.files.build(
+      id: RDF::Resource.new("https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365/bagit.txt"),
       format: "text/plain",
       uri: "https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365/bagit.txt",
       size: 3456,
@@ -19,6 +20,10 @@ describe Datastream::BagManifestDatastream do
       datetime: "#{Time.now}",
       digest: "ada799b7e0f1b7a1dc86d4e99df4b1f4"
     )
+  end
+
+  it 'should have a proper rdf_subject' do
+    @fi.rdf_subject.id.should == "https://s3.amazonaws.com/aptrust_test_bags/uva_uva_lib_1229365"
   end
 
   it 'should have properties and files' do
