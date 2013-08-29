@@ -5,5 +5,11 @@ notifications:
   email:
     recipients:
       - "andrew.curley@gmail.com"
+      - "scott.turnbull@aptrust.org"
     on_success: "change"
     on_failure: "always"
+# Whitelist of branches to build
+branches:
+  only:
+    - master
+    - develop
