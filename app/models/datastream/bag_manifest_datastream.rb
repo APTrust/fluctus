@@ -17,7 +17,7 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
   property :File
 end
 
-class Datastream::BagManifestDatastream < ActiveFedora::NtriplesRDFDatastream
+class Datastream::BagManifestDatastream < ActiveFedora::RdfxmlRDFDatastream
 
   # NOTE this does not get the line include ActiveFedora::RdfObject
   #      because it is a subclass of something that calls it already
