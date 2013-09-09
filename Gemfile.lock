@@ -1,12 +1,4 @@
 GIT
-  remote: git://github.com/acurley/faker.git
-  revision: 7480b422f236214dc2015700b8b57a2e1f4bfde3
-  branch: improve_us_phone_number_creation
-  specs:
-    faker (1.2.0)
-      i18n (~> 0.5)
-
-GIT
   remote: git://github.com/acurley/hydra-role-management.git
   revision: 4c4f0abb3175b61b0f5899772c71f49309e6f3d1
   specs:
@@ -24,6 +16,20 @@ GIT
       orm_adapter (~> 0.1)
       railties (>= 3.2.6, < 5)
       warden (~> 1.2.1)
+
+GIT
+  remote: git://github.com/rweng/jquery-datatables-rails.git
+  revision: 494f752b8eb8350f33841c822a67d014c869219f
+  specs:
+    jquery-datatables-rails (1.11.2)
+      jquery-rails
+
+GIT
+  remote: git://github.com/stympy/faker.git
+  revision: 6ef0c04ab816e84ac8d25af89defae45011127f6
+  specs:
+    faker (1.2.0)
+      i18n (~> 0.5)
 
 GEM
   remote: https://rubygems.org/
@@ -381,6 +387,7 @@ DEPENDENCIES
   inherited_resources
   jbuilder (~> 1.2)
   jettywrapper
+  jquery-datatables-rails!
   jquery-rails
   meta_request
   omniauth-google-oauth2
