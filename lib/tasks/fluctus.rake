@@ -51,8 +51,18 @@ namespace :fluctus do
     Rake::Task['fluctus:empty_db'].invoke
     Rake::Task['fluctus:setup'].invoke
 
-    puts "Creating 5 Insitutions"
-    5.times { FactoryGirl.create(:institution) }
+    partner_list = [
+        "Columbia University",
+        "Duke University",
+        "Johns Hopkins University",
+        "University of Maryland",
+        "University of Michigan",
+        "University of North Carolina at Chapel Hill",
+        "Syracuse University" , "University of Virginia"
+    ]
+
+    puts "Creating 5 Institutions"
+    partner_list.each { |partner| FactoryGirl.create(:institution, name: partner) }
 
     puts "Creating Users, DescriptionObjects and Bags for each Insitution"
     Institution.all.each {|institution|
