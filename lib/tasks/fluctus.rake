@@ -60,7 +60,7 @@ namespace :fluctus do
 
     puts "Creating #{partner_list.count} Institutions"
     partner_list.each_with_index do |partner, index|
-      puts "== Creating number #{index} of #{partner_list.count}: #{partner} "
+      puts "== Creating number #{index+1} of #{partner_list.count}: #{partner} "
       FactoryGirl.create(:institution, name: partner)
     end
 
@@ -68,15 +68,17 @@ namespace :fluctus do
     Institution.all.each do |institution|
       puts "Populating content for #{institution.name}"
 
-      rand(1..5).times.each_with_index do |total, count|
-        puts "== Creating user #{count+1} of #{total+1} for #{institution.name}"
+      numUsers = rand(1..5)
+      numUsers.times.each do |count|
+        puts "== Creating user #{count+1} of #{numUsers} for #{institution.name}"
         FactoryGirl.create(:user, institution_pid: institution.pid)
       end
 
-      rand(5..10).times.each_with_index do |total, count|
-        puts "== Creating object #{count+1} of #{total+1} for #{institution.name}"
+      numBags = rand(5..10)
+      numBags.times.each do |count|
+        puts "== Creating bag #{count+1} of #{numBags} for #{institution.name}"
         desc = FactoryGirl.create(:description_object, institution: institution)
-        FactoryGirl.create(:bag, description_object: desc)
+        bag = FactoryGirl.create(:bag, description_object: desc)
         desc.save!
       end
 
