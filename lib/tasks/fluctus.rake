@@ -9,7 +9,7 @@ namespace :fluctus do
       Role.create!(name: role)
     end
 
-    desc "Create an initial user for APTrust..."
+    desc "Create an initial Super-User for APTrust..."
     STDOUT.puts "What is your name?"
     name = STDIN.gets.strip
 
@@ -19,7 +19,8 @@ namespace :fluctus do
     STDOUT.puts "What is your phone number?"
     phone_number = STDIN.gets.strip
    
-    User.create!(name: name, email: email, phone_number: phone_number, institution_pid: i.pid, role_ids: [Role.where(name: 'admin').first.id])
+    User.create!(name: name, email: email, phone_number: phone_number, institution_pid: i.pid,
+                 role_ids: [Role.where(name: 'admin').first.id])
   end
 
   # Restricted only to non-production environments
@@ -52,26 +53,33 @@ namespace :fluctus do
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
-        "Columbia University",
-        "Duke University",
-        "Johns Hopkins University",
-        "University of Maryland",
-        "University of Michigan",
-        "University of North Carolina at Chapel Hill",
-        "Syracuse University" , "University of Virginia"
+        "Columbia University", "North Carolina State University", "Johns Hopkins University", "University of Maryland",
+        "University of Michigan", "University of North Carolina at Chapel Hill", "Syracuse University" ,
+        "University of Virginia", "University of Notre Dame", "Stanford University"
     ]
 
-    puts "Creating 5 Institutions"
-    partner_list.each { |partner| FactoryGirl.create(:institution, name: partner) }
+    puts "Creating #{partner_list.count} Institutions"
+    partner_list.each_with_index do |partner, index|
+      puts "== Creating number #{index} of #{partner_list.count}: #{partner} "
+      FactoryGirl.create(:institution, name: partner)
+    end
 
-    puts "Creating Users, DescriptionObjects and Bags for each Insitution"
-    Institution.all.each {|institution|
-      (1..5).to_a.sample.times { FactoryGirl.create(:user, institution_pid: institution.pid) }
-      (1..5).to_a.sample.times { 
-        desc = FactoryGirl.create(:description_object, institution: institution) 
+    puts "Creating Users, DescriptionObjects and Bags for each Institution"
+    Institution.all.each do |institution|
+      puts "Populating content for #{institution.name}"
+
+      rand(1..5).times.each_with_index do |total, count|
+        puts "== Creating user #{count+1} of #{total+1} for #{institution.name}"
+        FactoryGirl.create(:user, institution_pid: institution.pid)
+      end
+
+      rand(5..10).times.each_with_index do |total, count|
+        puts "== Creating object #{count+1} of #{total+1} for #{institution.name}"
+        desc = FactoryGirl.create(:description_object, institution: institution)
         FactoryGirl.create(:bag, description_object: desc)
         desc.save!
-      }
-    }
+      end
+
+    end
   end
 end

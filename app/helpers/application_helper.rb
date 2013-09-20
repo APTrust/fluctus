@@ -34,7 +34,7 @@ module ApplicationHelper
     if !current_user
       base_title
     else
-      "#{current_user.institution.name} | #{base_title}"
+      "#{current_user.institution.name}"
     end
   end
 
