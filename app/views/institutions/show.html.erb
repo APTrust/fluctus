@@ -1,46 +1,69 @@
-<div class="hero-unit">
+<div class="page-header">
   <h1><%= @institution.name %></h1>
-
-  <dl>
-    <dt>Users</dt>
-    <dd>Total: <%= @institution.users.count %></dd>
-  </dl>
-
-  <table>
-    <tbody>
-      <% @institution.users.each do |user| %>
-        <tr>
-          <td><%= show_link(user) %></td>
-          <td><%= user.name %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-
-  <dl>
-    <dt>Objects</dt>
-    <dd>Total: <%= @institution.description_objects.count %></dd>
-  </dl>
 </div>
 
-<h3>Most Recent Objects</h3>
-<% if @description_objects.size > 0 %>
-  <table class="table table-condensed table-hover">
-    <thead>
-      <tr>
-        <th>Title</th>
-      </tr>
-    </thead>
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
+  <li><a href="#objects" data-toggle="tab">Objects</a></li>
+  <li><a href="#users" data-toggle="tab">Users</a></li>
+</ul>
 
-    <tbody>
-      <% @description_objects.each do |description_object| %>
+<div class="tab-content">
+  <div class="tab-pane active" id="summary">
+    <dl class="dl-horizontal">
+      <dt>Users</dt>
+      <dd><%= @institution.users.count %></dd>
+      <dt>Objects</dt>
+      <dd><%= @institution.description_objects.count %></dd>
+    </dl>
+  </div>
+
+  <div class="tab-pane" id="objects">
+    <table class="table table-condensed">
+      <h3>50 Most Recent Objects</h3>
+      <thead>
         <tr>
-          <td><%= description_object.title %></td>
-          <td><%= show_link description_object %> <%= edit_link description_object %> <%= destroy_link description_object %></td>
+          <th>Title</th>
+          <th></th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-<p>No recent objects found.</p>
-<% end %>
+      </thead>
+      <tbody>
+        <% @institution.description_objects.each do |description_object| %>
+          <tr>
+            <td><%= description_object.title %></td>
+            <td>
+              <%= show_link(description_object) %>
+              <%= edit_link(description_object) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-pane" id="users">
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @institution.users.each do |user| %>
+          <tr>
+            <td><%= user.name %></td>
+            <td><%= user.email %></td>
+            <td>
+              <%= show_link(user) %>
+              <%= edit_link(user) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
