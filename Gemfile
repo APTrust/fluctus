@@ -53,6 +53,7 @@ gem 'simple_form', '~> 3.0.0.rc'
 gem 'hydra-role-management', github: 'acurley/hydra-role-management'
 gem 'phony_rails'
 gem 'inherited_resources'
+gem 'jquery-datatables-rails', git: 'git://github.com/rweng/jquery-datatables-rails.git'
 
 # S3 connector
 gem 'aws-s3'
@@ -66,7 +67,7 @@ group :development, :test do
   gem 'capybara'
   gem 'factory_girl_rails'
   gem 'shoulda-matchers'
-  gem 'faker', github: 'acurley/faker', branch: 'improve_us_phone_number_creation' # temporary until faker merges my pull request.
+  gem 'faker', github: 'stympy/faker'
   gem "jettywrapper"
   gem 'sqlite3'
   gem 'quiet_assets'

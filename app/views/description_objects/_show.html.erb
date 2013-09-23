@@ -1,4 +1,50 @@
-<p>
-  <strong>Title:</strong>
-  <%= @description_object.title %>
-</p>
+<div class="page-header">
+  <h1><%= @description_object.title %></h1>
+</div>
+
+<h3>Bags</h3>
+
+<ul class="nav nav-tabs">
+  <% @description_object.bags.each do |bag| %>
+    <li>
+      <a href="#<%= @description_object.bags.index(bag) %>" data-toggle="tab"><%= bag.original_pid %></a>
+    </li>
+  <% end %>
+</ul>
+
+<div class="tab-content">
+  <% @description_object.bags.each do |bag| %>
+    <div class="tab-pane" id="<%= bag.object_id %>">
+      <dl class="dl-horizontal">
+        <dt>Title</dt><dd><%= URI.unescape(bag.fileManifest.title.first) %></dd>
+        <dt>Link to Object</dt><dd><%= link_to "Amazon URL", URI.unescape(bag.fileManifest.uri.first) %></dd>
+      </dl>
+
+      <!-- Display bag content -->
+      <div class="tabbable tabs-left">
+        <ul class="nav nav-tabs">
+          <% bag.fileManifest.files.each do |file| %>
+            <li>
+              <a href="#<%= file.object_id %>" data-toggle="tab"><%= URI.unescape(file.uri.first) %></a>
+            </li>
+          <% end %>
+        </ul>
+        <div class="tab-content">
+          <% bag.fileManifest.files.each do |file| %>
+            <div class="tab-pane" id="<%= file.object_id %>" >
+              <dl class="dl-horizontal">
+                <dt>Format</dt><dd><%= file.format.first %></dd>
+                <dt>Link to Item</dt><dd><%= link_to "Amazon URL", URI.unescape(file.uri.first) %></dd>
+                <dt>Size</dt><dd><%= file.size.first %> bytes</dd>
+                <dt>Created</dt><dd><%= file.created.first %></dd>
+                <dt>Modified</dt><dd><%= file.modified.first %></dd>
+                <dt>Checksum</dt><dd><%= file.checksum.first.digest.first %></dd>
+              </dl>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+    </div>
+  <% end %>
+</div>

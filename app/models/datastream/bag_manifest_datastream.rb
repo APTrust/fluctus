@@ -17,7 +17,7 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
   property :File
 end
 
-class Datastream::BagManifestDatastream < ActiveFedora::NtriplesRDFDatastream
+class Datastream::BagManifestDatastream < ActiveFedora::RdfxmlRDFDatastream
 
   # NOTE this does not get the line include ActiveFedora::RdfObject
   #      because it is a subclass of something that calls it already
@@ -58,21 +58,3 @@ class Checksum
     map.digest(to: :checksumValue, in: FileVocabulary)
   end
 end
-
-
-#f.checksum.build(checksumValue: "nnval", generator_attributes: {algorithm: "URI"})
-
-# cs = b.files.first.checksum.first
-# cs.algorithm
-# cs.datetime
-# cs.value
-#
-#f = b.files.build(...)
-#f.checksum.build(algorithm: "foo" )
-#OR
-#
-#f = b.files.build(checksum_attributes: {algorithm: "foo", checksum_value: "blah"})
-#
-#b = bds.files.build({format: "floo", checksum_attributes: {algorithm: "foo", checksum_value: "blah"}})
-#
-#b = bds.files_attributes = [{format: "floo", checksum_attributes: {algorithm: "foo", checksum_value: "blah"}}]
