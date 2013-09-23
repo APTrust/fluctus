@@ -1,30 +1,30 @@
 module ApplicationHelper
   def show_link(object, content = nil, options={})
-    content ||= "View"
-    options[:class] = 'btn btn-primary' if options[:class].nil?
-    link_to(content, object, options) if can?(:read, object)
+    content ||= '<i class="icon-eye-open"></i> <strong>View</strong>'
+    options[:class] = 'btn' if options[:class].nil?
+    link_to(content.html_safe, object, options) if can?(:read, object)
   end
 
   def edit_link(object, content = nil, options={})
-    content ||= "Edit"
-    options[:class] = 'btn btn-warning' if options[:class].nil?
-    link_to(content, [:edit, object], options) if can?(:update, object)
+    content ||= '<i class="icon-edit"></i> <strong>Edit</strong>'
+    options[:class] = 'btn' if options[:class].nil?
+    link_to(content.html_safe, [:edit, object], options) if can?(:update, object)
   end
 
   def destroy_link(object, content = nil, options={})
-    content ||= "Delete"
+    content ||= '<i class="icon-trash"></i> <strong>Delete</strong>'
     options[:class] = 'btn btn-danger' if options[:class].nil?
     options[:method] = :delete if options[:method].nil?
     options[:data] = { confirm: 'Are you sure?' }if options[:confirm].nil?
-    link_to(content, object, options) if can?(:destroy, object)
+    link_to(content.html_safe, object, options) if can?(:destroy, object)
   end
 
   def create_link(object, content = nil, options={})
-    content ||= "Create"
-    options[:class] = 'btn btn-info' if options[:class].nil?
+    content ||= '<i class="icon-plus"></i> <strong>Create</strong>'
+    options[:class] = 'btn' if options[:class].nil?
     if can?(:create, object)
       object_class = (object.kind_of?(Class) ? object : object.class)
-      link_to(content, [:new, object_class.name.underscore.to_sym], options)
+      link_to(content.html_safe, [:new, object_class.name.underscore.to_sym], options)
     end
   end
 
