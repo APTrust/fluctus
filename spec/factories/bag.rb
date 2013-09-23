@@ -65,6 +65,7 @@ FactoryGirl.define do
           pe = bag.premisEvents
 
           bag.save!
+
       end
   end
 end
