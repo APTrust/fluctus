@@ -26,4 +26,6 @@ class Bag < ActiveFedora::Base
       URI.unescape(title.gsub(/\w*_/, ""))
     end
   end
+
+  alias_method :original_pid, :parse_pid
 end
