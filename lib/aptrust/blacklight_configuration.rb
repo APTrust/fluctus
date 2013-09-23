@@ -112,6 +112,14 @@ module Aptrust
 
         config.add_search_field 'all_fields', :label => 'All Fields'
 
+        config.add_search_field('original_pid') do |field|
+          field.label = "Original PID"
+          field.solr_local_parameters = {
+            :qf => '$original_pid_qf',
+            :pf => '$original_pid_pf'
+          }
+        end
+
         # Now we see how to over-ride Solr request handler defaults, in this
         # case for a BL "search field", which is really a dismax aggregate
         # of Solr search fields.
