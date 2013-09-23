@@ -64,7 +64,7 @@ module Aptrust
         config.add_index_field solr_name('desc_metadata__title', :stored_searchable, type: :string), :label => 'Title:'
         config.add_index_field solr_name('desc_metadata__name', :stored_searchable, type: :string), :label => 'Name:'
         config.add_index_field solr_name('institution_name', :stored_searchable, type: :string), :label => 'Institution:'
-        config.add_index_field solr_name('original_pid', :stored_searchable, type: :string), :label => 'Origina Pid:'
+        config.add_index_field solr_name('original_pid', :stored_searchable, type: :string), :label => 'Original Pid:'
 
         # config.add_index_field solr_name('title_vern', :stored_searchable, type: :string), :label => 'Title:'
         # config.add_index_field solr_name('author', :stored_searchable, type: :string), :label => 'Author:'
