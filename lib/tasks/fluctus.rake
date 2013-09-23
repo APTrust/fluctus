@@ -66,6 +66,8 @@ namespace :fluctus do
 
     puts "Creating Users, DescriptionObjects and Bags for each Institution"
     Institution.all.each do |institution|
+      next unless institution.name != "APTrust"
+
       puts "Populating content for #{institution.name}"
 
       numUsers = rand(1..5)
