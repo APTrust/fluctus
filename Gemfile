@@ -53,7 +53,6 @@ gem 'simple_form', '~> 3.0.0.rc'
 gem "hydra-role-management", "~> 0.1.0"
 gem 'phony_rails'
 gem 'inherited_resources'
-gem 'jquery-datatables-rails', git: 'git://github.com/rweng/jquery-datatables-rails.git'
 
 # S3 connector
 gem 'aws-s3'
