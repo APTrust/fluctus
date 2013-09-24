@@ -12,6 +12,7 @@
     
     <field name="lat" type="tdouble" stored="true" indexed="true" multiValued="false"/>
     <field name="lng" type="tdouble" stored="true" indexed="true" multiValued="false"/>
+    <field name="original_pid_tesim" type="pid_text" stored="true" indexed="true" multiValued="true"/>
 
     <!-- NOTE:  not all possible Solr field types are represented in the dynamic fields -->
 
@@ -245,6 +246,12 @@
         <filter class="solr.PorterStemFilterFactory"/>
         -->
         <filter class="solr.TrimFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="pid_text" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
       </analyzer>
     </fieldType>
         

@@ -39,6 +39,10 @@ end
 User.create!(name: <your name>, email: <your Google Email>, phone_number: <Your phone number>, institution_pid: i.pid, role_ids: [Role.first.id])
 ````
 
+* Use Proper Solr Configuration
+
+The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit history for that file before you deploy Solr in production.
+
 ## Heroku Instructions
 [Fluctus on Heroku](http://fluctus.herokuapp.com)
 
