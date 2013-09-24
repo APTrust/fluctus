@@ -1,17 +1,6 @@
 GIT
 
 GIT
-  remote: git://github.com/plataformatec/devise.git
-  revision: 6b5988d756d780903bf8c9ccb3e2b3b724ccebe8
-  branch: rails4
-  specs:
-    devise (2.2.4)
-      bcrypt-ruby (~> 3.0)
-      orm_adapter (~> 0.1)
-      railties (>= 3.2.6, < 5)
-      warden (~> 1.2.1)
-
-GIT
   remote: git://github.com/rweng/jquery-datatables-rails.git
   revision: 494f752b8eb8350f33841c822a67d014c869219f
   specs:
@@ -120,6 +109,12 @@ GEM
     debug_inspector (0.0.2)
     deprecation (0.0.5)
       activesupport
+    devise (3.1.0)
+      bcrypt-ruby (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 3.2.6, < 5)
+      thread_safe (~> 0.1)
+      warden (~> 1.2.3)
     diff-lcs (1.2.4)
     equivalent-xml (0.3.0)
       nokogiri (>= 1.4.3)
@@ -377,7 +372,7 @@ DEPENDENCIES
   capybara
   coffee-rails (~> 4.0.0)
   coveralls
-  devise!
+  devise
   factory_girl_rails
   faker!
   figaro
