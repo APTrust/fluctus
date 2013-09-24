@@ -50,7 +50,7 @@ gem "bootstrap-sass"
 gem 'figaro'
 gem 'omniauth-google-oauth2'
 gem 'simple_form', '~> 3.0.0.rc'
-gem 'hydra-role-management', github: 'acurley/hydra-role-management'
+gem "hydra-role-management", "~> 0.1.0"
 gem 'phony_rails'
 gem 'inherited_resources'
 gem 'jquery-datatables-rails', git: 'git://github.com/rweng/jquery-datatables-rails.git'

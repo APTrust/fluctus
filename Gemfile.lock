@@ -1,10 +1,4 @@
 GIT
-  remote: git://github.com/acurley/hydra-role-management.git
-  revision: c95d53dd8a23bee6f7e48b0bdeaec7ed730f9ff7
-  specs:
-    hydra-role-management (0.0.2)
-      bootstrap_forms
-      cancan
 
 GIT
   remote: git://github.com/plataformatec/devise.git
@@ -168,6 +162,9 @@ GEM
       hydra-access-controls (= 6.3.4)
       hydra-core (= 6.3.4)
       rails (>= 3.2.6)
+    hydra-role-management (0.1.0)
+      bootstrap_forms
+      cancan
     i18n (0.6.5)
     inherited_resources (1.4.1)
       has_scope (~> 0.6.0.rc)
@@ -385,7 +382,7 @@ DEPENDENCIES
   faker!
   figaro
   hydra-head (~> 6.3.0)
-  hydra-role-management!
+  hydra-role-management (~> 0.1.0)
   inherited_resources
   jbuilder (~> 1.2)
   jettywrapper
