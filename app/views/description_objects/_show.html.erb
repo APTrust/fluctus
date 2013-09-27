@@ -39,7 +39,9 @@
                 <dt>Modified</dt><dd><%= file.modified.first %></dd>
                 <dt>Checksum</dt><dd><%= file.checksum.first.algorithm.first %>: <%= file.checksum.first.digest.first %></dd>
                 <dt>Item URI</dt><dd><%= URI.unescape(file.uri.first) %></dd>
-                <dt><dd><%= link_to "Download Item", URI.unescape(file.uri.first) %></dd>
+                <dt><dd>
+                <%= link_to "Download Item", URI.unescape(file.uri.first) %>
+              </dd>
               </dl>
             </div>
           <% end %>
