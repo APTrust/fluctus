@@ -45,8 +45,26 @@
               </dl>
             </div>
           <% end %>
+
         </div>
       </div>
+      <h4>Audited Events</h4>
+
+      <% bag.premisEvents.events.each do |event| %>
+          <div class="panel panel-default">
+            <div class="panel-heading"><strong>object:</strong><%= event.object.first %></div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                      <dt>Type</dt><dd><%= event.type.first %></dd>
+                      <dt>Outcome Detail:</dt><dd><%= event.outcome_detail.first %></dd>
+                      <dt>Outcome Information</dt><dd><%= event.outcome_information.first %></dd>
+                      <dt>Detail:</dt><dd><%= event.detail.first %></dd>
+                      <dt>Identifier</dt><dd><%= event.identifier.first %></dd>
+                      <dt>Datetime</dt><dd><%= event.date_time.first %></dd>
+                    </dl>
+                </div>
+          </div>
+      <% end %>
 
     </div>
   <% end %>

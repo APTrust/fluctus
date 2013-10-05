@@ -25,6 +25,33 @@ def make_file(base_uri, filename, format)
   }
 end
 
+def make_ingest(file)
+  attrs = {
+      object: "#{file[:uri]}",
+      identifier: SecureRandom.uuid,
+      date_time: Time.now,
+      type: "ingest",
+      detail: "Rspec bag data generator",
+      agent: "FactoryGirl gem"
+  }
+end
+
+def make_fixity_generation(file)
+  attrs = {
+      object: "#{file[:uri]}",
+      identifier: SecureRandom.uuid,
+      date_time: "#{file[:checksum_attributes].first[:datetime]}",
+      outcome_detail: "#{file[:checksum_attributes].first[:digest]}",
+      type: "fixity generation",
+      detail: "Rspec bag data generator",
+      agent: "FactoryGirl gem"
+  }
+end
+
+def make_fixity_check(file)
+  attrs = {}
+end
+
 def make_datafile(base_uri)
   format = [
       {ext: "txt", type: "plain/text"},
@@ -63,6 +90,16 @@ FactoryGirl.define do
           mf.files_attributes = fake_files
 
           pe = bag.premisEvents
+
+          fake_events = []
+
+          fake_files.each do |bag_file|
+            # puts "#{bag_file[:uri]}"
+            fake_events << make_ingest(bag_file)
+            fake_events << make_fixity_generation(bag_file)
+          end
+
+          pe.events_attributes = fake_events
 
           bag.save!
       end
