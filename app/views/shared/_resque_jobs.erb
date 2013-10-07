@@ -9,7 +9,7 @@
   <% 10.times do %>
       <tr>
         <td>
-          ins_id:<%= SecureRandom.uuid%>
+          <%= @institution.brief_name %>:<%= SecureRandom.uuid%>
         </td>
         <td class="text-success">
           Running

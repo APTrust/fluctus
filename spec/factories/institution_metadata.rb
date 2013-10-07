@@ -3,5 +3,6 @@
 FactoryGirl.define do
   factory :institution_metadata, class: Datastream::InstitutionMetadata do
     name { Faker::Company.name }
+    brief_name { Faker::Lorem.characters rand(3..5) }
   end
 end

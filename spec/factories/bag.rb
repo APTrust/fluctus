@@ -68,40 +68,43 @@ def make_datafile(base_uri)
 end
 
 FactoryGirl.define do
-  factory :bag do 
+  factory :bag do
+
       description_object { FactoryGirl.create(:description_object) }
+      bname = "test" # description_object.institution.brief_name.first
+
       after(:build) do |bag|
-          # Fabricate a random integer for creating a PID
-          i = SecureRandom.uuid
+        # Fabricate a random integer for creating a PID
+        i = SecureRandom.uuid
 
-          mf = bag.fileManifest
-          mf.title = "uva_uva-lib%3A#{i}"
-          mf.uri = "https://s3.amazonaws.com/test_bags/uva_uva-lib%3A#{i}"
+        mf = bag.fileManifest
+        mf.title = "#{bname}_bag%3A#{i}"
+        mf.uri = "https://s3.amazonaws.com/test_bags/#{bname}_lib%3A#{i}"
 
-          # Generate fake bag files
-          fake_files = [
-              make_file(mf.uri.first, "bagit.txt", "text/plain"),
-              make_file(mf.uri.first, "bag-info.txt", "text/plain"),
-              make_file(mf.uri.first, "aptrust-info.txt", "text/plain"),
-              make_file(mf.uri.first, "manifest-md5.txt", "text/plain"),
-          ]
-          rand(1..33).times { |n| fake_files << make_datafile("#{mf.uri.first}/data") }
+        # Generate fake bag files
+        fake_files = [
+            make_file(mf.uri.first, "bagit.txt", "text/plain"),
+            make_file(mf.uri.first, "bag-info.txt", "text/plain"),
+            make_file(mf.uri.first, "aptrust-info.txt", "text/plain"),
+            make_file(mf.uri.first, "manifest-md5.txt", "text/plain"),
+        ]
+        rand(1..33).times { |n| fake_files << make_datafile("#{mf.uri.first}/data") }
 
-          mf.files_attributes = fake_files
+        mf.files_attributes = fake_files
 
-          pe = bag.premisEvents
+        pe = bag.premisEvents
 
-          fake_events = []
+        fake_events = []
 
-          fake_files.each do |bag_file|
-            # puts "#{bag_file[:uri]}"
-            fake_events << make_ingest(bag_file)
-            fake_events << make_fixity_generation(bag_file)
-          end
+        fake_files.each do |bag_file|
+          # puts "#{bag_file[:uri]}"
+          fake_events << make_ingest(bag_file)
+          fake_events << make_fixity_generation(bag_file)
+        end
 
-          pe.events_attributes = fake_events
+        pe.events_attributes = fake_events
 
-          bag.save!
+        bag.save!
       end
   end
 end

@@ -53,15 +53,17 @@ namespace :fluctus do
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
-        "Columbia University", "North Carolina State University", "Johns Hopkins University", "University of Maryland",
-        "University of Michigan", "University of North Carolina at Chapel Hill", "Syracuse University" ,
-        "University of Virginia", "University of Notre Dame", "Stanford University"
+        ["Columbia University", "clmb"], ["North Carolina State University", "ncsu"],
+        ["Johns Hopkins University", "jhu"], ["University of Maryland", "mrlnd"],
+        ["University of Michigan", "mich"], ["University of North Carolina at Chapel Hill", "uncch"],
+        ["Syracuse University", "srcs"], ["University of Virginia","uva"],
+        ["University of Notre Dame", "und"], ["Stanford University", "stnfd"]
     ]
 
     puts "Creating #{partner_list.count} Institutions"
     partner_list.each_with_index do |partner, index|
-      puts "== Creating number #{index+1} of #{partner_list.count}: #{partner} "
-      FactoryGirl.create(:institution, name: partner)
+      puts "== Creating number #{index+1} of #{partner_list.count}: #{partner.first} "
+      FactoryGirl.create(:institution, name: partner.first, brief_name: partner.last)
     end
 
     puts "Creating Users, DescriptionObjects and Bags for each Institution"
