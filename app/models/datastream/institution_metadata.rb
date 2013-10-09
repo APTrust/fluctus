@@ -1,7 +1,6 @@
-class Datastream::InstitutionMetadata < ActiveFedora::NtriplesRDFDatastream
+class Datastream::InstitutionMetadata < ActiveFedora::RdfxmlRDFDatastream
   map_predicates do |map|
-    map.name(in: RDF::DC, to: 'title') do |index|
-      index.as :stored_searchable
-    end
+    map.name(in: RDF::DC, to: 'title') { |index| index.as :stored_searchable }
+    map.brief_name(in: RDF::DC, to: 'alternative')
   end
 end

@@ -15,10 +15,6 @@ describe DescriptionObject do
   it { should validate_presence_of(:title) }
   it { should validate_presence_of(:institution) }
 
-  it 'should serialize descMetadata as RDF triples' do 
-    @desc.descMetadata.serialize.should == "<info:fedora/#{@desc.pid}> <http://purl.org/dc/terms/title> \"#{@desc.title}\" .\n"
-  end
-
   it "should have one bag associated" do 
     @desc.bags.count.should == 1
     @desc.bags.should == [@bag]

@@ -5,7 +5,7 @@ class Bag < ActiveFedora::Base
 
   belongs_to :description_object, property: :is_part_of
 
-  # This method is being stashed until we determine the relationship 
+  # This method is being stashed until we determine the relationship
   # between bags and compressed bags.
   #
   # validate :validate_compressed_bag_count

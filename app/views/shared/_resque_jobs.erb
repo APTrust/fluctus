@@ -1,0 +1,25 @@
+<h4>Jobs Processing for <%= @institution.name %></h4>
+<table class="table table-striped">
+  <tr>
+    <th>Item</th>
+    <th>Status</th>
+    <th>Processes</th>
+    <th>Started</th>
+  </tr>
+  <% 10.times do %>
+      <tr>
+        <td>
+          <%= @institution.brief_name %>:<%= SecureRandom.uuid%>
+        </td>
+        <td class="text-success">
+          Running
+        </td>
+        <td>
+          APTrust::Jobs::Bag Processing
+        </td>
+        <td>
+          <%= time_ago_in_words(Time.now - rand(200..2500)) %> ago
+        </td>
+      </tr>
+  <% end %>
+</table>

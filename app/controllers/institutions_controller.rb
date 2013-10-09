@@ -6,6 +6,7 @@ class InstitutionsController < ApplicationController
   # Return the most recent 50 Description Objects uploaded by an instituion.
   def show
     @description_objects = DescriptionObject.where(is_part_of_ssim: "info:fedora/#{@institution.pid}").limit(50).to_a
+    @response = @description_objects
     show!
   end
 
