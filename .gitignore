@@ -30,3 +30,6 @@
 
 # Coveralls
 /coverage
+
+# Ignore jetty directory (from hydra-jetty)
+/jetty
