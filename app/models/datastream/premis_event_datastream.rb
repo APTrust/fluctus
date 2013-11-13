@@ -19,6 +19,8 @@ class Datastream::PremisEventDatastream < ActiveFedora::RdfxmlRDFDatastream
   map_predicates do |map|
     map.events(to: :Event, in: EventVocabulary, class_name: "Event")
   end
+
+  accepts_nested_attributes_for :events
 end
 
 class Event

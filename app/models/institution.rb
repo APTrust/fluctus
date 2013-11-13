@@ -8,6 +8,7 @@ class Institution < ActiveFedora::Base
   has_many :description_objects, property: :is_part_of
 
   delegate_to 'descMetadata', [:name], unique: true
+  delegate_to 'descMetadata', [:brief_name], unique: true
 
   validates :name, presence: true
   validate :name_is_unique

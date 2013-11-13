@@ -8,10 +8,6 @@ describe Institution do
   end
 
   it { should validate_presence_of(:name) }
-  
-  it 'should serialize descMetadata as RDF triples' do 
-    i.descMetadata.serialize.should == "<info:fedora/#{i.pid}> <http://purl.org/dc/terms/title> \"#{i.name}\" .\n"
-  end
 
   it 'should retun a proper solr_doc' do
     i.to_solr['desc_metadata__name_tesim'].should == [i.name]

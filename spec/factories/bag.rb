@@ -25,6 +25,33 @@ def make_file(base_uri, filename, format)
   }
 end
 
+def make_ingest(file)
+  attrs = {
+      object: "#{file[:uri]}",
+      identifier: SecureRandom.uuid,
+      date_time: Time.now,
+      type: "ingest",
+      detail: "Rspec bag data generator",
+      agent: "FactoryGirl gem"
+  }
+end
+
+def make_fixity_generation(file)
+  attrs = {
+      object: "#{file[:uri]}",
+      identifier: SecureRandom.uuid,
+      date_time: "#{file[:checksum_attributes].first[:datetime]}",
+      outcome_detail: "#{file[:checksum_attributes].first[:digest]}",
+      type: "fixity generation",
+      detail: "Rspec bag data generator",
+      agent: "FactoryGirl gem"
+  }
+end
+
+def make_fixity_check(file)
+  attrs = {}
+end
+
 def make_datafile(base_uri)
   format = [
       {ext: "txt", type: "plain/text"},
@@ -41,30 +68,43 @@ def make_datafile(base_uri)
 end
 
 FactoryGirl.define do
-  factory :bag do 
-    description_object { FactoryGirl.create(:description_object) }
-    after(:build) do |bag|
-      # Fabricate a random integer for creating a PID
-      i = SecureRandom.uuid
+  factory :bag do
 
-      mf = bag.fileManifest
-      mf.title = "uva_uva-lib%3A#{i}"
-      mf.uri = "https://s3.amazonaws.com/test_bags/uva_uva-lib%3A#{i}"
+      description_object { FactoryGirl.create(:description_object) }
+      bname = "test" # description_object.institution.brief_name.first
 
-      # Generate fake bag files
-      fake_files = [
-          make_file(mf.uri.first, "bagit.txt", "text/plain"),
-          make_file(mf.uri.first, "bag-info.txt", "text/plain"),
-          make_file(mf.uri.first, "aptrust-info.txt", "text/plain"),
-          make_file(mf.uri.first, "manifest-md5.txt", "text/plain"),
-      ]
-      rand(1..33).times { |n| fake_files << make_datafile("#{mf.uri.first}/data") }
+      after(:build) do |bag|
+        # Fabricate a random integer for creating a PID
+        i = SecureRandom.uuid
 
-      mf.files_attributes = fake_files
+        mf = bag.fileManifest
+        mf.title = "#{bname}_bag%3A#{i}"
+        mf.uri = "https://s3.amazonaws.com/test_bags/#{bname}_lib%3A#{i}"
 
-      pe = bag.premisEvents
+        # Generate fake bag files
+        fake_files = [
+            make_file(mf.uri.first, "bagit.txt", "text/plain"),
+            make_file(mf.uri.first, "bag-info.txt", "text/plain"),
+            make_file(mf.uri.first, "aptrust-info.txt", "text/plain"),
+            make_file(mf.uri.first, "manifest-md5.txt", "text/plain"),
+        ]
+        rand(1..33).times { |n| fake_files << make_datafile("#{mf.uri.first}/data") }
 
-      bag.save!
-    end
+        mf.files_attributes = fake_files
+
+        pe = bag.premisEvents
+
+        fake_events = []
+
+        fake_files.each do |bag_file|
+          # puts "#{bag_file[:uri]}"
+          fake_events << make_ingest(bag_file)
+          fake_events << make_fixity_generation(bag_file)
+        end
+
+        pe.events_attributes = fake_events
+
+        bag.save!
+      end
   end
 end

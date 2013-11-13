@@ -16,6 +16,9 @@
       <dt>Objects</dt>
       <dd><%= @institution.description_objects.count %></dd>
     </dl>
+
+    <%= render "shared/resque_jobs" %>
+
   </div>
 
   <div class="tab-pane" id="objects">

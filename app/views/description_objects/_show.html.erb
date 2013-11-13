@@ -17,7 +17,7 @@
     <div class="tab-pane" id="<%= bag.object_id %>">
       <dl class="dl-horizontal">
         <dt>Title</dt><dd><%= URI.unescape(bag.fileManifest.title.first) %></dd>
-        <dt>Link to Object</dt><dd><%= link_to "Amazon URL", URI.unescape(bag.fileManifest.uri.first) %></dd>
+        <dt>Bag URI</dt><dd><%= URI.unescape(bag.fileManifest.uri.first) %></dd>
       </dl>
 
       <!-- Display bag content -->
@@ -25,7 +25,7 @@
         <ul class="nav nav-tabs">
           <% bag.fileManifest.files.each do |file| %>
             <li>
-              <a href="#<%= file.object_id %>" data-toggle="tab"><%= URI.unescape(file.uri.first) %></a>
+              <a href="#<%= file.object_id %>" data-toggle="tab"><%= URI.unescape(file.uri.first).sub(URI.unescape(bag.fileManifest.uri.first), "") %></a>
             </li>
           <% end %>
         </ul>
@@ -34,16 +34,37 @@
             <div class="tab-pane" id="<%= file.object_id %>" >
               <dl class="dl-horizontal">
                 <dt>Format</dt><dd><%= file.format.first %></dd>
-                <dt>Link to Item</dt><dd><%= link_to "Amazon URL", URI.unescape(file.uri.first) %></dd>
                 <dt>Size</dt><dd><%= file.size.first %> bytes</dd>
                 <dt>Created</dt><dd><%= file.created.first %></dd>
                 <dt>Modified</dt><dd><%= file.modified.first %></dd>
-                <dt>Checksum</dt><dd><%= file.checksum.first.digest.first %></dd>
+                <dt>Checksum</dt><dd><%= file.checksum.first.algorithm.first %>: <%= file.checksum.first.digest.first %></dd>
+                <dt>Item URI</dt><dd><%= URI.unescape(file.uri.first) %></dd>
+                <dt><dd>
+                <%= link_to "Download Item", URI.unescape(file.uri.first) %>
+              </dd>
               </dl>
             </div>
           <% end %>
+
         </div>
       </div>
+      <h4>Audited Events</h4>
+
+      <% bag.premisEvents.events.each do |event| %>
+          <div class="panel panel-default">
+            <div class="panel-heading"><strong>object:</strong><%= event.object.first %></div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                      <dt>Type</dt><dd><%= event.type.first %></dd>
+                      <dt>Outcome Detail:</dt><dd><%= event.outcome_detail.first %></dd>
+                      <dt>Outcome Information</dt><dd><%= event.outcome_information.first %></dd>
+                      <dt>Detail:</dt><dd><%= event.detail.first %></dd>
+                      <dt>Identifier</dt><dd><%= event.identifier.first %></dd>
+                      <dt>Datetime</dt><dd><%= event.date_time.first %></dd>
+                    </dl>
+                </div>
+          </div>
+      <% end %>
 
     </div>
   <% end %>
