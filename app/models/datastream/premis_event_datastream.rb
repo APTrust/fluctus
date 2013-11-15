@@ -1,4 +1,4 @@
-# NOTE example of use https://gist.github.com/no-reply/4151387
+ # NOTE example of use https://gist.github.com/no-reply/4151387
 # NOTE vocab link http://multimedialab.elis.ugent.be/users/samcoppe/ontologies/Premis/premis.owl
 
 # Note serialize via obj.serialize
