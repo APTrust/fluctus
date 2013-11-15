@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
     self.roles.pluck(:name).include?(role.to_s)
   end
 
-  # Since an Institution is an ActiveFedora Object, these two objects cannot be related as normal (i.e. belogns_to)
+  # Since an Institution is an ActiveFedora Object, these two objects cannot be related as normal (i.e. belongs_to)
   # They will be connected through the Institution.name which should be unique.
   #
   # Given that Institutions have their descMetadata stored as RDF and ActiveFedora indexes that content with a 
