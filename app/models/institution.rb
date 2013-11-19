@@ -3,7 +3,7 @@ class Institution < ActiveFedora::Base
 
   # NOTE with rdf datastreams must query like so ins = Institution.where(desc_metadata__name_tesim: "APTrust")
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
-  has_metadata 'descMetadata', type: Datastream::InstitutionMetadata
+  has_metadata 'descMetadata', type: InstitutionMetadata
 
   has_many :description_objects, property: :is_part_of
   has_many :intellectual_objects, property: :is_part_of

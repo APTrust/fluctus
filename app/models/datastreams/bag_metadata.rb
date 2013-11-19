@@ -1,4 +1,4 @@
-class Datastream::BagMetadata < ActiveFedora::OmDatastream
+class BagMetadata < ActiveFedora::OmDatastream
 
   set_terminology do |t|
     t.root(path: 'bag')

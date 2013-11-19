@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Datastream::DescriptionObjectMetadata do 
+describe DescriptionObjectMetadata do
   before(:all) do 
     @desc = DescriptionObject.new(pid: 'test:1234')
-    @datastream = Datastream::DescriptionObjectMetadata.new(@desc)
+    @datastream = DescriptionObjectMetadata.new(@desc)
     @datastream.title = "Test"
   end
 

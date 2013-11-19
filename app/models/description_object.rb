@@ -5,7 +5,7 @@ class DescriptionObject < ActiveFedora::Base
   before_save :set_permissions
 
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
-  has_metadata 'descMetadata', type: Datastream::DescriptionObjectMetadata
+  has_metadata 'descMetadata', type: DescriptionObjectMetadata
 
   belongs_to :institution, property: :is_part_of
   has_many :bags, property: :is_part_of

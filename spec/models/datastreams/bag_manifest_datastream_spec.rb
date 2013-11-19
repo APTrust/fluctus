@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Datastream::BagManifestDatastream do
+describe BagManifestDatastream do
 
   before do
     bag = Bag.new
