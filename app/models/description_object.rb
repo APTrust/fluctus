@@ -1,3 +1,4 @@
+# add a comment
 class DescriptionObject < ActiveFedora::Base
   include Hydra::ModelMixins::RightsMetadata
 

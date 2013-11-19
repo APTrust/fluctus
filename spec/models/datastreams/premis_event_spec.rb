@@ -4,10 +4,10 @@ require 'spec_helper'
 # https://github.com/anusharanganathan/oraingest/blob/master/spec/models/datastreams/workflow_rdf_datastream_spec.rb
 describe Datastream::PremisEventDatastream do
 
+  subject { Datastream::PremisEventDatastream.new(double('inner object', pid: 'test/pexxx34234', :new? => true), 'premisEvents')}
+
   before do
-    bag = Bag.new
-    @pe = bag.premisEvents
-    @e_fix = @pe.events.build(
+    @e_fix = subject.events.build(
         identifier: "0hc50321-6d7b-3847-89ag-a8b0fhc1f245" ,
         type: "fixity generation",
         date_time: "#{Time.now}",
@@ -17,7 +17,7 @@ describe Datastream::PremisEventDatastream do
         object: "bag_id/data/pathtoitem.item",
         agent: "Amazon S3 Fixity App"
     )
-    @e_creation = @pe.events.build(
+    subject.events.build(
         identifier: "0hc50321-6d7b-3847-89ag-a8b0fhc1f246",
         type: "Bag Creation",
         date_time: Time.now,
@@ -30,8 +30,8 @@ describe Datastream::PremisEventDatastream do
   end
 
   it 'should contain events' do
-    @pe.should.respond_to? :events
-    @pe.events.count.should == 2
+    subject.should.respond_to? :events
+    subject.events.count.should == 2
   end
 
   it "should have a proper fixity event" do
