@@ -4,7 +4,7 @@ describe User do
   let(:user) { FactoryGirl.create(:aptrust_user) }
 
   after do
-    user.delete
+    user.destroy
   end
 
   describe "#where method works using RDF indexing uniqueness" do 

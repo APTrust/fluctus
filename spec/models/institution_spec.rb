@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Institution do
   let (:i) { FactoryGirl.create(:institution) }
 
-  after do 
-    i.delete
+  after do
+    i.destroy
   end
 
   it { should validate_presence_of(:name) }
