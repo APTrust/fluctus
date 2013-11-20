@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Datastream::InstitutionMetadata do 
+describe InstitutionMetadata do
   before(:all) do 
     @i = Institution.new(pid: 'test:1234')
-    @datastream = Datastream::InstitutionMetadata.new(@i)
+    @datastream = InstitutionMetadata.new(@i)
     @datastream.name = "Test"
     @datastream.brief_name = "tst"
   end

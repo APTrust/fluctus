@@ -15,7 +15,7 @@ class EventVocabulary < RDF::Vocabulary("http://multimedialab.elis.ugent.be/user
   property :Event
 end
 
-class Datastream::PremisEventDatastream < ActiveFedora::RdfxmlRDFDatastream
+class PremisEventMetadata < ActiveFedora::RdfxmlRDFDatastream
   map_predicates do |map|
     map.events(to: :Event, in: EventVocabulary, class_name: "Event")
   end
