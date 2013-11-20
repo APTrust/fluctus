@@ -5,7 +5,6 @@ class Institution < ActiveFedora::Base
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
   has_metadata 'descMetadata', type: InstitutionMetadata
 
-  has_many :description_objects, property: :is_part_of
   has_many :intellectual_objects, property: :is_part_of
 
   delegate_to 'descMetadata', [:name], unique: true
@@ -42,8 +41,8 @@ class Institution < ActiveFedora::Base
     #
     # This is a relationship with another ActiveFedora object, so the traditional .where method won't work.
     # We must rely upon the ActiveFedora object reporting the relationship count information.
-    if self.description_objects.count != 0
-      errors[:base] << "Cannot delete #{self.name} because Description Objects are associated with it"
+    if self.intellectual_objects.count != 0
+      errors[:base] << "Cannot delete #{self.name} because Intellectual Objects are associated with it"
     end
 
     return false if !errors[:base].empty?

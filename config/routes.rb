@@ -1,6 +1,5 @@
 Fluctus::Application.routes.draw do
   resources :institutions
-  resources :description_objects, except: [:destroy, :index, :new]
   resources :users
 
   Blacklight.add_routes(self)

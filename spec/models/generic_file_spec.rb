@@ -9,7 +9,7 @@ describe GenericFile do
   end
 
   it 'should have a premisEvents datastream' do
-    subject.premisEvents.should be_kind_of PremisEventDatastream
+    subject.premisEvents.should be_kind_of PremisEventMetadata
   end
 
 end

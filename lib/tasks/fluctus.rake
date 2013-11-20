@@ -27,7 +27,7 @@ namespace :fluctus do
   desc "Empty the database"
   task empty_db: :environment do
     if !Rails.env.production?
-      [User, DescriptionObject, Institution, Role, Bag].each(&:destroy_all)
+      [User, IntellectualObject, Institution, Role, GenericFile].each(&:destroy_all)
     end
   end
 
@@ -66,26 +66,26 @@ namespace :fluctus do
       FactoryGirl.create(:institution, name: partner.first, brief_name: partner.last)
     end
 
-    puts "Creating Users, DescriptionObjects and Bags for each Institution"
-    Institution.all.each do |institution|
-      next unless institution.name != "APTrust"
-
-      puts "Populating content for #{institution.name}"
-
-      numUsers = rand(1..5)
-      numUsers.times.each do |count|
-        puts "== Creating user #{count+1} of #{numUsers} for #{institution.name}"
-        FactoryGirl.create(:user, institution_pid: institution.pid)
-      end
-
-      numBags = rand(5..10)
-      numBags.times.each do |count|
-        puts "== Creating bag #{count+1} of #{numBags} for #{institution.name}"
-        desc = FactoryGirl.create(:description_object, institution: institution)
-        bag = FactoryGirl.create(:bag, description_object: desc)
-        desc.save!
-      end
-
-    end
+    #puts "Creating Users for each Institution"
+    #Institution.all.each do |institution|
+    #  next unless institution.name != "APTrust"
+    #
+    #  puts "Populating content for #{institution.name}"
+    #
+    #  numUsers = rand(1..5)
+    #  numUsers.times.each do |count|
+    #    puts "== Creating user #{count+1} of #{numUsers} for #{institution.name}"
+    #    FactoryGirl.create(:user, institution_pid: institution.pid)
+    #  end
+    #
+    #  numBags = rand(5..10)
+    #  numBags.times.each do |count|
+    #    puts "== Creating bag #{count+1} of #{numBags} for #{institution.name}"
+    #    desc = FactoryGirl.create(:description_object, institution: institution)
+    #    bag = FactoryGirl.create(:bag, description_object: desc)
+    #    desc.save!
+    #  end
+    #
+    #end
   end
 end

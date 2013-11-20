@@ -14,7 +14,7 @@
       <dt>Users</dt>
       <dd><%= @institution.users.count %></dd>
       <dt>Objects</dt>
-      <dd><%= @institution.description_objects.count %></dd>
+      <dd><%= @institution.intellectual_objects.count %></dd>
     </dl>
 
     <%= render "shared/resque_jobs" %>
@@ -31,12 +31,12 @@
         </tr>
       </thead>
       <tbody>
-        <% @institution.description_objects.each do |description_object| %>
+        <% @institution.intellectual_objects.each do |intellectual_object| %>
           <tr>
-            <td><%= description_object.title %></td>
+            <td><%= intellectual_object.title %></td>
             <td>
-              <%= show_link(description_object) %>
-              <%= edit_link(description_object) %>
+              <%= show_link(intellectual_object) %>
+              <%= edit_link(intellectual_object) %>
             </td>
           </tr>
         <% end %>

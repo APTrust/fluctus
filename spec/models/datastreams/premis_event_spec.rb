@@ -2,9 +2,9 @@ require 'spec_helper'
 
 # NOTE basing tests on examples found at
 # https://github.com/anusharanganathan/oraingest/blob/master/spec/models/datastreams/workflow_rdf_datastream_spec.rb
-describe PremisEventDatastream do
+describe PremisEventMetadata do
 
-  subject { PremisEventDatastream.new(double('inner object', pid: 'test/pexxx34234', :new? => true), 'premisEvents')}
+  subject { PremisEventMetadata.new(double('inner object', pid: 'test/pexxx34234', :new? => true), 'premisEvents')}
 
   before do
     @e_fix = subject.events.build(
