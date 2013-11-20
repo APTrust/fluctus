@@ -79,8 +79,9 @@ RSpec.configure do |config|
     # FactoryGirl.create(:fake_university)
   end
 
-  config.after(:all) do 
-    DescriptionObject.destroy_all
+  config.after(:all) do
+    GenericFile.destroy_all
+    IntellectualObject.destroy_all
     Role.destroy_all
     User.destroy_all
     Institution.destroy_all

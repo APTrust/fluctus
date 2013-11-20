@@ -54,10 +54,10 @@ describe Institution do
       user.destroy
     end
 
-    it 'should not delete if a description object is associated' do
-      description_object = FactoryGirl.create(:description_object, institution: i)
+    it 'should not delete if a intellectual object is associated' do
+      item = FactoryGirl.create(:intellectual_object, institution: i)
       i.destroy.should be_false
-      description_object.destroy
+      item.destroy
     end
   end
 end
