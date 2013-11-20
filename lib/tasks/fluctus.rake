@@ -82,8 +82,14 @@ namespace :fluctus do
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
         ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
-        desc = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
-        desc.save!
+        item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
+        item.save!
+        numFiles = rand(3..30)
+        numFiles.times.each do |count|
+          puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
+          f = FactoryGirl.create(:generic_file, intellectual_object: item)
+          f.save!
+        end
       end
 
     end

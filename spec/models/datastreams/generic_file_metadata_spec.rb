@@ -16,8 +16,8 @@ formats = [
 describe GenericFileMetadata do
 
   before do
-    @item = GenericFile.new(pid: 'test/gf_1234')
-    @ds = GenericFileMetadata.new(@item)
+    @gf = FactoryGirl.create(:generic_file)
+    @ds = @gf.descMetadata
   end
 
   it 'should set a a proper format' do
