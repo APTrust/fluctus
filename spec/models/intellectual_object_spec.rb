@@ -12,6 +12,7 @@ describe IntellectualObject do
   it { should validate_presence_of(:title) }
   it { should validate_presence_of(:identifier) }
   it { should validate_presence_of(:institution) }
+  it { should validate_presence_of(:rights)}
 
   it 'should have a descMetadata datastream' do
     subject.descMetadata.should be_kind_of IntellectualObjectMetadata
@@ -20,6 +21,16 @@ describe IntellectualObject do
   it 'should properly set a title' do
     subject.title = 'War and Peace'
     subject.title.should == 'War and Peace'
+  end
+
+  it 'should properly set rights' do
+    subject.rights = 'public'
+    subject.rights.should == 'public'
+  end
+
+  it 'must be one of the standard rights' do
+    subject.rights = 'error'
+    subject.should_not be_valid
   end
 
   it 'should properly set a description' do

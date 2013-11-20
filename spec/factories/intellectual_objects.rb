@@ -5,6 +5,7 @@ FactoryGirl.define do
     title { Faker::Lorem.sentence }
     description { Faker::Lorem.paragraph }
     identifier { SecureRandom.uuid }
+    rights { ['public', 'institution', 'private'].sample }
   end
 
 end
