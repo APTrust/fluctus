@@ -88,6 +88,7 @@ namespace :fluctus do
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
           f = FactoryGirl.create(:generic_file, intellectual_object: item)
+          f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_desc_metadata)
           f.save!
         end
       end
