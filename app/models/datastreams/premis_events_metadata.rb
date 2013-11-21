@@ -4,7 +4,6 @@
 
 # Note serialize via obj.serialize
 class EventVocabulary < RDF::Vocabulary("http://multimedialab.elis.ugent.be/users/samcoppe/ontologies/Premis/premis.owl#")
-  property :identifier
   property :eventType
   property :eventOutcome
   property :eventOutcomeDetail

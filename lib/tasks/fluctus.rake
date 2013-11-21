@@ -1,21 +1,3 @@
-def make_fileattrs(base_uri)
-  format = [
-      {ext: "txt", type: "plain/text"},
-      {ext: "xml", type: "application/xml"},
-      {ext: "xml", type: "application/rdf+xml"},
-      {ext: "pdf", type: "application/pdf"},
-      {ext: "tif", type: "image/tiff"},
-      {ext: "mp4", type: "video/mp4"},
-      {ext: "wav", type: "audio/wav"},
-      {ext: "pdf", type: "application/pdf"}
-  ].sample
-
-  attrs = {
-      format: "#{format[:type]}",
-      uri: "#{base_uri}/#{Faker::Lorem.characters(char_count=rand(5..15))}.#{format[:ext]}",
-  }
-end
-
 namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
@@ -106,7 +88,7 @@ namespace :fluctus do
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
           f = FactoryGirl.create(:generic_file, intellectual_object: item)
-          # crappy hack here but I'm running out of time.
+          # crappy hack here but I'm running out of time. Create some descMetadata for them.
           format = [
               {ext: "txt", type: "plain/text"},
               {ext: "xml", type: "application/xml"},
@@ -123,6 +105,12 @@ namespace :fluctus do
               uri: "#{item.identifier.first}/data/#{Faker::Lorem.characters(char_count=rand(5..15))}.#{format[:ext]}",
           }
           f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_desc_metadata, format: attrs[:format], uri: attrs[:uri])
+          f.premisEvents.events_attributes = [
+              FactoryGirl.attributes_for(:premis_event_validation),
+              FactoryGirl.attributes_for(:premis_event_ingest),
+              FactoryGirl.attributes_for(:premis_event_fixity_generation),
+              FactoryGirl.attributes_for(:premis_event_fixity_check)
+          ]
           f.save!
         end
       end

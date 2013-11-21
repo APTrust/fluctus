@@ -11,6 +11,7 @@ describe PremisEventsMetadata do
         type: "fixity generation",
         date_time: "#{Time.now}",
         detail:  "S3 fixity check",
+        outcome: "success",
         outcome_detail: "",
         outcome_information: "454c167687fc3ce46e48b62533ea70e804287c413683158c58d49f23fcca397d",
         object: "bag_id/data/pathtoitem.item",
@@ -37,6 +38,7 @@ describe PremisEventsMetadata do
 
     @e_fix.date_time.should_not be_empty
     @e_fix.detail.should == ["S3 fixity check"]
+    @e_fix.outcome.should == ["success"]
     @e_fix.outcome_detail.should == [""]
     @e_fix.outcome_information.should == ["454c167687fc3ce46e48b62533ea70e804287c413683158c58d49f23fcca397d"]
     @e_fix.object.should == ["bag_id/data/pathtoitem.item"]

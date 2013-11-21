@@ -4,7 +4,7 @@
 
 FactoryGirl.define do
 
-  factory :premis_event_ingest do
+  factory :premis_event_ingest, class: PremisEventsMetadata do
     type { 'ingest' }
     date_time { "#{Time.now}" }
     detail { "copy to s3 preservation bucket aptrust_preservation" }
@@ -15,7 +15,7 @@ FactoryGirl.define do
     # agent { "ruby s3 copy library" }
   end
 
-  factory :premis_event_validation do
+  factory :premis_event_validation, class: PremisEventsMetadata do
     type { 'validation' }
     date_time { "#{Time.now}" }
     detail { "Check against bag manifest checksum" }
@@ -24,7 +24,7 @@ FactoryGirl.define do
     # agent { "ruby s3 copy library" }
   end
 
-  factory :premis_event_fixity_generation do
+  factory :premis_event_fixity_generation, class: PremisEventsMetadata do
     type { 'fixity_generation' }
     date_time { "#{Time.now}" }
     detail { "Generation on file prior to copy to S3" }
@@ -32,7 +32,7 @@ FactoryGirl.define do
     object { "https://github.com/APTrust/bagins" }
   end
 
-  factory :premis_event_fixity_check do
+  factory :premis_event_fixity_check, class: PremisEventsMetadata do
     type { 'fixity_check' }
     date_time { "#{Time.now}" }
     #detail { "copy to s3 preservation bucket aptrust_preservation" }
