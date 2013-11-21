@@ -1,4 +1,22 @@
-namespace :fluctus do 
+def make_fileattrs(base_uri)
+  format = [
+      {ext: "txt", type: "plain/text"},
+      {ext: "xml", type: "application/xml"},
+      {ext: "xml", type: "application/rdf+xml"},
+      {ext: "pdf", type: "application/pdf"},
+      {ext: "tif", type: "image/tiff"},
+      {ext: "mp4", type: "video/mp4"},
+      {ext: "wav", type: "audio/wav"},
+      {ext: "pdf", type: "application/pdf"}
+  ].sample
+
+  attrs = {
+      format: "#{format[:type]}",
+      uri: "#{base_uri}/#{Faker::Lorem.characters(char_count=rand(5..15))}.#{format[:ext]}",
+  }
+end
+
+namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
@@ -27,7 +45,7 @@ namespace :fluctus do
   desc "Empty the database"
   task empty_db: :environment do
     if !Rails.env.production?
-      [User, IntellectualObject, Institution, Role, GenericFile].each(&:destroy_all)
+      [User, GenericFile, IntellectualObject, Institution, Role].each(&:destroy_all)
     end
   end
 
@@ -88,7 +106,23 @@ namespace :fluctus do
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
           f = FactoryGirl.create(:generic_file, intellectual_object: item)
-          f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_desc_metadata)
+          # crappy hack here but I'm running out of time.
+          format = [
+              {ext: "txt", type: "plain/text"},
+              {ext: "xml", type: "application/xml"},
+              {ext: "xml", type: "application/rdf+xml"},
+              {ext: "pdf", type: "application/pdf"},
+              {ext: "tif", type: "image/tiff"},
+              {ext: "mp4", type: "video/mp4"},
+              {ext: "wav", type: "audio/wav"},
+              {ext: "pdf", type: "application/pdf"}
+          ].sample
+
+          attrs = {
+              format: "#{format[:type]}",
+              uri: "#{item.identifier.first}/data/#{Faker::Lorem.characters(char_count=rand(5..15))}.#{format[:ext]}",
+          }
+          f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_desc_metadata, format: attrs[:format], uri: attrs[:uri])
           f.save!
         end
       end
