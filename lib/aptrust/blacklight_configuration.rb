@@ -62,7 +62,6 @@ module Aptrust
         # solr fields to be displayed in the index (search results) view
         #   The ordering of the field names is the order of the display
         config.add_index_field solr_name('desc_metadata__title', :stored_searchable, type: :string), :label => 'Title:'
-        config.add_index_field solr_name('desc_metadata__name', :stored_searchable, type: :string), :label => 'Name:'
         config.add_index_field solr_name('institution_name', :stored_searchable, type: :string), :label => 'Institution:'
         config.add_index_field solr_name('original_pid', :stored_searchable, type: :string), :label => 'Original Pid:'
 
@@ -124,16 +123,16 @@ module Aptrust
         # case for a BL "search field", which is really a dismax aggregate
         # of Solr search fields.
 
-        # config.add_search_field('title') do |field|
-        #   # :solr_local_parameters will be sent using Solr LocalParams
-        #   # syntax, as eg {! qf=$title_qf }. This is neccesary to use
-        #   # Solr parameter de-referencing like $title_qf.
-        #   # See: http://wiki.apache.org/solr/LocalParams
-        #   field.solr_local_parameters = {
-        #     :qf => '$title_qf',
-        #     :pf => '$title_pf'
-        #   }
-        # end
+        config.add_search_field('title') do |field|
+           # :solr_local_parameters will be sent using Solr LocalParams
+           # syntax, as eg {! qf=$title_qf }. This is neccesary to use
+           # Solr parameter de-referencing like $title_qf.
+           # See: http://wiki.apache.org/solr/LocalParams
+           field.solr_local_parameters = {
+             :qf => '$title_qf',
+             :pf => '$title_pf'
+           }
+        end
 
         # config.add_search_field('author') do |field|
         #   field.solr_local_parameters = {

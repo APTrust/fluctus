@@ -74,9 +74,8 @@ RSpec.configure do |config|
       Role.create!(name: role)
     end
 
-    # Create our two default institutions
+    # Create our default institution
     FactoryGirl.create(:aptrust)
-    # FactoryGirl.create(:fake_university)
   end
 
   config.after(:all) do
