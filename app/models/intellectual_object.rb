@@ -24,22 +24,27 @@ class IntellectualObject < ActiveFedora::Base
   validates_inclusion_of :rights, in: %w(public institution private), message: "#{:rights} is not a valid rights"
 
   def check_permissions
+    pieces = self.institution.to_s.split(':')
+    pidNumber = pieces[1]
+
+    instAdminGroup = pidNumber + 'admin'
+    instUserGroup = pidNumber + 'user'
     if :rights.include? 'public'
       self.discover_groups = %w(admin, institutional_admin, institutional_user)
       self.read_groups = %w(admin, institutional_admin, institutional_user)
-      self.edit_groups = %w(admin, institutional_admin)
+      self.edit_groups = ['admin', instAdminGroup]
     elsif :rights.include? 'institution'
-      self.discover_groups = %w(admin, institutional_admin, institutional_user)
-      self.read_groups = %w(admin, institutional_admin, institutional_user)
-      self.edit_groups = %w(admin, institutional_admin)
+      self.discover_groups = ['admin', instAdminGroup, instUserGroup]
+      self.read_groups = ['admin', instAdminGroup, instUserGroup]
+      self.edit_groups = ['admin', instAdminGroup]
     elsif :rights.include? 'private'
-      self.discover_groups = %w(admin, institutional_admin, institutional_user)
-      self.read_groups = %w(admin, institutional_admin)
-      self.edit_groups = %w(admin, institutional_admin)
+      self.discover_groups = ['admin', instAdminGroup, instUserGroup]
+      self.read_groups = ['admin', instAdminGroup]
+      self.edit_groups = ['admin', instAdminGroup]
     else
-      self.discover_groups = %w[admin]
-      self.read_groups = %w[admin]
-      self.edit_groups = %w[admin]
+      self.discover_groups = 'admin'
+      self.read_groups = 'admin'
+      self.edit_groups = 'admin'
     end
 
   end
