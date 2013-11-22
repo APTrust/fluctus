@@ -13,7 +13,6 @@ class IntellectualObject < ActiveFedora::Base
   # arrays can be set in the datastream itself but it always returns first title as a string here.
   delegate_to 'descMetadata', [:title, :rights], unique: true
 
-  # TODO get this to work at the top of the object
   delegate_to 'descMetadata', [:description, :identifier]
 
   validates_presence_of :title
