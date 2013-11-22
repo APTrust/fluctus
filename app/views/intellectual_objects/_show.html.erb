@@ -1,6 +1,5 @@
 <ol class="breadcrumb">
-  <li><a href="#"><%= @intellectual_object.institution.name %></a></li> >
-  <li><a href="#">IntellectualObjects</a></li> >
+  <li><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %></li> >
   <li class="active"><%= @intellectual_object.title %></li>
 </ol>
 
@@ -12,7 +11,7 @@
 <div class="object_info">
   <dl class="dl-horizontal dl-invert">
     <dt>Institution</dt>
-    <dd><%= @intellectual_object.institution.name %>[<%= @intellectual_object.institution.brief_name %>]</dd>
+    <dd><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %> [<%= @intellectual_object.institution.brief_name %>]</dd>
     <dt>Rights</dt>
     <dd><%= @intellectual_object.rights %></dd>
     <dt>Identifier</dt>
@@ -25,7 +24,7 @@
 <div class="object_children">
   <h3>Preserved Files</h3>
   <% @intellectual_object.generic_files.each do |gf| %>
-        <h4><a href="#"><%= gf.uri %></a></h4>
+        <h4><%= link_to gf.uri, gf  %></h4>
       <dl class="dl-horizontal dl-invert">
         <dt>Last Fixity</dt>
         <dd><span class="label label-success">Success</span></dd>

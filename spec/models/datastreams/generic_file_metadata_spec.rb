@@ -60,8 +60,8 @@ describe GenericFileMetadata do
         digest: SecureRandom.hex
     }
     @ds.checksum_attributes = [exp]
-    @ds.checksum.first.algorithm.should == [exp[:algorithm]]
-    @ds.checksum.first.datetime.should == [exp[:datetime]]
-    @ds.checksum.first.digest.should == [exp[:digest]]
+    @ds.checksum.last.algorithm.should == [exp[:algorithm]]
+    @ds.checksum.last.datetime.should == [exp[:datetime]]
+    @ds.checksum.last.digest.should == [exp[:digest]]
   end
 end
