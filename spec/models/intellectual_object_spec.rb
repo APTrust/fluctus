@@ -5,9 +5,7 @@ require 'active_fedora/test_support'
 
 describe IntellectualObject do
 
-  before do
-    subject = FactoryGirl.create(:intellectual_object)
-  end
+  let(:subject) { FactoryGirl.create(:intellectual_object) }
 
   it { should validate_presence_of(:title) }
   it { should validate_presence_of(:identifier) }
@@ -43,6 +41,12 @@ describe IntellectualObject do
     exp = SecureRandom.uuid
     subject.identifier = exp
     subject.identifier.should == [exp]
+  end
+
+  it 'must check for generic_files before destory' do
+    item = FactoryGirl.create(:generic_file, intellectual_object: subject)
+    subject.destroy.should be_false
+    item.destroy
   end
 
 end

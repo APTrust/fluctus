@@ -5,12 +5,12 @@ require 'spec_helper'
 describe IntellectualObjectMetadata do
 
   before do
-    @item = FactoryGirl.create(:intellectual_object)
-    @ds = @item.descMetadata
+    @gf = FactoryGirl.create(:intellectual_object)
+    @ds = @gf.descMetadata
   end
 
   after do
-    @item.destroy
+    @gf.destroy
   end
 
   it 'should properly set a title' do
