@@ -25,26 +25,26 @@ class IntellectualObject < ActiveFedora::Base
 
   def check_permissions
     pieces = self.institution.to_s.split(':')
-    pidNumber = pieces[1]
+    pid_number = pieces[1]
 
-    instAdminGroup = pidNumber + 'admin'
-    instUserGroup = pidNumber + 'user'
+    inst_admin_group = pid_number + 'admin'
+    inst_user_group = pid_number + 'user'
     if :rights.include? 'public'
       self.discover_groups = %w(admin, institutional_admin, institutional_user)
       self.read_groups = %w(admin, institutional_admin, institutional_user)
-      self.edit_groups = ['admin', instAdminGroup]
+      self.edit_groups = ['admin', inst_admin_group]
     elsif :rights.include? 'institution'
-      self.discover_groups = ['admin', instAdminGroup, instUserGroup]
-      self.read_groups = ['admin', instAdminGroup, instUserGroup]
-      self.edit_groups = ['admin', instAdminGroup]
+      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
+      self.read_groups = ['admin', inst_admin_group, inst_user_group]
+      self.edit_groups = ['admin', inst_admin_group]
     elsif :rights.include? 'private'
-      self.discover_groups = ['admin', instAdminGroup, instUserGroup]
-      self.read_groups = ['admin', instAdminGroup]
-      self.edit_groups = ['admin', instAdminGroup]
+      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
+      self.read_groups = ['admin', inst_admin_group]
+      self.edit_groups = ['admin', inst_admin_group]
     else
-      self.discover_groups = 'admin'
-      self.read_groups = 'admin'
-      self.edit_groups = 'admin'
+      self.discover_groups = %w(admin)
+      self.read_groups = %w(admin)
+      self.edit_groups = %w(admin)
     end
   end
 

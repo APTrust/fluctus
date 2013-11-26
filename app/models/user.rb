@@ -29,20 +29,23 @@ class User < ActiveRecord::Base
 
   validates :phone_number, :phony_plausible => true
 
+  #data = YAML.load_file "fluctus/config/role_map_development.yml"
+  #groups.each{ |x| data[x] << self.email}
+  #File.open("fluctus/config/role_map_development.yml", 'w') {|f| YAML.dump(data, f)}
 
-  #this stub will add newly created users to permissions groups
-  groups = []
-  if(self.is?.equal?('admin'))
-    groups = ['admin']
-  elsif(self.is?.equal?('institutional_admin'))
-    groups = [self.institution_pid + 'admin', 'institutional_admin']
-  elsif(self.is?.equal('institutional_user'))
-    groups = [self.institution_pid + 'user', 'institutional_user']
+  # This method assigns permission groups
+  def groups
+    pid_pieces = self.institution_pid.split(':')
+    admin_group = pid_pieces[1] + 'admin'
+    user_group = pid_pieces[1] + 'user'
+    if(self.is?('admin'))
+      ['admin']
+    elsif(self.is?('institutional_admin'))
+      [admin_group, 'institutional_admin']
+    elsif(self.is?('institutional_user'))
+      [user_group, 'institutional_user']
+    end
   end
-
-  data = YAML.load_file "fluctus/config/role_map_development.yml"
-  groups.each{ |x| data[x] << self.email}
-  File.open("fluctus/config/role_map_development.yml", 'w') {|f| YAML.dump(data, f)}
 
   # Blacklight uses #to_s on youruser class to get a user-displayable 
   # login/identifier for the account. 
