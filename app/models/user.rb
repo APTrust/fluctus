@@ -35,11 +35,11 @@ class User < ActiveRecord::Base
 
   # This method assigns permission groups
   def groups
-    pid_pieces = self.institution_pid.split(':')
-    admin_group = pid_pieces[1] + 'admin'
-    user_group = pid_pieces[1] + 'user'
+    inst_pid = self.institution_pid
+    admin_group = inst_pid + 'admin'
+    user_group = inst_pid + 'user'
     if(self.is?('admin'))
-      ['admin']
+      %w(admin)
     elsif(self.is?('institutional_admin'))
       [admin_group, 'institutional_admin']
     elsif(self.is?('institutional_user'))

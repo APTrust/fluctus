@@ -23,12 +23,10 @@ class IntellectualObject < ActiveFedora::Base
   validates_presence_of :rights
   validates_inclusion_of :rights, in: %w(public institution private), message: "#{:rights} is not a valid rights"
 
-  def check_permissions
-    pieces = self.institution.to_s.split(':')
-    pid_number = pieces[1]
-
-    inst_admin_group = pid_number + 'admin'
-    inst_user_group = pid_number + 'user'
+  def set_permissions
+    inst_pid = self.institution
+    inst_admin_group = inst_pid + 'admin'
+    inst_user_group = inst_pid + 'user'
     if :rights.include? 'public'
       self.discover_groups = %w(admin, institutional_admin, institutional_user)
       self.read_groups = %w(admin, institutional_admin, institutional_user)
