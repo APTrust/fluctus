@@ -7,9 +7,11 @@ FactoryGirl.define do
   
     factory :aptrust_user, class: "User" do
       institution_pid { 
-        relation = Institution.where(desc_metadata__name_tesim: 'APTrust')
-        if relation.count == 1
-          relation.first.pid
+        aptrust_institution = Institution.where(desc_metadata__name_tesim: 'APTrust')
+        if aptrust_institution.count == 1
+          aptrust_institution.first.pid
+        elsif aptrust_institution.count > 1
+          raise 'There should never be more than one institution with the name APTrust'
         else
           FactoryGirl.create(:aptrust).pid
         end
