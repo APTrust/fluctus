@@ -6,6 +6,9 @@ require 'active_fedora/test_support'
 describe IntellectualObject do
 
   let(:subject) { FactoryGirl.create(:intellectual_object) }
+  let(:public_subject) { FactoryGirl.create(:public_intellectual_object) }
+  let(:inst_subject) { FactoryGirl.create(:institutional_intellectual_object) }
+  let(:private_subject) { FactoryGirl.create(:private_intellectual_object) }
 
   it { should validate_presence_of(:title) }
   it { should validate_presence_of(:identifier) }
@@ -47,6 +50,66 @@ describe IntellectualObject do
     item = FactoryGirl.create(:generic_file, intellectual_object: subject)
     subject.destroy.should be_false
     item.destroy
+  end
+
+  it 'should properly set discover groups if rights are public' do
+    public_subject.set_permissions
+    (public_subject.discover_groups.include?('admin') ) &&
+        (public_subject.discover_groups.include?('institutional_admin')) &&
+        (public_subject.discover_groups.include?('institutional_user'))
+  end
+
+  it 'should properly set read groups if rights are public' do
+    public_subject.set_permissions
+    (public_subject.read_groups.include?('admin') ) &&
+        (public_subject.read_groups.include?('institutional_admin')) &&
+        (public_subject.read_groups.include?('institutional_user'))
+  end
+
+  it 'should properly set edit groups if rights are public' do
+    public_subject.set_permissions
+    (public_subject.edit_groups.include?('admin') ) &&
+        (public_subject.edit_groups.include?("#{public_subject.institution}admin"))
+  end
+
+  it 'should properly set discover groups if rights are institutional' do
+    inst_subject.set_permissions
+    (inst_subject.discover_groups.include?('admin') ) &&
+        (inst_subject.discover_groups.include?("#{inst_subject.institution}admin")) &&
+        (inst_subject.discover_groups.include?("#{inst_subject.institution}user"))
+  end
+
+  it 'should properly set read groups if rights are institutional' do
+    inst_subject.set_permissions
+    (inst_subject.read_groups.include?('admin') ) &&
+        (inst_subject.read_groups.include?("#{inst_subject.institution}admin")) &&
+        (inst_subject.read_groups.include?("#{inst_subject.institution}user"))
+  end
+
+  it 'should properly set edit groups if rights are institutional' do
+    inst_subject.set_permissions
+    (inst_subject.edit_groups.include?('admin') ) &&
+        (inst_subject.edit_groups.include?("#{inst_subject.institution}admin"))
+  end
+
+  it 'should properly set discover groups if rights are private' do
+    private_subject.set_permissions
+    (private_subject.discover_groups.include?('admin') ) &&
+        (private_subject.discover_groups.include?("#{inst_subject.institution}admin")) &&
+        (private_subject.discover_groups.include?("#{inst_subject.institution}user"))
+  end
+
+  it 'should properly set read groups if rights are private' do
+    private_subject.set_permissions
+    (private_subject.read_groups.include?('admin') ) &&
+        (private_subject.read_groups.include?("#{inst_subject.institution}admin")) &&
+        (private_subject.read_groups.include?("#{inst_subject.institution}user"))
+  end
+
+  it 'should properly set edit groups if rights are private' do
+    private_subject.set_permissions
+    (private_subject.edit_groups.include?('admin') ) &&
+        (private_subject.edit_groups.include?("#{inst_subject.institution}admin"))
   end
 
 end

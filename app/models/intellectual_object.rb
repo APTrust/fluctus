@@ -1,11 +1,11 @@
 # Generated via
 #  `rails generate active_fedora::model IntellectualObject`
 class IntellectualObject < ActiveFedora::Base
-
-  # Creating a #descMetadata method that returns the datastream. 
+    # Creating a #descMetadata method that returns the datastream.
   #
   has_metadata "descMetadata", type: IntellectualObjectMetadata
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
+  include Hydra::ModelMixins::RightsMetadata
 
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
@@ -25,24 +25,25 @@ class IntellectualObject < ActiveFedora::Base
 
   def set_permissions
     inst_pid = self.institution
-    inst_admin_group = inst_pid + 'admin'
-    inst_user_group = inst_pid + 'user'
-    if :rights.include? 'public'
-      self.discover_groups = %w(admin, institutional_admin, institutional_user)
-      self.read_groups = %w(admin, institutional_admin, institutional_user)
-      self.edit_groups = ['admin', inst_admin_group]
-    elsif :rights.include? 'institution'
-      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
-      self.read_groups = ['admin', inst_admin_group, inst_user_group]
-      self.edit_groups = ['admin', inst_admin_group]
-    elsif :rights.include? 'private'
-      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
-      self.read_groups = ['admin', inst_admin_group]
-      self.edit_groups = ['admin', inst_admin_group]
+    inst_admin_group = "#{inst_pid}admin"
+    inst_user_group = "#{inst_pid}user"
+    rights = self.rights
+    if rights.include?('public')
+      self.set_discover_groups(['admin', 'institutional_admin', 'institutional_user'], [])
+      self.set_read_groups(['admin', 'institutional_admin', 'institutional_user'], [])
+      self.set_edit_groups(['admin', inst_admin_group], [])
+    elsif rights.include?('institution')
+      self.set_discover_groups(['admin', inst_admin_group, inst_user_group], [])
+      self.set_read_groups(['admin', inst_admin_group, inst_user_group], [])
+      self.set_edit_groups(['admin', inst_admin_group], [])
+    elsif rights.include?('private')
+      self.set_discover_groups(['admin', inst_admin_group, inst_user_group], [])
+      self.set_read_groups(['admin', inst_admin_group], [])
+      self.set_edit_groups(['admin', inst_admin_group], [])
     else
-      self.discover_groups = %w(admin)
-      self.read_groups = %w(admin)
-      self.edit_groups = %w(admin)
+      self.set_discover_groups(['admin'], [])
+      self.set_read_groups(['admin'], [])
+      self.set_edit_groups(['admin'], [])
     end
   end
 

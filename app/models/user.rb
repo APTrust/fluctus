@@ -36,8 +36,8 @@ class User < ActiveRecord::Base
   # This method assigns permission groups
   def groups
     inst_pid = self.institution_pid
-    admin_group = inst_pid + 'admin'
-    user_group = inst_pid + 'user'
+    admin_group = "#{inst_pid}admin"
+    user_group = "#{inst_pid}user"
     if(self.is?('admin'))
       %w(admin)
     elsif(self.is?('institutional_admin'))
