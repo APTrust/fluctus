@@ -75,7 +75,7 @@ namespace :fluctus do
       numUsers = rand(1..5)
       numUsers.times.each do |count|
         puts "== Creating user #{count+1} of #{numUsers} for #{institution.name}"
-        FactoryGirl.create(:user, institution_pid: institution.pid)
+        FactoryGirl.create(:user, :institutional_user, institution_pid: institution.pid)
       end
 
       numItems = rand(5..10)

@@ -1,0 +1,54 @@
+<ol class="breadcrumb">
+  <li><a href="#"><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %></a></li> >
+  <li><a href="#"><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %></a></li> >
+  <li class="active"><%= @generic_file.uri %></li>
+</ol>
+
+
+<div class="page-header">
+  <h1><%= @generic_file.uri %></h1>
+</div>
+
+<div class="object_info">
+  <dl class="dl-horizontal dl-invert">
+    <dt>Institution</dt>
+    <dd><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %> [<%= @generic_file.intellectual_object.institution.brief_name %>]</dd>
+    <dt>Intellectual Object</dt>
+    <dd><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %> [<%= @generic_file.intellectual_object.rights %>]</dd>
+    <dt>MimeType<dt>
+    <dd><%= @generic_file.format %></dd>
+    <dt>Filesize<dt>
+    <dd><%= number_to_human_size(@generic_file.size) %></dd>
+    <dt>Created</dt>
+    <dd><%= @generic_file.created %></dd>
+    <dt>Modified</dt>
+    <dd><%= @generic_file.modified %></dd>
+    <dt>Checksum</dt>
+    <% @generic_file.checksum.each do |checksum| %>
+    <dd><%= checksum.algorithm.first %>:<%= checksum.digest.first %> generated <%= time_ago_in_words(checksum.datetime.first) %> ago</dd>
+    <% end %>
+  </dl>
+</div>
+
+<div class="auditinfo">
+  <h3>Object Audit Events</h3>
+  <% @generic_file.premisEvents.events.each do |event| %>
+    <h4><%= event.date_time.first %></h4>
+      <dl class="dl-horizontal dl-invert">
+          <dt>Type</dt>
+          <dd><%= event.type.first %></dd>
+          <dt>Detail</dt>
+          <dd><%= event.detail.first %></dd>
+          <dt>Outcome</dt>
+          <dd><%= event.outcome.first %></dd>
+          <dt>Outcome Detail</dt>
+          <dd><%= event.outcome_detail.first %></dd>
+          <dt>Outcome Information</dt>
+          <dd><%= event.outcome_information.first %></dd>
+          <dt>Object</dt>
+          <dd><%= event.object.first %></dd>
+          <dt>Agent</dt>
+          <dd><%= event.agent.first %></dd>
+          </dl>
+  <% end %>
+</div>
