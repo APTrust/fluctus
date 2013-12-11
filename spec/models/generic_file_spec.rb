@@ -42,4 +42,15 @@ describe GenericFile do
     subject.should_not be_valid
   end
 
+  it 'should copy the permissions of the intellectual object it belongs to' do
+    int_obj = FactoryGirl.create(:intellectual_object)
+    int_obj.set_permissions
+    gen_file = FactoryGirl.create(:generic_file, intellectual_object: int_obj)
+    gen_file.set_permissions
+    (int_obj.discover_groups.should == gen_file.discover_groups) &&
+        (int_obj.read_groups.should == gen_file.read_groups) &&
+        (int_obj.edit_groups.should == gen_file.edit_groups)
+    #gen_file.permissions.should == int_obj.permissions
+  end
+
 end
