@@ -23,7 +23,7 @@ class IntellectualObject < ActiveFedora::Base
   validates_inclusion_of :rights, in: %w(public institution private), message: "#{:rights} is not a valid rights"
 
   def set_permissions
-    inst_pid = self.institution
+    inst_pid = self.institution.pid
     inst_admin_group = "Admin_At_#{inst_pid}"
     inst_user_group = "User_At_#{inst_pid}"
     rights = self.rights
@@ -46,7 +46,7 @@ class IntellectualObject < ActiveFedora::Base
     end
   end
 
-  :set_permisions
+  before_save :set_permissions
 
   before_destroy :check_for_associations
 
