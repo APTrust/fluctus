@@ -46,6 +46,7 @@ class IntellectualObject < ActiveFedora::Base
     end
   end
 
+  :set_permisions
 
   before_destroy :check_for_associations
 

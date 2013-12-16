@@ -44,7 +44,7 @@ describe GenericFile do
 
   it 'should copy the permissions of the intellectual object it belongs to' do
     int_obj = FactoryGirl.create(:intellectual_object)
-    int_obj.set_permissions
+    #int_obj.set_permissions
     gen_file = FactoryGirl.create(:generic_file, intellectual_object: int_obj)
     gen_file.set_permissions
     (int_obj.discover_groups.should == gen_file.discover_groups) &&

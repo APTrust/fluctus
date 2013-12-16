@@ -24,4 +24,6 @@ class GenericFile < ActiveFedora::Base
     self.edit_groups = io.edit_groups
   end
 
+  :set_permissions
+
 end
