@@ -69,47 +69,47 @@ describe IntellectualObject do
   it 'should properly set edit groups if rights are public' do
     #public_subject.set_permissions
     (public_subject.edit_groups.include?('admin') ) &&
-        (public_subject.edit_groups.include?("#{public_subject.institution}admin"))
+        (public_subject.edit_groups.include?("Admin_At_#{public_subject.institution}"))
   end
 
   it 'should properly set discover groups if rights are institutional' do
     #inst_subject.set_permissions
     (inst_subject.discover_groups.include?('admin') ) &&
-        (inst_subject.discover_groups.include?("#{inst_subject.institution}admin")) &&
-        (inst_subject.discover_groups.include?("#{inst_subject.institution}user"))
+        (inst_subject.discover_groups.include?("Admin_At_#{inst_subject.institution}")) &&
+        (inst_subject.discover_groups.include?("User_At_#{inst_subject.institution}"))
   end
 
   it 'should properly set read groups if rights are institutional' do
     #inst_subject.set_permissions
     (inst_subject.read_groups.include?('admin') ) &&
-        (inst_subject.read_groups.include?("#{inst_subject.institution}admin")) &&
-        (inst_subject.read_groups.include?("#{inst_subject.institution}user"))
+        (inst_subject.read_groups.include?("Admin_At_#{inst_subject.institution}")) &&
+        (inst_subject.read_groups.include?("User_At_#{inst_subject.institution}"))
   end
 
   it 'should properly set edit groups if rights are institutional' do
     #inst_subject.set_permissions
     (inst_subject.edit_groups.include?('admin') ) &&
-        (inst_subject.edit_groups.include?("#{inst_subject.institution}admin"))
+        (inst_subject.edit_groups.include?("Admin_At_#{inst_subject.institution}"))
   end
 
   it 'should properly set discover groups if rights are private' do
     #private_subject.set_permissions
     (private_subject.discover_groups.include?('admin') ) &&
-        (private_subject.discover_groups.include?("#{inst_subject.institution}admin")) &&
-        (private_subject.discover_groups.include?("#{inst_subject.institution}user"))
+        (private_subject.discover_groups.include?("Admin_At_#{inst_subject.institution}")) &&
+        (private_subject.discover_groups.include?("User_At_#{inst_subject.institution}"))
   end
 
   it 'should properly set read groups if rights are private' do
     #private_subject.set_permissions
     (private_subject.read_groups.include?('admin') ) &&
-        (private_subject.read_groups.include?("#{inst_subject.institution}admin")) &&
-        (private_subject.read_groups.include?("#{inst_subject.institution}user"))
+        (private_subject.read_groups.include?("Admin_At_#{inst_subject.institution}")) &&
+        (private_subject.read_groups.include?("User_At_#{inst_subject.institution}"))
   end
 
   it 'should properly set edit groups if rights are private' do
     #private_subject.set_permissions
     (private_subject.edit_groups.include?('admin') ) &&
-        (private_subject.edit_groups.include?("#{inst_subject.institution}admin"))
+        (private_subject.edit_groups.include?("Admin_At_#{inst_subject.institution}"))
   end
 
 end

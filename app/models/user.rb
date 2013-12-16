@@ -36,15 +36,19 @@ class User < ActiveRecord::Base
   # This method assigns permission groups
   def groups
     inst_pid = self.institution_pid
-    admin_group = "#{inst_pid}admin"
-    user_group = "#{inst_pid}user"
+    admin_group = "Admin_At_#{inst_pid}"
+    user_group = "User_At_#{inst_pid}"
+    groups = []
     if(self.is?('admin'))
-      %w(admin)
+      groups = %w(admin)
     elsif(self.is?('institutional_admin'))
-      [admin_group, 'institutional_admin']
+      groups = [admin_group, 'institutional_admin']
     elsif(self.is?('institutional_user'))
-      [user_group, 'institutional_user']
+      groups = [user_group, 'institutional_user']
+    else
+      groups = %w(public)
     end
+    groups
   end
 
   # Blacklight uses #to_s on youruser class to get a user-displayable 

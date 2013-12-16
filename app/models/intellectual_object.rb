@@ -24,25 +24,25 @@ class IntellectualObject < ActiveFedora::Base
 
   def set_permissions
     inst_pid = self.institution
-    inst_admin_group = "#{inst_pid}admin"
-    inst_user_group = "#{inst_pid}user"
+    inst_admin_group = "Admin_At_#{inst_pid}"
+    inst_user_group = "User_At_#{inst_pid}"
     rights = self.rights
     if rights.include?('public')
-      self.set_discover_groups(['admin', 'institutional_admin', 'institutional_user'], [])
-      self.set_read_groups(['admin', 'institutional_admin', 'institutional_user'], [])
-      self.set_edit_groups(['admin', inst_admin_group], [])
+      self.discover_groups = %w(admin institutional_admin institutional_user)
+      self.read_groups = %w(admin institutional_admin institutional_user)
+      self.edit_groups = ['admin', inst_admin_group]
     elsif rights.include?('institution')
-      self.set_discover_groups(['admin', inst_admin_group, inst_user_group], [])
-      self.set_read_groups(['admin', inst_admin_group, inst_user_group], [])
-      self.set_edit_groups(['admin', inst_admin_group], [])
+      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
+      self.read_groups = ['admin', inst_admin_group, inst_user_group]
+      self.edit_groups = ['admin', inst_admin_group]
     elsif rights.include?('private')
-      self.set_discover_groups(['admin', inst_admin_group, inst_user_group], [])
-      self.set_read_groups(['admin', inst_admin_group], [])
-      self.set_edit_groups(['admin', inst_admin_group], [])
+      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
+      self.read_groups = ['admin', inst_admin_group]
+      self.edit_groups = ['admin', inst_admin_group]
     else
-      self.set_discover_groups(['admin'], [])
-      self.set_read_groups(['admin'], [])
-      self.set_edit_groups(['admin'], [])
+      self.discover_groups = %w(admin)
+      self.read_groups = %w(admin)
+      self.edit_groups = %w(admin)
     end
   end
 

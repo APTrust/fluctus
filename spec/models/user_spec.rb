@@ -24,7 +24,7 @@ describe User do
     end
 
     it 'should return correct institution group as an institutional admin' do
-      inst_admin.groups.include?(user.institution_pid + 'admin')
+      inst_admin.groups.include?("Admin_At_#{user.institution_pid}")
     end
 
     it 'should return correct permission groups as an institutional user' do
@@ -32,7 +32,7 @@ describe User do
     end
 
     it 'should return correct institution group as an institutional user' do
-      inst_user.groups.include?(user.institution_pid + 'user')
+      inst_user.groups.include?("User_At_#{user.institution_pid}")
     end
 
   end
