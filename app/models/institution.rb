@@ -44,7 +44,7 @@ class Institution < ActiveFedora::Base
       errors[:base] << "Cannot delete #{self.name} because Intellectual Objects are associated with it"
     end
 
-    return false if !errors[:base].empty?
+    errors[:base].empty?
   end
 
 end

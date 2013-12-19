@@ -11,9 +11,7 @@ class Ability
   def admin_permissions
     if current_user.is? :admin
       can :manage, :all 
-      can :manage_user_roles, User
-      can :manage_user_institution, User
-      can :assign_admin_user, User
+      can [:manage_user_roles, :manage_user_institution, :assign_admin_user], User
     end
   end
 
