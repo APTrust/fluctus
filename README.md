@@ -45,6 +45,15 @@ rake fluctus:setup
 
 The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit history for that file before you deploy Solr in production.
 
+### Setting up Test Data
+
+There is a simple rake task to setup dummpy data in Fedora.
+
+````
+# Rake task clears the db and repository, sets up initial users and roles and then creates dummy data for models
+rake fluctus:populate_db
+````
+
 ## Heroku Instructions
 
 Note, section dropped as previous fluctus app was deleted.  Intend to rebuild this.
