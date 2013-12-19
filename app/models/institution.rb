@@ -1,5 +1,5 @@
 class Institution < ActiveFedora::Base
-  include Hydra::ModelMixins::RightsMetadata
+  include Hydra::AccessControls::Permissions
 
   # NOTE with rdf datastreams must query like so ins = Institution.where(desc_metadata__name_tesim: "APTrust")
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
@@ -7,8 +7,7 @@ class Institution < ActiveFedora::Base
 
   has_many :intellectual_objects, property: :is_part_of
 
-  delegate_to 'descMetadata', [:name], unique: true
-  delegate_to 'descMetadata', [:brief_name], unique: true
+  has_attributes :name, :brief_name, datastream: 'descMetadata', multiple: false
 
   validates :name, presence: true
   validate :name_is_unique
@@ -17,7 +16,7 @@ class Institution < ActiveFedora::Base
 
   # Return the users that belong to this institution.  Sorted by name for display purposes primarily.
   def users
-    return User.where(institution_pid: self.pid).to_a.sort_by(&:name)
+    User.where(institution_pid: self.pid).to_a.sort_by(&:name)
   end
 
   private

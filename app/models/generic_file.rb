@@ -5,8 +5,8 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  delegate_to 'descMetadata', [:uri, :size, :format, :created, :modified], unique: true
-  delegate_to 'descMetadata', [:checksum]
+  has_attributes :uri, :size, :format, :created, :modified, datastream: 'descMetadata', multiple: false
+  has_attributes :checksum, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :uri
   validates_presence_of :size

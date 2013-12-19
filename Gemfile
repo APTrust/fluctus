@@ -42,8 +42,7 @@ end
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'blacklight'
-gem 'hydra-head', '~> 6.3.0'
+gem 'hydra', '6.1.0'
 
 gem "devise"
 gem "bootstrap-sass"
@@ -62,7 +61,6 @@ group :development, :test do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem "rspec-rails"
-  gem 'rspec-mocks'
   gem 'capybara'
   gem 'factory_girl_rails'
   gem 'shoulda-matchers'
