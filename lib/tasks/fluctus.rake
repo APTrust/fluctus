@@ -1,3 +1,8 @@
+desc "Run specs"
+RSpec::Core::RakeTask.new(:rspec) do |t|
+  t.rspec_opts = ["--colour", '--profile 20']
+end
+
 namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
@@ -42,7 +47,7 @@ namespace :fluctus do
     puts "Starting Jetty"
     error = nil
     error = Jettywrapper.wrap(jetty_params) do
-        Rake::Task['spec'].invoke
+        Rake::Task['rspec'].invoke
     end
     raise "test failures: #{error}" if error
   end
