@@ -113,6 +113,7 @@ describe InstitutionsController do
 
   describe "POST create" do
     describe "with admin user" do
+      let (:attributes) { FactoryGirl.attributes_for(:institution) }
       before do
         sign_in admin_user
       end
@@ -125,8 +126,10 @@ describe InstitutionsController do
 
       it 'should accept good parameters' do
         expect {
-          post :create, institution: FactoryGirl.attributes_for(:institution)
-        }.to change(Institution, :count)
+          post :create, institution: attributes
+        }.to change(Institution, :count).by(1)
+        response.should redirect_to institution_url(assigns[:institution])
+        assigns[:institution].should be_kind_of Institution
       end
     end
   end
