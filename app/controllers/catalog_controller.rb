@@ -17,8 +17,4 @@ class CatalogController < ApplicationController
   # This filters out objects that you want to exclude from search results, like FileAssets
   CatalogController.solr_search_params_logic += [:exclude_unwanted_models]
 
-  # Added by APTrust.  Filter results based on User's insitutional affilation.  Superusers
-  # are not constrained in the same way, however.
-  #CatalogController.solr_search_params_logic += [:filter_on_institution]
-
 end
