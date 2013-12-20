@@ -4,6 +4,7 @@ class GenericFile < ActiveFedora::Base
   has_metadata "premisEvents", type: PremisEventsMetadata
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
   include Hydra::ModelMixins::RightsMetadata
+  #include Hydra::AccessControls::Permissions //Eventually the ModelMixins is going to go away and you'll switch to this
 
   belongs_to :intellectual_object, property: :is_part_of
 

@@ -1,5 +1,6 @@
 class Institution < ActiveFedora::Base
   include Hydra::ModelMixins::RightsMetadata
+  #include Hydra::AccessControls::Permissions //Eventually the ModelMixins is going to go away and you'll switch to this
 
   # NOTE with rdf datastreams must query like so ins = Institution.where(desc_metadata__name_tesim: "APTrust")
   has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata

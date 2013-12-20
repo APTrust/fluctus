@@ -6,6 +6,7 @@ class IntellectualObject < ActiveFedora::Base
   has_metadata "descMetadata", type: IntellectualObjectMetadata
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
   include Hydra::ModelMixins::RightsMetadata
+  #include Hydra::AccessControls::Permissions //Eventually the ModelMixins is going to go away and you'll switch to this
   include Aptrust::SolrHelper
 
   belongs_to :institution, property: :is_part_of
