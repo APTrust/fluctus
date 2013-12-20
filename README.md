@@ -58,11 +58,9 @@ rake fluctus:populate_db
 
 Note, section dropped as previous fluctus app was deleted.  Intend to rebuild this.
 
-# Querying RDF Datastreams
+# Notes on Queries
 
-We are making significant use of RDF Datastreams throughout the application.  Querying
-of these is different than traditional rails like model queries and follows a paradim
-more similar to earlier rails model queries.
+Most quieries are best carried out through the solr index in the formate below.
 
 The format is as follows::
 
