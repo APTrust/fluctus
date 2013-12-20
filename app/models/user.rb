@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   validates_inclusion_of :institution_pid, in: -> (institution) {Institution.all.map(&:pid)}
 
   # Custom format validations.  See app/validators
-  validates :name, person_name_format: true
+  validates :name, person_name_format: true, if: ->{ name.present? }
   validates :email, email: true
 
   # Handle and normalize phone numbers
@@ -65,18 +65,19 @@ class User < ActiveRecord::Base
     self.roles.pluck(:name).include?(role.to_s)
   end
 
+  def institutional_admin?
+    is? 'institutional_admin'
+  end
+
   # Since an Institution is an ActiveFedora Object, these two objects cannot be related as normal (i.e. belongs_to)
-  # They will be connected through the Institution.name which should be unique.
-  #
-  # Given that Institutions have their descMetadata stored as RDF and ActiveFedora indexes that content with a 
-  # datastream prefix, a traditional 'name' attribute cannot be searched upon.  Instead the entire solr field
-  # must be used in a #where method call.
+  # They will be connected through the User.institution_pid.
   def institution
-    Institution.where(pid: self.institution_pid).first
+    @institution ||= Institution.find(self.institution_pid)
   end
 
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
-  # which is not bundled with this app.  hydra-roles-management gem requires a guest boolean, so we must provide it here.
+  # which is not bundled with this app.  hydra-role-management gem requires a guest boolean, so we must provide it here.
+  # This will be fixed in hydra-role-management 0.1.1
   def guest?
     false
   end

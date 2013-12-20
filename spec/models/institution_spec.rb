@@ -27,12 +27,6 @@ describe Institution do
     end
   end
 
-  describe '#where behavior when using RDF' do
-    it 'should return a valid Institution object' do 
-      Institution.where(pid: i.pid).count.should == 1
-    end
-  end
-
   describe "#name_is_unique" do
     it { should validate_uniqueness_of(:name) }
   end
