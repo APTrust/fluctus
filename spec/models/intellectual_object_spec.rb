@@ -2,6 +2,7 @@
 #  `rails generate active_fedora::model IntellectualObject`
 require 'spec_helper'
 require 'active_fedora/test_support'
+include Aptrust::SolrHelper
 
 describe IntellectualObject do
 
@@ -68,48 +69,55 @@ describe IntellectualObject do
 
   it 'should properly set edit groups if rights are public' do
     #public_subject.set_permissions
+    inst_pid = clean_for_solr(public_subject.institution.pid)
     (public_subject.edit_groups.include?('admin') ) &&
-        (public_subject.edit_groups.include?("Admin_At_#{public_subject.institution}"))
+        (public_subject.edit_groups.include?("Admin_At_#{inst_pid}"))
   end
 
   it 'should properly set discover groups if rights are institutional' do
     #inst_subject.set_permissions
+    inst_pid = clean_for_solr(inst_subject.institution.pid)
     (inst_subject.discover_groups.include?('admin') ) &&
-        (inst_subject.discover_groups.include?("Admin_At_#{inst_subject.institution}")) &&
-        (inst_subject.discover_groups.include?("User_At_#{inst_subject.institution}"))
+        (inst_subject.discover_groups.include?("Admin_At_#{inst_pid}")) &&
+        (inst_subject.discover_groups.include?("User_At_#{inst_pid}"))
   end
 
   it 'should properly set read groups if rights are institutional' do
     #inst_subject.set_permissions
+    inst_pid = clean_for_solr(inst_subject.institution.pid)
     (inst_subject.read_groups.include?('admin') ) &&
-        (inst_subject.read_groups.include?("Admin_At_#{inst_subject.institution}")) &&
-        (inst_subject.read_groups.include?("User_At_#{inst_subject.institution}"))
+        (inst_subject.read_groups.include?("Admin_At_#{inst_pid}")) &&
+        (inst_subject.read_groups.include?("User_At_#{inst_pid}"))
   end
 
   it 'should properly set edit groups if rights are institutional' do
     #inst_subject.set_permissions
+    inst_pid = clean_for_solr(inst_subject.institution.pid)
     (inst_subject.edit_groups.include?('admin') ) &&
-        (inst_subject.edit_groups.include?("Admin_At_#{inst_subject.institution}"))
+        (inst_subject.edit_groups.include?("Admin_At_#{inst_pid}"))
   end
 
   it 'should properly set discover groups if rights are private' do
     #private_subject.set_permissions
+    inst_pid = clean_for_solr(private_subject.institution.pid)
     (private_subject.discover_groups.include?('admin') ) &&
-        (private_subject.discover_groups.include?("Admin_At_#{inst_subject.institution}")) &&
-        (private_subject.discover_groups.include?("User_At_#{inst_subject.institution}"))
+        (private_subject.discover_groups.include?("Admin_At_#{inst_pid}")) &&
+        (private_subject.discover_groups.include?("User_At_#{inst_pid}"))
   end
 
   it 'should properly set read groups if rights are private' do
     #private_subject.set_permissions
+    inst_pid = clean_for_solr(private_subject.institution.pid)
     (private_subject.read_groups.include?('admin') ) &&
-        (private_subject.read_groups.include?("Admin_At_#{inst_subject.institution}")) &&
-        (private_subject.read_groups.include?("User_At_#{inst_subject.institution}"))
+        (private_subject.read_groups.include?("Admin_At_#{inst_pid}")) &&
+        (private_subject.read_groups.include?("User_At_#{inst_pid}"))
   end
 
   it 'should properly set edit groups if rights are private' do
     #private_subject.set_permissions
+    inst_pid = clean_for_solr(private_subject.institution.pid)
     (private_subject.edit_groups.include?('admin') ) &&
-        (private_subject.edit_groups.include?("Admin_At_#{inst_subject.institution}"))
+        (private_subject.edit_groups.include?("Admin_At_#{inst_pid}"))
   end
 
 end

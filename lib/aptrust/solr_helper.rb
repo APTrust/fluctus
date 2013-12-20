@@ -6,5 +6,13 @@ module Aptrust
         solr_parameters[:fq] << "+#{Solrizer.solr_name("is_part_of", :symbol)}:\"info:fedora/#{current_user.institution.pid}\""
       end
     end
+
+    def clean_for_solr(myString)
+      if myString.nil?
+        return nil
+      else
+        cleanString = myString.gsub(/:/,"_")
+      end
+    end
   end
 end

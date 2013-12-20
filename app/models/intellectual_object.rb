@@ -6,6 +6,7 @@ class IntellectualObject < ActiveFedora::Base
   has_metadata "descMetadata", type: IntellectualObjectMetadata
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
   include Hydra::ModelMixins::RightsMetadata
+  include Aptrust::SolrHelper
 
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
@@ -23,7 +24,7 @@ class IntellectualObject < ActiveFedora::Base
   validates_inclusion_of :rights, in: %w(public institution private), message: "#{:rights} is not a valid rights"
 
   def set_permissions
-    inst_pid = self.institution.pid
+    inst_pid = clean_for_solr(self.institution.pid)
     inst_admin_group = "Admin_At_#{inst_pid}"
     inst_user_group = "User_At_#{inst_pid}"
     rights = self.rights

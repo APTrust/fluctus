@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
 
   # Connects this user object to Blacklights Bookmarks. 
   include Blacklight::User
+  include Aptrust::SolrHelper
   
   # Connects this user object to Role-management behaviors. 
   include Hydra::RoleManagement::UserRoles
@@ -35,7 +36,7 @@ class User < ActiveRecord::Base
 
   # This method assigns permission groups
   def groups
-    inst_pid = self.institution_pid
+    inst_pid = clean_for_solr(self.institution_pid)
     admin_group = "Admin_At_#{inst_pid}"
     user_group = "User_At_#{inst_pid}"
     groups = []

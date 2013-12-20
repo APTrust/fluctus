@@ -19,6 +19,6 @@ class CatalogController < ApplicationController
 
   # Added by APTrust.  Filter results based on User's insitutional affilation.  Superusers
   # are not constrained in the same way, however.
-  CatalogController.solr_search_params_logic += [:filter_on_institution]
+  #CatalogController.solr_search_params_logic += [:filter_on_institution]
 
 end
