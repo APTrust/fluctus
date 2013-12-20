@@ -3,13 +3,12 @@ class GenericFile < ActiveFedora::Base
   has_metadata "descMetadata", type: GenericFileMetadata
   has_metadata "premisEvents", type: PremisEventsMetadata
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
-  include Hydra::ModelMixins::RightsMetadata
-  #include Hydra::AccessControls::Permissions //Eventually the ModelMixins is going to go away and you'll switch to this
+  include Hydra::AccessControls::Permissions
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  delegate_to 'descMetadata', [:uri, :size, :format, :created, :modified], unique: true
-  delegate_to 'descMetadata', [:checksum]
+  has_attributes :uri, :size, :format, :created, :modified, datastream: 'descMetadata', multiple: false
+  has_attributes :checksum, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :uri
   validates_presence_of :size

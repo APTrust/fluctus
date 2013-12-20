@@ -12,71 +12,51 @@ Development | [![Build Status (Development)](https://travis-ci.org/APTrust/fluct
 This application aims to use the entire Hydra stack to manage all APTrust interactions with Fedora.  
 
 ### Requirements
-* Ruby 2.0.0
-* Rails 4.0.0
-* hydra-head 6.3.4
+
+See 'fluctus/Gemfile' for a full list of current dependencies.
+
+Overall Fluctus targets the following versions or later
+
+* Ruby >= 2.0.0
+* Rails >= 4.0.0
+* hydra-head >= 6.3.4
 
 ## Setup Instructions
-* Setup APTrust Institution object
+
+For development we follow the typical setup defined in the
+[Tutorial: Dive Into Hydra](https://github.com/projecthydra/hydra/wiki/Dive-into-Hydra)
+which should include the setup of a Jetty Wrapper to run Fedora and Hydra.
+
+### Additional Configuration
+
+We use the figaro gem for additional application configuration through 'fluctus/config/application.yml' which is added
+to the .gitignore file by default.  You will need to copy 'fluctus/config/application.yml.local' to
+'fluctus/config/application.yml' and setup values as appropriate.
+
+
+* Setup APTrust Institution object and Roles
 
 ````
-# Write institution to variable for use later
-i = Institution.create!(name: "APTrust")
-````
-
-* Setup Fluctus Roles
-
-````
-['admin', 'institutional_admin', 'institutional_user'].each do |role|
-  Role.create!(name: role)
-end
-````
-
-      
-* Setup First User Account with <strong>your</strong> Google Email.
-
-````
-User.create!(name: <your name>, email: <your Google Email>, phone_number: <Your phone number>, institution_pid: i.pid, role_ids: [Role.first.id])
+# rake task to setup initial insitutions, roles and a default aptrust_admin user.
+rake fluctus:setup
 ````
 
 * Use Proper Solr Configuration
 
 The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit history for that file before you deploy Solr in production.
 
+### Setting up Test Data
+
+There is a simple rake task to setup dummpy data in Fedora.
+
+````
+# Rake task clears the db and repository, sets up initial users and roles and then creates dummy data for models
+rake fluctus:populate_db
+````
+
 ## Heroku Instructions
-[Fluctus on Heroku](http://fluctus.herokuapp.com)
 
-Your Google email address must be added to the DB on heroku by APTrust staff, so contact them if you need to be added.  Otherwise, you will not be an authorized user and will be denied total access to the application.
-
-### Developers
-To setup your own Heroku hosted version:
-
-* Push latest version of master
-
-````
-git push heroku master
-````
-* Update database to ensure DB is up to date.
-
-````
-heroku run rake db:migrate
-````
-* Ensure configuration parameters are up to date on Heroku.  config/application.yml must be present in your local app and have your secret configuration parameters.
-
-````
-rake figaro:heroku
-````
-* Restart application
-
-````
-heroku restart
-````
-* Open application
-
-````
-heroku open
-````
-* Follow setup instructions as above.
+Note, section dropped as previous fluctus app was deleted.  Intend to rebuild this.
 
 # Querying RDF Datastreams
 

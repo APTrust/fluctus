@@ -14,31 +14,21 @@ describe Institution do
   end
 
   describe "#users" do
-    before do
-      @user =  FactoryGirl.create(:user, institution_pid: i.pid) 
-    end
-
-    it "should return an array of users" do 
-      i.users.class.should == [].class
-    end
+    let!(:user) { FactoryGirl.create(:user, institution_pid: i.pid)  }
 
     it "should contain the appropriate User" do
-      i.users.should include(@user)
-    end
-
-    it 'should only contain one user' do 
-      i.users.count.should == 1
+      i.users.should eq [user]
     end
 
     it 'should return users sorted by name' do
-      @user1 = FactoryGirl.create(:user, name: "Zeke", institution_pid: i.pid) 
-      @user2 =  FactoryGirl.create(:user, name: "Andrew", institution_pid: i.pid) 
-      i.users.index(@user1).should > i.users.index(@user2)
+      user1 = FactoryGirl.create(:user, name: "Zeke", institution_pid: i.pid) 
+      user2 =  FactoryGirl.create(:user, name: "Andrew", institution_pid: i.pid) 
+      i.users.index(user1).should > i.users.index(user2)
     end
   end
 
   describe '#where behavior when using RDF' do
-    it 'should return a vailid Institution object' do 
+    it 'should return a valid Institution object' do 
       Institution.where(pid: i.pid).count.should == 1
     end
   end
@@ -47,16 +37,17 @@ describe Institution do
     it { should validate_uniqueness_of(:name) }
   end
 
-  describe "#check_for_association" do 
-    it 'should not delete if a user is associated' do 
+  describe "deleting should be blocked" do 
+    it 'if a user is associated' do 
       user = FactoryGirl.create(:user, institution_pid: i.pid)
       i.destroy.should be_false
-      user.destroy
+      expect(Institution.exists?(i.pid)).to be_true
     end
 
-    it 'should not delete if a intellectual object is associated' do
+    it 'if an intellectual object is associated' do
       item = FactoryGirl.create(:intellectual_object, institution: i)
       i.destroy.should be_false
+      expect(Institution.exists?(i.pid)).to be_true
       item.destroy
     end
   end

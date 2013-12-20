@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.0.0'
+gem 'rails', '4.0.2'
 ruby '2.0.0'
 
 # Use SCSS for stylesheets
@@ -42,14 +42,13 @@ end
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'blacklight'
-gem 'hydra-head', '~> 6.3.0'
+gem 'hydra', '6.1.0'
 
 gem "devise"
 gem "bootstrap-sass"
 gem 'figaro'
 gem 'omniauth-google-oauth2'
-gem 'simple_form', '~> 3.0.0.rc'
+gem 'simple_form', '~> 3.0.1'
 gem "hydra-role-management", "~> 0.1.0"
 gem 'phony_rails'
 gem 'inherited_resources'
@@ -60,9 +59,7 @@ gem 'aws-s3'
 group :development, :test do
   gem 'meta_request'
   gem 'better_errors'
-  gem 'binding_of_caller'
   gem "rspec-rails"
-  gem 'rspec-mocks'
   gem 'capybara'
   gem 'factory_girl_rails'
   gem 'shoulda-matchers'
@@ -70,7 +67,6 @@ group :development, :test do
   gem "jettywrapper"
   gem 'sqlite3'
   gem 'quiet_assets'
-  gem 'selenium-webdriver'
   gem 'coveralls', require: false
 end
 
