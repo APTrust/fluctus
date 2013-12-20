@@ -36,20 +36,17 @@ class User < ActiveRecord::Base
 
   # This method assigns permission groups
   def groups
-    inst_pid = clean_for_solr(self.institution_pid)
-    admin_group = "Admin_At_#{inst_pid}"
-    user_group = "User_At_#{inst_pid}"
-    groups = []
-    if(self.is?('admin'))
-      groups = %w(admin)
-    elsif(self.is?('institutional_admin'))
-      groups = [admin_group, 'institutional_admin']
-    elsif(self.is?('institutional_user'))
-      groups = [user_group, 'institutional_user']
+    super + institution_groups
+  end
+
+  def institution_groups
+    if institutional_admin?
+      ["Admin_At_#{institution_group_suffix}"]
+    elsif institutional_user?
+      ["User_At_#{institution_group_suffix}"]
     else
-      groups = %w(public)
+      []
     end
-    groups
   end
 
   # Blacklight uses #to_s on youruser class to get a user-displayable 
@@ -57,7 +54,7 @@ class User < ActiveRecord::Base
   #
   # Method modified from the Blacklight default.
   def to_s
-    name.nil? ? email : name
+    name || email
   end
 
   # Roles are managed through the hydra-role-management gem.
@@ -65,14 +62,27 @@ class User < ActiveRecord::Base
     self.roles.pluck(:name).include?(role.to_s)
   end
 
+  def admin?
+    is? 'admin'
+  end
+
   def institutional_admin?
     is? 'institutional_admin'
   end
+
+  def institutional_user?
+    is? 'institutional_user'
+  end
+
 
   # Since an Institution is an ActiveFedora Object, these two objects cannot be related as normal (i.e. belongs_to)
   # They will be connected through the User.institution_pid.
   def institution
     @institution ||= Institution.find(self.institution_pid)
+  end
+
+  def institution_group_suffix
+    clean_for_solr(institution_pid)
   end
 
   # Guest users are disabled in this application.  The default Blacklight installation includes the gem devise-guests
@@ -86,13 +96,8 @@ class User < ActiveRecord::Base
   # not found, a new User with no attributes is created.  This is necessary to disable the creation of
   # unauthorized users.
   def self.find_for_google_oauth2(access_token, signed_in_resource=nil)
-    data = access_token.info
-    user = User.where(:email => data["email"]).first
-
-    unless user
-      # Return a new user rather than create one since Users should not be able to create their own accounts.
-      user = User.new
-    end
-    user
+    email = access_token.info["email"]
+    # Return a new user rather than create one since Users should not be able to create their own accounts.
+    User.where(email: email).first || User.new
   end
 end
