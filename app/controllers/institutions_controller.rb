@@ -24,7 +24,7 @@ class InstitutionsController < ApplicationController
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def institution_params
-      params.require(:institution).permit(:name)
+    def build_resource_params
+      [params.require(:institution).permit(:name)]
     end
 end

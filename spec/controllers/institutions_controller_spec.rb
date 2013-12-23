@@ -121,7 +121,7 @@ describe InstitutionsController do
       it "should reject no parameters" do
         expect {
           post :create, {}
-        }.to_not change(Institution, :count)
+        }.to raise_error ActionController::ParameterMissing
       end
 
       it 'should accept good parameters' do

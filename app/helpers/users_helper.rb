@@ -5,4 +5,12 @@ module UsersHelper
     gravatar_url = "https://secure.gravatar.com/avatar/#{gravatar_id}?s=#{options[:size]}"
     image_tag(gravatar_url, alt: user.name, class: "gravatar")
   end
+
+  # Returns a list of roles we have permission to assign
+  def roles_for_select
+     Role.all.select {|role| can? :add_user, role }.sort.map {|r| [r.name.titleize, r.id] }
+  end
+  def institutions_for_select
+     Institution.all.select {|institution| can? :add_user, institution }
+  end
 end

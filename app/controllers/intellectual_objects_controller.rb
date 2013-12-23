@@ -12,7 +12,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def intellectual_object_params
-    params[:intellectual_object]
+  def build_resource_params
+    [params[:intellectual_object]]
   end
 end

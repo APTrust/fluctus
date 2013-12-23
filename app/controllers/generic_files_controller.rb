@@ -7,7 +7,7 @@ class GenericFilesController < ApplicationController
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def generic_file_params
-    params[:generic_file]
+  def build_resource_params
+    [params[:generic_file]]
   end
 end

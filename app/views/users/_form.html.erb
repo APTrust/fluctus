@@ -6,19 +6,9 @@
     <%= f.input :email %>    
     <%= f.input :phone_number %>
     
-    <% if can? :manage_user_institution, User %>
-      <%= f.input :institution_pid, collection: Institution.all.map {|i| [i.name, i.pid] }, as: :select, label: "Institution" %>
-    <% else %>
-      <%= f.input :institution_pid, collection: [current_user.institution.name], as: :select, include_blank: false, label: "Institution" %>
-    <% end %>
+    <%= f.input :institution_pid, collection: institutions_for_select, as: :select, label: "Institution" %>
 
-    <% if can? :manage_user_roles, User %>
-      <% if can? :assign_admin_user, User %>
-        <%= f.association :roles, collection: Role.all.sort.map {|r| [r.name.titleize, r.id] }, as: :check_boxes %>
-      <% else %>
-        <%= f.association :roles, collection: Role.all.where('name is not "admin"').sort.map { |r| [r.name.titleize, r.id] }, as: :check_boxes %>
-      <% end %>
-    <% end %>
+    <%= f.association :roles, collection: roles_for_select, as: :check_boxes %>
   </div>
 
   <div class="form-actions">
