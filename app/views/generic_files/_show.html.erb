@@ -30,25 +30,4 @@
   </dl>
 </div>
 
-<div class="auditinfo">
-  <h3>Object Audit Events</h3>
-  <% @generic_file.premisEvents.events.each do |event| %>
-    <h4><%= event.date_time.first %></h4>
-      <dl class="dl-horizontal dl-invert">
-          <dt>Type</dt>
-          <dd><%= event.type.first %></dd>
-          <dt>Detail</dt>
-          <dd><%= event.detail.first %></dd>
-          <dt>Outcome</dt>
-          <dd><%= event.outcome.first %></dd>
-          <dt>Outcome Detail</dt>
-          <dd><%= event.outcome_detail.first %></dd>
-          <dt>Outcome Information</dt>
-          <dd><%= event.outcome_information.first %></dd>
-          <dt>Object</dt>
-          <dd><%= event.object.first %></dd>
-          <dt>Agent</dt>
-          <dd><%= event.agent.first %></dd>
-          </dl>
-  <% end %>
-</div>
+<%= render 'premis_events' %>

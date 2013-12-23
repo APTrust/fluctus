@@ -2,7 +2,11 @@ class GenericFilesController < ApplicationController
   load_and_authorize_resource
   before_filter :authenticate_user!
 
-  actions :show, :edit, :update
+  actions :edit, :update
+
+  def show
+    @events = Kaminari.paginate_array(@generic_file.premisEvents.events).page(params[:page]).per(10)
+  end
 
   private
 

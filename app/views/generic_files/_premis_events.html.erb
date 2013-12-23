@@ -1,0 +1,43 @@
+<div class="auditinfo">
+  <h3>Object Audit Events</h3>
+
+  <% if !@events.empty? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Type</th>
+          <th>Outcome</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @events.each do |event| %>
+          <tr>
+            <td> <%= event.date_time.first %> </td>
+            <td> <%= event.type.first %> </td>
+  
+            <td>
+              <dl class="dl-horizontal dl-invert">
+                <dt>Detail</dt>
+                <dd><%= event.detail.first %></dd>
+                <dt>Outcome</dt>
+                <dd><%= event.outcome.first %></dd>
+                <dt>Outcome Detail</dt>
+                <dd><%= event.outcome_detail.first %></dd>
+                <dt>Outcome Information</dt>
+                <dd><%= event.outcome_information.first %></dd>
+              </dl>
+            </td>
+  
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= paginate @events %>
+
+  <% else %>
+    <p> There are no audit events. </p>
+  <% end %>
+
+</div>
