@@ -4,7 +4,7 @@
 
 <ul class="nav nav-tabs">
   <li><a href="#summary" data-toggle="tab">Summary</a></li>
-  <li><a href="#objects" data-toggle="tab">Objects</a></li>
+  <li><%= link_to 'Objects', institution_intellectual_objects_path(@institution) %></li>
   <li><a href="#users" data-toggle="tab">Users</a></li>
 </ul>
 
@@ -19,29 +19,6 @@
 
     <%= render "shared/resque_jobs" %>
 
-  </div>
-
-  <div class="tab-pane" id="objects">
-    <table class="table table-condensed">
-      <h3>50 Most Recent Objects</h3>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @institution.intellectual_objects.each do |intellectual_object| %>
-          <tr>
-            <td><%= intellectual_object.title %></td>
-            <td>
-              <%= show_link(intellectual_object) %>
-              <%= edit_link(intellectual_object) %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
   </div>
 
   <div class="tab-pane" id="users">

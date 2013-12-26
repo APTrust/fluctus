@@ -79,6 +79,9 @@ class User < ActiveRecord::Base
   # They will be connected through the User.institution_pid.
   def institution
     @institution ||= Institution.find(self.institution_pid)
+  rescue ActiveFedora::ObjectNotFoundError => e
+    logger.warn "#{self.institution_pid} is set as the institution for #{self}, but it doesn't exist"
+    @institution = NilInstitution.new
   end
 
   def institution_group_suffix
@@ -99,5 +102,27 @@ class User < ActiveRecord::Base
     email = access_token.info["email"]
     # Return a new user rather than create one since Users should not be able to create their own accounts.
     User.where(email: email).first || User.new
+  end
+
+  class NilInstitution
+    def name
+      "Deleted Institution"
+    end
+
+    def to_param
+      'deleted'
+    end
+
+    def brief_name
+      "Deleted Institution"
+    end
+
+    def users
+      []
+    end
+
+    def intellectual_objects
+      []
+    end
   end
 end

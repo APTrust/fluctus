@@ -1,18 +1,45 @@
 class IntellectualObjectsController < ApplicationController
-  load_and_authorize_resource
   before_filter :authenticate_user!
-  before_action :set_intellectual_object, only: [:show, :edit, :update]
+  load_and_authorize_resource
 
-  actions :show, :edit, :update
+  include Blacklight::Catalog
+  include Hydra::Controller::ControllerBehavior
+
+  # These before_filters apply the hydra access controls
+  before_filter :enforce_show_permissions, only: :show
+
+  copy_blacklight_config_from CatalogController
+  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+  self.solr_search_params_logic += [:only_intellectual_objects]
+  self.solr_search_params_logic += [:for_selected_institution]
+
+
+  # actions :show, :edit, :update
+
 
   private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_intellectual_object
-    @intellectual_object = IntellectualObject.find(params[:id])
+
+  # Limits search results just to IntellectualObjects
+  # @param solr_parameters the current solr parameters
+  # @param user_parameters the current user-submitted parameters
+  def only_intellectual_objects(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(has_model: IntellectualObject.to_class_uri)
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def build_resource_params
-    [params[:intellectual_object]]
+  def for_selected_institution(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{params[:institution_id]}")
   end
+
+
+  # Overridden so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
+  def search_action_url options = {}
+    institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
+  end
+
+  # # Never trust parameters from the scary internet, only allow the white list through.
+  # def build_resource_params
+  #   [params[:intellectual_object]]
+  # end
 end

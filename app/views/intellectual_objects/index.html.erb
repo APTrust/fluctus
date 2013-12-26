@@ -1,0 +1,27 @@
+<div id="sidebar" class="span3">
+ <%= render 'search_sidebar' %>
+</div>
+
+<div id="content" class="span9">
+
+<h2 class="top-content-title">Objects for <%= params[:institution_id] %></h2>
+
+  <%= render 'did_you_mean' %>
+
+  <%= render 'constraints' %>
+
+  <%= render 'sort_and_per_page' %>
+
+  <h2 class="hide-text"><%= t('blacklight.search.search_results') %></h2>
+
+  <%- if response_has_no_search_results? %>
+    <%= render "zero_results" %>
+  <%- elsif render_grouped_response? %>
+    <%= render_grouped_document_index %>
+  <%- else %>
+    <%= render_document_index %>
+  <%- end %>
+
+  <%= render 'results_pagination' %>
+
+</div>
