@@ -3,10 +3,11 @@
 
 require File.expand_path('../config/application', __FILE__)
 
+Fluctus::Application.load_tasks
+
 # Get rid of the default task (was spec)
 task :default => []; Rake::Task[:default].clear
 
 task :ci => ['jetty:clean', 'fluctus:travis']
 task :default => [:ci]
 
-Fluctus::Application.load_tasks
