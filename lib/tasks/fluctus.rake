@@ -1,5 +1,5 @@
 desc "Run specs"
-RSpec::Core::RakeTask.new(:rspec) do |t|
+RSpec::Core::RakeTask.new(:rspec => 'test:prepare') do |t|
   t.rspec_opts = ["--colour", '--profile 20']
 end
 
