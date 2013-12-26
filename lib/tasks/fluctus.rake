@@ -88,11 +88,10 @@ namespace :fluctus do
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
         ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
-        item.save!
         numFiles = rand(3..30)
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
-          f = FactoryGirl.create(:generic_file, intellectual_object: item)
+          f = FactoryGirl.build(:generic_file, intellectual_object: item)
           # crappy hack here but I'm running out of time. Create some descMetadata for them.
           format = [
               {ext: "txt", type: "plain/text"},
