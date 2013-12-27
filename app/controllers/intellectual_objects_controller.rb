@@ -4,6 +4,7 @@ class IntellectualObjectsController < ApplicationController
 
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
+  include RecordsControllerBehavior
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, only: :show
@@ -14,8 +15,10 @@ class IntellectualObjectsController < ApplicationController
   self.solr_search_params_logic += [:for_selected_institution]
 
 
-  # actions :show, :edit, :update
-
+  # Override Hydra-editor to redirect to an alternate location after create
+  def redirect_after_update
+    intellectual_object_path(@record)
+  end
 
   private
 
@@ -33,7 +36,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
 
-  # Overridden so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
+  # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
   def search_action_url options = {}
     institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
   end

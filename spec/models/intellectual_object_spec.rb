@@ -43,6 +43,10 @@ describe IntellectualObject do
       subject.identifier.should == [exp]
     end
 
+    it "should have terms_for_editing" do
+      expect(subject.terms_for_editing).to eq [:title, :description]
+    end
+
     describe "#to_solr" do
       subject { FactoryGirl.build(:institutional_intellectual_object) }
       before do

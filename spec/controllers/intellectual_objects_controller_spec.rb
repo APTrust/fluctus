@@ -94,4 +94,36 @@ describe IntellectualObjectsController do
       end
     end
   end
+
+  describe "update an object" do
+    after { obj1.destroy }
+
+    describe "when not signed in" do
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      it "should redirect to login" do
+        patch :update, id: obj1, intellectual_object: {title: 'Foo' }
+        expect(response).to redirect_to root_url
+      end
+    end
+
+
+    describe "when signed in" do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
+      before { sign_in user }
+        
+      it "should update fields" do
+        patch :update, id: obj1, intellectual_object: {title: 'Foo'}
+        expect(response).to redirect_to intellectual_object_path(obj1)
+        expect(assigns(:intellectual_object).title).to eq 'Foo'
+      end
+
+      it "should update via json" do
+        patch :update, id: obj1, intellectual_object: {title: 'Foo'}, format: 'json'
+        expect(response).to be_successful
+        expect(assigns(:intellectual_object).title).to eq 'Foo'
+      end
+    end
+
+  end
 end

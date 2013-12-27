@@ -154,6 +154,10 @@ GEM
       hydra-access-controls (= 6.4.1)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
+    hydra-editor (0.1.1)
+      active-fedora (>= 6.3.0)
+      bootstrap_forms
+      rails (>= 3.2.13, < 5.0)
     hydra-head (6.4.1)
       hydra-access-controls (= 6.4.1)
       hydra-core (= 6.4.1)
@@ -373,6 +377,7 @@ DEPENDENCIES
   faker!
   figaro
   hydra (= 6.1.0)
+  hydra-editor
   hydra-role-management (~> 0.1.0)
   inherited_resources
   jbuilder (~> 1.2)

@@ -42,6 +42,7 @@ end
 # gem 'debugger', group: [:development, :test]
 
 gem 'hydra', '6.1.0'
+gem 'hydra-editor'
 
 gem "devise"
 gem "bootstrap-sass"
@@ -55,17 +56,22 @@ gem 'inherited_resources'
 # S3 connector
 gem 'aws-s3'
 
-group :development, :test do
+group :development do
   gem 'meta_request'
   gem 'better_errors'
-  gem "rspec-rails"
-  gem 'capybara'
+end
+group :development, :test do
   gem 'factory_girl_rails'
-  gem 'shoulda-matchers'
   gem 'faker', github: 'stympy/faker'
   gem "jettywrapper"
   gem 'sqlite3'
   gem 'quiet_assets'
+  gem "rspec-rails"
+end
+
+group :test do
+  gem 'capybara'
+  gem 'shoulda-matchers'
   gem 'coveralls', require: false
 end
 

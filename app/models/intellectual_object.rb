@@ -47,6 +47,10 @@ class IntellectualObject < ActiveFedora::Base
 
   before_destroy :check_for_associations
 
+  def terms_for_editing
+    [:title, :description]
+  end
+
   def to_solr(solr_doc=Hash.new)
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
