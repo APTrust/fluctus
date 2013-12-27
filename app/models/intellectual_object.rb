@@ -48,23 +48,21 @@ class IntellectualObject < ActiveFedora::Base
   before_destroy :check_for_associations
 
   def to_solr(solr_doc=Hash.new)
-    super(solr_doc)
-    solr_doc[ActiveFedora::SolrService.solr_name('institution_name', :stored_searchable)] = self.institution.name
-    solr_doc[ActiveFedora::SolrService.solr_name('institution_name', :facetable)] = self.institution.name
-    solr_doc[ActiveFedora::SolrService.solr_name('title', :stored_searchable)] = self.title
-    solr_doc[ActiveFedora::SolrService.solr_name('rights', :facetable)] = self.rights
-    solr_doc[ActiveFedora::SolrService.solr_name('original_pid', :stored_searchable)] = self.identifier
-    return solr_doc
-  end
-
-  def check_for_associations
-    # Check for related GenericFiles
-
-    if self.generic_files.count != 0
-      errors[:base] << "Cannot delete #{self.pid} because Generic Files are associated with it"
+    super(solr_doc).tap do |doc|
+      Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
     end
-
-    return false if !errors[:base].empty?
   end
+
+  private
+
+    def check_for_associations
+      # Check for related GenericFiles
+
+      if self.generic_files.count != 0
+        errors[:base] << "Cannot delete #{self.pid} because Generic Files are associated with it"
+      end
+
+      errors[:base].empty?
+    end
 
 end

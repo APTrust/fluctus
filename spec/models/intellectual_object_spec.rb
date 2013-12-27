@@ -1,11 +1,10 @@
-# Generated via
-#  `rails generate active_fedora::model IntellectualObject`
 require 'spec_helper'
-require 'active_fedora/test_support'
 include Aptrust::SolrHelper
 
 describe IntellectualObject do
-
+  before(:all) do
+    IntellectualObject.destroy_all
+  end
 
   it { should validate_presence_of(:title) }
   it { should validate_presence_of(:identifier) }
@@ -42,6 +41,21 @@ describe IntellectualObject do
       exp = SecureRandom.uuid
       subject.identifier = exp
       subject.identifier.should == [exp]
+    end
+
+    describe "#to_solr" do
+      subject { FactoryGirl.build(:institutional_intellectual_object) }
+      let(:solr_doc) { subject.to_solr }
+      it "should have fields" do
+        solr_doc['institution_name_ssi'].should == subject.institution.name 
+        solr_doc['is_part_of_ssim'].should == subject.institution.internal_uri
+        # Searchable
+        solr_doc['desc_metadata__title_tesim'].should == [subject.title]
+        # sortable
+        solr_doc['desc_metadata__title_si'].should == subject.title
+        solr_doc['desc_metadata__identifier_tesim'].should == subject.identifier
+        solr_doc['desc_metadata__description_tesim'].should == subject.description
+      end
     end
   end
 

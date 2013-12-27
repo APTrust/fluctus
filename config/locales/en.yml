@@ -27,3 +27,7 @@ en:
       manage_users: "Manage Users"
       new_institution: "New Institution"
       new_user: "New User"
+    search:
+      pagination_info:
+        single_item_found: '<strong>1</strong> result found'
+        
