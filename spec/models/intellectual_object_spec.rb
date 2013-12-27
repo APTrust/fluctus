@@ -45,6 +45,10 @@ describe IntellectualObject do
 
     describe "#to_solr" do
       subject { FactoryGirl.build(:institutional_intellectual_object) }
+      before do
+        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject)
+        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject)
+      end      
       let(:solr_doc) { subject.to_solr }
       it "should have fields" do
         solr_doc['institution_name_ssi'].should == subject.institution.name 
@@ -55,45 +59,52 @@ describe IntellectualObject do
         solr_doc['desc_metadata__title_si'].should == subject.title
         solr_doc['desc_metadata__identifier_tesim'].should == subject.identifier
         solr_doc['desc_metadata__description_tesim'].should == subject.description
+        solr_doc['desc_metadata__rights_sim'].should == ["institution"] 
+        solr_doc['format_sim'].should == ["application/xml"] 
       end
     end
   end
 
   describe "A saved instance" do
-    subject { FactoryGirl.create(:intellectual_object) }
-    let(:inst_pid) { clean_for_solr(subject.institution.pid) }
     after { subject.destroy }
 
-    it 'must check for generic_files before destory' do
-      item = FactoryGirl.create(:generic_file, intellectual_object: subject)
-      subject.destroy.should be_false
-      item.destroy
-    end
+    describe "with generic files" do
+      subject { FactoryGirl.create(:intellectual_object) }
+      let(:file) { FactoryGirl.build(:generic_file, intellectual_object: subject) }
+      before { subject.generic_files << file }
 
-    describe "with public access" do
-      subject { FactoryGirl.create(:public_intellectual_object) }
-      it 'should properly set groups' do
-        expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
-        expect(subject.read_groups).to match_array ['institutional_user', 'institutional_admin']
-        expect(subject.discover_groups).to eq []
+      it 'should not be destroyable' do
+        subject.destroy.should be_false
       end
     end
 
-    describe "with institutional access" do
-      subject { FactoryGirl.create(:institutional_intellectual_object) }
-      it 'should properly set groups' do
-        expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
-        expect(subject.read_groups).to eq ["User_At_#{inst_pid}"]
-        expect(subject.discover_groups).to eq []
+    describe "indexes groups" do
+      let(:inst_pid) { clean_for_solr(subject.institution.pid) }
+      describe "with public access" do
+        subject { FactoryGirl.create(:public_intellectual_object) }
+        it 'should properly set groups' do
+          expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
+          expect(subject.read_groups).to match_array ['institutional_user', 'institutional_admin']
+          expect(subject.discover_groups).to eq []
+        end
       end
-    end
 
-    describe "with private access" do
-      subject { FactoryGirl.create(:private_intellectual_object) }
-      it 'should properly set groups' do
-        expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
-        expect(subject.read_groups).to eq []
-        expect(subject.discover_groups).to eq ["User_At_#{inst_pid}"]
+      describe "with institutional access" do
+        subject { FactoryGirl.create(:institutional_intellectual_object) }
+        it 'should properly set groups' do
+          expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
+          expect(subject.read_groups).to eq ["User_At_#{inst_pid}"]
+          expect(subject.discover_groups).to eq []
+        end
+      end
+
+      describe "with private access" do
+        subject { FactoryGirl.create(:private_intellectual_object) }
+        it 'should properly set groups' do
+          expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
+          expect(subject.read_groups).to eq []
+          expect(subject.discover_groups).to eq ["User_At_#{inst_pid}"]
+        end
       end
     end
   end

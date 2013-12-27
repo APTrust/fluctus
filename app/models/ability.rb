@@ -1,8 +1,5 @@
 class Ability
-  # CanCan::Ability is included in Hydra::Ability so no need to include it here
-  # include CanCan::Ability
   include Hydra::Ability
-  include Hydra::PolicyAwareAbility
 
   # customizing permissions as directed:
   # https://github.com/projecthydra/hydra-head/blob/master/hydra-access-controls/lib/hydra/ability.rb

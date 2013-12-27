@@ -1,5 +1,3 @@
-# Generated via
-#  `rails generate active_fedora::model IntellectualObject`
 class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
   map_predicates do |map|
     map.title(in: RDF::DC) do |index|
@@ -11,6 +9,8 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
     map.identifier(in: RDF::DC) do |index|
       index.as :stored_searchable
     end
-    map.rights(in: RDF::DC, to: 'rights')
+    map.rights(in: RDF::DC) do |index|
+      index.as :facetable
+    end
   end
 end
