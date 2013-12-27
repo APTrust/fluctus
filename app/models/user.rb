@@ -14,12 +14,12 @@ class User < ActiveRecord::Base
   # :recoverable, :rememberable, :trackable, :validatable,
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
-  devise :omniauthable, :registerable, :omniauth_providers => [:google_oauth2]
+  devise :omniauthable, :registerable, omniauth_providers: [:google_oauth2]
 
   validates :email, :phone_number, presence: true
   validates :email, uniqueness: true
   validates :institution_pid, presence: true
-  validates_inclusion_of :institution_pid, in: -> (institution) {Institution.all.map(&:pid)}
+  validate :institution_pid_points_at_institution
 
   # Custom format validations.  See app/validators
   validates :name, person_name_format: true, if: ->{ name.present? }
@@ -33,7 +33,6 @@ class User < ActiveRecord::Base
   #data = YAML.load_file "fluctus/config/role_map_development.yml"
   #groups.each{ |x| data[x] << self.email}
   #File.open("fluctus/config/role_map_development.yml", 'w') {|f| YAML.dump(data, f)}
-
   # This method assigns permission groups
   def groups
     super + institution_groups
@@ -125,4 +124,11 @@ class User < ActiveRecord::Base
       []
     end
   end
+
+  private
+
+  def institution_pid_points_at_institution
+    errors.add(:institution_pid, "is not a valid institution") unless Institution.exists?(institution_pid)
+  end
+
 end
