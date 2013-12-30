@@ -132,6 +132,20 @@ describe InstitutionsController do
         assigns[:institution].should be_kind_of Institution
       end
     end
+    describe "with institutional admin user" do
+      let (:attributes) { FactoryGirl.attributes_for(:institution) }
+      before do
+        sign_in institutional_admin
+      end
+
+      it 'should be unauthorized' do
+        expect {
+          post :create, institution: attributes
+        }.to_not change(Institution, :count)
+        expect(response).to redirect_to root_path
+        expect(flash[:error]).to eq "You are not authorized to access this page."
+      end
+    end
   end
 
 end
