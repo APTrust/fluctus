@@ -11,19 +11,24 @@ class UsersController < ApplicationController
 
     def build_resource_params
       [params.fetch(:user, {}).permit(:name, :email, :phone_number).tap do |p|
-        if params[:user][:institution_pid]
-          institution = Institution.find(params[:user][:institution_pid])
-          authorize!(:add_user, institution)
-          p[:institution_pid] = institution.id
-        end
-        if params[:user][:role_ids]
-          roles = Role.find(params[:user][:role_ids])
-          roles.each do |role|
-            authorize!(:add_user, role)
-            p[:role_ids] ||= []
-            p[:role_ids] << role.id
-          end
-        end
+        p[:institution_pid] = build_institution_pid if params[:user][:institution_pid]
+        p[:role_ids] = build_role_ids if params[:user][:role_ids]
       end]
+    end
+
+    def build_institution_pid
+      institution = Institution.find(params[:user][:institution_pid])
+      authorize!(:add_user, institution)
+      institution.id
+    end
+
+    def build_role_ids
+      [].tap do |role_ids|
+        roles = Role.find(params[:user][:role_ids].reject &:blank?)
+        roles.each do |role|
+          authorize!(:add_user, role)
+          role_ids << role.id
+        end
+      end
     end
 end
