@@ -16,3 +16,5 @@ branches:
   only:
     - master
     - develop
+before_install:
+  - gem install bundler
