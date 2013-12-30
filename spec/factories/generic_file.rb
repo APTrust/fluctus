@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :generic_file do
-    intellectual_object { FactoryGirl.create(:intellectual_object) }
+    intellectual_object { FactoryGirl.build(:intellectual_object) }
     format { 'application/xml' }
     uri { 'test/data/filename.xml' }
     size { rand(20000..500000000) }

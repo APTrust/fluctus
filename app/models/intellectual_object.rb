@@ -1,5 +1,3 @@
-# Generated via
-#  `rails generate active_fedora::model IntellectualObject`
 class IntellectualObject < ActiveFedora::Base
 
   has_metadata "descMetadata", type: IntellectualObjectMetadata
@@ -17,7 +15,7 @@ class IntellectualObject < ActiveFedora::Base
   validates_presence_of :institution
   validates_presence_of :identifier
   validates_presence_of :rights
-  validates_inclusion_of :rights, in: %w(public institution private), message: "#{:rights} is not a valid rights"
+  validates_inclusion_of :rights, in: %w(public institution private), message: "#{:rights} is not a valid rights", if: :rights
 
   def set_permissions
     inst_pid = clean_for_solr(self.institution.pid)
@@ -63,7 +61,7 @@ class IntellectualObject < ActiveFedora::Base
     def check_for_associations
       # Check for related GenericFiles
 
-      if self.generic_files.count != 0
+      unless generic_file_ids.empty?
         errors[:base] << "Cannot delete #{self.pid} because Generic Files are associated with it"
       end
 

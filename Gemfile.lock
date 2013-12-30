@@ -1,4 +1,44 @@
 GIT
+  remote: git://github.com/projecthydra/active_fedora.git
+  revision: 7a97a49ad67c5454bb71166efb89a8f0d65ec928
+  ref: 7a97a49
+  specs:
+    active-fedora (7.0.0.alpha)
+      activesupport (>= 3.0.0)
+      deprecation
+      mediashelf-loggable
+      nom-xml (>= 0.5.1)
+      om (~> 3.0.0)
+      rdf
+      rdf-rdfxml (~> 1.1.0)
+      rsolr
+      rubydora (~> 1.6, >= 1.6.5)
+
+GIT
+  remote: git://github.com/projecthydra/hydra-head.git
+  revision: 93653e06cb43e793d6ee133e0cd28c1729fefef3
+  ref: 93653e0
+  specs:
+    hydra-access-controls (7.0.0.alpha)
+      active-fedora (~> 7.0.0.alpha)
+      activesupport
+      blacklight (~> 4.0)
+      cancan
+      deprecation
+    hydra-core (7.0.0.alpha)
+      active-fedora
+      blacklight (~> 4.0)
+      block_helpers
+      deprecation (>= 0.0.5)
+      hydra-access-controls (= 7.0.0.alpha)
+      jettywrapper (>= 1.4.1)
+      rails (>= 3.2.3, < 5)
+    hydra-head (7.0.0.alpha)
+      hydra-access-controls (= 7.0.0.alpha)
+      hydra-core (= 7.0.0.alpha)
+      rails (>= 3.2.6)
+
+GIT
   remote: git://github.com/stympy/faker.git
   revision: 35ae2b9aa8e2079d25b36a60212a21a02909c792
   specs:
@@ -17,16 +57,6 @@ GEM
       erubis (~> 2.7.0)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
-    active-fedora (6.7.3)
-      activesupport (>= 3.0.0)
-      deprecation
-      mediashelf-loggable
-      nom-xml (>= 0.5.1)
-      om (~> 3.0.0)
-      rdf
-      rdf-rdfxml (= 1.0.1)
-      rsolr
-      rubydora (~> 1.6, >= 1.6.5)
     activemodel (4.0.2)
       activesupport (= 4.0.2)
       builder (~> 3.1.0)
@@ -121,47 +151,20 @@ GEM
     figaro (0.7.0)
       bundler (~> 1.0)
       rails (>= 3, < 5)
+    haml (4.0.4)
+      tilt
     has_scope (0.6.0.rc)
       actionpack (>= 3.2, < 5)
       activesupport (>= 3.2, < 5)
     hashie (2.0.5)
     hike (1.2.3)
     hooks (0.3.3)
+    htmlentities (4.3.1)
     httpauth (0.2.0)
-    hydra (6.1.0)
-      active-fedora (~> 6.7.0)
-      blacklight (~> 4.5.0)
-      hydra-head (~> 6.4.0)
-      jettywrapper (~> 1.5.0)
-      nokogiri (~> 1.6.0)
-      nom-xml (~> 0.5.1)
-      om (~> 3.0.3)
-      rails (>= 3.2.15, < 5.0)
-      rsolr (~> 1.0.9)
-      rubydora (~> 1.6.5)
-      solrizer (~> 3.1.0)
-    hydra-access-controls (6.4.1)
-      active-fedora (~> 6.6)
-      activesupport
-      blacklight (~> 4.0)
-      cancan
-      deprecation
-    hydra-core (6.4.1)
-      active-fedora
-      blacklight (~> 4.0)
-      block_helpers
-      deprecation (>= 0.0.5)
-      hydra-access-controls (= 6.4.1)
-      jettywrapper (>= 1.4.1)
-      rails (>= 3.2.3, < 5)
     hydra-editor (0.1.1)
       active-fedora (>= 6.3.0)
       bootstrap_forms
       rails (>= 3.2.13, < 5.0)
-    hydra-head (6.4.1)
-      hydra-access-controls (= 6.4.1)
-      hydra-core (= 6.4.1)
-      rails (>= 3.2.6)
     hydra-role-management (0.1.0)
       bootstrap_forms
       cancan
@@ -266,10 +269,16 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.1.1)
-    rdf (1.1.0.1)
-    rdf-rdfxml (1.0.1)
-      rdf (>= 1.0)
-      rdf-xsd (>= 1.0)
+    rdf (1.1.1.1)
+    rdf-rdfa (1.1.0)
+      haml (>= 4.0)
+      htmlentities (>= 4.3.1)
+      rdf (>= 1.1.0)
+      rdf-xsd (>= 1.1)
+    rdf-rdfxml (1.1.0)
+      rdf (>= 1.1)
+      rdf-rdfa (>= 1.1)
+      rdf-xsd (>= 1.1)
     rdf-xsd (1.1.0)
       rdf (>= 1.1)
     rdoc (3.12.2)
@@ -366,6 +375,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active-fedora!
   aws-s3
   better_errors
   bootstrap-sass
@@ -376,8 +386,8 @@ DEPENDENCIES
   factory_girl_rails
   faker!
   figaro
-  hydra (= 6.1.0)
   hydra-editor
+  hydra-head!
   hydra-role-management (~> 0.1.0)
   inherited_resources
   jbuilder (~> 1.2)

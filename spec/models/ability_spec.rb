@@ -2,6 +2,9 @@ require 'spec_helper'
 require 'cancan/matchers'
 
 describe Ability do
+  before :all do
+    Institution.destroy_all
+  end
   describe 'an admin user' do
     let(:user) { FactoryGirl.create(:user) }
     let(:admin) { FactoryGirl.create(:user, :admin) }

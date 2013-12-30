@@ -73,12 +73,10 @@ describe IntellectualObject do
     after { subject.destroy }
 
     describe "with generic files" do
-      subject { FactoryGirl.create(:intellectual_object) }
-      let(:file) { FactoryGirl.build(:generic_file, intellectual_object: subject) }
-      before { subject.generic_files << file }
+      subject { FactoryGirl.create(:intellectual_object, generic_files: [FactoryGirl.create(:generic_file)]) }
 
       it 'should not be destroyable' do
-        subject.destroy.should be_false
+        expect(subject.destroy).to be_false
       end
     end
 

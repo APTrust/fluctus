@@ -41,7 +41,8 @@ end
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'hydra', '6.1.0'
+gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '93653e0' # pre 7.0.0.pre1
+gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '7a97a49' # pre 7.0.0.pre1
 gem 'hydra-editor'
 
 gem "devise"
