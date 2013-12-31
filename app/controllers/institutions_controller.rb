@@ -3,6 +3,8 @@ class InstitutionsController < ApplicationController
   before_filter :authenticate_user!
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
 
+  include Blacklight::SolrHelper
+  
   # DELETE /institutions/1
   # DELETE /institutions/1.json
   def destroy
@@ -20,4 +22,5 @@ class InstitutionsController < ApplicationController
     def build_resource_params
       [params.require(:institution).permit(:name)]
     end
+
 end

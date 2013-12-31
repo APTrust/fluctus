@@ -17,7 +17,9 @@ end
 
 class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   map_predicates do |map|
-    map.format(in: FileVocabulary)
+    map.format(in: FileVocabulary) do |index|
+      index.as :stored_sortable
+    end
     map.uri(to: :absoluteURI, in: RDF::HTTP)
     map.size(in: FileVocabulary) do |index|
       index.as :stored_sortable

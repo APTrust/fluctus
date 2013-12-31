@@ -24,6 +24,10 @@ class GenericFile < ActiveFedora::Base
     self.edit_groups = io.edit_groups
   end
 
-  #before_save :set_permissions
+  def to_solr(solr_doc = {})
+    super
+    Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
+  end
+
 
 end

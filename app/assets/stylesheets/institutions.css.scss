@@ -1,0 +1,11 @@
+table.upload_stats {
+  max-width: 400px;
+  .total_content_upload_label {
+    font-weight: bold;
+  }
+
+  .bytes {
+    text-align: right;
+  }
+
+}

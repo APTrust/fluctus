@@ -4,6 +4,7 @@
 
 <ul class="nav nav-tabs">
   <li><a href="#summary" data-toggle="tab">Summary</a></li>
+  <li><a href="#stats" data-toggle="tab">Statistics</a></li>
   <li><%= link_to 'Objects', institution_intellectual_objects_path(@institution) %></li>
   <li><a href="#users" data-toggle="tab">Users</a></li>
 </ul>
@@ -18,6 +19,18 @@
     </dl>
 
     <%= render "shared/resque_jobs" %>
+
+  </div>
+
+  <div class="tab-pane" id="stats">
+    <table class="upload_stats table">
+      <% @institution.bytes_by_format.each do |format, bytes| %>
+      <tr>
+        <td class="<%=format.split('/')[-1].downcase.gsub(/\s/, '_') %>_label"><%= format %></td>
+        <td class="bytes"><%=number_to_human_size bytes %></td>
+      </tr>
+      <% end %>
+    </table>
 
   </div>
 

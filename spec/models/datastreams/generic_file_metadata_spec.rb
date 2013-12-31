@@ -52,5 +52,8 @@ describe GenericFileMetadata do
     it "should have size indexed as an integer" do
       expect(subject['desc_metadata__size_isi']).to eq '128774003'
     end
+    it "should have mime type indexed " do
+      expect(subject['desc_metadata__format_ssi']).to eq "application/xml"
+    end
   end
 end
