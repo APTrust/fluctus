@@ -15,16 +15,6 @@ GIT
       rubydora (~> 1.6, >= 1.6.5)
 
 GIT
-  remote: git://github.com/projecthydra/hydra-editor.git
-  revision: f3218fd15e567f0fdb0d359db33dd9c7f5b2dc03
-  ref: f3218fd
-  specs:
-    hydra-editor (0.1.1)
-      active-fedora (>= 6.3.0)
-      bootstrap_forms
-      rails (>= 3.2.13, < 5.0)
-
-GIT
   remote: git://github.com/projecthydra/hydra-head.git
   revision: 93653e06cb43e793d6ee133e0cd28c1729fefef3
   ref: 93653e0
@@ -167,6 +157,10 @@ GEM
     hooks (0.3.3)
     htmlentities (4.3.1)
     httpauth (0.2.0)
+    hydra-editor (0.2.0)
+      active-fedora (>= 6.3.0)
+      bootstrap_forms
+      rails (>= 3.2.13, < 5.0)
     hydra-role-management (0.1.0)
       bootstrap_forms
       cancan
@@ -387,7 +381,7 @@ DEPENDENCIES
   factory_girl_rails
   faker!
   figaro
-  hydra-editor!
+  hydra-editor (~> 0.2.0)
   hydra-head!
   hydra-role-management (~> 0.1.0)
   inherited_resources
