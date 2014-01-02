@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe InstitutionsController do
+  before :all do
+    Institution.destroy_all
+  end
+
   let(:admin_user) { FactoryGirl.create(:user, :admin) }
   let(:institutional_user) { FactoryGirl.create(:user, :institutional_user) }
   let(:institutional_admin) { FactoryGirl.create(:user, :institutional_admin) }
