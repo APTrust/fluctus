@@ -51,8 +51,4 @@ class IntellectualObjectsController < ApplicationController
     institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
   end
 
-  # # Never trust parameters from the scary internet, only allow the white list through.
-  # def build_resource_params
-  #   [params[:intellectual_object]]
-  # end
 end

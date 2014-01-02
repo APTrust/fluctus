@@ -18,6 +18,7 @@ describe IntellectualObjectsController do
 
     describe "when some objects are in the repository and signed in" do
       let(:another_institution) { FactoryGirl.create(:institution) }
+
       let!(:obj1) { FactoryGirl.create(:public_intellectual_object,
                                        institution: another_institution) }
       let!(:obj2) { FactoryGirl.create(:institutional_intellectual_object,
@@ -177,10 +178,8 @@ describe IntellectualObjectsController do
   end
 
   describe "create an object" do
-    after { obj1.destroy }
 
     describe "when not signed in" do
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
       it "should redirect to login" do
         post :create, institution_id: FactoryGirl.create(:institution), intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url
@@ -188,10 +187,8 @@ describe IntellectualObjectsController do
       end
     end
 
-
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
       before { sign_in user }
         
       it "should only allow assigning institutions you have access to" do
