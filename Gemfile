@@ -42,8 +42,8 @@ end
 # gem 'debugger', group: [:development, :test]
 
 gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '93653e0' # pre 7.0.0.pre1
-gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '7a97a49' # pre 7.0.0.pre1
-gem 'hydra-editor'
+gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '2fbd75f' # pre 7.0.0.pre1
+gem 'hydra-editor', github: 'projecthydra/hydra-editor', ref: 'f3218fd' # pre 0.2.0
 
 gem "devise"
 gem "bootstrap-sass"

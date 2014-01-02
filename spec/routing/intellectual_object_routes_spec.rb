@@ -9,4 +9,7 @@ describe "Routing" do
     expect(get: '/objects/apt:123').to route_to(controller: 'intellectual_objects', action: 'show', id: 'apt:123')
     expect(intellectual_object_path('apt:123')).to eq '/objects/apt:123'
   end
+  it "should route to create when POST /institutions/aptrust-dev:1/objects" do
+    expect(post: '/institutions/aptrust-dev:1/objects').to route_to(controller: 'intellectual_objects', action: 'create', institution_id: 'aptrust-dev:1')
+  end
 end

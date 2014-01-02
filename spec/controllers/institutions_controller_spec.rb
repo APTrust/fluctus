@@ -143,7 +143,7 @@ describe InstitutionsController do
           post :create, institution: attributes
         }.to_not change(Institution, :count)
         expect(response).to redirect_to root_path
-        expect(flash[:error]).to eq "You are not authorized to access this page."
+        expect(flash[:alert]).to eq "You are not authorized to access this page."
       end
     end
   end

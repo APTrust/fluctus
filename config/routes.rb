@@ -1,6 +1,6 @@
 Fluctus::Application.routes.draw do
   resources :institutions do
-    resources :intellectual_objects, only: [:index], path: 'objects'
+    resources :intellectual_objects, only: [:index, :create], path: 'objects'
   end
   resources :intellectual_objects, only: [:show, :edit, :update], path: 'objects'
 

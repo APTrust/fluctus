@@ -103,7 +103,7 @@ describe UsersController do
         it "can't show" do
           get :show, id: user_of_different_institution
           response.should redirect_to root_url
-          expect(flash[:error]).to eq "You are not authorized to access this page."
+          expect(flash[:alert]).to eq "You are not authorized to access this page."
         end
       end
     end
@@ -124,7 +124,7 @@ describe UsersController do
             post :create, user: attributes
           }.not_to change(User, :count)
           response.should redirect_to root_path
-          expect(flash[:error]).to eq "You are not authorized to access this page."
+          expect(flash[:alert]).to eq "You are not authorized to access this page."
         end
       end
 
@@ -147,7 +147,7 @@ describe UsersController do
               post :create, user: attributes
             }.to_not change(User, :count)
             response.should be_redirect
-            expect(flash[:error]).to eq "You are not authorized to access this page."
+            expect(flash[:alert]).to eq "You are not authorized to access this page."
           end
         end
       end
@@ -167,7 +167,7 @@ describe UsersController do
         it "should show an error" do
           get :edit, id: user_of_different_institution
           response.should be_redirect
-          expect(flash[:error]).to eq "You are not authorized to access this page."
+          expect(flash[:alert]).to eq "You are not authorized to access this page."
         end
       end
     end
@@ -187,7 +187,7 @@ describe UsersController do
         it "should show an error message" do
           patch :update, id: user_of_different_institution, user: {name: 'Frankie'}
           response.should be_redirect
-          expect(flash[:error]).to eq "You are not authorized to access this page."
+          expect(flash[:alert]).to eq "You are not authorized to access this page."
         end
       end
     end

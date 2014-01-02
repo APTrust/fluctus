@@ -1,6 +1,7 @@
 class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource
+  load_and_authorize_resource :institution, except: [:show, :edit, :update]
+  load_and_authorize_resource except: [:index]
 
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
@@ -20,7 +21,20 @@ class IntellectualObjectsController < ApplicationController
     intellectual_object_path(@record)
   end
 
+  protected 
+  def self.cancan_resource_class
+    CanCan::ControllerResource
+  end
+
+  def set_attributes
+    super
+    resource.institution = @institution if params[:action] == 'create'
+  end
   private
+
+  def self.resource_instance_name
+    name.sub("Controller", "").underscore.split('/').last.singularize
+  end
 
   # Limits search results just to IntellectualObjects
   # @param solr_parameters the current solr parameters

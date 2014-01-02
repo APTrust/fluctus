@@ -1,9 +1,12 @@
 require 'spec_helper'
 
 describe IntellectualObjectsController do
-  describe "search when some objects are in the repository" do
+  describe "search" do
 
-    before(:all) { IntellectualObject.destroy_all }
+    before(:all) do
+      IntellectualObject.destroy_all
+      Institution.destroy_all
+    end
 
     describe "when not signed in" do
       it "should redirect to login" do
@@ -13,8 +16,7 @@ describe IntellectualObjectsController do
     end
 
 
-    describe "when signed in" do
-      let(:user) { FactoryGirl.create(:user, :institutional_user) }
+    describe "when some objects are in the repository and signed in" do
       let(:another_institution) { FactoryGirl.create(:institution) }
       let!(:obj1) { FactoryGirl.create(:public_intellectual_object,
                                        institution: another_institution) }
@@ -31,41 +33,54 @@ describe IntellectualObjectsController do
                                        identifier: 'jhu.d9abff425d09d5b0') }
       let!(:obj5) { FactoryGirl.create(:private_intellectual_object,
                                        institution: another_institution) }
-      before { sign_in user }
         
-      describe "and viewing my institution" do
-        it "should show the results that I have access to that belong to the institution" do
-          get :index, institution_id: user.institution
-          expect(response).to be_successful
-          expect(assigns(:document_list).size).to eq 2
-          assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
-          expect(assigns(:document_list).map &:id).to match_array [obj2.id, obj4.id]
-        end
+      before { sign_in user }
+      describe "as an institutional user" do
+        let(:user) { FactoryGirl.create(:user, :institutional_user) }
+        describe "and viewing my institution" do
+          it "should show the results that I have access to that belong to the institution" do
+            get :index, institution_id: user.institution
+            expect(response).to be_successful
+            expect(assigns(:document_list).size).to eq 2
+            assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
+            expect(assigns(:document_list).map &:id).to match_array [obj2.id, obj4.id]
+          end
 
-        it "should match a partial search on title" do
-          get :index, institution_id: user.institution, q: 'Rugby'
-          expect(response).to be_successful
-          expect(assigns(:document_list).map &:id).to match_array [obj2.id]
+          it "should match a partial search on title" do
+            get :index, institution_id: user.institution, q: 'Rugby'
+            expect(response).to be_successful
+            expect(assigns(:document_list).map &:id).to match_array [obj2.id]
+          end
+          it "should match a partial search on description" do
+            get :index, institution_id: user.institution, q: 'Guangzhou'
+            expect(response).to be_successful
+            expect(assigns(:document_list).map &:id).to match_array [obj4.id]
+          end
+          it "should match an exact search on identifier" do
+            get :index, institution_id: user.institution, q: 'jhu.d9abff425d09d5b0'
+            expect(response).to be_successful
+            expect(assigns(:document_list).map &:id).to match_array [obj4.id]
+          end
         end
-        it "should match a partial search on description" do
-          get :index, institution_id: user.institution, q: 'Guangzhou'
-          expect(response).to be_successful
-          expect(assigns(:document_list).map &:id).to match_array [obj4.id]
-        end
-        it "should match an exact search on identifier" do
-          get :index, institution_id: user.institution, q: 'jhu.d9abff425d09d5b0'
-          expect(response).to be_successful
-          expect(assigns(:document_list).map &:id).to match_array [obj4.id]
+        describe "and viewing another institution" do
+          it "should redirect" do
+            get :index, institution_id: another_institution
+            expect(response).to redirect_to root_url
+            expect(flash[:alert]).to eq "You are not authorized to access this page."
+          end
         end
       end
-      describe "and viewing another institution" do
-        it "should show the results that I have access to that belong to the institution " do
-          get :index, institution_id: another_institution
-          expect(response).to be_successful
-          expect(assigns(:document_list).size).to eq 1
-          assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
-          # current user isn't a member of 'another_institution' so we can't see obj3 or obj5.
-          expect(assigns(:document_list).map &:id).to match_array [obj1.id]
+
+      describe "when signed in as an admin" do
+        let(:user) { FactoryGirl.create(:user, :admin) }
+        describe "and viewing another institution" do
+          it "should show the results that I have access to that belong to the institution " do
+            get :index, institution_id: another_institution
+            expect(response).to be_successful
+            expect(assigns(:document_list).size).to eq 3
+            assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
+            expect(assigns(:document_list).map &:id).to match_array [obj1.id, obj3.id, obj5.id]
+          end
         end
       end
     end
@@ -82,15 +97,50 @@ describe IntellectualObjectsController do
       end
     end
 
-
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_user) }
       before { sign_in user }
         
-      it "should show some" do
+      it "should show the object" do
         get :show, id: obj1
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
+      end
+    end
+  end
+
+  describe "edit an object" do
+    after { obj1.destroy }
+
+    describe "when not signed in" do
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      it "should redirect to login" do
+        get :edit, id: obj1
+        expect(response).to redirect_to root_url
+      end
+    end
+
+    describe "when signed in" do
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution: user.institution) }
+      describe "as an institutional_user" do
+        let(:user) { FactoryGirl.create(:user, :institutional_user) }
+        before { sign_in user }
+          
+        it "should be unauthorized" do
+          get :edit, id: obj1
+          expect(response).to redirect_to root_url
+          expect(flash[:alert]).to eq "You are not authorized to access this page."
+        end
+      end
+      describe "as an institutional_admin" do
+        let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+        before { sign_in user }
+          
+        it "should show the object" do
+          get :edit, id: obj1
+          expect(response).to be_successful
+          expect(assigns(:intellectual_object)).to eq obj1
+        end
       end
     end
   end
@@ -124,6 +174,52 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
     end
+  end
 
+  describe "create an object" do
+    after { obj1.destroy }
+
+    describe "when not signed in" do
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      it "should redirect to login" do
+        post :create, institution_id: FactoryGirl.create(:institution), intellectual_object: {title: 'Foo' }
+        expect(response).to redirect_to root_url
+        expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
+      end
+    end
+
+
+    describe "when signed in" do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
+      before { sign_in user }
+        
+      it "should only allow assigning institutions you have access to" do
+        post :create, institution_id: FactoryGirl.create(:institution), intellectual_object: {title: 'Foo'}, format: 'json'
+        expect(response.code).to eq "403" # forbidden
+        expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
+       end
+
+      it "should show errors" do
+        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo'}, format: 'json'
+        expect(response.code).to eq '422' #Unprocessable Entity
+        expect(JSON.parse(response.body)).to eq({"identifier" => ["can't be blank"],"rights" => ["can't be blank"]})
+      end
+
+      it "should update fields" do
+        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', rights: 'private'}, format: 'json'
+        expect(response.code).to eq '201'
+        expect(assigns(:intellectual_object).title).to eq 'Foo'
+      end
+
+      it "should use the institution parameter in the URL, not from the json" do
+        expect {
+          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', rights: 'private'}, format: 'json'
+          expect(response.code).to eq '201'
+          expect(assigns(:intellectual_object).title).to eq 'Foo'
+          expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid
+        }.to change(IntellectualObject, :count).by(1)
+      end
+    end
   end
 end
