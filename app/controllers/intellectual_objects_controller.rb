@@ -18,7 +18,7 @@ class IntellectualObjectsController < ApplicationController
 
   # Override Hydra-editor to redirect to an alternate location after create
   def redirect_after_update
-    intellectual_object_path(@record)
+    intellectual_object_path(resource)
   end
 
   protected 
@@ -31,10 +31,6 @@ class IntellectualObjectsController < ApplicationController
     resource.institution = @institution if params[:action] == 'create'
   end
   private
-
-  def self.resource_instance_name
-    name.sub("Controller", "").underscore.split('/').last.singularize
-  end
 
   # Limits search results just to IntellectualObjects
   # @param solr_parameters the current solr parameters
