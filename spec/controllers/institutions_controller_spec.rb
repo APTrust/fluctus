@@ -18,7 +18,6 @@ describe InstitutionsController do
       it "responds successfully with an HTTP 200 status code" do
         get :index
         expect(response).to be_success
-        expect(response.status).to eq(200)
       end
 
       it "renders the index template" do
@@ -29,6 +28,19 @@ describe InstitutionsController do
       it "assigns all institutions as @institutions" do
         get :index
         assigns(:institutions).should include(admin_user.institution)
+      end
+    end
+  end
+
+  describe "GET #new" do
+    describe "for admin users" do 
+      before do 
+        sign_in admin_user
+      end
+
+      it "responds successfully" do
+        get :new
+        expect(response).to be_success
       end
     end
   end
