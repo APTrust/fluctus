@@ -17,16 +17,19 @@ class GenericFile < ActiveFedora::Base
   validates_presence_of :format
   validates_presence_of :checksum
 
-  def set_permissions
-    io = self.intellectual_object
-    self.discover_groups = io.discover_groups
-    self.read_groups = io.read_groups
-    self.edit_groups = io.edit_groups
-  end
+  before_save :copy_permissions_from_intellectual_object
 
   def to_solr(solr_doc = {})
     super
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
+  end
+
+  private 
+  def copy_permissions_from_intellectual_object
+    io = self.intellectual_object
+    self.discover_groups = io.discover_groups
+    self.read_groups = io.read_groups
+    self.edit_groups = io.edit_groups
   end
 
 

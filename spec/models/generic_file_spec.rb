@@ -17,15 +17,17 @@ describe GenericFile do
   it { should validate_presence_of(:format) }
   it { should validate_presence_of(:checksum) }
 
-  it 'should copy the permissions of the intellectual object it belongs to' do
-    int_obj = FactoryGirl.create(:intellectual_object)
-    #int_obj.set_permissions
-    gen_file = FactoryGirl.create(:generic_file, intellectual_object: int_obj)
-    gen_file.set_permissions
-    (int_obj.discover_groups.should == gen_file.discover_groups) &&
-        (int_obj.read_groups.should == gen_file.read_groups) &&
-        (int_obj.edit_groups.should == gen_file.edit_groups)
-    #gen_file.permissions.should == int_obj.permissions
+
+  describe "permissions" do
+    let(:int_obj) { FactoryGirl.create(:intellectual_object) }
+    let(:gen_file) { FactoryGirl.create(:generic_file, intellectual_object: int_obj) }
+    after do
+      gen_file.destroy
+      int_obj.destroy
+    end
+    it 'should copy the permissions of the intellectual object it belongs to' do
+      gen_file.permissions.should == int_obj.permissions
+    end
   end
 
   describe "#to_solr" do
