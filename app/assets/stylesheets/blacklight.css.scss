@@ -1,10 +1,24 @@
 $logo_image: 'aptrust/aptrust_nodes_icon.png';
+$apt_red: #800000;
+$apt_black: #180000;
 
 @import 'bootstrap';
 @import 'bootstrap-responsive';
 
 @import 'blacklight/blacklight';
 
+#header-navbar-fixed-top .brand {
+  width: auto;
+  text-indent: 45px;
+  font-size: 2em;
+  font-weight: bold;
+  color: $apt_black;
+}
+
+#header-navbar-fixed-top .brand em {
+  color: $apt_red;
+  font-style: normal;
+}
 
 @media (min-width: 768px) and (max-width: 979px) {
   .logo-text {

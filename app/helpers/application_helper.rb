@@ -31,11 +31,6 @@ module ApplicationHelper
   def header_title
     # TODO put base_title into an ENV
     base_title = "APTrust"
-    if !current_user
-      base_title
-    else
-      "#{current_user.institution.name}"
-    end
   end
 
   def full_title(page_title)
