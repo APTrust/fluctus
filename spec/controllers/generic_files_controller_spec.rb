@@ -6,12 +6,10 @@ describe GenericFilesController do
 
   before do
     GenericFile.delete_all
-    User.delete_all
   end
 
   after :all do
     GenericFile.delete_all
-    User.delete_all
   end
 
   describe "GET #show" do

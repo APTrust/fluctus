@@ -123,6 +123,10 @@ class User < ActiveRecord::Base
     def intellectual_objects
       []
     end
+
+    def bytes_by_format
+      {}
+    end
   end
 
   private
