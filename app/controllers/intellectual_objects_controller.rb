@@ -28,10 +28,6 @@ class IntellectualObjectsController < ApplicationController
     CanCan::ControllerResource
   end
 
-  def set_attributes
-    super
-    resource.institution = @institution if params[:action] == 'create'
-  end
   private
 
   # Limits search results just to IntellectualObjects
