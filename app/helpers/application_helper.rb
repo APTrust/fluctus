@@ -51,4 +51,10 @@ module ApplicationHelper
     end
   end
 
+  def display_version
+    return '' if Rails.env.production?
+    app_version = Fluctus::Application::VERSION
+    return "Running Fluctus ver #{app_version} on Rails #{Rails.version} under Ruby #{RUBY_VERSION}"
+  end
+
 end
