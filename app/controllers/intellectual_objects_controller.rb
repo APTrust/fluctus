@@ -7,6 +7,7 @@ class IntellectualObjectsController < ApplicationController
 
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
+  include Aptrust::AdminAccess
   include RecordsControllerBehavior
 
   # These before_filters apply the hydra access controls

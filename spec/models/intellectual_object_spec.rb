@@ -85,7 +85,7 @@ describe IntellectualObject do
       describe "with public access" do
         subject { FactoryGirl.create(:public_intellectual_object) }
         it 'should properly set groups' do
-          expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
+          expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
           expect(subject.read_groups).to match_array ['institutional_user', 'institutional_admin']
           expect(subject.discover_groups).to eq []
         end
@@ -94,7 +94,7 @@ describe IntellectualObject do
       describe "with institutional access" do
         subject { FactoryGirl.create(:institutional_intellectual_object) }
         it 'should properly set groups' do
-          expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
+          expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
           expect(subject.read_groups).to eq ["User_At_#{inst_pid}"]
           expect(subject.discover_groups).to eq []
         end
@@ -103,7 +103,7 @@ describe IntellectualObject do
       describe "with private access" do
         subject { FactoryGirl.create(:private_intellectual_object) }
         it 'should properly set groups' do
-          expect(subject.edit_groups).to match_array ['admin', "Admin_At_#{inst_pid}"]
+          expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
           expect(subject.read_groups).to eq []
           expect(subject.discover_groups).to eq ["User_At_#{inst_pid}"]
         end

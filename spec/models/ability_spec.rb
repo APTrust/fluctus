@@ -5,14 +5,13 @@ describe Ability do
   before :all do
     Institution.destroy_all
     @user_institution = FactoryGirl.create(:institution)
-
   end
+
   describe 'an admin user' do
     before (:all) {
       @intellectual_object = FactoryGirl.create(:intellectual_object)
     }
 
-    #let(:user) { FactoryGirl.create(:user, institution_pid: @user_institution.pid ) }
     let(:admin) { FactoryGirl.create(:user, :admin, institution_pid: @user_institution.pid) }
     let(:intellectual_object) { @intellectual_object }
     subject { Ability.new(admin) }

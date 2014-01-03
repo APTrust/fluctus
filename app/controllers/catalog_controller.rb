@@ -7,6 +7,7 @@ class CatalogController < ApplicationController
   include Hydra::Controller::ControllerBehavior
   include Aptrust::SolrHelper
   include Aptrust::BlacklightConfiguration
+  include Aptrust::AdminAccess
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, :only=>:show
@@ -16,5 +17,4 @@ class CatalogController < ApplicationController
 
   # This filters out objects that you want to exclude from search results, like FileAssets
   CatalogController.solr_search_params_logic += [:exclude_unwanted_models]
-
 end

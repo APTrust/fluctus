@@ -21,23 +21,16 @@ class IntellectualObject < ActiveFedora::Base
     inst_pid = clean_for_solr(self.institution.pid)
     inst_admin_group = "Admin_At_#{inst_pid}"
     inst_user_group = "User_At_#{inst_pid}"
-    rights = self.rights
-    if rights.include?('public')
-      self.discover_groups = %w(admin institutional_admin institutional_user)
-      self.read_groups = %w(admin institutional_admin institutional_user)
-      self.edit_groups = ['admin', inst_admin_group]
-    elsif rights.include?('institution')
-      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
-      self.read_groups = ['admin', inst_admin_group, inst_user_group]
-      self.edit_groups = ['admin', inst_admin_group]
-    elsif rights.include?('private')
-      self.discover_groups = ['admin', inst_admin_group, inst_user_group]
-      self.read_groups = ['admin', inst_admin_group]
-      self.edit_groups = ['admin', inst_admin_group]
-    else
-      self.discover_groups = %w(admin)
-      self.read_groups = %w(admin)
-      self.edit_groups = %w(admin)
+    case rights
+      when 'public'
+        self.read_groups = %w(institutional_admin institutional_user)
+        self.edit_groups = [inst_admin_group]
+      when 'institution'
+        self.read_groups = [inst_user_group]
+        self.edit_groups = [inst_admin_group]
+      when 'private'
+        self.discover_groups = [inst_user_group]
+        self.edit_groups = [inst_admin_group]
     end
   end
 
