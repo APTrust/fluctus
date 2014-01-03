@@ -7,14 +7,18 @@ describe Ability do
     Institution.destroy_all
   end
   describe 'an admin user' do
+    before (:all) {
+      @intellectual_object = FactoryGirl.create(:intellectual_object)
+    }
+
     let(:user) { FactoryGirl.create(:user) }
     let(:admin) { FactoryGirl.create(:user, :admin) }
-    let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
+    let(:intellectual_object) { @intellectual_object }
     subject { Ability.new(admin) }
 
     it { should be_able_to(:create, Institution) }
     it { should be_able_to(:edit, intellectual_object) }
-    it { should be_able_to(:add_user, FactoryGirl.create(:institution)) }
+    it { should be_able_to(:add_user, intellectual_object.institution) }
     it { should be_able_to(:add_user, Role.where(name: 'admin').first) }
     it { should be_able_to(:add_user, Role.where(name: 'institutional_admin').first) }
     it { should be_able_to(:add_user, Role.where(name: 'institutional_user').first) }
@@ -27,8 +31,13 @@ describe Ability do
   end
 
   describe 'an institutional_admin user' do
-    let(:institutional_admin) { FactoryGirl.create(:user, :institutional_admin) }
-    let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: institutional_admin.institution) }
+    before (:all) {
+      @institutional_admin = FactoryGirl.create(:user, :institutional_admin)
+      @intellectual_object = FactoryGirl.create(:intellectual_object, institution: @institutional_admin.institution)
+    }
+    let(:institutional_admin) { @institutional_admin }
+    let(:intellectual_object) { @intellectual_object }
+
     subject { Ability.new(institutional_admin) }
 
     it { should     be_able_to(:edit, intellectual_object) }
@@ -81,10 +90,14 @@ describe Ability do
   end
 
   describe 'an institutional_user' do
-    let(:institutional_user) { FactoryGirl.create(:user, :institutional_user) }
-    let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: institutional_user.institution) }
-    let(:file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
-    let(:user) { FactoryGirl.create(:user) }
+    before (:all) {
+      @institutional_user = FactoryGirl.create(:user, :institutional_user)
+      @intellectual_object = FactoryGirl.create(:intellectual_object, institution: @institutional_user.institution)
+      @file = FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object)
+    }
+    let(:institutional_user) { @institutional_user }
+    let(:intellectual_object) { @intellectual_object }
+    let(:file) { @file }
     subject { Ability.new(institutional_user) }
     it { should_not be_able_to(:edit, intellectual_object) }
     it { should_not be_able_to(:add_user, Role.where(name: 'admin').first) }
@@ -92,10 +105,10 @@ describe Ability do
 
     it { should_not be_able_to(:add_user, institutional_user.institution) }
     it { should_not be_able_to(:create, Institution) }
-    it { should_not be_able_to(:update, user) }
+    it { should_not be_able_to(:update, User.new) }
     it { should     be_able_to(:update, institutional_user) }
     it { should     be_able_to(:read,   institutional_user.institution) }
-    it { should_not be_able_to(:read,   user.institution) }
+    it { should_not be_able_to(:read,   FactoryGirl.create(:institution)) }
     it { should_not be_able_to(:update, file) }
 
     describe "when the file is" do
