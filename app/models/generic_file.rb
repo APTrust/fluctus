@@ -8,7 +8,7 @@ class GenericFile < ActiveFedora::Base
   belongs_to :intellectual_object, property: :is_part_of
 
   has_attributes :uri, :size, :format, :created, :modified, datastream: 'descMetadata', multiple: false
-  has_attributes :checksum, datastream: 'descMetadata', multiple: true
+  delegate :checksum_attributes=, :checksum, to: :descMetadata
 
   validates_presence_of :uri
   validates_presence_of :size

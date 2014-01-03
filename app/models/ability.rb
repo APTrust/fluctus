@@ -5,6 +5,11 @@ class Ability
   # https://github.com/projecthydra/hydra-head/blob/master/hydra-access-controls/lib/hydra/ability.rb
   self.ability_logic +=[:admin_permissions, :institutional_admin_permissions, :institutional_user_permissions]
 
+  
+  def create_permissions
+    # nop - override default behavior which allows any registered user to create
+  end
+
   def admin_permissions
     if current_user.is? :admin
       can :manage, :all 
@@ -18,7 +23,8 @@ class Ability
       can [:read, :update, :destroy], User, institution_pid: current_user.institution_pid
       can [:create], User
       can [:read, :update], Institution, pid: current_user.institution_pid
-      cannot :create, Institution
+      can :create, GenericFile, :intellectual_object => { :institution_id => current_user.institution_pid }
+      can :create, IntellectualObject, institution_id: current_user.institution_pid
     end
   end
   
@@ -26,7 +32,6 @@ class Ability
     if current_user.is? :institutional_user
       can :manage, User, id: current_user.id
       can :read, Institution, pid: current_user.institution_pid
-      cannot :create, Institution
     end
   end
 end

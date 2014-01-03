@@ -1,17 +1,26 @@
 class GenericFilesController < ApplicationController
-  load_and_authorize_resource
   before_filter :authenticate_user!
-
-  actions :edit, :update
+  load_and_authorize_resource :intellectual_object, only: :create
+  load_and_authorize_resource through: :intellectual_object, only: :create
+  load_and_authorize_resource except: :create
 
   def show
     @events = Kaminari.paginate_array(@generic_file.premisEvents.events).page(params[:page]).per(10)
   end
 
-  private
+  def create
+    respond_to do |format|
+      if resource.save
+        format.json { render json: @generic_file, status: :created }
+      else
+        format.json { render json: resource.errors, status: :unprocessable_entity }
+      end
+    end
+  end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def build_resource_params
-    [params[:generic_file]]
+  protected
+  
+  def resource
+    @generic_file
   end
 end

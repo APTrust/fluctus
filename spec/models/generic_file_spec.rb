@@ -15,7 +15,14 @@ describe GenericFile do
   it { should validate_presence_of(:created) }
   it { should validate_presence_of(:modified) }
   it { should validate_presence_of(:format) }
-  it { should validate_presence_of(:checksum) }
+  it "should validate presence of checksum" do 
+    expect(subject.valid?).to be_false
+    expect(subject.errors[:checksum]).to eq ["can't be blank"]
+    subject.checksum_attributes = [{digest: '1234'}]
+    # other fields cause the object to not be valid. This forces recalculating errors
+    expect(subject.valid?).to be_false
+    expect(subject.errors[:checksum]).to be_empty
+  end
 
 
   describe "permissions" do

@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::Base
-  inherit_resources
 
   # Adds a few additional behaviors into the application controller 
    include Blacklight::Controller

@@ -37,4 +37,51 @@ describe GenericFilesController do
     end
   end
 
+
+  describe "POST #create" do
+    after do
+      obj1.destroy
+    end
+    describe "when not signed in" do
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      it "should redirect to login" do
+        post :create, intellectual_object_id: obj1, intellectual_object: {title: 'Foo' }
+        expect(response).to redirect_to root_url
+        expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
+      end
+    end
+
+    describe "when signed in" do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
+      before { sign_in user }
+        
+      describe "and assigning to an object you don't have access to" do
+        let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+        it "should be forbidden" do
+          post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+          expect(response.code).to eq "403" # forbidden
+          expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
+         end
+      end
+
+      it "should show errors" do
+        post :create, intellectual_object_id: obj1, generic_file: {}, format: 'json'
+        expect(response.code).to eq '422' #Unprocessable Entity
+        expect(JSON.parse(response.body)).to eq( {
+          "checksum" => ["can't be blank"],
+          "created" => ["can't be blank"],
+          "format" => ["can't be blank"],
+          "modified" => ["can't be blank"],
+          "size" => ["can't be blank"],
+          "uri" => ["can't be blank"]})
+      end
+
+      it "should update fields" do
+        post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        expect(response.code).to eq '201'
+        expect(assigns(:generic_file).uri).to eq 'path/within/bag'
+      end
+    end
+  end
 end
