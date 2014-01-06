@@ -4,10 +4,13 @@ Fluctus::Application.routes.draw do
   end
   resources :intellectual_objects, only: [:show, :edit, :update], path: 'objects' do
     resources :generic_files, only: [:create], path: 'files'
+    resources :events, only: [:create]
   end
 
   resources :users
-  resources :generic_files, only: [:show, :update], path: 'files'
+  resources :generic_files, only: [:show, :update], path: 'files' do
+    resources :events, only: [:create]
+  end
 
   Blacklight.add_routes(self)
 

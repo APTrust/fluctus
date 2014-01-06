@@ -54,6 +54,7 @@ gem 'simple_form', '~> 3.0.1'
 gem "hydra-role-management", "~> 0.1.0"
 gem 'phony_rails'
 gem 'inherited_resources'
+gem 'uuidtools'
 
 # S3 connector
 gem 'aws-s3'

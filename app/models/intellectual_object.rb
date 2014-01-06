@@ -4,6 +4,7 @@ class IntellectualObject < ActiveFedora::Base
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
   include Hydra::AccessControls::Permissions
   include Aptrust::SolrHelper
+  include Auditable   # premis events
 
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of

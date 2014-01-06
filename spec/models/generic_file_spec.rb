@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe GenericFile do
+
+  it 'uses the Auditable module to create premis events' do
+    GenericFile.included_modules.include?(Auditable).should be_true
+    subject.respond_to?(:add_event).should be_true
+  end
+
   it 'should have a descMetadata datastream' do
     subject.descMetadata.should be_kind_of GenericFileMetadata
   end

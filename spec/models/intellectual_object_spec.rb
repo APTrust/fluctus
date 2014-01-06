@@ -16,6 +16,10 @@ describe IntellectualObject do
       subject.descMetadata.should be_kind_of IntellectualObjectMetadata
     end
 
+    it 'should have a premisEvents datastream' do
+      subject.premisEvents.should be_kind_of PremisEventsMetadata
+    end
+
     it 'should properly set a title' do
       subject.title = 'War and Peace'
       subject.title.should == 'War and Peace'
