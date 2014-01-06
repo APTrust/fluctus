@@ -44,7 +44,7 @@ describe IntellectualObject do
     end
 
     it "should have terms_for_editing" do
-      expect(subject.terms_for_editing).to eq [:title, :description]
+      expect(subject.terms_for_editing).to eq [:title, :description, :rights]
     end
 
     describe "#to_solr" do

@@ -1,38 +1,45 @@
-<ol class="breadcrumb">
-  <li><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %></li> >
-  <li class="active"><%= @intellectual_object.title %></li>
-</ol>
+<div id="content" class="span9 show-document">
+
+  <ol class="breadcrumb">
+    <li><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %></li> >
+    <li class="active"><%= @intellectual_object.title %></li>
+  </ol>
 
 
-<div class="page-header">
-  <h1><%= @intellectual_object.title %></h1>
-</div>
+  <div class="page-header">
+    <h1><%= @intellectual_object.title %></h1>
+  </div>
 
-<div class="object_info">
-  <dl class="dl-horizontal dl-invert">
-    <dt>Institution</dt>
-    <dd><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %> [<%= @intellectual_object.institution.brief_name %>]</dd>
-    <dt>Rights</dt>
-    <dd><%= @intellectual_object.rights %></dd>
-    <dt>Identifier</dt>
-    <% @intellectual_object.identifier.each do |ident| %>
-        <dd><%= ident %></dd>
+  <div class="object_info">
+    <dl class="dl-horizontal dl-invert">
+      <dt>Institution</dt>
+      <dd><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %> [<%= @intellectual_object.institution.brief_name %>]</dd>
+      <dt>Rights</dt>
+      <dd><%= @intellectual_object.rights %></dd>
+      <dt>Identifier</dt>
+      <% @intellectual_object.identifier.each do |ident| %>
+          <dd><%= ident %></dd>
+      <% end %>
+    </dl>
+  </div>
+
+  <div class="object_children">
+    <h3>Preserved Files</h3>
+    <% @intellectual_object.generic_files.each do |gf| %>
+          <h4><%= link_to gf.uri, gf  %></h4>
+        <dl class="dl-horizontal dl-invert">
+          <dt>Last Fixity</dt>
+          <dd><span class="label label-success">Success</span></dd>
+          <dt>MimeType<dt>
+          <dd><%= gf.format %></dd>
+          <dt>Filesize<dt>
+          <dd><%= number_to_human_size(gf.size) %></dd>
+        </dl>
+
     <% end %>
-  </dl>
+  </div>
 </div>
 
-<div class="object_children">
-  <h3>Preserved Files</h3>
-  <% @intellectual_object.generic_files.each do |gf| %>
-        <h4><%= link_to gf.uri, gf  %></h4>
-      <dl class="dl-horizontal dl-invert">
-        <dt>Last Fixity</dt>
-        <dd><span class="label label-success">Success</span></dd>
-        <dt>MimeType<dt>
-        <dd><%= gf.format %></dd>
-        <dt>Filesize<dt>
-        <dd><%= number_to_human_size(gf.size) %></dd>
-      </dl>
-
-  <% end %>
+<div id="sidebar" class="span3">
+   <%= render_document_sidebar_partial %>
 </div>

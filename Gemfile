@@ -43,7 +43,7 @@ end
 
 gem 'hydra-head', github: 'projecthydra/hydra-head', ref: 'c55582d' # pre 7.0.0.pre1
 gem 'active-fedora', github: 'projecthydra/active_fedora', ref: 'ea45a11' # pre 7.0.0.pre1
-gem 'hydra-editor', '~> 0.2.1'
+gem 'hydra-editor', github: 'projecthydra/hydra-editor', ref: '9574ff6'#'~> 0.2.2'
 
 gem "devise"
 gem "bootstrap-sass"
