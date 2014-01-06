@@ -3,6 +3,7 @@ class GenericFile < ActiveFedora::Base
   has_metadata "descMetadata", type: GenericFileMetadata
   has_metadata "premisEvents", type: PremisEventsMetadata
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
+  has_file_datastream "content", control_group: 'E'
   include Hydra::AccessControls::Permissions
 
   belongs_to :intellectual_object, property: :is_part_of
@@ -22,6 +23,10 @@ class GenericFile < ActiveFedora::Base
   def to_solr(solr_doc = {})
     super
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
+  end
+
+  def content_uri= uri
+    content.dsLocation = uri
   end
 
   private 

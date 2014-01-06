@@ -1,5 +1,8 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
+  before_filter do
+    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :size, :created, :modified, :format, checksum_attributes: [:digest, :algorithm, :datetime])
+  end
   load_and_authorize_resource :intellectual_object, only: :create
   load_and_authorize_resource through: :intellectual_object, only: :create
   load_and_authorize_resource except: :create
@@ -19,7 +22,7 @@ class GenericFilesController < ApplicationController
   end
 
   protected
-  
+
   def resource
     @generic_file
   end
