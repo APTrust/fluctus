@@ -41,6 +41,7 @@ describe Ability do
     subject { Ability.new(institutional_admin) }
 
     it { should     be_able_to(:edit, intellectual_object) }
+    it { should     be_able_to(:update, SolrDocument.new(intellectual_object.rightsMetadata.to_solr.merge(id: intellectual_object.pid))) }
     it { should_not be_able_to(:edit, FactoryGirl.create(:intellectual_object)) }
 
     it { should_not be_able_to(:create, Institution) }
