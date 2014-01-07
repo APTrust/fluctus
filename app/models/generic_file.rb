@@ -32,6 +32,7 @@ class GenericFile < ActiveFedora::Base
 
   def soft_delete!
     self.state = 'D'
+    premisEvents.events.build(type: 'delete')
     save!
     Hydra::Queue.push(DeleteGenericFileJob.new(id))
   end

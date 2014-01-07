@@ -48,6 +48,7 @@ class Event
   def initialize(graph=RDF::Graph.new, subject=nil)
     super
     init_identifier
+    init_time
   end
 
   def to_solr(solr_doc={}, opts={})
@@ -59,6 +60,10 @@ class Event
   end
 
 private
+  def init_time
+    self.date_time = Time.now.utc.iso8601 if self.date_time.empty?
+  end
+
   def init_identifier
     if self.identifier.empty?
       uuid = UUIDTools::UUID.timestamp_create
