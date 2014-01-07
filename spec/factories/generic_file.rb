@@ -8,7 +8,7 @@ FactoryGirl.define do
     created { "#{Time.now}" }
     modified { "#{Time.now}" }
 
-    before(:create) do  |generic_file|
+    after(:build) do  |generic_file|
       generic_file.descMetadata.checksum.build({
                      algorithm: 'md5',
                      datetime: Time.now.to_s,

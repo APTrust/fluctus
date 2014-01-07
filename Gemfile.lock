@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/projecthydra/active_fedora.git
-  revision: ea45a11e77c4814783b5cca2d17e8555dbdb408a
-  ref: ea45a11
+  revision: 2c8fbf620e57219c62ef46b8b2e875fe087bf99c
+  ref: 2c8fbf6
   specs:
     active-fedora (7.0.0.alpha)
       activesupport (>= 3.0.0)
@@ -27,8 +27,8 @@ GIT
 
 GIT
   remote: git://github.com/projecthydra/hydra-head.git
-  revision: c55582d801bfbeb0cbcd9104bf969362c210dca5
-  ref: c55582d
+  revision: 49f350e098545eda9e036f31725e1ea594d7268f
+  ref: 49f350e
   specs:
     hydra-access-controls (7.0.0.alpha)
       active-fedora (~> 7.0.0.alpha)
@@ -158,7 +158,7 @@ GEM
     figaro (0.7.0)
       bundler (~> 1.0)
       rails (>= 3, < 5)
-    haml (4.0.4)
+    haml (4.0.5)
       tilt
     has_scope (0.6.0.rc)
       actionpack (>= 3.2, < 5)
