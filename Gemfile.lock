@@ -50,6 +50,15 @@ GIT
       rails (>= 3.2.6)
 
 GIT
+  remote: git://github.com/projecthydra/hydra-queue.git
+  revision: 1d865eb97ab923b9a1874eef1c243483ba14fa8c
+  specs:
+    hydra-queue (0.0.1)
+      activesupport
+      hydra-head
+      resque (~> 1.25)
+
+GIT
   remote: git://github.com/stympy/faker.git
   revision: 35ae2b9aa8e2079d25b36a60212a21a02909c792
   specs:
@@ -409,6 +418,7 @@ DEPENDENCIES
   figaro
   hydra-editor!
   hydra-head!
+  hydra-queue!
   hydra-role-management (~> 0.1.0)
   inherited_resources
   jbuilder (~> 1.2)
