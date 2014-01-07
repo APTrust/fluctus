@@ -3,6 +3,6 @@
 FactoryGirl.define do
   factory :institution_metadata, class: InstitutionMetadata do
     name { Faker::Company.name }
-    brief_name { Faker::Lorem.characters rand(3..5) }
+    brief_name { SecureRandom.hex(rand(3..5)) }
   end
 end

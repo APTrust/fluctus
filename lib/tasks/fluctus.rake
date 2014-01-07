@@ -58,11 +58,13 @@ namespace :fluctus do
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
-        ["Columbia University", "clmb"], ["North Carolina State University", "ncsu"],
-        ["Johns Hopkins University", "jhu"], ["University of Maryland", "mrlnd"],
-        ["University of Michigan", "mich"], ["University of North Carolina at Chapel Hill", "uncch"],
-        ["Syracuse University", "srcs"], ["University of Virginia","uva"],
-        ["University of Notre Dame", "und"], ["Stanford University", "stnfd"]
+        ["Columbia University", "cul"], ["North Carolina State University", "ncsu"],
+        ["Johns Hopkins University", "jhu"], ["University of Maryland", "mdu"],
+        ["University of Michigan", "umich"], ["University of North Carolina at Chapel Hill", "unc"],
+        ["Syracuse University", "syr"], ["University of Virginia","uva"],
+        ["University of Notre Dame", "und"], ["Stanford University", "stnfd"],
+        ["University of Chicago", "uchi"], ["University of Miami", "um"],
+        ["University of Connecticut", "uconn"], ["University of Cinnicnati", "ucin"],
     ]
 
     puts "Creating #{partner_list.count} Institutions"
