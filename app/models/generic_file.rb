@@ -19,6 +19,7 @@ class GenericFile < ActiveFedora::Base
   validates_presence_of :checksum
 
   before_save :copy_permissions_from_intellectual_object
+  after_save :update_parent_index
 
   def to_solr(solr_doc = {})
     super
@@ -30,11 +31,15 @@ class GenericFile < ActiveFedora::Base
   end
 
   private 
+
+  def update_parent_index
+    #TODO in order to improve performance, you can put this work in a background job
+    intellectual_object.generic_files.reset
+    intellectual_object.update_index
+  end
+
   def copy_permissions_from_intellectual_object
-    io = self.intellectual_object
-    self.discover_groups = io.discover_groups
-    self.read_groups = io.read_groups
-    self.edit_groups = io.edit_groups
+    self.permissions = intellectual_object.permissions
   end
 
 

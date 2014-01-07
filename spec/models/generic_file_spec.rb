@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe GenericFile do
-
   it 'should have a descMetadata datastream' do
     subject.descMetadata.should be_kind_of GenericFileMetadata
   end
@@ -24,29 +23,53 @@ describe GenericFile do
     expect(subject.errors[:checksum]).to be_empty
   end
 
-
-  describe "permissions" do
-    let(:int_obj) { FactoryGirl.create(:intellectual_object) }
-    let(:gen_file) { FactoryGirl.create(:generic_file, intellectual_object: int_obj) }
-    after do
-      gen_file.destroy
-      int_obj.destroy
-    end
-    it 'should copy the permissions of the intellectual object it belongs to' do
-      gen_file.permissions.should == int_obj.permissions
-    end
-  end
-
-  describe "#to_solr" do
+  describe "with an intellectual object" do
     before do
       subject.intellectual_object = intellectual_object
     end
+
     let(:institution) { mock_model Institution, internal_uri: 'info:fedora/testing:123' }
     let(:intellectual_object) { mock_model IntellectualObject, institution: institution }
-    let(:solr_doc) { subject.to_solr }
-    it "should index the institution, so we can do aggregations without a join query" do
-      solr_doc['institution_uri_ssim'].should == ['info:fedora/testing:123']
+
+    describe "#to_solr" do
+      let(:solr_doc) { subject.to_solr }
+      it "should index the institution, so we can do aggregations without a join query" do
+        solr_doc['institution_uri_ssim'].should == ['info:fedora/testing:123']
+      end
+    end
+
+    describe 'that is saved' do
+      let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
+      subject { FactoryGirl.build(:generic_file, intellectual_object: intellectual_object) }
+      describe "permissions" do
+        before do
+          intellectual_object.permissions = [
+            Hydra::AccessControls::Permission.new(:name=>"institutional_admin", :access=>"read", :type=>"group"),
+            Hydra::AccessControls::Permission.new(:name=>"institutional_user", :access=>"read", :type=>"group"),
+            Hydra::AccessControls::Permission.new(:name=>"Admin_At_aptrust-test_22953", :access=>"edit", :type=>"group")]
+        end
+        after do
+          subject.destroy
+          intellectual_object.destroy
+        end
+        it 'should copy the permissions of the intellectual object it belongs to' do
+          subject.save!
+          subject.permissions.should == [
+            Hydra::AccessControls::Permission.new(:name=>"institutional_admin", :access=>"read", :type=>"group"),
+            Hydra::AccessControls::Permission.new(:name=>"institutional_user", :access=>"read", :type=>"group"),
+            Hydra::AccessControls::Permission.new(:name=>"Admin_At_aptrust-test_22953", :access=>"edit", :type=>"group")]
+        end
+      end
+      describe "its intellectual_object" do
+        after(:all)do # Must use after(:all) to avoid 'can't modify frozen Class' bug in rspec-mocks
+          subject.destroy
+          intellectual_object.destroy
+        end
+        it "should reindex" do
+          intellectual_object.should_receive(:update_index)
+          subject.save!
+        end
+      end
     end
   end
-
 end
