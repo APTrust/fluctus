@@ -3,7 +3,6 @@ require 'spec_helper'
 describe Auditable do
 
   class ObjectWithAuditEvents < ActiveFedora::Base
-    has_metadata "premisEvents", type: PremisEventsMetadata
     include Auditable
   end
 
