@@ -6,3 +6,6 @@ development:
   FEDORA_USER:
   FEDORA_PASS:
   FEDORA_NAMESPACE:
+  REDIS_HOST: localhost
+  REDIS_PORT: 6379
+

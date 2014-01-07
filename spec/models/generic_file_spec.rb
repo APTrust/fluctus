@@ -70,6 +70,28 @@ describe GenericFile do
           subject.save!
         end
       end
+
+      describe "soft_delete!" do
+        after do
+          subject.destroy
+          intellectual_object.destroy
+        end
+        before do
+          subject.save!
+        end
+
+        let(:async_job) { double('one') }
+
+        it "should set the state to deleted and index the object state" do
+          DeleteGenericFileJob.should_receive(:new).with(subject.pid).and_return(async_job)
+          Hydra::Queue.should_receive(:push).with(async_job).once
+          subject.soft_delete!
+          expect(subject.state).to eq 'D'
+          expect(subject.to_solr['object_state_ssi']).to eq 'D'
+        end
+
+        it "should create a new premis event"
+      end
     end
   end
 end

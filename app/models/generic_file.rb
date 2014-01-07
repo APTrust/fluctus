@@ -30,6 +30,12 @@ class GenericFile < ActiveFedora::Base
     content.dsLocation = uri
   end
 
+  def soft_delete!
+    self.state = 'D'
+    save!
+    Hydra::Queue.push(DeleteGenericFileJob.new(id))
+  end
+
   private 
 
   def update_parent_index
