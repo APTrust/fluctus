@@ -9,6 +9,17 @@ class IntellectualObjectsController < ApplicationController
 
   self.solr_search_params_logic += [:for_selected_institution]
 
+  def update
+    if params[:counter]
+      # They are just updating the search counter
+      search_session[:counter] = params[:counter]
+      redirect_to :action => "show", :status => 303
+    else
+      # They are updating a record. Use the method defined in RecordsControllerBehavior
+      super
+    end
+  end
+
   def destroy
     resource.soft_delete
     respond_to do |format|
