@@ -19,7 +19,7 @@ describe IntellectualObjectsController do
     describe "when some objects are in the repository and signed in" do
       let(:another_institution) { FactoryGirl.create(:institution) }
 
-      let!(:obj1) { FactoryGirl.create(:public_intellectual_object,
+      let!(:obj1) { FactoryGirl.create(:consortial_intellectual_object,
                                        institution: another_institution) }
       let!(:obj2) { FactoryGirl.create(:institutional_intellectual_object,
                                        institution: user.institution,
@@ -27,12 +27,12 @@ describe IntellectualObjectsController do
                                        description: 'a Scottish rugby union club. It was founded in Aberdeen in 1928.') }
       let!(:obj3) { FactoryGirl.create(:institutional_intellectual_object,
                                        institution: another_institution) }
-      let!(:obj4) { FactoryGirl.create(:private_intellectual_object, 
+      let!(:obj4) { FactoryGirl.create(:restricted_intellectual_object,
                                        institution: user.institution,
                                        title: "The 2nd Workers' Cultural Palace Station",
                                        description: 'a station of Line 2 of the Guangzhou Metro.',
                                        identifier: 'jhu.d9abff425d09d5b0') }
-      let!(:obj5) { FactoryGirl.create(:private_intellectual_object,
+      let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object,
                                        institution: another_institution) }
         
       before { sign_in user }
@@ -88,7 +88,7 @@ describe IntellectualObjectsController do
   end
 
   describe "view an object" do
-    let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+    let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
     after { obj1.destroy }
 
     describe "when not signed in" do
@@ -114,7 +114,7 @@ describe IntellectualObjectsController do
     after { obj1.destroy }
 
     describe "when not signed in" do
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
         get :edit, id: obj1
         expect(response).to redirect_to root_url
@@ -122,7 +122,7 @@ describe IntellectualObjectsController do
     end
 
     describe "when signed in" do
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution: user.institution) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: user.institution) }
       describe "as an institutional_user" do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
         before { sign_in user }
@@ -150,7 +150,7 @@ describe IntellectualObjectsController do
     after { obj1.destroy }
 
     describe "when not signed in" do
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
         patch :update, id: obj1, intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url
@@ -160,7 +160,7 @@ describe IntellectualObjectsController do
 
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
       before { sign_in user }
         
       it "should update fields" do
@@ -204,14 +204,14 @@ describe IntellectualObjectsController do
       end
 
       it "should update fields" do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', rights: 'private'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', rights: 'restricted'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
       it "should use the institution parameter in the URL, not from the json" do
         expect {
-          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', rights: 'private'}, format: 'json'
+          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', rights: 'restricted'}, format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Foo'
           expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid

@@ -37,7 +37,7 @@ describe IntellectualObjectMetadata do
 
   it 'should properly set rights' do
     @ds.rights.should_not be_empty
-    exp = ['public', 'institution', 'private'].sample
+    exp = ['consortial', 'institution', 'restricted'].sample
     @ds.rights = exp
     @ds.rights.should == [exp]
   end
