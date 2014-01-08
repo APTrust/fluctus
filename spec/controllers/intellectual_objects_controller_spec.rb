@@ -162,7 +162,13 @@ describe IntellectualObjectsController do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
       let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
       before { sign_in user }
-        
+
+      it "should update the search counter" do
+        patch :update, id: obj1, counter: '5'
+        expect(response).to redirect_to intellectual_object_path(obj1)
+        expect(session[:search][:counter]).to eq '5'
+      end
+       
       it "should update fields" do
         patch :update, id: obj1, intellectual_object: {title: 'Foo'}
         expect(response).to redirect_to intellectual_object_path(obj1)
