@@ -25,17 +25,13 @@ describe Auditable do
   describe 'adding a new event' do
     let(:attrs) { FactoryGirl.attributes_for(:premis_event_ingest) }
 
-    it 'returns the event when successful' do
+    it 'returns the event' do
       subject.add_event(attrs).class.should == Event
-    end
-
-    it 'returns nil if it failed' do
-      subject.should_receive(:save).and_return(false)
-      subject.add_event(attrs).should be_nil
     end
 
     it 'saves the new event to the premisEvents datastream' do
       subject.add_event(attrs)
+      subject.save!
 
       reload = ActiveFedora::Base.find(subject.id)
       reload.premisEvents.events.length.should == 1
@@ -50,6 +46,7 @@ describe Auditable do
       subject.save!
       subject.premisEvents.events.length.should == 1
       subject.add_event(attrs)
+      subject.save!
 
       reload = ActiveFedora::Base.find(subject.id)
       reload.premisEvents.events.length.should == 2

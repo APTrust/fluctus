@@ -8,7 +8,7 @@ module Auditable
   def add_event(attributes)
     event = self.premisEvents.events.build(attributes)
     write_event_to_solr(event)
-    return_value = self.save ? event : nil
+    event
   end
 
   def write_event_to_solr(event)

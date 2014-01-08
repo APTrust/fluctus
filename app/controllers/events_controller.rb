@@ -4,7 +4,7 @@ class EventsController < ApplicationController
 
   def create
     @event = @parent_object.add_event(params['event'])
-    if @event
+    if @parent_object.save
       flash[:notice] = "Successfully created new event: #{@event.identifier}"
     else
       flash[:alert] = "Unable to create event for #{@parent_object.id} using input parameters: #{params['event']}"

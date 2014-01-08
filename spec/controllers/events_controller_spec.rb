@@ -36,14 +36,11 @@ describe EventsController do
       end
 
       it 'if it fails, it prints a fail message' do
-        GenericFile.any_instance.should_receive(:add_event).and_return(nil) # Make it fail
-
         file.premisEvents.events.count.should == 0
+        GenericFile.any_instance.should_receive(:save).and_return(false) # Make it fail
         post :create, generic_file_id: file, event: event_attrs
         file.reload
-
         file.premisEvents.events.count.should == 0
-        assigns(:event).should be_nil
         flash[:alert].should =~ /Unable to create event/
       end
     end
