@@ -8,7 +8,7 @@ Fluctus::Application.routes.draw do
   end
 
   resources :users
-  resources :generic_files, only: [:show, :update], path: 'files' do
+  resources :generic_files, only: [:show, :update, :destroy], path: 'files' do
     resources :events, only: [:create]
   end
 

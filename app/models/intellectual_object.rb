@@ -28,6 +28,7 @@ class IntellectualObject < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new)
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
+      # TODO only generic_files in the active state
       Solrizer.insert_field(doc, 'format', generic_files.map(&:format), :facetable)
     end
   end

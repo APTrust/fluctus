@@ -30,7 +30,7 @@ class GenericFile < ActiveFedora::Base
     content.dsLocation = uri
   end
 
-  def soft_delete!
+  def soft_delete
     self.state = 'D'
     premisEvents.events.build(type: 'delete')
     save!

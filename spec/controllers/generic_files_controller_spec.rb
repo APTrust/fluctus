@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe GenericFilesController do
-  let(:user) { FactoryGirl.create(:user, :admin) }
+  let(:user) { FactoryGirl.create(:user, :admin, institution_pid: @institution.pid) }
   let(:file) { FactoryGirl.create(:generic_file) }
 
-  before do
-    GenericFile.delete_all
-    IntellectualObject.delete_all
-    Institution.delete_all
+  before(:all) do
+    @institution = FactoryGirl.create(:institution)
+    @another_institution = FactoryGirl.create(:institution)
+    @intellectual_object = FactoryGirl.create(:public_intellectual_object, institution_id: @institution.id)
   end
 
   after :all do
@@ -41,11 +41,8 @@ describe GenericFilesController do
 
 
   describe "POST #create" do
-    after do
-      obj1.destroy
-    end
     describe "when not signed in" do
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      let(:obj1) { @intellectual_object }
       it "should redirect to login" do
         post :create, intellectual_object_id: obj1, intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url
@@ -54,12 +51,12 @@ describe GenericFilesController do
     end
 
     describe "when signed in" do
-      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
+      let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @institution.pid) }
+      let(:obj1) { @intellectual_object }
       before { sign_in user }
         
       describe "and assigning to an object you don't have access to" do
-        let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+        let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: @another_institution.id) }
         it "should be forbidden" do
           post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
           expect(response.code).to eq "403" # forbidden
@@ -87,6 +84,40 @@ describe GenericFilesController do
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/bag'
           expect(file.content.dsLocation).to eq 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg'
+        end
+      end
+    end
+  end
+
+  describe "DELETE #destroy" do
+    before(:all) { @file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id) }
+    let(:file) { @file }
+
+    describe "when not signed in" do
+      it "should redirect to login" do
+        delete :destroy, id: file
+        expect(response).to redirect_to root_url
+        expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
+      end
+    end
+
+    describe "when signed in" do
+      before { sign_in user }
+        
+      describe "and deleteing a file you don't have access to" do
+        let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
+        it "should be forbidden" do
+          delete :destroy, id: file, format: 'json'
+          expect(response.code).to eq "403" # forbidden
+          expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
+         end
+      end
+
+      describe "and you have access to the file" do
+        it "should delete the file" do
+          delete :destroy, id: file, format: 'json'
+          expect(assigns[:generic_file].state).to eq 'D'
+          expect(response.code).to eq '204'
         end
       end
     end

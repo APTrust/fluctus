@@ -1,8 +1,6 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter do
-    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :size, :created, :modified, :format, checksum_attributes: [:digest, :algorithm, :datetime])
-  end
+  before_filter :filter_parameters
   load_and_authorize_resource :intellectual_object, only: :create
   load_and_authorize_resource through: :intellectual_object, only: :create
   load_and_authorize_resource except: :create
@@ -21,7 +19,18 @@ class GenericFilesController < ApplicationController
     end
   end
 
+  def destroy
+    @generic_file.soft_delete
+    respond_to do |format|
+      format.json { head :no_content }
+    end
+  end
+
   protected
+
+  def filter_parameters
+    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :size, :created, :modified, :format, checksum_attributes: [:digest, :algorithm, :datetime])
+  end
 
   def resource
     @generic_file

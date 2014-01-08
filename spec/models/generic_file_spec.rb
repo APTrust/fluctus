@@ -77,7 +77,7 @@ describe GenericFile do
         end
       end
 
-      describe "soft_delete!" do
+      describe "soft_delete" do
         after do
           subject.destroy
           intellectual_object.destroy
@@ -92,7 +92,7 @@ describe GenericFile do
           DeleteGenericFileJob.should_receive(:new).with(subject.pid).and_return(async_job)
           OrderUp.should_receive(:push).with(async_job).once
           expect {
-            subject.soft_delete!
+            subject.soft_delete
           }.to change { subject.premisEvents.events.count}.by(1)
           expect(subject.state).to eq 'D'
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
