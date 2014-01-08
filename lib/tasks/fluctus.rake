@@ -36,6 +36,14 @@ namespace :fluctus do
     end
   end
 
+  desc "Delete all solr documents"
+  task clean_solr: :environment do
+    if !Rails.env.production?
+      solr = ActiveFedora::SolrService.instance.conn
+      solr.delete_by_query("*:*", params: { commit: true })
+    end
+  end
+
   desc "Run ci"
   task :travis do 
     puts "Updating Solr config"
@@ -53,6 +61,7 @@ namespace :fluctus do
   desc "Empty DB and add dummy information"
   task populate_db: :environment do
     Rake::Task['fluctus:empty_db'].invoke
+    Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
@@ -110,11 +119,12 @@ namespace :fluctus do
           }
           f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_desc_metadata, format: attrs[:format], uri: attrs[:uri])
 
+          f.save!
+
           f.add_event(FactoryGirl.attributes_for(:premis_event_validation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_ingest))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
-
           f.save!
         end
       end
