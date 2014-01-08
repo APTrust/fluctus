@@ -42,10 +42,8 @@ namespace :fluctus do
     Rake::Task['jetty:config'].invoke
     
     require 'jettywrapper'
-    jetty_params = Jettywrapper.load_config.merge({jetty_home: File.join(Rails.root , 'jetty'), startup_wait: 60 })
-    
+    jetty_params = Jettywrapper.load_config
     puts "Starting Jetty"
-    error = nil
     error = Jettywrapper.wrap(jetty_params) do
         Rake::Task['rspec'].invoke
     end
