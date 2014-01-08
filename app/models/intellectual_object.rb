@@ -33,6 +33,13 @@ class IntellectualObject < ActiveFedora::Base
     end
   end
 
+  def soft_delete
+    self.state = 'D'
+    premisEvents.events.build(type: 'delete')
+    save!
+    OrderUp.push(DeleteIntellectualObjectJob.new(id))
+  end
+
   private
     def set_permissions
       inst_pid = clean_for_solr(self.institution.pid)
