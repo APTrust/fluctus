@@ -90,7 +90,7 @@ describe GenericFile do
 
         it "should set the state to deleted and index the object state" do
           DeleteGenericFileJob.should_receive(:new).with(subject.pid).and_return(async_job)
-          Hydra::Queue.should_receive(:push).with(async_job).once
+          OrderUp.should_receive(:push).with(async_job).once
           expect {
             subject.soft_delete!
           }.to change { subject.premisEvents.events.count}.by(1)
