@@ -45,7 +45,7 @@ describe GenericFilesController do
       obj1.destroy
     end
     describe "when not signed in" do
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
         post :create, intellectual_object_id: obj1, intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url
@@ -55,11 +55,11 @@ describe GenericFilesController do
 
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
       before { sign_in user }
         
       describe "and assigning to an object you don't have access to" do
-        let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+        let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
         it "should be forbidden" do
           post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
           expect(response.code).to eq "403" # forbidden

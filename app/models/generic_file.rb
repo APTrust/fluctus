@@ -1,6 +1,6 @@
 class GenericFile < ActiveFedora::Base
 
-  has_metadata "descMetadata", type: GenericFileMetadata
+  has_metadata "techMetadata", type: GenericFileMetadata
   has_metadata "premisEvents", type: PremisEventsMetadata
   has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
   has_file_datastream "content", control_group: 'E'
@@ -8,8 +8,8 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :format, :created, :modified, datastream: 'descMetadata', multiple: false
-  delegate :checksum_attributes=, :checksum, to: :descMetadata
+  has_attributes :uri, :size, :format, :created, :modified, datastream: 'techMetadata', multiple: false
+  delegate :checksum_attributes=, :checksum, to: :techMetadata
 
   validates_presence_of :uri
   validates_presence_of :size

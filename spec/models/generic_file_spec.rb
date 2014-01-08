@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe GenericFile do
-  it 'should have a descMetadata datastream' do
-    subject.descMetadata.should be_kind_of GenericFileMetadata
+  it 'should have a techMetadata datastream' do
+    subject.techMetadata.should be_kind_of GenericFileMetadata
   end
 
   it 'should have a premisEvents datastream' do

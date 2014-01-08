@@ -50,10 +50,10 @@ describe GenericFileMetadata do
   describe "#to_solr" do
     subject { FactoryGirl.build(:generic_file, size: 128774003 ).to_solr }
     it "should have size indexed as an integer" do
-      expect(subject['desc_metadata__size_isi']).to eq '128774003'
+      expect(subject['tech_metadata__size_isi']).to eq '128774003'
     end
     it "should have mime type indexed " do
-      expect(subject['desc_metadata__format_ssi']).to eq "application/xml"
+      expect(subject['tech_metadata__format_ssi']).to eq "application/xml"
     end
   end
 end
