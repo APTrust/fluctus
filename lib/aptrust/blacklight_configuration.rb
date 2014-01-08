@@ -11,6 +11,7 @@ module Aptrust
         description_field = solr_name('desc_metadata__description', :stored_searchable)
         rights_field = solr_name('desc_metadata__rights', :facetable)
         format_field = solr_name('format', :facetable)
+        event_type_field = solr_name('event_type', :symbol)
 
         config.default_solr_params = {
           :qf => [title_field, identifier_field, description_field].join(' '),
@@ -30,6 +31,7 @@ module Aptrust
         config.add_facet_field institution_field, sort: 'index', label: "Institution"
         config.add_facet_field rights_field, sort: 'index', label: "Rights"
         config.add_facet_field format_field, sort: 'index', label: "Format"
+        config.add_facet_field event_type_field, sort: 'index', label: "Event Type"
 
         # Have BL send all facet field names to Solr, which has been the default
         # previously. Simply remove these lines if you'd rather use Solr request

@@ -6,11 +6,17 @@ module Aptrust::GatedSearch
   included do
     # These before_filters apply the hydra access controls
     before_filter :enforce_show_permissions, only: :show
-    # This applies appropriate access controls to all solr queries
-    self.solr_search_params_logic += [:add_access_controls_to_solr_params]
-    self.solr_search_params_logic += [:only_intellectual_objects]
-    self.solr_search_params_logic += [:only_active_objects]
+
     include Aptrust::BlacklightConfiguration
+  end
+
+  module ClassMethods
+    def apply_catalog_search_params
+      # This applies appropriate access controls to all solr queries
+      self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+      self.solr_search_params_logic += [:only_intellectual_objects]
+      self.solr_search_params_logic += [:only_active_objects]
+    end
   end
 
   protected
@@ -36,4 +42,5 @@ module Aptrust::GatedSearch
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << "_query_:\"{!raw f=object_state_ssi}A\"" unless user_parameters[:show_all] == 'true'
   end
+
 end

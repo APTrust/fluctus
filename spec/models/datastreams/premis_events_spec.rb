@@ -69,7 +69,7 @@ describe Event do
     it 'contains the fields needed for search, sort, display' do
       event = meta.events.build(attrs)
       event.to_solr['id'].should == attrs[:identifier]
-      event.to_solr['event_type_ssm'].should == [attrs[:type]]
+      event.to_solr['event_type_ssim'].should == [attrs[:type]]
       event.to_solr['event_outcome_ssm'].should == [attrs[:outcome]]
       event.to_solr['event_date_time_si'].should == attrs[:date_time]
     end

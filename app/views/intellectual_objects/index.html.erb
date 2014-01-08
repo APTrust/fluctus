@@ -8,20 +8,20 @@
 
   <%= render 'did_you_mean' %>
 
-  <%= render 'constraints' %>
+  <%= render 'shared/constraints' %>
 
   <%= render 'sort_and_per_page' %>
 
   <h2 class="hide-text"><%= t('blacklight.search.search_results') %></h2>
 
   <%- if response_has_no_search_results? %>
-    <%= render "zero_results" %>
+    <%= render "shared/zero_results" %>
   <%- elsif render_grouped_response? %>
     <%= render_grouped_document_index %>
   <%- else %>
     <%= render_document_index %>
   <%- end %>
 
-  <%= render 'results_pagination' %>
+  <%= render 'shared/results_pagination' %>
 
 </div>

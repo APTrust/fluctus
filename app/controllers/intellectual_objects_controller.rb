@@ -5,6 +5,7 @@ class IntellectualObjectsController < ApplicationController
   load_and_authorize_resource except: [:index, :create]
 
   include Aptrust::GatedSearch
+  apply_catalog_search_params
   include RecordsControllerBehavior
 
   self.solr_search_params_logic += [:for_selected_institution]
