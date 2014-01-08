@@ -7,7 +7,6 @@ class IntellectualObjectsController < ApplicationController
   include Aptrust::GatedSearch
   include RecordsControllerBehavior
 
-  self.solr_search_params_logic += [:only_intellectual_objects]
   self.solr_search_params_logic += [:for_selected_institution]
 
   def destroy
@@ -29,14 +28,6 @@ class IntellectualObjectsController < ApplicationController
   end
 
   private
-
-  # Limits search results just to IntellectualObjects
-  # @param solr_parameters the current solr parameters
-  # @param user_parameters the current user-submitted parameters
-  def only_intellectual_objects(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(has_model: IntellectualObject.to_class_uri)
-  end
 
   def for_selected_institution(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
