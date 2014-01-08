@@ -1,7 +1,6 @@
 class IntellectualObjectsController < ApplicationController
-  inherit_resources
   before_filter :authenticate_user!
-  load_and_authorize_resource :institution, except: [:show, :edit, :update]
+  load_and_authorize_resource :institution, only: [:index, :create]
   load_and_authorize_resource :through => :institution, only: :create
   load_and_authorize_resource except: [:index, :create]
 
@@ -18,13 +17,20 @@ class IntellectualObjectsController < ApplicationController
   self.solr_search_params_logic += [:only_intellectual_objects]
   self.solr_search_params_logic += [:for_selected_institution]
 
+  def destroy
+    resource.soft_delete
+    respond_to do |format|
+      format.json { head :no_content }
+    end
+  end
+
+  protected 
 
   # Override Hydra-editor to redirect to an alternate location after create
   def redirect_after_update
     intellectual_object_path(resource)
   end
 
-  protected 
   def self.cancan_resource_class
     CanCan::ControllerResource
   end

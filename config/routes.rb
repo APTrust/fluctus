@@ -2,7 +2,7 @@ Fluctus::Application.routes.draw do
   resources :institutions do
     resources :intellectual_objects, only: [:index, :create], path: 'objects'
   end
-  resources :intellectual_objects, only: [:show, :edit, :update], path: 'objects' do
+  resources :intellectual_objects, only: [:show, :edit, :update, :destroy], path: 'objects' do
     resources :generic_files, only: [:create], path: 'files'
     resources :events, only: [:create]
   end

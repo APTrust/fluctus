@@ -219,4 +219,27 @@ describe IntellectualObjectsController do
       end
     end
   end
+
+  describe "destroy an object" do
+    describe "when not signed in" do
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object) }
+      after { obj1.destroy }
+      it "should redirect to login" do
+        delete :destroy, id: obj1
+        expect(response).to redirect_to root_url
+      end
+    end
+
+    describe "when signed in" do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: user.institution_pid) }
+      before { sign_in user }
+
+      it "should update via json" do
+        delete :destroy, id: obj1, format: 'json'
+        expect(response.code).to eq '204'
+        expect(assigns(:intellectual_object).state).to eq 'D'
+      end
+    end
+  end
 end
