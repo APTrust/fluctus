@@ -109,12 +109,12 @@ namespace :fluctus do
               uri: "#{item.identifier.first}/data/#{Faker::Lorem.characters(char_count=rand(5..15))}.#{format[:ext]}",
           }
           f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_desc_metadata, format: attrs[:format], uri: attrs[:uri])
-          f.premisEvents.events_attributes = [
-              FactoryGirl.attributes_for(:premis_event_validation),
-              FactoryGirl.attributes_for(:premis_event_ingest),
-              FactoryGirl.attributes_for(:premis_event_fixity_generation),
-              FactoryGirl.attributes_for(:premis_event_fixity_check)
-          ]
+
+          f.add_event(FactoryGirl.attributes_for(:premis_event_validation))
+          f.add_event(FactoryGirl.attributes_for(:premis_event_ingest))
+          f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
+          f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
+
           f.save!
         end
       end
