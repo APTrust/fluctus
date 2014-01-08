@@ -4,16 +4,9 @@ class IntellectualObjectsController < ApplicationController
   load_and_authorize_resource :through => :institution, only: :create
   load_and_authorize_resource except: [:index, :create]
 
-  include Blacklight::Catalog
-  include Hydra::Controller::ControllerBehavior
-  include Aptrust::AdminAccess
+  include Aptrust::GatedSearch
   include RecordsControllerBehavior
 
-  # These before_filters apply the hydra access controls
-  before_filter :enforce_show_permissions, only: :show
-
-  copy_blacklight_config_from CatalogController
-  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
   self.solr_search_params_logic += [:only_intellectual_objects]
   self.solr_search_params_logic += [:for_selected_institution]
 
