@@ -3,7 +3,7 @@
 FactoryGirl.define do
   factory :generic_file_tech_metadata, :class => 'GenericFileMetadata' do
     format { 'application/xml' }
-    uri { 'test/data/filename.xml' }
+    uri { 'file:///#{intellectual_object.identifier}/data/filename.xml' }
     size { rand(20000..500000000) }
     created { "#{Time.now}" }
     modified { "#{Time.now}" }
