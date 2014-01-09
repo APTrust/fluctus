@@ -1,5 +1,5 @@
       <div class="controls" <%  if index == 0 %> id="additional_<%= key.to_s %>_clone" <% end %>>
-        <%= select_tag "#{resource.class.model_name.singular}[#{key.to_s}][]", options_for_select(%w(private institution public), v), include_blank: true, id: "#{resource.class.model_name.singular}_#{key.to_s}",  class: "input-large" %>
+        <%= select_tag "#{resource.class.model_name.singular}[#{key.to_s}][]", options_for_select(%w(restricted institution consortial), v), include_blank: true, id: "#{resource.class.model_name.singular}_#{key.to_s}",  class: "input-large" %>
         <% unless resource.class.unique?(key) %>
           <%= render :partial=>"records/edit_fields/suffix", :locals=>{key: key, index: index} %>
         <% end %>

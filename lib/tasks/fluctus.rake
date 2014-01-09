@@ -101,7 +101,7 @@ namespace :fluctus do
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
           f = FactoryGirl.build(:generic_file, intellectual_object: item)
-          # crappy hack here but I'm running out of time. Create some descMetadata for them.
+          # crappy hack here but I'm running out of time. Create some techMetadata for them.
           format = [
               {ext: "txt", type: "plain/text"},
               {ext: "xml", type: "application/xml"},
@@ -117,7 +117,7 @@ namespace :fluctus do
               format: "#{format[:type]}",
               uri: "#{item.identifier.first}/data/#{Faker::Lorem.characters(char_count=rand(5..15))}.#{format[:ext]}",
           }
-          f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_desc_metadata, format: attrs[:format], uri: attrs[:uri])
+          f.descMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri])
 
           f.save!
 

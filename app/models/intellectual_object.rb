@@ -16,7 +16,7 @@ class IntellectualObject < ActiveFedora::Base
   validates_presence_of :institution
   validates_presence_of :identifier
   validates_presence_of :rights
-  validates_inclusion_of :rights, in: %w(public institution private), message: "#{:rights} is not a valid rights", if: :rights
+  validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
 
   before_save :set_permissions
   before_destroy :check_for_associations
@@ -47,13 +47,13 @@ class IntellectualObject < ActiveFedora::Base
       inst_admin_group = "Admin_At_#{inst_pid}"
       inst_user_group = "User_At_#{inst_pid}"
       case rights
-        when 'public'
+        when 'consortial'
           self.read_groups = %w(institutional_admin institutional_user)
           self.edit_groups = [inst_admin_group]
         when 'institution'
           self.read_groups = [inst_user_group]
           self.edit_groups = [inst_admin_group]
-        when 'private'
+        when 'restricted'
           self.discover_groups = [inst_user_group]
           self.edit_groups = [inst_admin_group]
       end

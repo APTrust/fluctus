@@ -26,8 +26,8 @@ describe IntellectualObject do
     end
 
     it 'should properly set rights' do
-      subject.rights = 'public'
-      subject.rights.should == 'public'
+      subject.rights = 'consortial'
+      subject.rights.should == 'consortial'
     end
 
     it 'must be one of the standard rights' do
@@ -107,8 +107,8 @@ describe IntellectualObject do
 
     describe "indexes groups" do
       let(:inst_pid) { clean_for_solr(subject.institution.pid) }
-      describe "with public access" do
-        subject { FactoryGirl.create(:public_intellectual_object) }
+      describe "with consortial access" do
+        subject { FactoryGirl.create(:consortial_intellectual_object) }
         it 'should properly set groups' do
           expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
           expect(subject.read_groups).to match_array ['institutional_user', 'institutional_admin']
@@ -125,8 +125,8 @@ describe IntellectualObject do
         end
       end
 
-      describe "with private access" do
-        subject { FactoryGirl.create(:private_intellectual_object) }
+      describe "with restricted access" do
+        subject { FactoryGirl.create(:restricted_intellectual_object) }
         it 'should properly set groups' do
           expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
           expect(subject.read_groups).to eq []

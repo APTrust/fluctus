@@ -5,18 +5,18 @@ FactoryGirl.define do
     title { Faker::Lorem.sentence }
     description { Faker::Lorem.paragraph }
     identifier { SecureRandom.uuid }
-    rights { ['public', 'institution', 'private'].sample }
+    rights { ['consortial', 'institution', 'restricted'].sample }
 
-    factory :public_intellectual_object, class: IntellectualObject do
-      rights { 'public' }
+    factory :consortial_intellectual_object, class: IntellectualObject do
+      rights { 'consortial' }
     end
 
     factory :institutional_intellectual_object, class: IntellectualObject do
       rights { 'institution' }
     end
 
-    factory :private_intellectual_object, class: IntellectualObject do
-      rights { 'private' }
+    factory :restricted_intellectual_object, class: IntellectualObject do
+      rights { 'restricted' }
     end
 
   end

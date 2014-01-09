@@ -7,7 +7,7 @@ describe GenericFilesController do
   before(:all) do
     @institution = FactoryGirl.create(:institution)
     @another_institution = FactoryGirl.create(:institution)
-    @intellectual_object = FactoryGirl.create(:public_intellectual_object, institution_id: @institution.id)
+    @intellectual_object = FactoryGirl.create(:consortial_intellectual_object, institution_id: @institution.id)
   end
 
   after :all do
@@ -56,7 +56,7 @@ describe GenericFilesController do
       before { sign_in user }
         
       describe "and assigning to an object you don't have access to" do
-        let(:obj1) { FactoryGirl.create(:public_intellectual_object, institution_id: @another_institution.id) }
+        let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
         it "should be forbidden" do
           post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
           expect(response.code).to eq "403" # forbidden
