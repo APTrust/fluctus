@@ -37,6 +37,28 @@ namespace :fluctus do
   end
 
   desc "Delete all solr documents"
+  task clean_solr: :environment do
+    if !Rails.env.production?
+      solr = ActiveFedora::SolrService.instance.conn
+      solr.delete_by_query("*:*", params: { commit: true })
+    end
+  end
+
+  desc "Run ci"
+  task :travis do
+    puts "Updating Solr config"
+    Rake::Task['jetty:config'].invoke
+
+    require 'jettywrapper'
+    jetty_params = Jettywrapper.load_config
+    puts "Starting Jetty"
+    error = Jettywrapper.wrap(jetty_params) do
+      Rake::Task['rspec'].invoke
+    end
+    raise "test failures: #{error}" if error
+  end
+
+  desc "Empty DB and add dummy information"
   task :populate_db, [:numInstitutions, :numIntObjects, :numGenFiles] => [:environment] do |t, args|
     Rake::Task['fluctus:empty_db'].invoke
     Rake::Task['fluctus:clean_solr'].invoke
