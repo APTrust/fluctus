@@ -75,14 +75,13 @@ namespace :fluctus do
     ]
 
     args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
-
-    if (args[:numInstitutions.to_i > partner_list.count])
-      args[:numInstitutions] = partner_list.count
+    numInsts = args[:numInstitutions].to_i
+    if (numInsts > partner_list.count)
+      numInsts = partner_list.count
       puts "We currently have only #{partner_list.count} institutions."
     end
 
-    puts "Creating #{args[:numInstitutions]} Institutions"
-    numInsts = args[:numInstitutions].to_i
+    puts "Creating #{numInsts} Institutions"
     numInsts.times.each do |count|
       puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
       FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count].last)
