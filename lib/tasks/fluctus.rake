@@ -60,6 +60,10 @@ namespace :fluctus do
 
   desc "Empty DB and add dummy information"
   task populate_db: :environment do
+    if !Rails.env.production?
+      puts "Do not run in production!"
+      return
+    end
     Rake::Task['fluctus:empty_db'].invoke
     Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
@@ -130,5 +134,15 @@ namespace :fluctus do
       end
 
     end
+  end
+
+  desc "Adds 50 events to a generic file and returns its pid."
+  task populate_events: :environment do
+     if !Rails.env.production?
+       gf = GenericFile.first
+       50.times { |n| gf.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_information: "Event #{n} of 50"))}
+       gf.save!
+       puts "50 items added to generic file pid #{gf.pid}"
+     end
   end
 end
