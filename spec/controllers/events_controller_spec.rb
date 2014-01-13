@@ -25,17 +25,25 @@ describe EventsController do
 
     describe 'GET index' do
       before do
-        @event = file.add_event(event_attrs)
+        oldest_time = "2014-01-13 10:15:00 -0600"
+        middle_time = "2014-01-13 10:30:00 -0600"
+        newest_time = "2014-01-13 10:45:00 -0600"
+
+        @event = file.add_event(event_attrs.merge(date_time: oldest_time))
+        @event2 = file.add_event(event_attrs.merge(date_time: newest_time))
+        @event3 = file.add_event(event_attrs.merge(date_time: middle_time))
         file.save!
+
         @someone_elses_event = someone_elses_file.add_event(event_attrs)
         someone_elses_file.save!
+
         get :index, institution_id: file.institution
       end
 
-      it 'shows the events for that institution' do
+      it 'shows the events for that institution, sorted by time' do
         assigns(:institution).should == file.institution
-        assigns(:document_list).length.should == 1
-        assigns(:document_list).map(&:id).should == @event.identifier
+        assigns(:document_list).length.should == 3
+        assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
       end
     end
 
