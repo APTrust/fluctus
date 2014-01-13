@@ -14,6 +14,7 @@ module Auditable
   def write_event_to_solr(event)
     solr_doc = event.to_solr
     Solrizer.insert_field(solr_doc, parent_key_for_events, self.id, :symbol)
+    Solrizer.insert_field(solr_doc, 'institution_id', institution.id, :symbol)
     ActiveFedora::SolrService.add(solr_doc)
     ActiveFedora::SolrService.commit
   end

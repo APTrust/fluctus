@@ -15,6 +15,12 @@ describe GenericFile do
     subject.premisEvents.should be_kind_of PremisEventsMetadata
   end
 
+  it 'delegates institution to the intellectual object' do
+    file = FactoryGirl.create(:generic_file)
+    institution = file.intellectual_object.institution
+    file.institution.should == institution
+  end
+
   it { should validate_presence_of(:uri) }
   it { should validate_presence_of(:size) }
   it { should validate_presence_of(:created) }

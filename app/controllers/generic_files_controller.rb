@@ -1,9 +1,9 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters
-  load_and_authorize_resource :intellectual_object, only: :create
-  load_and_authorize_resource through: :intellectual_object, only: :create
-  load_and_authorize_resource except: :create
+  load_and_authorize_resource :intellectual_object, only: [:create, :update]
+  load_and_authorize_resource through: :intellectual_object, only: [:create]
+  load_and_authorize_resource except: [:create, :update]
 
   def show
     @events = Kaminari.paginate_array(@generic_file.premisEvents.events).page(params[:page]).per(10)
@@ -16,6 +16,16 @@ class GenericFilesController < ApplicationController
       else
         format.json { render json: resource.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def update
+    @generic_file = @intellectual_object.generic_files.where(uri: params[:id]).first
+    authorize! :update, resource 
+    if resource.update(params[:generic_file])
+      head :no_content
+    else
+      render json: resource.errors, status: :unprocessable_entity
     end
   end
 

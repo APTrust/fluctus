@@ -45,21 +45,25 @@ namespace :fluctus do
   end
 
   desc "Run ci"
-  task :travis do
+  task :travis do 
     puts "Updating Solr config"
     Rake::Task['jetty:config'].invoke
-
+    
     require 'jettywrapper'
     jetty_params = Jettywrapper.load_config
     puts "Starting Jetty"
     error = Jettywrapper.wrap(jetty_params) do
-      Rake::Task['rspec'].invoke
+        Rake::Task['rspec'].invoke
     end
     raise "test failures: #{error}" if error
   end
 
   desc "Empty DB and add dummy information"
   task :populate_db, [:numInstitutions, :numIntObjects, :numGenFiles] => [:environment] do |t, args|
+    if Rails.env.production?
+      puts "Do not run in production!"
+      return
+    end
     Rake::Task['fluctus:empty_db'].invoke
     Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
@@ -74,22 +78,11 @@ namespace :fluctus do
         ["University of Connecticut", "uconn"], ["University of Cinnicnati", "ucin"],
     ]
 
-    args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
-    numInsts = args[:numInstitutions].to_i
-    if (numInsts > partner_list.count)
-      numInsts = partner_list.count
-      puts "We currently have only #{partner_list.count} institutions."
+    puts "Creating #{partner_list.count} Institutions"
+    partner_list.each_with_index do |partner, index|
+      puts "== Creating number #{index+1} of #{partner_list.count}: #{partner.first} "
+      FactoryGirl.create(:institution, name: partner.first, brief_name: partner.last)
     end
-
-    puts "Creating #{numInsts} Institutions"
-    numInsts.times.each do |count|
-      puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
-      FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count].last)
-    end
-    #partner_list.each_with_index do |partner, index|
-    #  puts "== Creating number #{index+1} of #{partner_list.count}: #{partner.first} "
-    #  FactoryGirl.create(:institution, name: partner.first, brief_name: partner.last)
-    #end
 
     puts "Creating Users for each Institution"
     Institution.all.each do |institution|
@@ -103,12 +96,12 @@ namespace :fluctus do
         FactoryGirl.create(:user, :institutional_user, institution_pid: institution.pid)
       end
 
-      numItems = args[:numIntObjects].to_i
+      numItems = rand(5..10)
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
         ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
-        numFiles = args[:numGenFiles].to_i
+        numFiles = rand(3..30)
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
           f = FactoryGirl.build(:generic_file, intellectual_object: item)

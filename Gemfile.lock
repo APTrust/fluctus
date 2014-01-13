@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/projecthydra/active_fedora.git
-  revision: a00ff6109082f5a575fbcc56b17c21e1b7363e09
-  ref: a00ff61
+  revision: 367ac6ced777e206cb4e9f9dc225d28ebd01e190
+  ref: 367ac6c
   specs:
     active-fedora (7.0.0.alpha)
       activesupport (>= 3.0.0)
@@ -48,6 +48,22 @@ GIT
       hydra-access-controls (= 7.0.0.alpha)
       hydra-core (= 7.0.0.alpha)
       rails (>= 3.2.6)
+
+GIT
+  remote: git://github.com/projecthydra/rubydora.git
+  revision: 35b04cdc0af0847376f3dd1e78849e5e04ec1974
+  ref: 35b04cd
+  specs:
+    rubydora (1.6.5)
+      activemodel
+      activesupport
+      deprecation
+      equivalent-xml
+      fastercsv
+      hooks (~> 0.3.0)
+      mime-types
+      nokogiri
+      rest-client
 
 GIT
   remote: git://github.com/stympy/faker.git
@@ -279,7 +295,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rake (10.1.1)
     rdf (1.1.1.1)
-    rdf-rdfa (1.1.0)
+    rdf-rdfa (1.1.1)
       haml (>= 4.0)
       htmlentities (>= 4.3.1)
       rdf (>= 1.1.0)
@@ -319,16 +335,6 @@ GEM
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
-    rubydora (1.6.5)
-      activemodel
-      activesupport
-      deprecation
-      equivalent-xml
-      fastercsv
-      hooks (~> 0.3.0)
-      mime-types
-      nokogiri
-      rest-client
     sass (3.2.13)
     sass-rails (4.0.1)
       railties (>= 4.0.0, < 5.0)
@@ -428,6 +434,7 @@ DEPENDENCIES
   rails_12factor
   resque (~> 1.25)
   rspec-rails
+  rubydora!
   sass-rails (~> 4.0.0)
   sdoc
   shoulda-matchers

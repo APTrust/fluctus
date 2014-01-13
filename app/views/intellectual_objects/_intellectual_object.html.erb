@@ -22,6 +22,10 @@
                   <dd class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value intellectual_object, :field => solr_fname %></dd>
           <% end -%>
         <% end -%>
+        <% if intellectual_object['object_state_ssi'] == 'D' %>
+          <dt>State</dt>
+          <dd>Deleted</dd>
+        <% end %>
 
       </dl>
     </div>

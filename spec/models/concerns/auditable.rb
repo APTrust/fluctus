@@ -8,6 +8,12 @@ describe Auditable do
 
   subject { ObjectWithAuditEvents.new }
 
+  before do
+    @inst_id = '456'
+    inst = double('institution', id: @inst_id)
+    subject.stub(:institution).and_return(inst)
+  end
+
   let(:parent_object_key) { "#{subject.class.to_s.underscore}_id" }
 
   it 'has a name for the id of the parent object of an event' do
@@ -56,8 +62,9 @@ describe Auditable do
       event.detail.first.should =~ /copy to s3/
     end
 
-    it 'writes a solr doc for the new event that includes the id of the parent object' do
+    it 'writes a solr doc for the new event that includes the id of the parent object and the institution id' do
       subject.save!
+
       event_id = '123'
       params = attrs.merge(identifier: event_id)
       subject.add_event(params)
@@ -68,6 +75,7 @@ describe Auditable do
       solr_result = ActiveFedora::SolrService.query("id:#{event_id}").first
       key = "#{parent_object_key}_ssim"
       solr_result[key].should == [subject.id]
+      solr_result['institution_id_ssim'].should == [@inst_id]
     end
 
   end

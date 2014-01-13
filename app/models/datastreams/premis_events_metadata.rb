@@ -52,7 +52,7 @@ class Event
   end
 
   def to_solr(solr_doc={}, opts={})
-    Solrizer.insert_field(solr_doc, 'event_type', self.type, :displayable)
+    Solrizer.insert_field(solr_doc, 'event_type', self.type, :symbol)
     Solrizer.insert_field(solr_doc, 'event_outcome', self.outcome, :displayable)
     Solrizer.insert_field(solr_doc, 'event_date_time', self.date_time, :sortable)
     solr_doc.merge!(SOLR_DOCUMENT_ID => self.identifier.first)

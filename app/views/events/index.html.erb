@@ -1,0 +1,20 @@
+<div id="sidebar" class="span3">
+  <%= render 'sidebar' %>
+</div>
+
+<div id="content" class="span9">
+  <h2 class="top-content-title"> Events for <%= @institution.name %> </h2>
+
+  <%= render 'shared/constraints' %>
+  <%= render 'sort_and_per_page' %>
+
+  <h2 class="hide-text"> <%= t('blacklight.search.search_results') %> </h2>
+
+  <%- if response_has_no_search_results? %>
+    <%= render 'shared/zero_results' %>
+  <%- else %>
+    <%= render_document_index %>
+  <%- end %>
+
+  <%= render 'shared/results_pagination' %>
+</div>

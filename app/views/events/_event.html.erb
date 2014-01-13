@@ -1,0 +1,25 @@
+<% # container for a single doc -%>
+<div class="document <%= render_document_class event %>">
+  <% # header bar for doc items in index view -%>
+  <div class="documentHeader clearfix">
+
+    <%- # main title -%>
+    <h5 class="index_title">
+      <% counter = document_counter_with_offset(event_counter) %>
+      <%= t('blacklight.search.documents.counter', :counter => counter) if counter %>
+      <%= parent_object_link(event) %>
+    </h5>
+  </div>
+
+  <dl class="document-metadata dl-horizontal dl-invert">
+    <dt> Event Identifier: </dt>
+    <dd> <%= "#{event.id}" %> </dd>
+
+    <dt> Event Type: </dt>
+    <dd> <%= event['event_type_ssim'].first %> </dd>
+
+    <dt> Outcome: </dt>
+    <dd> <%= event['event_outcome_ssm'].first %> </dd>
+  </dl>
+
+</div>

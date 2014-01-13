@@ -4,7 +4,7 @@ require 'spec_helper'
 # https://github.com/anusharanganathan/oraingest/blob/master/spec/models/datastreams/workflow_rdf_datastream_spec.rb
 describe PremisEventsMetadata do
 
-  subject { PremisEventsMetadata.new(double('inner object', pid: 'test/pexxx34234', :new? => true), 'premisEvents')}
+  subject { PremisEventsMetadata.new(double('inner object', pid: 'test/pexxx34234', :new_record? => true), 'premisEvents')}
 
   before do
     @e_fix = subject.events.build(
@@ -63,13 +63,13 @@ end
 describe Event do
 
   let(:attrs) { FactoryGirl.attributes_for(:premis_event_fixity_generation).merge(identifier: '123') }
-  let(:meta) { PremisEventsMetadata.new(double('inner object', pid: 'test/pexxx34234', :new? => true), 'premisEvents')}
+  let(:meta) { PremisEventsMetadata.new(double('inner object', pid: 'test/pexxx34234', :new_record? => true), 'premisEvents')}
 
   describe '#to_solr' do
     it 'contains the fields needed for search, sort, display' do
       event = meta.events.build(attrs)
       event.to_solr['id'].should == attrs[:identifier]
-      event.to_solr['event_type_ssm'].should == [attrs[:type]]
+      event.to_solr['event_type_ssim'].should == [attrs[:type]]
       event.to_solr['event_outcome_ssm'].should == [attrs[:outcome]]
       event.to_solr['event_date_time_si'].should == attrs[:date_time]
     end

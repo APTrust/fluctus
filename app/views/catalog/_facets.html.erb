@@ -1,5 +1,4 @@
 <% # main container for facets/limits menu -%>
-<% if has_facet_values?  %>
   <h3>Show:</h3>
   <%= form_tag search_action_url, :method => :get, :class => 'search-query-form form-inline clearfix' do %>
     <%= search_as_hidden_fields(:omit_keys => [:qt, :page, :show_all]).html_safe %>
@@ -10,7 +9,7 @@
     </label>
 
     <label class="search-scope">
-      <%= radio_button_tag 'show_all', 'true', params['show_all'] != 'false' %>
+      <%= radio_button_tag 'show_all', 'true', params['show_all'] == 'true' %>
       <span class="label-text">All</span>
     </label>
 
@@ -20,6 +19,7 @@
       </button>
     </noscript>
   <% end %>
+<% if has_facet_values?  %>
   <div id="facets" class="facets sidenav">
     
    
