@@ -60,7 +60,7 @@ namespace :fluctus do
 
   desc "Empty DB and add dummy information"
   task populate_db: :environment do
-    if !Rails.env.production?
+    if Rails.env.production?
       puts "Do not run in production!"
       return
     end
