@@ -19,6 +19,26 @@ describe EventsController do
   let(:someone_elses_file) { FactoryGirl.create(:generic_file, intellectual_object: someone_elses_object) }
 
 
+  describe 'signed in as admin user' do
+    let(:user) { FactoryGirl.create(:user, :admin) }
+    before { sign_in user }
+
+    describe 'GET index' do
+      before do
+        @someone_elses_event = someone_elses_file.add_event(event_attrs)
+        someone_elses_file.save!
+        get :index, institution_id: someone_elses_file.institution
+      end
+
+      it "can view events, even if it's not my institution" do
+        assigns(:institution).should == someone_elses_file.institution
+        assigns(:document_list).length.should == 1
+        assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
+      end
+    end
+  end
+
+
   describe 'signed in as institutional admin' do
     let(:user) { FactoryGirl.create(:user, :institutional_admin) }
     before { sign_in user }
