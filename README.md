@@ -49,36 +49,24 @@ The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so b
 
 * Populating stub data for testing.
 
-There is a simple rake task to setup dummpy data in Fedora. by default this rake task sets up 16 or so institutions
+There is a simple rake task to setup dummy data in Fedora. by default this rake task sets up 16 or so institutions
 (one for each partner), about 5 fake users in each institution, 3-10 Intellectual Objects and 3-30 Generic Files for
-each Intellectual Object with a handfull of Premis Events for each. Be aware this takes about 20 minutes to run
+each Intellectual Object with a handful of Premis Events for each. Be aware this takes about 20 minutes to run
 on most workstations, for a faster setup see the options below the default example.
 
 ````
-# Rake task clears the db and repository, sets up initial users and roles and then creates dummy data for models. If
-called normally it creates all institutions in the partner list, and creates a random number of intellectual objects
-and generic files for each institution. If called with parameters, the user can choose how many of each they would like
-to create.
-
-Without Parameters:
+# Without Parameters:
 rake fluctus:populate_db
 
-With Parameters:
+# With Parameters:
 rake fluctus:populate_db[number_of_institutions,number_of_intellectual_objects,number_of_generic_files]
-````
-
-You can limit the max number of Institutions, Intellectual Objects and Generic files by passing values to the rake
-tasks like so.  The order of arguments are KELLY FILL THIS IN PLEASE
-
-````
-KELLY FILL IN A COMMAND LINE EXAMPLE HERE PLEASE.
 ````
 
 * Adding additional stub Premis Events to Generic Files
 
-To test longer lists of premis events you can a rake task was added for convienence that will find the first Generic
+To test longer lists of premis events you can a rake task was added for convenience that will find the first Generic
 File object in the repository and add 50 or so fake identifier assignments so we can test the views.
-
+                                                                                                 git
 To execute that rake task just type the command:
 
 ````
