@@ -54,6 +54,7 @@ There is a simple rake task to setup dummpy data in Fedora.
 called normally it creates all institutions in the partner list, and creates a random number of intellectual objects
 and generic files for each institution. If called with parameters, the user can choose how many of each they would like
 to create.
+
 Without Parameters:
 rake fluctus:populate_db
 
