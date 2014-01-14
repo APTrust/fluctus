@@ -33,7 +33,7 @@ module Aptrust
         config.add_facet_field rights_field, sort: 'index', label: "Rights"
         config.add_facet_field format_field, sort: 'index', label: "Format"
         config.add_facet_field event_type_field, sort: 'index', label: "Event Type"
-        config.add_facet_field event_outcome_field, sort: 'index', label: "Event Type"
+        config.add_facet_field event_outcome_field, sort: 'index', label: "Event Outcome"
 
         # Have BL send all facet field names to Solr, which has been the default
         # previously. Simply remove these lines if you'd rather use Solr request
