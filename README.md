@@ -60,7 +60,7 @@ on most workstations, for a faster setup see the options below the default examp
 rake fluctus:populate_db
 
 # With Parameters for number_of_institutions, number_of_intellectual_objects, number_of_generic_files:
-rake fluctus:populate_db[2, 5, 5]
+rake fluctus:populate_db[2,5,5]
 ````
 
 * Adding additional stub Premis Events to Generic Files
