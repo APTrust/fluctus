@@ -6,6 +6,7 @@ class EventsController < ApplicationController
   include Aptrust::GatedSearch
   self.solr_search_params_logic += [:only_events]
   self.solr_search_params_logic += [:for_selected_institution]
+  self.solr_search_params_logic += [:sort_chronologically]
 
   def create
     @event = @parent_object.add_event(params['event'])
@@ -34,6 +35,16 @@ protected
   def only_events(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << "event_type_ssim:*"
+  end
+
+  def sort_chronologically(solr_parameters, user_parameters)
+    chron_sort = "#{Solrizer.solr_name('event_date_time', :sortable)} desc"
+
+    unless solr_parameters[:sort].blank?
+      chron_sort = chron_sort + ', ' + solr_parameters[:sort]
+    end
+
+    solr_parameters[:sort] = chron_sort
   end
 
 end

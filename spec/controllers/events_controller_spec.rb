@@ -19,23 +19,51 @@ describe EventsController do
   let(:someone_elses_file) { FactoryGirl.create(:generic_file, intellectual_object: someone_elses_object) }
 
 
+  describe 'signed in as admin user' do
+    let(:user) { FactoryGirl.create(:user, :admin) }
+    before { sign_in user }
+
+    describe 'GET index' do
+      before do
+        @someone_elses_event = someone_elses_file.add_event(event_attrs)
+        someone_elses_file.save!
+        get :index, institution_id: someone_elses_file.institution
+      end
+
+      it "can view events, even if it's not my institution" do
+        assigns(:institution).should == someone_elses_file.institution
+        assigns(:document_list).length.should == 1
+        assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
+      end
+    end
+  end
+
+
   describe 'signed in as institutional admin' do
     let(:user) { FactoryGirl.create(:user, :institutional_admin) }
     before { sign_in user }
 
     describe 'GET index' do
       before do
-        @event = file.add_event(event_attrs)
+        oldest_time = "2014-01-13 10:15:00 -0600"
+        middle_time = "2014-01-13 10:30:00 -0600"
+        newest_time = "2014-01-13 10:45:00 -0600"
+
+        @event = file.add_event(event_attrs.merge(date_time: oldest_time))
+        @event2 = file.add_event(event_attrs.merge(date_time: newest_time))
+        @event3 = file.add_event(event_attrs.merge(date_time: middle_time))
         file.save!
+
         @someone_elses_event = someone_elses_file.add_event(event_attrs)
         someone_elses_file.save!
+
         get :index, institution_id: file.institution
       end
 
-      it 'shows the events for that institution' do
+      it 'shows the events for that institution, sorted by time' do
         assigns(:institution).should == file.institution
-        assigns(:document_list).length.should == 1
-        assigns(:document_list).map(&:id).should == @event.identifier
+        assigns(:document_list).length.should == 3
+        assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
       end
     end
 

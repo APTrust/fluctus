@@ -4,6 +4,10 @@ describe Auditable do
 
   class ObjectWithAuditEvents < ActiveFedora::Base
     include Auditable
+
+    def uri
+      'hello from uri method'
+    end
   end
 
   subject { ObjectWithAuditEvents.new }
@@ -14,15 +18,15 @@ describe Auditable do
     subject.stub(:institution).and_return(inst)
   end
 
-  let(:parent_object_key) { "#{subject.class.to_s.underscore}_id" }
+  let(:field_name_base) { subject.class.to_s.underscore }
 
-  it 'has a name for the id of the parent object of an event' do
-    # Example:  A GenericFile that has a premisEvent.
-    # When the event gets written to solr, it will have a
-    # field called generic_file_id_* to identify which
-    # GenericFile the premisEvent belongs to.
-    subject.parent_key_for_events.should == parent_object_key
+  describe 'solr fields that describe the parent object of an event' do
+
+    it 'has a base name for solr fields that describe the parent' do
+      subject.namespaced_solr_field_base.should == field_name_base
+    end
   end
+
 
   it 'has a premisEvents datastream' do
     subject.premisEvents.should be_kind_of PremisEventsMetadata
@@ -73,9 +77,9 @@ describe Auditable do
       event = subject.premisEvents.events.first
 
       solr_result = ActiveFedora::SolrService.query("id:#{event_id}").first
-      key = "#{parent_object_key}_ssim"
-      solr_result[key].should == [subject.id]
       solr_result['institution_id_ssim'].should == [@inst_id]
+      solr_result["#{field_name_base}_id_ssim"].should == [subject.id]
+      solr_result["#{field_name_base}_uri_ssim"].should == [subject.uri]
     end
 
   end

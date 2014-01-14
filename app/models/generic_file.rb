@@ -43,7 +43,9 @@ class GenericFile < ActiveFedora::Base
 
   def update_parent_index
     #TODO in order to improve performance, you can put this work in a background job
-    intellectual_object.generic_files.reset
+
+    # Force the generic_files to be reloaded
+    intellectual_object.generic_files(true)
     intellectual_object.update_index
   end
 
