@@ -57,4 +57,28 @@ describe EventsHelper do
 
   end
 
+  describe '#dislay_event_outcome' do
+    describe 'without enough info in the solr doc' do
+      it 'returns nil' do
+        helper.display_event_outcome({}).should == nil
+      end
+    end
+
+    describe 'when the outcome is a node' do
+      let(:solr_doc) { { 'event_outcome_ssim' => ['success'] } }
+
+      it 'returns the first entry' do
+        helper.display_event_outcome(solr_doc).should == 'success'
+      end
+    end
+
+    describe 'when the outcome is a string' do
+      let(:solr_doc) { { 'event_outcome_ssim' => 'success' } }
+
+      it 'returns the string' do
+        helper.display_event_outcome(solr_doc).should == 'success'
+      end
+    end
+  end
+
 end

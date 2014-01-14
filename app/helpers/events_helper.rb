@@ -22,4 +22,8 @@ module EventsHelper
     link_to id, intellectual_object_path(id)
   end
 
+  def display_event_outcome(solr_doc)
+    Array(solr_doc['event_outcome_ssim']).first
+  end
+
 end
