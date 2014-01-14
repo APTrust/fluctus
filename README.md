@@ -43,7 +43,8 @@ rake fluctus:setup
 
 * Use Proper Solr Configuration
 
-The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit history for that file before you deploy Solr in production.
+The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit
+history for that file before you deploy Solr in production.
 
 ### Setting up Test Data
 
@@ -58,8 +59,8 @@ on most workstations, for a faster setup see the options below the default examp
 # Without Parameters:
 rake fluctus:populate_db
 
-# With Parameters:
-rake fluctus:populate_db[number_of_institutions,number_of_intellectual_objects,number_of_generic_files]
+# With Parameters for number_of_institutions, number_of_intellectual_objects, number_of_generic_files:
+rake fluctus:populate_db[2, 5, 5]
 ````
 
 * Adding additional stub Premis Events to Generic Files
