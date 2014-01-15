@@ -82,6 +82,18 @@ describe Auditable do
       solr_result["#{field_name_base}_uri_ssim"].should == [subject.uri]
     end
 
+    it 'it indexes the intellectual_object_id' do
+      subject.save!
+      id = '111'
+      subject.stub(:intellectual_object_id).and_return(id)
+      subject.add_event(attrs)
+
+      subject.premisEvents.events.count.should == 1
+      event = subject.premisEvents.events.first
+      solr_result = ActiveFedora::SolrService.query("id:#{event.identifier.first}").first
+      solr_result["intellectual_object_id_ssim"].should == [id]
+    end
+
   end
 
 end

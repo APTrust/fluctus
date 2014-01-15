@@ -81,4 +81,22 @@ describe EventsHelper do
     end
   end
 
+  describe '#event_catalog_title' do
+    it 'includes institution name if viewing institution events' do
+      inst = FactoryGirl.build(:institution)
+      assign(:institution, inst)
+      helper.event_catalog_title.should == "Events for #{inst.name}"
+    end
+
+    it 'includes object title if viewing events for an object' do
+      object = FactoryGirl.build(:intellectual_object)
+      assign(:parent_object, object)
+      helper.event_catalog_title.should == "Events for #{object.title}"
+    end
+
+    it 'has a default value to fail over to' do
+      helper.event_catalog_title.should == "Events"
+    end
+  end
+
 end

@@ -23,6 +23,11 @@
     </dl>
   </div>
 
+  <div class="object_events">
+    <h3> Events </h3>
+    <%= link_to "View Events", intellectual_object_events_path(@intellectual_object), class: 'btn btn-primary' %>
+  </div>
+
   <div class="object_children">
     <h3>Preserved Files</h3>
     <% @intellectual_object.generic_files.each do |gf| %>

@@ -1,11 +1,14 @@
 class EventsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_and_authorize_parent_object, only: [:create]
-  load_and_authorize_resource :institution, only: [:index]
+  load_and_authorize_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
+  load_and_authorize_resource :institution, only: [:index], if: :inst_id_exists?
 
   include Aptrust::GatedSearch
+
   self.solr_search_params_logic += [:only_events]
   self.solr_search_params_logic += [:for_selected_institution]
+  self.solr_search_params_logic += [:for_selected_object]
   self.solr_search_params_logic += [:sort_chronologically]
 
   def create
@@ -20,6 +23,14 @@ class EventsController < ApplicationController
 
 protected
 
+  def inst_id_exists?
+    params['institution_id']
+  end
+
+  def intellectual_object_id_exists?
+    params['intellectual_object_id']
+  end
+
   def load_and_authorize_parent_object
     parent_id = params['generic_file_id'] || params['intellectual_object_id']
     @parent_object = ActiveFedora::Base.find(parent_id)
@@ -27,9 +38,17 @@ protected
   end
 
   def for_selected_institution(solr_parameters, user_parameters)
+    return unless @institution
     solr_parameters[:fq] ||= []
     id = ActiveFedora::SolrService.escape_uri_for_query(@institution.id)
     solr_parameters[:fq] << "institution_id_ssim:#{id}"
+  end
+
+  def for_selected_object(solr_parameters, user_parameters)
+    return unless @intellectual_object
+    solr_parameters[:fq] ||= []
+    id = ActiveFedora::SolrService.escape_uri_for_query(@intellectual_object.id)
+    solr_parameters[:fq] << "intellectual_object_id_ssim:#{id}"
   end
 
   def only_events(solr_parameters, user_parameters)

@@ -26,4 +26,14 @@ module EventsHelper
     Array(solr_doc['event_outcome_ssim']).first
   end
 
+  def event_catalog_title
+    if @parent_object && @parent_object.respond_to?(:title)
+      "Events for #{@parent_object.title}"
+    elsif @institution
+      "Events for #{@institution.name}"
+    else
+      "Events"
+    end
+  end
+
 end
