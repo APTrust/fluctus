@@ -1,15 +1,4 @@
 GIT
-  remote: git://github.com/projecthydra/hydra-editor.git
-  revision: 9574ff6b9a84e8899b6d35c60c80ef12b4b84a60
-  ref: 9574ff6
-  specs:
-    hydra-editor (0.2.1)
-      active-fedora (>= 6.3.0)
-      bootstrap_forms
-      deprecation
-      rails (>= 3.2.13, < 5.0)
-
-GIT
   remote: git://github.com/stympy/faker.git
   revision: e259c9c5f7b861a6a2529a97d545d8b158d8c566
   specs:
@@ -153,6 +142,11 @@ GEM
       hydra-access-controls (= 7.0.0.pre1)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
+    hydra-editor (0.2.2)
+      active-fedora (>= 6.3.0)
+      bootstrap_forms
+      deprecation
+      rails (>= 3.2.13, < 5.0)
     hydra-head (7.0.0.pre1)
       hydra-access-controls (= 7.0.0.pre1)
       hydra-core (= 7.0.0.pre1)
@@ -399,7 +393,7 @@ DEPENDENCIES
   factory_girl_rails
   faker!
   figaro
-  hydra-editor!
+  hydra-editor (~> 0.2.2)
   hydra-head (= 7.0.0.pre1)
   hydra-role-management (~> 0.1.0)
   inherited_resources

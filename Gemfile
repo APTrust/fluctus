@@ -42,7 +42,7 @@ end
 # gem 'debugger', group: [:development, :test]
 
 gem 'hydra-head', '7.0.0.pre1'
-gem 'hydra-editor', github: 'projecthydra/hydra-editor', ref: '9574ff6'#'~> 0.2.2'
+gem 'hydra-editor', '~> 0.2.2'
 gem 'order_up', '0.0.1'
 gem 'resque', '~> 1.25'
 
