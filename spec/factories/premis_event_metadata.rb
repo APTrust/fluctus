@@ -54,7 +54,6 @@ FactoryGirl.define do
     outcome_information { "Generated with ruby SecureRandom.uuid()" }
     object { "Ruby 2.0.1" }
     agent { "http://www.ruby-doc.org/" }
-    agent { "http://www.ruby-doc.org/" }
   end
 
 end
