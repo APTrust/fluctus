@@ -2,7 +2,7 @@
 var facet_mine_behavior = function() {
   $('#aux-search-submit-header').hide();
 
-  $('input[name="show_all"]').on("change", function(e) {
+  $('input[name="show"]').on("change", function(e) {
     $(this).closest('form').submit();
   });
 
