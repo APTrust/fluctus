@@ -13,6 +13,12 @@ FactoryGirl.define do
     outcome_information { "Multipart Put using md5 checksum" }
     object { "ruby aws-s3 gem" }
     agent { "https://github.com/marcel/aws-s3/tree/master" }
+
+    factory :premis_event_ingest_fail do
+      detail { "Error copying to S3" }
+      outcome { "failure" }
+    end
+
   end
 
   factory :premis_event_validation, class: PremisEventsMetadata do
@@ -32,6 +38,12 @@ FactoryGirl.define do
     outcome_detail { "sha256:#{SecureRandom.hex(64)}" }
     object { "Go language cryptohash" }
     agent {"http://golang.org"}
+
+    factory :premis_event_fixity_generation_fail do
+      outcome { "failure" }
+      detail { "Error reading file" }
+      outcome_information { "error: unable to find file 'testfile.xml'" }
+    end
   end
 
   factory :premis_event_fixity_check, class: PremisEventsMetadata do
@@ -43,6 +55,12 @@ FactoryGirl.define do
     outcome_information { "Fixity matches" }
     object { "Go language cryptohash" }
     agent { "http://golang.org/" }
+
+    factory :premis_event_fixity_check_fail do
+      outcome { "failure" }
+      detail { "Error, fixity does not match expected value" }
+      outcome_information { "Acutal calculated hash was SHA256:#{SecureRandom.hex(64)}" }
+    end
   end
 
   factory :premis_event_identifier, class: PremisEventsMetadata do
@@ -54,6 +72,13 @@ FactoryGirl.define do
     outcome_information { "Generated with ruby SecureRandom.uuid()" }
     object { "Ruby 2.0.1" }
     agent { "http://www.ruby-doc.org/" }
+
+    factory :premis_event_identifier_fail do
+      outcome { "failure" }
+      detail {"Error generating S3 key"}
+      outcome_detail { "" }
+      outcome_information { "File not found" }
+    end
   end
 
 end

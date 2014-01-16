@@ -77,6 +77,20 @@ rake fluctus:populate_events
 Note the Generic File Object pid that will be output so you can use that to load the proper object in the web
 interface for testing.
 
+*  Adding an event failure
+
+A simple factory will allow you to add a failed version of any of the current premis events just by
+using the factory name and adding _fail at the end.  So to add some fake data for a failed event for
+testing you could do the following in code or at command line.
+
+````
+# Start by getting the object you want to add the failed event to.
+gf = GenericFile.first
+
+# Then add the event as attributes
+gf.add_event(FactoryGirl.attributes_for(:premis_events_fixity_check_fail))
+````
+
 ## Heroku Instructions
 
 Note, section dropped as previous fluctus app was deleted.  Intend to rebuild this.
