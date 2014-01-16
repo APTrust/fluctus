@@ -48,7 +48,7 @@ describe Auditable do
       event = reload.premisEvents.events.first
       event.outcome.should == ['success']
       event.type.should == ['ingest']
-      event.detail.first.should =~ /copy to s3/
+      event.detail.first.should =~ /copy to s3/i
     end
 
     it 'doesnt delete any previously exising events' do
@@ -63,7 +63,7 @@ describe Auditable do
       event = reload.premisEvents.events.last
       event.outcome.should == ['success']
       event.type.should == ['ingest']
-      event.detail.first.should =~ /copy to s3/
+      event.detail.first.should =~ /copy to s3/i
     end
 
     it 'writes a solr doc for the new event that includes the id of the parent object and the institution id' do
