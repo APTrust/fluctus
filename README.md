@@ -89,6 +89,7 @@ gf = GenericFile.first
 
 # Then add the event as attributes
 gf.add_event(FactoryGirl.attributes_for(:premis_events_fixity_check_fail))
+gf.save
 ````
 
 ## Heroku Instructions
@@ -107,3 +108,15 @@ So as an example, if you were to query for "APTrust" in the name field of the de
 datastream in the Institution model you would search as follows::
 
   ins = Institution.where(desc_metadata__name_tesim: "APTrust")
+
+# Re-indexing objects in solr:
+
+If you re-index an object that has premisEvents, you may also want to re-index the object's events.
+
+```ruby
+object = IntellectualObject.first
+object.update_index
+object.premisEvents.events.each {|e| write_event_to_solr(e) }
+```
+
+
