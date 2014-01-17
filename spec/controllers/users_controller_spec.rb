@@ -30,7 +30,7 @@ describe UsersController do
     end
 
     describe "can create Institutional Administrators" do
-      let(:institutional_admin_role_id) { Role.where(name: 'institutional_admin').first.id}
+      let(:institutional_admin_role_id) { Role.where(name: 'institutional_admin').first_or_create.id}
       let(:attributes) { FactoryGirl.attributes_for(:user, :role_ids => [institutional_admin_role_id]) }
 
       it "unless no parameters are passed" do
@@ -115,7 +115,7 @@ describe UsersController do
     end
 
     describe "creating Institutional User" do
-      let(:institutional_admin_role_id) { Role.where(name: 'institutional_admin').first.id}
+      let(:institutional_admin_role_id) { Role.where(name: 'institutional_admin').first_or_create.id}
 
       describe "at another institution" do
         let(:attributes) { FactoryGirl.attributes_for(:user) }
@@ -130,7 +130,7 @@ describe UsersController do
 
       describe "at my institution" do
         describe "with institutional_user role" do
-          let(:institutional_user_role_id) { Role.where(name: 'institutional_user').first.id}
+          let(:institutional_user_role_id) { Role.where(name: 'institutional_user').first_or_create.id}
           let(:attributes) { FactoryGirl.attributes_for(:user, :institution_pid=>institutional_admin.institution_pid, :role_ids => [institutional_user_role_id]) }
           it 'should be successful' do
             expect {

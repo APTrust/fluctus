@@ -45,12 +45,13 @@ class GenericFile < ActiveFedora::Base
     #TODO in order to improve performance, you can put this work in a background job
 
     # Force the generic_files to be reloaded
+    # These could have been deleted, but they're still in solr
     intellectual_object.generic_files(true)
     intellectual_object.update_index
   end
 
   def copy_permissions_from_intellectual_object
-    self.permissions = intellectual_object.permissions
+    self.permissions = intellectual_object.permissions if intellectual_object
   end
 
 

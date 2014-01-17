@@ -42,6 +42,7 @@ end
 # gem 'debugger', group: [:development, :test]
 
 gem 'hydra-head', '7.0.0.pre1'
+gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '0dfa278' # pre3
 gem 'hydra-editor', '~> 0.2.2'
 gem 'order_up', '0.0.1'
 gem 'resque', '~> 1.25'

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130812204946) do
+ActiveRecord::Schema.define(version: 20140115231323) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -43,6 +43,13 @@ ActiveRecord::Schema.define(version: 20130812204946) do
   end
 
   add_index "searches", ["user_id"], name: "index_searches_on_user_id"
+
+  create_table "usage_samples", force: true do |t|
+    t.string   "institution_id"
+    t.text     "data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false

@@ -30,9 +30,6 @@ class User < ActiveRecord::Base
 
   validates :phone_number, :phony_plausible => true
 
-  #data = YAML.load_file "fluctus/config/role_map_development.yml"
-  #groups.each{ |x| data[x] << self.email}
-  #File.open("fluctus/config/role_map_development.yml", 'w') {|f| YAML.dump(data, f)}
   # This method assigns permission groups
   def groups
     super + institution_groups

@@ -91,6 +91,13 @@ gf = GenericFile.first
 gf.add_event(FactoryGirl.attributes_for(:premis_events_fixity_check_fail))
 gf.save
 ````
+## Statistics sampling
+To create a sample run the script like so:
+```
+$ RAILS_ENV=production ./script/sample_uploads
+```
+You probably want to put this in a cron job so it can be run regularly
+
 
 ## Heroku Instructions
 

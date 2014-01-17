@@ -49,7 +49,7 @@ describe Ability do
     it { should_not be_able_to(:add_user, FactoryGirl.create(:institution)) }
     it { should_not be_able_to(:add_user, Role.where(name: 'admin').first) }
     it { should_not be_able_to(:add_user, Role.where(name: 'institutional_admin').first) }
-    it { should     be_able_to(:add_user, Role.where(name: 'institutional_user').first) }
+    it { should     be_able_to(:add_user, Role.where(name: 'institutional_user').first_or_create) }
 
     describe "when the user is" do
       describe "in my institution" do

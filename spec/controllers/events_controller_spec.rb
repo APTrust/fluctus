@@ -2,14 +2,6 @@ require 'spec_helper'
 
 describe EventsController do
 
-  before :all do
-    Institution.destroy_all
-    GenericFile.destroy_all
-    IntellectualObject.destroy_all
-    solr = ActiveFedora::SolrService.instance.conn
-    solr.delete_by_query("*:*", params: { commit: true })
-  end
-
   let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution, rights: 'institution') }
   let(:file) { FactoryGirl.create(:generic_file, intellectual_object: object) }
   let(:event_attrs) { FactoryGirl.attributes_for(:premis_event_fixity_generation) }
@@ -31,6 +23,7 @@ describe EventsController do
 
       it "can view events, even if it's not my institution" do
         get :index, institution_id: someone_elses_file.institution
+        expect(response).to be_success
         assigns(:institution).should == someone_elses_file.institution
         assigns(:document_list).length.should == 1
         assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
@@ -38,6 +31,7 @@ describe EventsController do
 
       it "can view events, even if it's not my intellectual object" do
         get :index, intellectual_object_id: someone_elses_object
+        expect(response).to be_success
         assigns(:intellectual_object).should == someone_elses_object
         assigns(:document_list).length.should == 1
         assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
@@ -143,6 +137,7 @@ describe EventsController do
       describe 'events for an intellectual object' do
         it 'shows the events for that object, sorted by time' do
           get :index, intellectual_object_id: object
+          expect(response).to be_success
           assigns(:intellectual_object).should == object
           assigns(:document_list).length.should == 3
           assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]

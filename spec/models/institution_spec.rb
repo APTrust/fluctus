@@ -15,7 +15,7 @@ describe Institution do
 
   describe "bytes_by_format" do
     it "should return a hash" do
-      expect(subject.bytes_by_format).to eq({"Total content upload"=>0})
+      expect(subject.bytes_by_format).to eq({"all"=>0})
     end
     describe 'with attached files' do
       before do
@@ -25,7 +25,7 @@ describe Institution do
       let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: '166311750.0') }
       let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, format: 'audio/wav', size: '143732461.0' ) }
       it "should return a hash" do
-        expect(subject.bytes_by_format).to eq({"Total content upload"=>310044211.0,
+        expect(subject.bytes_by_format).to eq({"all"=>310044211.0,
                                                'application/xml' => 166311750,
                                                'audio/wav' => 143732461.0})
       end

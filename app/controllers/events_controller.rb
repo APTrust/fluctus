@@ -40,15 +40,13 @@ protected
   def for_selected_institution(solr_parameters, user_parameters)
     return unless @institution
     solr_parameters[:fq] ||= []
-    id = ActiveFedora::SolrService.escape_uri_for_query(@institution.id)
-    solr_parameters[:fq] << "institution_id_ssim:#{id}"
+    solr_parameters[:fq] << "institution_id_ssim:\"#{@institution.id}\""
   end
 
   def for_selected_object(solr_parameters, user_parameters)
     return unless @intellectual_object
     solr_parameters[:fq] ||= []
-    id = ActiveFedora::SolrService.escape_uri_for_query(@intellectual_object.id)
-    solr_parameters[:fq] << "intellectual_object_id_ssim:#{id}"
+    solr_parameters[:fq] << "intellectual_object_id_ssim:\"#{@intellectual_object.id}\""
   end
 
   def only_events(solr_parameters, user_parameters)
