@@ -76,6 +76,7 @@ module Aptrust
 
         config.add_sort_field 'score desc, system_create_dtsi desc, desc_metadata__title_si asc', :label => 'relevance'
         config.add_sort_field 'pub_date_dtsi desc, desc_metadata__title_si asc', :label => 'date added'
+        config.add_sort_field 'system_modified_dtsi desc', :label => 'date changed'
         config.add_sort_field 'desc_metadata__title_si asc, system_create_dtsi desc', :label => 'title'
 
         # If there are more than this many search results, no spelling ("did you

@@ -12,6 +12,9 @@
 
 <div class="tab-content">
   <div class="tab-pane" id="summary">
+
+    <%= link_to "Recently Modified Objects", institution_intellectual_objects_path(@institution, sort: 'system_modified_dtsi desc'), :id => 'recent_doc_link' %>
+
     <dl class="dl-horizontal">
       <dt>Users</dt>
       <dd><%= @institution.users.count %></dd>
