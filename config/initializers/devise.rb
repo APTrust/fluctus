@@ -3,8 +3,8 @@
 Devise.setup do |config|
   config.secret_key = 'cee99810bcec63fbd495da3cbcb1d232d6e01150a96ba22bc3cfe70d6ce04fa9416542696490e53839e6c3133e483e6820b167d3a2e71f69ff10f43ea725abc6'
   
-  require "omniauth-google-oauth2"
-  config.omniauth :google_oauth2, ENV["GOOGLE_KEY"], ENV["GOOGLE_SECRET"], { access_type: "offline", approval_prompt: "" }
+  #require "omniauth-google-oauth2"
+  #config.omniauth :google_oauth2, ENV["GOOGLE_KEY"], ENV["GOOGLE_SECRET"], { access_type: "offline", approval_prompt: "" }
   
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
