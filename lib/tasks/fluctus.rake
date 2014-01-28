@@ -21,10 +21,13 @@ namespace :fluctus do
     STDOUT.puts "What is your email?"
     email = STDIN.gets.strip
 
+    STDOUT.puts "Create a password."
+    password = STDIN.gets.strip
+
     STDOUT.puts "What is your phone number?"
     phone_number = STDIN.gets.strip
    
-    User.create!(name: name, email: email, phone_number: phone_number, institution_pid: i.pid,
+    User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
                  role_ids: [Role.where(name: 'admin').first.id])
   end
 
@@ -97,11 +100,13 @@ namespace :fluctus do
       end
 
       numItems = rand(5..10)
+      numItems = 1
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
         ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
         numFiles = rand(3..30)
+        numFiles = 1
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
           f = FactoryGirl.build(:generic_file, intellectual_object: item)
