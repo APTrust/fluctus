@@ -23,33 +23,33 @@ describe Users::OmniauthCallbacksController do
     #   it { response.should redirect_to tasks_path }
     # end
     
-    context "when capabpe of authenticating into the system" do
-      before(:each) do
-        stub_env_for_omniauth
-        
-        @user = FactoryGirl.create(:user, email: "john@company_name.com")
-        sign_in(@user)
-
-        get :google_oauth2
-      end
-      
-      it { flash[:notice].should == (I18n.t "devise.omniauth_callbacks.success", :kind => "Google") }
+    #context "when capabpe of authenticating into the system" do
+      #before(:each) do
+      #  stub_env_for_omniauth
+      #
+      #  @user = FactoryGirl.create(:user, email: "john@company_name.com")
+      #  sign_in(@user)
+      #
+      #  get :google_oauth2
+      #end
+      #
+      #it { flash[:notice].should == (I18n.t "devise.omniauth_callbacks.success", :kind => "Google") }
       # it { flash[:notice].should == "Successfully authenticated from Google account."}
       # it { response.should redirect_to root_url }
-    end
+    #end
   end
 
-  describe "unregistered user" do
-    before(:each) do 
-      stub_env_for_omniauth
-      @user = User.new
-      sign_in(@user)
-      get :google_oauth2
-    end
-
-    it {flash[:error].should == "john@company_name.com is not authorized to access this application." }
-    it {response.should redirect_to root_url}
-  end
+  #describe "unregistered user" do
+  #  before(:each) do
+  #    stub_env_for_omniauth
+  #    @user = User.new
+  #    sign_in(@user)
+  #    get :google_oauth2
+  #  end
+  #
+  #  it {flash[:error].should == "john@company_name.com is not authorized to access this application." }
+  #  it {response.should redirect_to root_url}
+  #end
   
   # describe "#logged in user" do
   #   context "when user don't have facebook authentication" do
@@ -106,7 +106,7 @@ describe Users::OmniauthCallbacksController do
   
 end
 
-def stub_env_for_omniauth
-  request.env["devise.mapping"] = Devise.mappings[:user]
-  request.env["omniauth.auth"] = OmniAuth.config.mock_auth[:google]
-end
+#def stub_env_for_omniauth
+#  request.env["devise.mapping"] = Devise.mappings[:user]
+#  request.env["omniauth.auth"] = OmniAuth.config.mock_auth[:google]
+#end

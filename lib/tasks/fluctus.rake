@@ -18,7 +18,7 @@ namespace :fluctus do
     STDOUT.puts "What is your name?"
     name = STDIN.gets.strip
 
-    STDOUT.puts "What is your Google email?"
+    STDOUT.puts "What is your email?"
     email = STDIN.gets.strip
 
     STDOUT.puts "What is your phone number?"

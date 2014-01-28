@@ -7,8 +7,8 @@ describe "Catalog" do
     end
 
     describe 'for all users' do
-      it 'should have link called Google Login' do
-        expect(page).to have_link 'Google Login'
+      it 'should have link called Login' do
+        expect(page).to have_link 'Login'
       end
 
       it 'should have APTrust footer information' do 
@@ -18,7 +18,7 @@ describe "Catalog" do
 
     describe 'for unauthenticated users' do 
       it 'should return unauthorized login message' do
-        click_link('Google Login')
+        click_link('Login')
         expect(page).to have_content 'not authorized to access this application'
       end
     end

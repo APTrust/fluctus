@@ -10,6 +10,8 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create]
   end
 
+  devise_for :users
+
   resources :users
   resources :generic_files, only: [:show, :destroy], path: 'files' do
     resources :events, only: [:create]
@@ -24,7 +26,7 @@ Fluctus::Application.routes.draw do
 
   devise_scope :user do
     # root to: "home#index"
-    delete 'sign_out', :to => 'devise/sessions#destroy', as: :destroy_user_session
+    #delete 'sign_out', :to => 'devise/sessions#destroy', as: :destroy_user_session
   end
 
   authenticated :user do

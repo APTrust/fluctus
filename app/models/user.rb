@@ -98,11 +98,11 @@ class User < ActiveRecord::Base
   # This method comes from the oauth2 documentation on Github.  The only alteration is that when a user is
   # not found, a new User with no attributes is created.  This is necessary to disable the creation of
   # unauthorized users.
-  def self.find_for_google_oauth2(access_token, signed_in_resource=nil)
-    email = access_token.info["email"]
-    # Return a new user rather than create one since Users should not be able to create their own accounts.
-    User.where(email: email).first || User.new
-  end
+  #def self.find_for_google_oauth2(access_token, signed_in_resource=nil)
+  #  email = access_token.info["email"]
+  #  # Return a new user rather than create one since Users should not be able to create their own accounts.
+  #  User.where(email: email).first || User.new
+  #end
 
   class NilInstitution
     def name
