@@ -246,6 +246,13 @@ describe IntellectualObjectsController do
         expect(response.code).to eq '204'
         expect(assigns(:intellectual_object).state).to eq 'D'
       end
+
+      it "should update via html" do
+        delete :destroy, id: obj1
+        expect(response).to redirect_to root_path
+        expect(flash[:notice]).to eq "Delete job has been queued for object: #{obj1.title}"
+        expect(assigns(:intellectual_object).state).to eq 'D'
+      end
     end
   end
 end

@@ -25,6 +25,10 @@ class IntellectualObjectsController < ApplicationController
     resource.soft_delete
     respond_to do |format|
       format.json { head :no_content }
+      format.html {
+        flash[:notice] = "Delete job has been queued for object: #{resource.title}"
+        redirect_to root_path
+      }
     end
   end
 
