@@ -20,6 +20,7 @@ Overall Fluctus targets the following versions or later
 * Ruby >= 2.0.0
 * Rails >= 4.0.0
 * hydra-head >= 6.3.4
+* [Redis](http://redis.io/)
 
 ## Setup Instructions
 
@@ -45,6 +46,17 @@ rake fluctus:setup
 
 The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit
 history for that file before you deploy Solr in production.
+
+### Redis
+
+We are using redis as a queue for resque jobs.  For development, you'll need to have a redis server running if you want to perform certain tasks that would normally queue up a resque job (for example, deleting an IntellectualObject).
+
+* Install redis (If you are using a Mac, it's easy to install with homebrew)
+* Run the redis server:
+
+```bash
+redis-server /usr/local/etc/redis.conf
+```
 
 ### Setting up Test Data
 
