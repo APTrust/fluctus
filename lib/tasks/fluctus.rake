@@ -21,11 +21,11 @@ namespace :fluctus do
     STDOUT.puts "What is your email?"
     email = STDIN.gets.strip
 
-    STDOUT.puts "Create a password."
-    password = STDIN.gets.strip
-
     STDOUT.puts "What is your phone number?"
     phone_number = STDIN.gets.strip
+
+    STDOUT.puts "Create a password."
+    password = STDIN.gets.strip
    
     User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
                  role_ids: [Role.where(name: 'admin').first.id])

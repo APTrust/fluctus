@@ -9,6 +9,10 @@
     <%= f.input :institution_pid, collection: institutions_for_select, as: :select, label: "Institution" %>
 
     <%= f.association :roles, collection: roles_for_select, as: :check_boxes %>
+
+    <%= f.input :password %>
+    <%= f.input :password_confirmation %>
+
   </div>
 
   <div class="form-actions">

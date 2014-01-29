@@ -10,7 +10,11 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create]
   end
 
-  devise_for :users
+  devise_for :users, :controllers => { :registrations => "registrations" }
+  as :user do
+    get 'users/edit' => 'devise/registrations#edit', :as => 'edit_user_registration'
+    put 'users/:id' => 'devise/registrations#update', :as => 'user_registration'
+  end
 
   resources :users
   resources :generic_files, only: [:show, :destroy], path: 'files' do
