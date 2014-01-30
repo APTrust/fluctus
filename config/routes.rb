@@ -12,15 +12,16 @@ Fluctus::Application.routes.draw do
 
   devise_for :users
 
-  resources :users
+  resources :users  #, only: [:edit] do
+  #  collection do
+  #    patch 'update_password'
+  #  end
+  #end
   resources :generic_files, only: [:show, :destroy], path: 'files' do
     resources :events, only: [:create]
   end
 
   Blacklight.add_routes(self)
-
-  #devise_for :users, path_names: {sign_in: "login", sign_out: "logout"},
-        #controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
 
   mount Hydra::RoleManagement::Engine => '/'
 
