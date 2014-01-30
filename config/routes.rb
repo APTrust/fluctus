@@ -10,15 +10,7 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create]
   end
 
-  devise_for :users, :controllers => { :registrations => "registrations" }
-  devise_scope :user do
-      get 'users/edit' => 'registrations#edit', :as => 'edit_user_registration'
-      put 'users/:id' => 'registrations#update', :as => 'user_registration'
-  end
-  #as :user do
-  #  get 'users/edit' => 'registrations#edit', :as => 'edit_user_registration'
-  #  put 'users/:id' => 'registrations#update', :as => 'user_registration'
-  #end
+  devise_for :users
 
   resources :users
   resources :generic_files, only: [:show, :destroy], path: 'files' do
@@ -31,11 +23,6 @@ Fluctus::Application.routes.draw do
         #controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
 
   mount Hydra::RoleManagement::Engine => '/'
-
-  devise_scope :user do
-    # root to: "home#index"
-    #delete 'sign_out', :to => 'devise/sessions#destroy', as: :destroy_user_session
-  end
 
   authenticated :user do
     root to: "institutions#show", as: 'authenticated_root'

@@ -2,7 +2,7 @@
   <h1>Editing User</h1>
 </div>
 
-<%= simple_form_for(@user, url: user_registration_path(@user), html: {class: 'form-horizontal', :method => :put}) do |f| %>
+<%= simple_form_for(@user, html: {class: 'form-horizontal', :method => :put}) do |f| %>
     <%= f.error_notification %>
 
     <div class="form-inputs">
