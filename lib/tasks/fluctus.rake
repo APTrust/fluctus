@@ -109,6 +109,9 @@ namespace :fluctus do
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
         ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
+        item.add_event(FactoryGirl.attributes_for(:premis_event_ingest, detail: "Metadata recieved from bag.", outcome_detail: "", outcome_information: "Parsed as part of bag submission."))
+        item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: "Assigned by Fedora."))
+
         numFiles = args[:numGenFiles].to_i
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
