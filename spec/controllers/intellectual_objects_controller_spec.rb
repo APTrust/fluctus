@@ -11,7 +11,7 @@ describe IntellectualObjectsController do
     describe "when not signed in" do
       it "should redirect to login" do
         get :index, institution_id: 'apt:123'
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
 
@@ -94,7 +94,7 @@ describe IntellectualObjectsController do
     describe "when not signed in" do
       it "should redirect to login" do
         get :show, id: obj1
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
 
@@ -117,7 +117,7 @@ describe IntellectualObjectsController do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
         get :edit, id: obj1
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
 
@@ -153,7 +153,7 @@ describe IntellectualObjectsController do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
         patch :update, id: obj1, intellectual_object: {title: 'Foo' }
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
 
@@ -188,7 +188,7 @@ describe IntellectualObjectsController do
     describe "when not signed in" do
       it "should redirect to login" do
         post :create, institution_id: FactoryGirl.create(:institution), intellectual_object: {title: 'Foo' }
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
     end
@@ -232,7 +232,7 @@ describe IntellectualObjectsController do
       after { obj1.destroy }
       it "should redirect to login" do
         delete :destroy, id: obj1
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
 

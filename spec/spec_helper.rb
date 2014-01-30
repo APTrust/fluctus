@@ -7,7 +7,7 @@ require 'capybara/rails'
 require 'capybara/rspec'
 require 'coveralls'
 require 'simplecov'
-require 'email_spec'
+#require 'email_spec'
 
 # push test code to remote and produce locally.
 Coveralls.wear!
@@ -87,8 +87,8 @@ RSpec.configure do |config|
     Institution.destroy_all
   end
 
-  config.include(EmailSpec::Helpers)
-  config.include(EmailSpec::Matchers)
+  #config.include(EmailSpec::Helpers)
+  #config.include(EmailSpec::Matchers)
 
   # ## Mock Framework
   #
@@ -116,6 +116,9 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = "default"
+
+  #For devise testing
+  config.include Devise::TestHelpers, :type => :controller
 
   # config.backtrace_exclusion_patterns = Array.new
 end

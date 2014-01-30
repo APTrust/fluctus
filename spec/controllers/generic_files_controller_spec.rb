@@ -45,7 +45,7 @@ describe GenericFilesController do
       let(:obj1) { @intellectual_object }
       it "should redirect to login" do
         post :create, intellectual_object_id: obj1, intellectual_object: {title: 'Foo' }
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
     end
@@ -96,7 +96,7 @@ describe GenericFilesController do
     describe "when not signed in" do
       it "should redirect to login" do
         patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), trailing_slash: true
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
     end
@@ -130,7 +130,7 @@ describe GenericFilesController do
     describe "when not signed in" do
       it "should redirect to login" do
         delete :destroy, id: file
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
     end

@@ -16,13 +16,6 @@ describe "Catalog" do
       end
     end
 
-    describe 'for unauthenticated users' do 
-      it 'should return unauthorized login message' do
-        click_link('Login')
-        expect(page).to have_content 'not authorized to access this application'
-      end
-    end
-
     describe 'for authenticated' do
       describe 'admin users' do
         before(:all) do
