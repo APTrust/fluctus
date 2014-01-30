@@ -11,10 +11,14 @@ Fluctus::Application.routes.draw do
   end
 
   devise_for :users, :controllers => { :registrations => "registrations" }
-  as :user do
-    get 'users/edit' => 'devise/registrations#edit', :as => 'edit_user_registration'
-    put 'users/:id' => 'devise/registrations#update', :as => 'user_registration'
+  devise_scope :user do
+      get 'users/edit' => 'registrations#edit', :as => 'edit_user_registration'
+      put 'users/:id' => 'registrations#update', :as => 'user_registration'
   end
+  #as :user do
+  #  get 'users/edit' => 'registrations#edit', :as => 'edit_user_registration'
+  #  put 'users/:id' => 'registrations#update', :as => 'user_registration'
+  #end
 
   resources :users
   resources :generic_files, only: [:show, :destroy], path: 'files' do

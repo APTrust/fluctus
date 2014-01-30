@@ -1,6 +1,11 @@
 class RegistrationsController < Devise::RegistrationsController
+  inherit_resources
+  #load_and_authorize_resource :user, only: [:create, :update]  //works for editing self, not others
+  load_and_authorize_resource
+
   def update
     account_update_params = devise_parameter_sanitizer.sanitize(:account_update)
+    #raise statement
 
     # required for settings form to submit when password is left blank
     if account_update_params[:password].blank?
@@ -8,7 +13,7 @@ class RegistrationsController < Devise::RegistrationsController
       account_update_params.delete("password_confirmation")
     end
 
-    @user = User.find(current_user.id)
+    #@user = User.find(current_user.id)
     if @user.update_attributes(account_update_params)
       set_flash_message :notice, :updated
       # Sign in the user bypassing validation in case his password changed

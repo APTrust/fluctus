@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
   #devise :omniauthable, :registerable, omniauth_providers: [:google_oauth2]
-  devise :database_authenticatable, :recoverable, :rememberable, :trackable, :timeoutable, :validatable
+  devise :database_authenticatable, :recoverable, :rememberable, :trackable, :timeoutable
 
   validates :email, :phone_number, presence: true
   validates :email, uniqueness: true
