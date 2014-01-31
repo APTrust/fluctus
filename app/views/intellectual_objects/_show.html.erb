@@ -19,6 +19,8 @@
       <% @intellectual_object.identifier.each do |ident| %>
           <dd><%= ident %></dd>
       <% end %>
+      <dt> Last Modified </dt>
+      <dd> <%= @intellectual_object.modified_date %> </dd>
     </dl>
   </div>
 

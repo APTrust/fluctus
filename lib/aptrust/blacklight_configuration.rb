@@ -46,6 +46,7 @@ module Aptrust
         config.add_index_field title_field, label: 'Title:'
         config.add_index_field institution_field, label: 'Institution:'
         config.add_index_field identifier_field, label: 'Identifier:'
+        config.add_index_field 'system_modified_dtsi', label: 'Last Modified:'
         config.add_index_field description_field, label: 'Description:'
 
         config.add_search_field 'all_fields', :label => 'All Fields'
