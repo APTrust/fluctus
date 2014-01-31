@@ -20,6 +20,7 @@ class Ability
     if current_user.is? :institutional_admin
       can :add_user, Institution, id: current_user.institution_pid
       can :add_user, Role, name: 'institutional_user'
+      can :add_user, Role, name: 'institutional_admin'
       can [:read, :update, :destroy], User, institution_pid: current_user.institution_pid
       can [:create], User
       can [:read, :update], Institution, pid: current_user.institution_pid

@@ -172,7 +172,7 @@ describe EventsController do
       end
 
       it 'redirects to login' do
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
     end
@@ -183,7 +183,7 @@ describe EventsController do
       end
 
       it 'redirects to login' do
-        expect(response).to redirect_to root_url
+        expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
     end

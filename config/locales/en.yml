@@ -23,7 +23,7 @@ en:
   blacklight:
     application_name: 'APTrust'
     header_links:
-      login: "Google Login"
+      login: "Login"
       manage_users: "Manage Users"
       new_institution: "New Institution"
       new_user: "New User"

@@ -142,12 +142,12 @@ describe UsersController do
         end
         describe "with institutional_admin role" do
           let(:attributes) { FactoryGirl.attributes_for(:user, institution_pid: institutional_admin.institution_pid, role_ids: [institutional_admin_role_id]) }
-          it 'should show an error' do
+          it 'should be successful' do
             expect {
               post :create, user: attributes
-            }.to_not change(User, :count)
-            response.should be_redirect
-            expect(flash[:alert]).to eq "You are not authorized to access this page."
+            }.to change(User, :count).by(1)
+            response.should redirect_to user_url(assigns[:user])
+            expect(assigns[:user]).to be_institutional_admin
           end
         end
       end

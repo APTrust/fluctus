@@ -8,10 +8,20 @@ class UsersController < ApplicationController
     destroy!(notice: "User #{@user.to_s} was deleted.")
   end
 
+  #def update_password
+  #  @user = User.find(current_user.id)
+  #  if @user.update_with_password(user_params)
+  #    sign_in @user, :bypass => true
+  #    redirect_to root_path
+  #  else
+  #    render "edit"
+  #  end
+  #end
+
   private
 
     def build_resource_params
-      [params.fetch(:user, {}).permit(:name, :email, :phone_number).tap do |p|
+      [params.fetch(:user, {}).permit(:name, :email, :phone_number, :password, :password_confirmation).tap do |p|
         p[:institution_pid] = build_institution_pid if params[:user][:institution_pid]
         p[:role_ids] = build_role_ids if params[:user][:role_ids]
       end]
@@ -32,4 +42,9 @@ class UsersController < ApplicationController
         end
       end
     end
+
+  #def user_params
+  #  params.required(:user).permit(:password, :password_confirmation, :current_password)
+  #end
+
 end

@@ -50,7 +50,7 @@ gem 'resque', '~> 1.25'
 gem "devise"
 gem "bootstrap-sass"
 gem 'figaro'
-gem 'omniauth-google-oauth2'
+#gem 'omniauth-google-oauth2'
 gem 'simple_form', '~> 3.0.1'
 gem "hydra-role-management", "~> 0.1.0"
 gem 'phony_rails'
