@@ -9,6 +9,7 @@ notifications:
   email:
     recipients:
       - "scott.turnbull@aptrust.org"
+      - "kelly.croswell@aptrust.org"
     on_success: "change"
     on_failure: "always"
 # Whitelist of branches to build
@@ -18,3 +19,5 @@ branches:
     - develop
 before_install:
   - gem install bundler
+services:
+  - redis-server
