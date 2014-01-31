@@ -81,10 +81,18 @@ namespace :fluctus do
         ["University of Connecticut", "uconn"], ["University of Cinnicnati", "ucin"],
     ]
 
-    puts "Creating #{partner_list.count} Institutions"
-    partner_list.each_with_index do |partner, index|
-      puts "== Creating number #{index+1} of #{partner_list.count}: #{partner.first} "
-      FactoryGirl.create(:institution, name: partner.first, brief_name: partner.last)
+    args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
+
+    numInsts = args[:numInstitutions].to_i
+    if (numInsts > partner_list.count)
+      numInsts = partner_list.count
+      puts "We currently have only #{partner_list.count} institutions."
+    end
+
+    puts "Creating #{numInsts} Institutions"
+    numInsts.times.each do |count|
+      puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
+      FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count].last)
     end
 
     puts "Creating Users for each Institution"
@@ -99,14 +107,15 @@ namespace :fluctus do
         FactoryGirl.create(:user, :institutional_user, institution_pid: institution.pid)
       end
 
-      numItems = rand(5..10)
-      numItems = 1
+      numItems = args[:numIntObjects].to_i
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
         ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
-        numFiles = rand(3..30)
-        numFiles = 1
+        item.add_event(FactoryGirl.attributes_for(:premis_event_ingest, detail: "Metadata recieved from bag.", outcome_detail: "", outcome_information: "Parsed as part of bag submission."))
+        item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: "Assigned by Fedora."))
+
+        numFiles = args[:numGenFiles].to_i
         numFiles.times.each do |count|
           puts "== ** Creating generic file object #{count+1} of #{numFiles} for intellectual_object #{ item.pid }"
           f = FactoryGirl.build(:generic_file, intellectual_object: item)

@@ -20,14 +20,17 @@ module Auditable
       Solrizer.insert_field(solr_doc, "#{namespaced_solr_field_base}_uri", self.uri, :symbol)
     end
 
+    if self.respond_to?(:intellectual_object_id)
+      Solrizer.insert_field(solr_doc, "intellectual_object_id", self.intellectual_object_id, :symbol)
+    end
+
     ActiveFedora::SolrService.add(solr_doc)
     ActiveFedora::SolrService.commit
   end
 
   # Example:  A GenericFile that has a premisEvent.
   # The solr doc for the event will have some fields that
-  # describe the GenericFile, such as generic_file_id_ssim
-  # and generic_file_uri_ssim.
+  # describe the GenericFile, such as generic_file_id_ssim.
   def namespaced_solr_field_base
     self.class.to_s.demodulize.underscore
   end

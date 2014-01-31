@@ -48,7 +48,7 @@ describe Auditable do
       event = reload.premisEvents.events.first
       event.outcome.should == ['success']
       event.type.should == ['ingest']
-      event.detail.first.should =~ /copy to s3/
+      event.detail.first.should =~ /copy to s3/i
     end
 
     it 'doesnt delete any previously exising events' do
@@ -63,7 +63,7 @@ describe Auditable do
       event = reload.premisEvents.events.last
       event.outcome.should == ['success']
       event.type.should == ['ingest']
-      event.detail.first.should =~ /copy to s3/
+      event.detail.first.should =~ /copy to s3/i
     end
 
     it 'writes a solr doc for the new event that includes the id of the parent object and the institution id' do
@@ -80,6 +80,18 @@ describe Auditable do
       solr_result['institution_id_ssim'].should == [@inst_id]
       solr_result["#{field_name_base}_id_ssim"].should == [subject.id]
       solr_result["#{field_name_base}_uri_ssim"].should == [subject.uri]
+    end
+
+    it 'it indexes the intellectual_object_id' do
+      subject.save!
+      id = '111'
+      subject.stub(:intellectual_object_id).and_return(id)
+      subject.add_event(attrs)
+
+      subject.premisEvents.events.count.should == 1
+      event = subject.premisEvents.events.first
+      solr_result = ActiveFedora::SolrService.query("id:#{event.identifier.first}").first
+      solr_result["intellectual_object_id_ssim"].should == [id]
     end
 
   end

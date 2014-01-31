@@ -1,37 +1,18 @@
 GIT
-  remote: git://github.com/projecthydra/hydra-editor.git
-  revision: 9574ff6b9a84e8899b6d35c60c80ef12b4b84a60
-  ref: 9574ff6
+  remote: git://github.com/projecthydra/active_fedora.git
+  revision: 0dfa27831c0a9937a6c6b4620bcc18ddf24c0a9a
+  ref: 0dfa278
   specs:
-    hydra-editor (0.2.1)
-      active-fedora (>= 6.3.0)
-      bootstrap_forms
+    active-fedora (7.0.0.pre2)
+      activesupport (>= 3.0.0)
       deprecation
-      rails (>= 3.2.13, < 5.0)
-
-GIT
-  remote: git://github.com/projecthydra/hydra-head.git
-  revision: 49f350e098545eda9e036f31725e1ea594d7268f
-  ref: 49f350e
-  specs:
-    hydra-access-controls (7.0.0.alpha)
-      active-fedora (~> 7.0.0.alpha)
-      activesupport
-      blacklight (~> 4.0)
-      cancan
-      deprecation
-    hydra-core (7.0.0.alpha)
-      active-fedora
-      blacklight (~> 4.0)
-      block_helpers
-      deprecation (>= 0.0.5)
-      hydra-access-controls (= 7.0.0.alpha)
-      jettywrapper (>= 1.4.1)
-      rails (>= 3.2.3, < 5)
-    hydra-head (7.0.0.alpha)
-      hydra-access-controls (= 7.0.0.alpha)
-      hydra-core (= 7.0.0.alpha)
-      rails (>= 3.2.6)
+      mediashelf-loggable
+      nom-xml (>= 0.5.1)
+      om (~> 3.0.0)
+      rdf
+      rdf-rdfxml (~> 1.1.0)
+      rsolr (~> 1.0.10.pre1)
+      rubydora (~> 1.7.0.pre1)
 
 GIT
   remote: git://github.com/stympy/faker.git
@@ -52,16 +33,6 @@ GEM
       erubis (~> 2.7.0)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
-    active-fedora (7.0.0.pre1)
-      activesupport (>= 3.0.0)
-      deprecation
-      mediashelf-loggable
-      nom-xml (>= 0.5.1)
-      om (~> 3.0.0)
-      rdf
-      rdf-rdfxml (~> 1.1.0)
-      rsolr
-      rubydora (~> 1.7.0.pre1)
     activemodel (4.0.2)
       activesupport (= 4.0.2)
       builder (~> 3.1.0)
@@ -84,8 +55,9 @@ GEM
       mime-types
       xml-simple
     bcrypt-ruby (3.1.2)
-    blacklight (4.5.0)
+    blacklight (4.6.3)
       bootstrap-sass (>= 2.2.0, < 2.4)
+      deprecation
       kaminari (~> 0.13)
       marc (>= 0.4.3, < 1.1)
       nokogiri (~> 1.6)
@@ -158,6 +130,29 @@ GEM
     hike (1.2.3)
     hooks (0.3.3)
     htmlentities (4.3.1)
+    hydra-access-controls (7.0.0.pre1)
+      active-fedora (~> 7.0.0.pre2)
+      activesupport
+      blacklight (~> 4.0)
+      cancan
+      deprecation
+    hydra-core (7.0.0.pre1)
+      active-fedora
+      blacklight (~> 4.0)
+      block_helpers
+      deprecation (>= 0.0.5)
+      hydra-access-controls (= 7.0.0.pre1)
+      jettywrapper (>= 1.4.1)
+      rails (>= 3.2.3, < 5)
+    hydra-editor (0.2.2)
+      active-fedora (>= 6.3.0)
+      bootstrap_forms
+      deprecation
+      rails (>= 3.2.13, < 5.0)
+    hydra-head (7.0.0.pre1)
+      hydra-access-controls (= 7.0.0.pre1)
+      hydra-core (= 7.0.0.pre1)
+      rails (>= 3.2.6)
     hydra-role-management (0.1.0)
       bootstrap_forms
       cancan
@@ -178,7 +173,7 @@ GEM
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     json (1.8.1)
-    kaminari (0.15.0)
+    kaminari (0.15.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
     logger (1.2.8)
@@ -250,8 +245,8 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.1.1)
-    rdf (1.1.1.1)
-    rdf-rdfa (1.1.1)
+    rdf (1.1.2.1)
+    rdf-rdfa (1.1.2)
       haml (>= 4.0)
       htmlentities (>= 4.3.1)
       rdf (>= 1.1.0)
@@ -277,7 +272,7 @@ GEM
       vegas (~> 0.1.2)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    rsolr (1.0.9)
+    rsolr (1.0.10.pre1)
       builder (>= 2.1.2)
     rspec-core (2.14.7)
     rspec-expectations (2.14.4)
@@ -291,7 +286,7 @@ GEM
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
-    rubydora (1.7.0.pre1)
+    rubydora (1.7.0)
       activemodel
       activesupport
       deprecation
@@ -373,7 +368,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active-fedora (= 7.0.0.pre1)
+  active-fedora!
   aws-s3
   bootstrap-sass
   capybara
@@ -383,8 +378,8 @@ DEPENDENCIES
   factory_girl_rails
   faker!
   figaro
-  hydra-editor!
-  hydra-head!
+  hydra-editor (~> 0.2.2)
+  hydra-head (= 7.0.0.pre1)
   hydra-role-management (~> 0.1.0)
   inherited_resources
   jbuilder (~> 1.2)

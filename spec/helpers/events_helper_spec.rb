@@ -57,4 +57,46 @@ describe EventsHelper do
 
   end
 
+  describe '#dislay_event_outcome' do
+    describe 'without enough info in the solr doc' do
+      it 'returns nil' do
+        helper.display_event_outcome({}).should == nil
+      end
+    end
+
+    describe 'when the outcome is a node' do
+      let(:solr_doc) { { 'event_outcome_ssim' => ['success'] } }
+
+      it 'returns the first entry' do
+        helper.display_event_outcome(solr_doc).should == 'success'
+      end
+    end
+
+    describe 'when the outcome is a string' do
+      let(:solr_doc) { { 'event_outcome_ssim' => 'success' } }
+
+      it 'returns the string' do
+        helper.display_event_outcome(solr_doc).should == 'success'
+      end
+    end
+  end
+
+  describe '#event_catalog_title' do
+    it 'includes institution name if viewing institution events' do
+      inst = FactoryGirl.build(:institution)
+      assign(:institution, inst)
+      helper.event_catalog_title.should == "Events for #{inst.name}"
+    end
+
+    it 'includes object title if viewing events for an object' do
+      object = FactoryGirl.build(:intellectual_object)
+      assign(:parent_object, object)
+      helper.event_catalog_title.should == "Events for #{object.title}"
+    end
+
+    it 'has a default value to fail over to' do
+      helper.event_catalog_title.should == "Events"
+    end
+  end
+
 end

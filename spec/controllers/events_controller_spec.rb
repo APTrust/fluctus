@@ -2,20 +2,12 @@ require 'spec_helper'
 
 describe EventsController do
 
-  before :all do
-    Institution.destroy_all
-    GenericFile.destroy_all
-    IntellectualObject.destroy_all
-    solr = ActiveFedora::SolrService.instance.conn
-    solr.delete_by_query("*:*", params: { commit: true })
-  end
-
-  let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution) }
+  let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution, rights: 'institution') }
   let(:file) { FactoryGirl.create(:generic_file, intellectual_object: object) }
   let(:event_attrs) { FactoryGirl.attributes_for(:premis_event_fixity_generation) }
 
   # An object and a file from a different institution:
-  let(:someone_elses_object) { FactoryGirl.create(:intellectual_object) }
+  let(:someone_elses_object) { FactoryGirl.create(:intellectual_object, rights: 'institution') }
   let(:someone_elses_file) { FactoryGirl.create(:generic_file, intellectual_object: someone_elses_object) }
 
 
@@ -27,11 +19,20 @@ describe EventsController do
       before do
         @someone_elses_event = someone_elses_file.add_event(event_attrs)
         someone_elses_file.save!
-        get :index, institution_id: someone_elses_file.institution
       end
 
       it "can view events, even if it's not my institution" do
+        get :index, institution_id: someone_elses_file.institution
+        expect(response).to be_success
         assigns(:institution).should == someone_elses_file.institution
+        assigns(:document_list).length.should == 1
+        assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
+      end
+
+      it "can view events, even if it's not my intellectual object" do
+        get :index, intellectual_object_id: someone_elses_object
+        expect(response).to be_success
+        assigns(:intellectual_object).should == someone_elses_object
         assigns(:document_list).length.should == 1
         assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
       end
@@ -42,38 +43,6 @@ describe EventsController do
   describe 'signed in as institutional admin' do
     let(:user) { FactoryGirl.create(:user, :institutional_admin) }
     before { sign_in user }
-
-    describe 'GET index' do
-      before do
-        oldest_time = "2014-01-13 10:15:00 -0600"
-        middle_time = "2014-01-13 10:30:00 -0600"
-        newest_time = "2014-01-13 10:45:00 -0600"
-
-        @event = file.add_event(event_attrs.merge(date_time: oldest_time))
-        @event2 = file.add_event(event_attrs.merge(date_time: newest_time))
-        @event3 = file.add_event(event_attrs.merge(date_time: middle_time))
-        file.save!
-
-        @someone_elses_event = someone_elses_file.add_event(event_attrs)
-        someone_elses_file.save!
-
-        get :index, institution_id: file.institution
-      end
-
-      it 'shows the events for that institution, sorted by time' do
-        assigns(:institution).should == file.institution
-        assigns(:document_list).length.should == 3
-        assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
-      end
-    end
-
-    describe "GET index for an institution where you don't have permission" do
-      it 'denies access' do
-        get :index, institution_id: someone_elses_file.institution
-        expect(response).to redirect_to root_url
-        flash[:alert].should =~ /You are not authorized/
-      end
-    end
 
     describe 'POST create' do
       it 'creates an event for the generic file' do
@@ -122,6 +91,75 @@ describe EventsController do
       end
     end
 
+  end
+
+
+  describe 'signed in as institutional user' do
+    let(:user) { FactoryGirl.create(:user, :institutional_user) }
+    before { sign_in user }
+
+    describe 'POST create' do
+      it 'denies access' do
+        file.premisEvents.events.count.should == 0
+        post :create, generic_file_id: file, event: event_attrs
+        file.reload
+
+        file.premisEvents.events.count.should == 0
+        expect(response).to redirect_to root_url
+        flash[:alert].should =~ /You are not authorized/
+      end
+    end
+
+    describe 'GET index' do
+      before do
+        oldest_time = "2014-01-13 10:15:00 -0600"
+        middle_time = "2014-01-13 10:30:00 -0600"
+        newest_time = "2014-01-13 10:45:00 -0600"
+
+        @event = file.add_event(event_attrs.merge(date_time: oldest_time))
+        @event2 = file.add_event(event_attrs.merge(date_time: newest_time))
+        @event3 = file.add_event(event_attrs.merge(date_time: middle_time))
+        file.save!
+
+        @someone_elses_event = someone_elses_file.add_event(event_attrs)
+        someone_elses_file.save!
+      end
+
+      describe 'events for an institution' do
+        it 'shows the events for that institution, sorted by time' do
+          get :index, institution_id: file.institution
+          assigns(:institution).should == file.institution
+          assigns(:document_list).length.should == 3
+          assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
+        end
+      end
+
+      describe 'events for an intellectual object' do
+        it 'shows the events for that object, sorted by time' do
+          get :index, intellectual_object_id: object
+          expect(response).to be_success
+          assigns(:intellectual_object).should == object
+          assigns(:document_list).length.should == 3
+          assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
+        end
+      end
+
+      describe "for an institution where you don't have permission" do
+        it 'denies access' do
+          get :index, institution_id: someone_elses_file.institution
+          expect(response).to redirect_to root_url
+          flash[:alert].should =~ /You are not authorized/
+        end
+      end
+
+      describe "for an intellectual object where you don't have permission" do
+        it 'denies access' do
+          get :index, intellectual_object_id: someone_elses_object
+          expect(response).to redirect_to root_url
+          flash[:alert].should =~ /You are not authorized/
+        end
+      end
+    end
   end
 
 

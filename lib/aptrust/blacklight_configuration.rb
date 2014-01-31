@@ -12,6 +12,7 @@ module Aptrust
         rights_field = solr_name('desc_metadata__rights', :facetable)
         format_field = solr_name('format', :facetable)
         event_type_field = solr_name('event_type', :symbol)
+        event_outcome_field = solr_name('event_outcome', :symbol)
 
         config.default_solr_params = {
           :qf => [title_field, identifier_field, description_field].join(' '),
@@ -32,6 +33,7 @@ module Aptrust
         config.add_facet_field rights_field, sort: 'index', label: "Rights"
         config.add_facet_field format_field, sort: 'index', label: "Format"
         config.add_facet_field event_type_field, sort: 'index', label: "Event Type"
+        config.add_facet_field event_outcome_field, sort: 'index', label: "Event Outcome"
 
         # Have BL send all facet field names to Solr, which has been the default
         # previously. Simply remove these lines if you'd rather use Solr request
@@ -74,6 +76,7 @@ module Aptrust
 
         config.add_sort_field 'score desc, system_create_dtsi desc, desc_metadata__title_si asc', :label => 'relevance'
         config.add_sort_field 'pub_date_dtsi desc, desc_metadata__title_si asc', :label => 'date added'
+        config.add_sort_field 'system_modified_dtsi desc', :label => 'date changed'
         config.add_sort_field 'desc_metadata__title_si asc, system_create_dtsi desc', :label => 'title'
 
         # If there are more than this many search results, no spelling ("did you

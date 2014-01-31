@@ -32,18 +32,16 @@ RSpec.configure do |config|
   # Add all fluctus roles before testing.
   config.before(:all) do 
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
-      Role.create!(name: role)
+      Role.first_or_create(name: role)
     end
 
     # Create our default institution
-    FactoryGirl.create(:aptrust)
+    # FactoryGirl.create(:aptrust)
   end
 
   config.after(:all) do
     GenericFile.destroy_all
     IntellectualObject.destroy_all
-    Role.destroy_all
-    User.destroy_all
     Institution.destroy_all
   end
 

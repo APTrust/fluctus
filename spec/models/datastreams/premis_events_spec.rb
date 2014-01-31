@@ -70,8 +70,9 @@ describe Event do
       event = meta.events.build(attrs)
       event.to_solr['id'].should == attrs[:identifier]
       event.to_solr['event_type_ssim'].should == [attrs[:type]]
-      event.to_solr['event_outcome_ssm'].should == [attrs[:outcome]]
+      event.to_solr['event_outcome_ssim'].should == [attrs[:outcome]]
       event.to_solr['event_date_time_si'].should == attrs[:date_time]
+      event.to_solr['event_date_time_ssim'].should == [attrs[:date_time]]
     end
   end
 

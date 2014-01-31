@@ -35,4 +35,15 @@ describe "Routes for Events" do
     )
   end
 
+  it "has an index for an intellectual object's events" do
+    expect(
+      get: 'objects/obj:123/events'
+    ).to(
+      route_to(controller: 'events',
+               action: 'index',
+               intellectual_object_id: 'obj:123'
+      )
+    )
+  end
+
 end

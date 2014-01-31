@@ -12,6 +12,9 @@
 
 <div class="tab-content">
   <div class="tab-pane" id="summary">
+
+    <%= link_to "Recently Modified Objects", institution_intellectual_objects_path(@institution, sort: 'system_modified_dtsi desc'), :id => 'recent_doc_link' %>
+
     <dl class="dl-horizontal">
       <dt>Users</dt>
       <dd><%= @institution.users.count %></dd>
@@ -27,11 +30,22 @@
     <table class="upload_stats table">
       <% @institution.bytes_by_format.each do |format, bytes| %>
       <tr>
-        <td class="<%=format.split('/')[-1].downcase.gsub(/\s/, '_') %>_label"><%= format %></td>
+        <td class="<%=format_class(format) %>"><%= format_display(format) %></td>
         <td class="bytes"><%=number_to_human_size bytes %></td>
       </tr>
       <% end %>
     </table>
+
+    <div id="chart-frame">
+      <div id="chart" style="padding: 0px; position: relative;"></div>
+    </div>
+    <script>
+      var d = <%=@institution.statistics.inspect %>
+      
+      $.plot("#chart", [d], {
+        xaxis: { mode: "time" }
+      });
+    </script>
 
   </div>
 

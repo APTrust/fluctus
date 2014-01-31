@@ -153,6 +153,13 @@ describe GenericFilesController do
           expect(assigns[:generic_file].state).to eq 'D'
           expect(response.code).to eq '204'
         end
+
+        it 'delete the file with html response' do
+          delete :destroy, id: file
+          expect(response).to redirect_to intellectual_object_path(file.intellectual_object)
+          expect(assigns[:generic_file].state).to eq 'D'
+          expect(flash[:notice]).to eq "Delete job has been queued for file: #{file.uri}"
+        end
       end
     end
   end

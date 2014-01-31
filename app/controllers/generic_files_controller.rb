@@ -33,6 +33,10 @@ class GenericFilesController < ApplicationController
     @generic_file.soft_delete
     respond_to do |format|
       format.json { head :no_content }
+      format.html {
+        flash[:notice] = "Delete job has been queued for file: #{@generic_file.uri}"
+        redirect_to @generic_file.intellectual_object
+      }
     end
   end
 

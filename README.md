@@ -20,6 +20,7 @@ Overall Fluctus targets the following versions or later
 * Ruby >= 2.0.0
 * Rails >= 4.0.0
 * hydra-head >= 6.3.4
+* [Redis](http://redis.io/)
 
 ## Setup Instructions
 
@@ -43,7 +44,19 @@ rake fluctus:setup
 
 * Use Proper Solr Configuration
 
-The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit history for that file before you deploy Solr in production.
+The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit
+history for that file before you deploy Solr in production.
+
+### Redis
+
+We are using redis as a queue for resque jobs.  For development, you'll need to have a redis server running if you want to perform certain tasks that would normally queue up a resque job (for example, deleting an IntellectualObject).
+
+* Install redis (If you are using a Mac, it's easy to install with homebrew)
+* Run the redis server:
+
+```bash
+redis-server /usr/local/etc/redis.conf
+```
 
 ### Setting up Test Data
 
@@ -58,8 +71,8 @@ on most workstations, for a faster setup see the options below the default examp
 # Without Parameters:
 rake fluctus:populate_db
 
-# With Parameters:
-rake fluctus:populate_db[number_of_institutions,number_of_intellectual_objects,number_of_generic_files]
+# With Parameters for number_of_institutions, number_of_intellectual_objects, number_of_generic_files:
+rake fluctus:populate_db[2,5,5]
 ````
 
 * Adding additional stub Premis Events to Generic Files
@@ -75,6 +88,28 @@ rake fluctus:populate_events
 
 Note the Generic File Object pid that will be output so you can use that to load the proper object in the web
 interface for testing.
+
+*  Adding an event failure
+
+A simple factory will allow you to add a failed version of any of the current premis events just by
+using the factory name and adding _fail at the end.  So to add some fake data for a failed event for
+testing you could do the following in code or at command line.
+
+````
+# Start by getting the object you want to add the failed event to.
+gf = GenericFile.first
+
+# Then add the event as attributes
+gf.add_event(FactoryGirl.attributes_for(:premis_events_fixity_check_fail))
+gf.save
+````
+## Statistics sampling
+To create a sample run the script like so:
+```
+$ RAILS_ENV=production ./script/sample_uploads
+```
+You probably want to put this in a cron job so it can be run regularly
+
 
 ## Heroku Instructions
 
@@ -92,3 +127,15 @@ So as an example, if you were to query for "APTrust" in the name field of the de
 datastream in the Institution model you would search as follows::
 
   ins = Institution.where(desc_metadata__name_tesim: "APTrust")
+
+# Re-indexing objects in solr:
+
+If you re-index an object that has premisEvents, you may also want to re-index the object's events.
+
+```ruby
+object = IntellectualObject.first
+object.update_index
+object.premisEvents.events.each {|e| write_event_to_solr(e) }
+```
+
+

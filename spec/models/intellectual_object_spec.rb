@@ -80,7 +80,18 @@ describe IntellectualObject do
       after do
         subject.generic_files.destroy_all
       end
-      subject { FactoryGirl.create(:intellectual_object, generic_files: [FactoryGirl.create(:generic_file)]) }
+
+      subject { FactoryGirl.create(:intellectual_object) }
+
+      before do
+        @file = FactoryGirl.create(:generic_file, intellectual_object_id: subject.id)
+        subject.reload
+      end
+
+      it 'test setup assumptions' do
+        subject.id.should == subject.generic_files.first.intellectual_object_id
+        subject.generic_files.should == [@file]
+      end
 
       it 'should not be destroyable' do
         expect(subject.destroy).to be_false

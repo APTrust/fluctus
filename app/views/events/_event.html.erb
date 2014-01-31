@@ -16,10 +16,13 @@
     <dd> <%= "#{event.id}" %> </dd>
 
     <dt> Event Type: </dt>
-    <dd> <%= event['event_type_ssim'].first %> </dd>
+    <dd> <%= Array(event['event_type_ssim']).first %> </dd>
 
     <dt> Outcome: </dt>
-    <dd> <%= event['event_outcome_ssm'].first %> </dd>
+    <dd> <%= display_event_outcome(event) %> </dd>
+
+    <dt> DateTime: </dt>
+    <dd> <%= Array(event['event_date_time_ssim']).first %> </dd>
   </dl>
 
 </div>

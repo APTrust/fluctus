@@ -20,15 +20,16 @@ FactoryGirl.define do
     end
 
     trait :admin do
-      roles { [Role.where(name: 'admin').first] }
+      roles { [Role.where(name: 'admin').first_or_create] }
     end
 
     trait :institutional_admin do
-      roles { [Role.where(name: 'institutional_admin').first] }
+      roles { [Role.where(name: 'institutional_admin').first_or_create]}
+
     end
 
     trait :institutional_user do
-      roles { [Role.where(name: 'institutional_user').first] }
+      roles { [Role.where(name: 'institutional_user').first_or_create] }
     end
   end
 end

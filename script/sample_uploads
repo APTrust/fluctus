@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+# this script is intended to be run as a cron job which will sample and record
+# the current usage statistics for each institution.
+
+require File.join(File.dirname(__FILE__), '../config/environment.rb')
+
+StatisticsSampler.record_current_statistics

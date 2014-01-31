@@ -1,24 +1,5 @@
 <% # main container for facets/limits menu -%>
-  <h3>Show:</h3>
-  <%= form_tag search_action_url, :method => :get, :class => 'search-query-form form-inline clearfix' do %>
-    <%= search_as_hidden_fields(:omit_keys => [:qt, :page, :show_all]).html_safe %>
-
-    <label class="search-scope">
-      <%= radio_button_tag 'show_all', 'false', params['show_all'] != 'true' %>
-      <span class="label-text">Active</span>
-    </label>
-
-    <label class="search-scope">
-      <%= radio_button_tag 'show_all', 'true', params['show_all'] == 'true' %>
-      <span class="label-text">All</span>
-    </label>
-
-    <noscript>
-      <button type="submit" class="search-submit btn btn-primary" id="aux-search-submit-header">
-        Filter by Work Owner
-      </button>
-    </noscript>
-  <% end %>
+<%= render 'shared/state_facet' %>
 <% if has_facet_values?  %>
   <div id="facets" class="facets sidenav">
     

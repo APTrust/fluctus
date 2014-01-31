@@ -18,4 +18,6 @@
 //= require blacklight/blacklight
 //= require turbolinks
 //= require hydra-editor/hydra-editor
+//= require jquery.flot
+//= require jquery.flot.time
 //= require_tree .

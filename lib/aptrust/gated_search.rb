@@ -40,7 +40,15 @@ module Aptrust::GatedSearch
   # @param user_parameters the current user-submitted parameters
   def only_active_objects(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << "_query_:\"{!raw f=object_state_ssi}A\"" unless user_parameters[:show_all] == 'true'
+    case user_parameters[:show]
+    when 'all'
+      # no constraint
+    when 'deleted'
+      solr_parameters[:fq] << "_query_:\"{!raw f=object_state_ssi}D\""
+    else
+      # constrain to active
+      solr_parameters[:fq] << "_query_:\"{!raw f=object_state_ssi}A\""
+    end
   end
 
 end
