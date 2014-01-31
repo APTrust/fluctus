@@ -19,9 +19,8 @@ class UsersController < ApplicationController
       redirect_to root_path
       flash[:notice] = "Successfully changed password."
     else
-      sign_in @user, :bypass => true
       redirect_to root_path
-      flash[:alert] = "Current password was incorrect. Password has not been changed. You have been logged out."
+      flash[:alert] = "Current password was incorrect. Password has not been changed."
     end
   end
 
