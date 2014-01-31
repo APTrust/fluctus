@@ -32,7 +32,7 @@ RSpec.configure do |config|
   # Add all fluctus roles before testing.
   config.before(:all) do 
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
-      Role.first_or_create(name: role)
+      Role.where(name: role).first_or_create
     end
 
     # Create our default institution
