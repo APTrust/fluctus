@@ -1,18 +1,23 @@
 GIT
-  remote: git://github.com/projecthydra/active_fedora.git
-  revision: 0dfa27831c0a9937a6c6b4620bcc18ddf24c0a9a
-  ref: 0dfa278
+  remote: git://github.com/projecthydra/hydra-head.git
+  revision: 2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e
+  ref: 2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e
   specs:
-    active-fedora (7.0.0.pre2)
-      activesupport (>= 3.0.0)
+    hydra-access-controls (7.0.0.pre2)
+      active-fedora (~> 7.0.0.rc1)
+      activesupport
+      blacklight (= 5.0.0.pre4)
+      cancan
       deprecation
-      mediashelf-loggable
-      nom-xml (>= 0.5.1)
-      om (~> 3.0.0)
-      rdf
-      rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.10.pre1)
-      rubydora (~> 1.7.0.pre1)
+    hydra-core (7.0.0.pre2)
+      block_helpers
+      hydra-access-controls (= 7.0.0.pre2)
+      jettywrapper (>= 1.4.1)
+      rails (>= 3.2.3, < 5)
+    hydra-head (7.0.0.pre2)
+      hydra-access-controls (= 7.0.0.pre2)
+      hydra-core (= 7.0.0.pre2)
+      rails (>= 3.2.6)
 
 GIT
   remote: git://github.com/stympy/faker.git
@@ -33,6 +38,16 @@ GEM
       erubis (~> 2.7.0)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
+    active-fedora (7.0.0.rc1)
+      activesupport (>= 3.0.0)
+      deprecation
+      mediashelf-loggable
+      nom-xml (>= 0.5.1)
+      om (~> 3.0.0)
+      rdf
+      rdf-rdfxml (~> 1.1.0)
+      rsolr (~> 1.0.10.pre1)
+      rubydora (~> 1.7.0)
     activemodel (4.0.2)
       activesupport (= 4.0.2)
       builder (~> 3.1.0)
@@ -55,18 +70,17 @@ GEM
       mime-types
       xml-simple
     bcrypt-ruby (3.1.2)
-    blacklight (4.6.3)
-      bootstrap-sass (>= 2.2.0, < 2.4)
+    blacklight (5.0.0.pre4)
+      bootstrap-sass (~> 3.0)
       deprecation
       kaminari (~> 0.13)
-      marc (>= 0.4.3, < 1.1)
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.6)
       sass-rails
     block_helpers (0.3.3)
       activesupport (>= 2.0)
-    bootstrap-sass (2.3.2.2)
+    bootstrap-sass (3.1.0.1)
       sass (~> 3.2)
     bootstrap_forms (4.0.1)
     builder (3.1.4)
@@ -78,7 +92,7 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
-    childprocess (0.3.9)
+    childprocess (0.4.0)
       ffi (~> 1.0, >= 1.0.11)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
@@ -86,7 +100,7 @@ GEM
     coffee-script (2.2.0)
       coffee-script-source
       execjs
-    coffee-script-source (1.6.3)
+    coffee-script-source (1.7.0)
     countries (0.9.3)
       currencies (~> 0.4.2)
     coveralls (0.7.0)
@@ -97,7 +111,7 @@ GEM
       thor
     currencies (0.4.2)
     daemons (1.1.9)
-    deprecation (0.0.5)
+    deprecation (0.1.0)
       activesupport
     devise (3.2.2)
       bcrypt-ruby (~> 3.0)
@@ -106,8 +120,7 @@ GEM
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
-    docile (1.1.1)
-    ensure_valid_encoding (0.5.3)
+    docile (1.1.3)
     equivalent-xml (0.4.0)
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
@@ -130,29 +143,11 @@ GEM
     hike (1.2.3)
     hooks (0.3.3)
     htmlentities (4.3.1)
-    hydra-access-controls (7.0.0.pre1)
-      active-fedora (~> 7.0.0.pre2)
-      activesupport
-      blacklight (~> 4.0)
-      cancan
-      deprecation
-    hydra-core (7.0.0.pre1)
-      active-fedora
-      blacklight (~> 4.0)
-      block_helpers
-      deprecation (>= 0.0.5)
-      hydra-access-controls (= 7.0.0.pre1)
-      jettywrapper (>= 1.4.1)
-      rails (>= 3.2.3, < 5)
     hydra-editor (0.2.2)
       active-fedora (>= 6.3.0)
       bootstrap_forms
       deprecation
       rails (>= 3.2.13, < 5.0)
-    hydra-head (7.0.0.pre1)
-      hydra-access-controls (= 7.0.0.pre1)
-      hydra-core (= 7.0.0.pre1)
-      rails (>= 3.2.6)
     hydra-role-management (0.1.0)
       bootstrap_forms
       cancan
@@ -163,13 +158,13 @@ GEM
     jbuilder (1.5.3)
       activesupport (>= 3.0.0)
       multi_json (>= 1.2.0)
-    jettywrapper (1.5.0)
+    jettywrapper (1.5.2)
       activesupport (>= 3.0.0)
       childprocess
       i18n
       logger
       mediashelf-loggable
-    jquery-rails (3.0.4)
+    jquery-rails (3.1.0)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     json (1.8.1)
@@ -180,9 +175,6 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    marc (0.8.1)
-      ensure_valid_encoding
-      unf
     mediashelf-loggable (0.4.9)
     meta_request (0.2.8)
       callsite
@@ -211,18 +203,18 @@ GEM
       resque (~> 1.25)
     orm_adapter (0.5.0)
     pg (0.17.1)
-    phony (1.9.0)
-    phony_rails (0.5.0)
+    phony (2.1.3)
+    phony_rails (0.6.0)
       activesupport (>= 3.0)
       countries (>= 0.8.2)
-      phony (= 1.9.0)
+      phony (~> 2.1)
     polyglot (0.3.3)
     quiet_assets (1.0.2)
       railties (>= 3.1, < 5.0)
     rack (1.5.2)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
-    rack-protection (1.5.1)
+    rack-protection (1.5.2)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -257,9 +249,9 @@ GEM
       rdf-xsd (>= 1.1)
     rdf-xsd (1.1.0)
       rdf (>= 1.1)
-    rdoc (3.12.2)
+    rdoc (4.1.1)
       json (~> 1.4)
-    redis (3.0.6)
+    redis (3.0.7)
     redis-namespace (1.4.1)
       redis (~> 3.0.4)
     responders (1.0.0)
@@ -275,9 +267,9 @@ GEM
     rsolr (1.0.10.pre1)
       builder (>= 2.1.2)
     rspec-core (2.14.7)
-    rspec-expectations (2.14.4)
+    rspec-expectations (2.14.5)
       diff-lcs (>= 1.1.3, < 2.0)
-    rspec-mocks (2.14.4)
+    rspec-mocks (2.14.5)
     rspec-rails (2.14.1)
       actionpack (>= 3.0)
       activemodel (>= 3.0)
@@ -286,7 +278,7 @@ GEM
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
-    rubydora (1.7.0)
+    rubydora (1.7.1)
       activemodel
       activesupport
       deprecation
@@ -296,15 +288,15 @@ GEM
       mime-types
       nokogiri
       rest-client
-    sass (3.2.13)
+    sass (3.2.14)
     sass-rails (4.0.1)
       railties (>= 4.0.0, < 5.0)
       sass (>= 3.1.10)
       sprockets-rails (~> 2.0.0)
-    sdoc (0.3.20)
-      json (>= 1.1.3)
-      rdoc (~> 3.10)
-    shoulda-matchers (2.4.0)
+    sdoc (0.4.0)
+      json (~> 1.8)
+      rdoc (~> 4.0, < 5.0)
+    shoulda-matchers (2.5.0)
       activesupport (>= 3.0.0)
     simple_form (3.0.1)
       actionpack (>= 4.0.0, < 4.1)
@@ -342,19 +334,16 @@ GEM
     thread_safe (0.1.3)
       atomic
     tilt (1.4.1)
-    tins (0.13.1)
+    tins (0.13.2)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    turbolinks (2.2.0)
+    turbolinks (2.2.1)
       coffee-rails
     tzinfo (0.3.38)
     uglifier (2.4.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
-    unf (0.1.3)
-      unf_ext
-    unf_ext (0.0.6)
     uuidtools (2.1.4)
     vegas (0.1.11)
       rack (>= 1.0.0)
@@ -368,9 +357,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active-fedora!
+  active-fedora (= 7.0.0.rc1)
   aws-s3
-  bootstrap-sass
   capybara
   coffee-rails (~> 4.0.0)
   coveralls
@@ -379,7 +367,7 @@ DEPENDENCIES
   faker!
   figaro
   hydra-editor (~> 0.2.2)
-  hydra-head (= 7.0.0.pre1)
+  hydra-head!
   hydra-role-management (~> 0.1.0)
   inherited_resources
   jbuilder (~> 1.2)

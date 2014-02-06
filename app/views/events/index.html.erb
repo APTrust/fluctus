@@ -1,14 +1,12 @@
-<div id="sidebar" class="span3">
+<div id="sidebar" class="col-md-3">
   <%= render 'sidebar' %>
 </div>
 
-<div id="content" class="span9">
+<div id="content" class="col-md-9">
   <h2 class="top-content-title"> <%= event_catalog_title %> </h2>
 
   <%= render 'shared/constraints' %>
   <%= render 'sort_and_per_page' %>
-
-  <h2 class="hide-text"> <%= t('blacklight.search.search_results') %> </h2>
 
   <%- if @response.empty?  %>
     <%= render 'shared/zero_results' %>

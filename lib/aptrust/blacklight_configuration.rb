@@ -21,13 +21,12 @@ module Aptrust
         }
 
         # solr field configuration for search results/index views
-        config.index.show_link = 'desc_metadata__title_tesim'
-        config.index.record_display_type = 'has_model_ssim'
+        config.index.title_field = 'desc_metadata__title_tesim'
+        config.index.display_type_field = 'has_model_ssim'
 
         # solr field configuration for document/show views
-        config.show.html_title = 'desc_metadata__title_tesim'
-        config.show.heading = 'desc_metadata__title_tesim'
-        config.show.display_type = 'has_model_ssim'
+        config.show.title_field = 'desc_metadata__title_tesim'
+        config.show.display_type_field = 'has_model_ssim'
 
         config.add_facet_field institution_field, sort: 'index', label: "Institution"
         config.add_facet_field rights_field, sort: 'index', label: "Rights"
@@ -43,11 +42,11 @@ module Aptrust
 
         # solr fields to be displayed in the index (search results) view
         #   The ordering of the field names is the order of the display
-        config.add_index_field title_field, label: 'Title:'
-        config.add_index_field institution_field, label: 'Institution:'
-        config.add_index_field identifier_field, label: 'Identifier:'
-        config.add_index_field 'system_modified_dtsi', label: 'Last Modified:'
-        config.add_index_field description_field, label: 'Description:'
+        config.add_index_field title_field, label: 'Title'
+        config.add_index_field institution_field, label: 'Institution'
+        config.add_index_field identifier_field, label: 'Identifier'
+        config.add_index_field 'system_modified_dtsi', label: 'Last Modified'
+        config.add_index_field description_field, label: 'Description'
 
         config.add_search_field 'all_fields', :label => 'All Fields'
 

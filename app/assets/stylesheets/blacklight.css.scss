@@ -3,11 +3,9 @@ $apt_red: #800000;
 $apt_black: #180000;
 
 @import 'bootstrap';
-@import 'bootstrap-responsive';
-
 @import 'blacklight/blacklight';
 
-#header-navbar-fixed-top .brand {
+#header-navbar .navbar-brand {
   width: auto;
   text-indent: 45px;
   font-size: 2em;
@@ -15,7 +13,7 @@ $apt_black: #180000;
   color: $apt_black;
 }
 
-#header-navbar-fixed-top .brand em {
+#header-navbar .navbar-brand em {
   color: $apt_red;
   font-style: normal;
 }
@@ -31,3 +29,26 @@ $apt_black: #180000;
     width: auto;
   }
 }
+
+#q { width: auto; }
+
+#sortAndPerPage {
+  border-top: 1px solid #DDDDDD;
+  margin-top: 1em;
+  padding-top: 1em;
+}
+
+.glyphicon {
+  font-family: 'Glyphicons Halflings';   /* to enable glyphicon */
+  padding-right: 0.25em;
+}
+
+.search-scope .label-text {
+  font-weight: normal;
+}
+
+.top-content-title { font-weight: bold; }
+.panel-heading h4 { font-weight: bold; }
+.index_title a { font-weight: bold; }
+.page-header h1 { font-weight: bold; }
+

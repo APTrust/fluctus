@@ -1,7 +1,7 @@
-<div id="content" class="span9 show-document">
+<div id="content" class="col-md-9 show-document">
 
   <ol class="breadcrumb">
-    <li><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %></li> >
+    <li><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %></li>
     <li class="active"><%= @intellectual_object.title %></li>
   </ol>
 
@@ -46,6 +46,6 @@
   </div>
 </div>
 
-<div id="sidebar" class="span3">
+<div id="sidebar" class="col-md-3">
    <%= render_document_sidebar_partial %>
 </div>
