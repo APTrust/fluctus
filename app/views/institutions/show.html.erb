@@ -5,15 +5,13 @@
 <ul class="nav nav-tabs">
   <li><a href="#summary" data-toggle="tab">Summary</a></li>
   <li><a href="#stats" data-toggle="tab">Statistics</a></li>
-  <li><%= link_to 'Objects', institution_intellectual_objects_path(@institution) %></li>
+  <li><%= link_to 'Objects', institution_intellectual_objects_path(@institution, sort: 'system_modified_dtsi desc') %></li>
   <li><a href="#users" data-toggle="tab">Users</a></li>
   <li><%= link_to 'Events', institution_events_path(@institution) %></li>
 </ul>
 
 <div class="tab-content">
   <div class="tab-pane" id="summary">
-
-    <%= link_to "Recently Modified Objects", institution_intellectual_objects_path(@institution, sort: 'system_modified_dtsi desc'), :id => 'recent_doc_link' %>
 
     <dl class="dl-horizontal">
       <dt>Users</dt>
