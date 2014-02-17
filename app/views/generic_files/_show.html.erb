@@ -1,15 +1,17 @@
 <div id="content" class="col-md-10">
   <ol class="breadcrumb">
     <li><a href="#"><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %></a></li>
+    <li>/</li>
     <li><a href="#"><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %></a></li>
+    <li>/</li>
     <li class="active"><%= @generic_file.uri %></li>
   </ol>
 
-  <div class="page-header">
-    <h1><%= @generic_file.uri %></h1>
-  </div>
+  <section class="page-header">
+    <h2><%= @generic_file.uri %></h2>
+  </section>
 
-  <div class="object_info">
+  <section class="object_info">
     <dl class="dl-horizontal dl-invert">
       <dt>Institution</dt>
       <dd><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %> [<%= @generic_file.intellectual_object.institution.brief_name %>]</dd>
@@ -28,12 +30,11 @@
       <dd><%= checksum.algorithm.first %>:<%= checksum.digest.first %> generated <%= time_ago_in_words(checksum.datetime.first) %> ago</dd>
       <% end %>
     </dl>
+  </section>
+  <div id="sidebar" class="col-md-2">
+    <%= destroy_link @generic_file %>
   </div>
 
   <%= render 'premis_events' %>
-</div>
-
-<div id="sidebar" class="col-md-2">
-  <%= destroy_link @generic_file %>
 </div>
 
