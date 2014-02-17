@@ -4,7 +4,7 @@
 
 .auditinfo {
   table {
-    width: 1000px;
+    width: 1200px;
   }
 
   table, th, td {
@@ -15,21 +15,18 @@
     padding: 0.5em;
   }
 
-  .time {
-    column-width: 100px;
-    -moz-column-width:100px; /* Firefox */
-    -webkit-column-width:100px; /* Safari and Chrome */
+  th {
+    text-align:center
   }
 
-  .type {
-    column-width: 100px;
-    -moz-column-width:100px; /* Firefox */
-    -webkit-column-width:100px; /* Safari and Chrome */
+  .time, .type {
+    text-align:center
   }
 
   .outcome {
     column-width: 800px;
     -moz-column-width:800px; /* Firefox */
     -webkit-column-width:800px; /* Safari and Chrome */
+    word-wrap: break-word;
   }
 }
