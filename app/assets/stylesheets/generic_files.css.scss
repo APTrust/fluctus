@@ -4,7 +4,7 @@
 
 .auditinfo {
   table {
-    width: 1200px;
+    width: 100%;
   }
 
   table, th, td {
@@ -24,9 +24,9 @@
   }
 
   .outcome {
-    column-width: 800px;
-    -moz-column-width:800px; /* Firefox */
-    -webkit-column-width:800px; /* Safari and Chrome */
+    column-width: 700px;
+    -moz-column-width:700px; /* Firefox */
+    -webkit-column-width:700px; /* Safari and Chrome */
     word-wrap: break-word;
   }
 }
