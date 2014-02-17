@@ -5,19 +5,19 @@
     <table class="premis">
       <thead>
         <tr>
-          <th>Time</th>
-          <th>Type</th>
-          <th>Outcome</th>
+          <th class="time">Time</th>
+          <th class="type">Type</th>
+          <th class="outcome">Outcome</th>
         </tr>
       </thead>
       <tbody>
         <% @events.each do |event| %>
           <tr>
-            <td> <%= event.date_time.first %> </td>
-            <td> <%= event.type.first %> </td>
+            <td class="time"> <%= event.date_time.first %> </td>
+            <td class="type"> <%= event.type.first %> </td>
   
             <td>
-              <dl class="dl-horizontal dl-invert">
+              <dl class="dl-horizontal dl-invert outcome">
                 <dt>Detail</dt>
                 <dd><%= event.detail.first %></dd>
                 <dt>Outcome</dt>
