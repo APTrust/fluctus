@@ -1,6 +1,6 @@
   <h3>Show:</h3>
   <%= form_tag search_action_url, :method => :get, :class => 'search-query-form form-inline clearfix' do %>
-    <%= search_as_hidden_fields(:omit_keys => [:qt, :page, :show]).html_safe %>
+    <%= render_hash_as_hidden_fields(params_for_search().except(:q, :search_field, :qt, :page, :show, :utf8)) %>
 
     <label class="search-scope">
       <%= radio_button_tag 'show', 'active', params['show'].blank? || params['show'] == 'active' %>

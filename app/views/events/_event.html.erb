@@ -4,7 +4,7 @@
   <div class="documentHeader clearfix">
 
     <%- # main title -%>
-    <h5 class="index_title">
+    <h5 class="index_title col-sm-9 col-lg-9">
       <% counter = document_counter_with_offset(event_counter) %>
       <%= t('blacklight.search.documents.counter', :counter => counter) if counter %>
       <%= parent_object_link(event) %>

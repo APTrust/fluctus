@@ -41,14 +41,13 @@ end
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'hydra-head', '7.0.0.pre1'
-gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '0dfa278' # pre3
+gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e'  # TODO: Upgrade to 7.0 release
+gem 'active-fedora', '7.0.0.rc1'
 gem 'hydra-editor', '~> 0.2.2'
 gem 'order_up', '0.0.1'
 gem 'resque', '~> 1.25'
 
 gem "devise"
-gem "bootstrap-sass"
 gem 'figaro'
 #gem 'omniauth-google-oauth2'
 gem 'simple_form', '~> 3.0.1'

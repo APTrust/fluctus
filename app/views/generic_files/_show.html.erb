@@ -1,7 +1,7 @@
-<div id="content" class="span10">
+<div id="content" class="col-md-10">
   <ol class="breadcrumb">
-    <li><a href="#"><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %></a></li> >
-    <li><a href="#"><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %></a></li> >
+    <li><a href="#"><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %></a></li>
+    <li><a href="#"><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %></a></li>
     <li class="active"><%= @generic_file.uri %></li>
   </ol>
 
@@ -33,7 +33,7 @@
   <%= render 'premis_events' %>
 </div>
 
-<div id="sidebar" class="span2">
+<div id="sidebar" class="col-md-2">
   <%= destroy_link @generic_file %>
 </div>
 

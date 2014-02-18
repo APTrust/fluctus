@@ -1,31 +1,32 @@
-<div id="header-navbar-fixed-top" class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <div class="row">
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </a>
+<div id="header-navbar" class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
 
-        <div class="span3 logo-text">
-          <%= link_to raw("<em>APT</em>rust"), root_path, :class => "brand" %>
-        </div>
-        
-        <div class="span6 clearfix" id="searchbar">
-          <% if user_signed_in? %>         
-            <%= render_search_bar %>
-          <% end %>
-        </div>
+    <div class="navbar-header col-md-3">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#user-util-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
 
-        <div class="span3 nav-collapse">
-          <% if user_signed_in? %>
-            <%= render partial: '/user_util_links' %>
-          <% else %>
-            <%= render partial: '/user_sign_in_links' %>
-          <% end %>
-        </div>
+      <%= link_to raw("<em>APT</em>rust"), root_path, :class => "navbar-brand logo-text" %>
+    </div>
+
+    <div id="search-navbar" class="navbar-static-top col-md-6" role="navigation">
+      <div class="navbar-header">
+        <% if user_signed_in? %>
+          <%= render_search_bar %>
+        <% end %>
       </div>
     </div>
+
+    <div class="collapse navbar-collapse col-md-3" id="user-util-collapse">
+      <% if user_signed_in? %>
+        <%= render partial: '/user_util_links' %>
+      <% else %>
+        <%= render partial: '/user_sign_in_links' %>
+      <% end %>
+    </div>
+
   </div>
 </div>

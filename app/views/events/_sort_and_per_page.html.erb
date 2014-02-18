@@ -1,7 +1,9 @@
-<div id="sortAndPerPage">
+<div id="sortAndPerPage" class="clearfix">
   <div class="page_links">
-    <%= render :partial => 'shared/paginate_compact' %>
+    <%= render :partial => 'shared/paginate_compact', :object => @response %>
   </div>
 
-  <%= render :partial => 'shared/per_page_widget' %>
+  <div class="search-widgets pull-right">
+    <%= render :partial => 'shared/per_page_widget' %>
+  </div>
 </div>
