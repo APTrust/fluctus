@@ -8,4 +8,6 @@ development:
   FEDORA_NAMESPACE:
   REDIS_HOST: localhost
   REDIS_PORT: 6379
+  RAILS_SECRET_KEY:
+  DEVISE_SECRET_KEY:
 
