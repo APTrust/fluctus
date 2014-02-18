@@ -34,6 +34,8 @@ We use the figaro gem for additional application configuration through 'fluctus/
 to the .gitignore file by default.  You will need to copy 'fluctus/config/application.yml.local' to
 'fluctus/config/application.yml' and setup values as appropriate.
 
+Use the ``` rake secret ``` command to generate secret keys for rails and devise.  Paste those keys into the 'fluctus/config/application.yml' file.
+
 
 * Setup APTrust Institution object and Roles
 
