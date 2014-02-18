@@ -5,11 +5,11 @@
     <li class="active"><%= @intellectual_object.title %></li>
   </ol>
 
-  <div class="page-header">
-    <h1><%= @intellectual_object.title %></h1>
-  </div>
+  <section class="page-header">
+    <h2><%= @intellectual_object.title %></h2>
+  </section>
 
-  <div class="object_info">
+  <section class="object_info">
     <dl class="dl-horizontal dl-invert">
       <dt>Institution</dt>
       <dd><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %> [<%= @intellectual_object.institution.brief_name %>]</dd>
@@ -22,14 +22,14 @@
       <dt> Last Modified </dt>
       <dd> <%= @intellectual_object.modified_date %> </dd>
     </dl>
-  </div>
-
-  <div class="object_events">
-    <h3> Events </h3>
+  </section>
+  <section id="sidebar" class="col-md-3">
+    <%= render_document_sidebar_partial %>
+  </section>
+  <section class="object_events">
     <%= link_to "View Events", intellectual_object_events_path(@intellectual_object), class: 'btn btn-primary' %>
-  </div>
-
-  <div class="object_children">
+  </section>
+  <section class="object_children">
     <h3>Preserved Files</h3>
     <% @intellectual_object.generic_files.each do |gf| %>
           <h4><%= link_to gf.uri, gf  %></h4>
@@ -43,9 +43,5 @@
         </dl>
 
     <% end %>
-  </div>
-</div>
-
-<div id="sidebar" class="col-md-3">
-   <%= render_document_sidebar_partial %>
+  </section>
 </div>
