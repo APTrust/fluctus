@@ -15,6 +15,7 @@ Fluctus::Application.routes.draw do
   resources :users do
     patch 'update_password', on: :collection
     get 'edit_password', on: :member
+    patch 'generate_api_key', on: :member
   end
 
   resources :generic_files, only: [:show, :destroy], path: 'files' do

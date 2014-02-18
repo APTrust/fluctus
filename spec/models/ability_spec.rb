@@ -7,12 +7,14 @@ describe Ability do
     @user_institution = FactoryGirl.create(:institution)
   end
 
+
   describe 'an admin user' do
     before (:all) {
       @intellectual_object = FactoryGirl.create(:intellectual_object)
     }
 
     let(:admin) { FactoryGirl.create(:user, :admin, institution_pid: @user_institution.pid) }
+    let(:user) { FactoryGirl.create(:user, institution_pid: @user_institution.pid) }
     let(:intellectual_object) { @intellectual_object }
     subject { Ability.new(admin) }
 
@@ -22,6 +24,9 @@ describe Ability do
     it { should be_able_to(:add_user, Role.where(name: 'admin').first) }
     it { should be_able_to(:add_user, Role.where(name: 'institutional_admin').first) }
     it { should be_able_to(:add_user, Role.where(name: 'institutional_user').first) }
+
+    it { should be_able_to(:generate_api_key, user) }
+    it { should be_able_to(:generate_api_key, admin) }
 
     describe "with a file" do
       let(:file) { FactoryGirl.create(:generic_file) }
@@ -50,17 +55,20 @@ describe Ability do
     it { should_not be_able_to(:add_user, Role.where(name: 'admin').first) }
     it { should     be_able_to(:add_user, Role.where(name: 'institutional_admin').first) }
     it { should     be_able_to(:add_user, Role.where(name: 'institutional_user').first) }
+    it { should     be_able_to(:generate_api_key, institutional_admin) }
 
     describe "when the user is" do
       describe "in my institution" do
         let(:user) { FactoryGirl.create(:user, institution_pid: @user_institution.pid) }
         it { should     be_able_to(:update, user) }
+        it { should_not be_able_to(:generate_api_key, user) }
       end
 
       describe "not in my institution" do
         let(:user) { FactoryGirl.create(:user) }
         it { should_not be_able_to(:update, user) }
         it { should_not be_able_to(:assign_admin_user, user) }
+        it { should_not be_able_to(:generate_api_key, user) }
       end
     end
     describe "when the file is" do
@@ -96,10 +104,13 @@ describe Ability do
       @intellectual_object = FactoryGirl.create(:intellectual_object, institution: @institutional_user.institution)
       @file = FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object)
     }
+
     let(:institutional_user) { @institutional_user }
     let(:intellectual_object) { @intellectual_object }
     let(:file) { @file }
+
     subject { Ability.new(institutional_user) }
+
     it { should_not be_able_to(:edit, intellectual_object) }
     it { should_not be_able_to(:add_user, Role.where(name: 'admin').first) }
     it { should_not be_able_to(:add_user, Role.where(name: 'institutional_admin').first) }
@@ -108,6 +119,7 @@ describe Ability do
     it { should_not be_able_to(:create, Institution) }
     it { should_not be_able_to(:update, User.new) }
     it { should     be_able_to(:update, institutional_user) }
+    it { should     be_able_to(:generate_api_key, institutional_user) }
     it { should     be_able_to(:read,   institutional_user.institution) }
     it { should_not be_able_to(:read,   FactoryGirl.create(:institution)) }
     it { should_not be_able_to(:update, file) }
@@ -117,6 +129,14 @@ describe Ability do
       describe "in my institution" do
         it { should_not be_able_to(:update, file) }
         it { should_not be_able_to(:create, intellectual_object.generic_files.build) }
+      end
+    end
+
+    describe "when the user is" do
+      let(:user) { FactoryGirl.create(:user, institution_pid: @user_institution.pid) }
+
+      describe "in my institution" do
+        it { should_not be_able_to(:generate_api_key, user) }
       end
     end
   end
