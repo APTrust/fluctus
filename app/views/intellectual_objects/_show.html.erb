@@ -32,9 +32,14 @@
   </section>
   <section class="object_children">
     <h3>Preserved Files</h3>
-    <% @intellectual_object.generic_files.each do |gf| %>
-          <h4><%= link_to gf.uri, gf  %></h4>
-        <dl class="dl-horizontal dl-invert">
+    <% @intellectual_object.generic_files.each_with_index do |gf, index| %>
+        <% counter = index+1%>
+        <div class="documentHeader clearfix"><h5 class="index_title col-sm-9 col-lg-9">
+          <%= t('blacklight.search.documents.counter', :counter => counter) if counter %>
+          <%= link_to gf.uri, gf  %>
+        </h5></div>
+
+        <dl class="document-metadata dl-horizontal dl-invert">
           <dt>Last Fixity</dt>
           <dd><span class="label label-success">Success</span></dd>
           <dt>MimeType<dt>
