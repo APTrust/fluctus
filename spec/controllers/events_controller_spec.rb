@@ -144,6 +144,16 @@ describe EventsController do
         end
       end
 
+      describe 'events for a generic file' do
+        it 'shows the events for that file, sorted by time' do
+          get :index, generic_file_id: file
+          expect(response).to be_success
+          assigns(:generic_file).should == file
+          assigns(:document_list).length.should == 3
+          assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
+        end
+      end
+
       describe "for an institution where you don't have permission" do
         it 'denies access' do
           get :index, institution_id: someone_elses_file.institution
@@ -155,6 +165,14 @@ describe EventsController do
       describe "for an intellectual object where you don't have permission" do
         it 'denies access' do
           get :index, intellectual_object_id: someone_elses_object
+          expect(response).to redirect_to root_url
+          flash[:alert].should =~ /You are not authorized/
+        end
+      end
+
+      describe "for a generic file where you don't have permission" do
+        it 'denies access' do
+          get :index, generic_file_id: someone_elses_file
           expect(response).to redirect_to root_url
           flash[:alert].should =~ /You are not authorized/
         end
