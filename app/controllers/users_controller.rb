@@ -8,15 +8,36 @@ class UsersController < ApplicationController
     destroy!(notice: "User #{@user.to_s} was deleted.")
   end
 
-  #def update_password
-  #  @user = User.find(current_user.id)
-  #  if @user.update_with_password(user_params)
-  #    sign_in @user, :bypass => true
-  #    redirect_to root_path
-  #  else
-  #    render "edit"
-  #  end
-  #end
+  def edit_password
+    @user = current_user
+  end
+
+  def update_password
+    @user = User.find(current_user.id)
+    if @user.update_with_password(user_params)
+      sign_in @user, :bypass => true
+      redirect_to root_path
+      flash[:notice] = "Successfully changed password."
+    else
+      redirect_to root_path
+      flash[:alert] = "Current password was incorrect. Password has not been changed."
+    end
+  end
+
+  def generate_api_key
+    @user.generate_api_key
+
+    if @user.save
+      msg = ["Please record this key.  If you lose it, you will have to generate a new key.",
+             "Your API secret key is: #{@user.api_secret_key}"]
+      msg = msg.join("<br/>").html_safe
+      flash[:notice] = msg
+    else
+      flash[:alert] = 'ERROR: Unable to create API key.'
+    end
+
+    redirect_to user_path(@user)
+  end
 
   private
 
@@ -43,8 +64,8 @@ class UsersController < ApplicationController
       end
     end
 
-  #def user_params
-  #  params.required(:user).permit(:password, :password_confirmation, :current_password)
-  #end
+  def user_params
+    params.required(:user).permit(:password, :password_confirmation, :current_password)
+  end
 
 end

@@ -1,4 +1,4 @@
-development:
+development: &dev
   GOOGLE_KEY:
   GOOGLE_SECRET:
   SOLR_URL:
@@ -11,3 +11,5 @@ development:
   RAILS_SECRET_KEY:
   DEVISE_SECRET_KEY:
 
+test:
+  <<: *dev

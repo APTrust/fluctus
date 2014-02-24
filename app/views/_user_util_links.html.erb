@@ -27,10 +27,10 @@
           <li><%= link_to t('blacklight.header_links.search_history'), search_history_path %></li>
           <li class="divider"></li>
           <li><%= link_to "Edit Profile", edit_user_path(current_user) %></li>
+          <li><%= link_to "Change Password", edit_password_user_path(current_user), method: :get %></li>
           <li class="divider"></li>
           <li><%= link_to t('blacklight.header_links.logout'), destroy_user_session_path, method: :delete %></li>
         </ul>
     </li>
   </ul>
 </div>
-

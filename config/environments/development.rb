@@ -27,4 +27,11 @@ Fluctus::Application.configure do
   # number of complex assets.
   config.assets.debug = true
   config.assets.logger = false
+
+  # Sets up mailing host for password resets
+  Rails.application.routes.default_url_options[:host] = 'localhost:3000'
+  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
+  #send password reset emails to a file
+  config.action_mailer.delivery_method = :file
 end
