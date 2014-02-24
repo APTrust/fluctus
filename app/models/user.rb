@@ -1,3 +1,5 @@
+require 'bcrypt'
+
 class User < ActiveRecord::Base
   # Connects this user object to Hydra behaviors. 
   include Hydra::User
@@ -53,6 +55,13 @@ class User < ActiveRecord::Base
     name || email
   end
 
+  def as_json(options = nil)
+    json_data = super
+    json_data.delete('api_secret_key')
+    json_data.delete('encrypted_api_secret_key')
+    json_data
+  end
+
   # Roles are managed through the hydra-role-management gem.
   def is?(role)
     self.roles.pluck(:name).include?(role.to_s)
@@ -89,6 +98,30 @@ class User < ActiveRecord::Base
   # This will be fixed in hydra-role-management 0.1.1
   def guest?
     false
+  end
+
+  attr_reader :api_secret_key
+
+  def api_secret_key=(key)
+    @api_secret_key = key
+    self.encrypted_api_secret_key = if key.blank?
+                                      nil
+                                    else
+                                      password_digest(key)
+                                    end
+  end
+
+  # Generate a new API key for this user
+  def generate_api_key(length = 20)
+    self.api_secret_key = SecureRandom.hex(length)
+  end
+
+  # Verifies whether an API key (from sign in) matches the user's API key.
+  def valid_api_key?(input_key)
+    return false if encrypted_api_secret_key.blank?
+    bcrypt  = ::BCrypt::Password.new(encrypted_api_secret_key)
+    key = ::BCrypt::Engine.hash_secret("#{input_key}#{User.pepper}", bcrypt.salt)
+    Devise.secure_compare(key, encrypted_api_secret_key)
   end
 
   class NilInstitution

@@ -1,4 +1,4 @@
-development:
+development: &dev
   GOOGLE_KEY:
   GOOGLE_SECRET:
   SOLR_URL:
@@ -8,4 +8,8 @@ development:
   FEDORA_NAMESPACE:
   REDIS_HOST: localhost
   REDIS_PORT: 6379
+  RAILS_SECRET_KEY:
+  DEVISE_SECRET_KEY:
 
+test:
+  <<: *dev

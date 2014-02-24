@@ -10,7 +10,16 @@ module UsersHelper
   def roles_for_select
      Role.all.select {|role| can? :add_user, role }.sort.map {|r| [r.name.titleize, r.id] }
   end
+
   def institutions_for_select
      Institution.all.select {|institution| can? :add_user, institution }
+  end
+
+  def generate_key_confirmation_msg(user)
+    if user.encrypted_api_secret_key
+      'Are you sure?  Your current API secret key will be destroyed and replaced with the new one.'
+    else
+      ''
+    end
   end
 end
