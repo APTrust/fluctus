@@ -27,7 +27,9 @@
   <section id="sidebar" class="col-md-3">
     <%= render_document_sidebar_partial %>
   </section>
-
+  <section class="object_events">
+    <%= link_to "View Events", intellectual_object_events_path(@intellectual_object), class: 'btn btn-primary' %>
+  </section>
   <section class="object_children">
     <h3>Preserved Files</h3>
     <% @intellectual_object.generic_files.each do |gf| %>
@@ -42,8 +44,5 @@
         </dl>
 
     <% end %>
-  </section>
-  <section class="object_events">
-    <%= link_to "View Events", intellectual_object_events_path(@intellectual_object), class: 'btn btn-primary' %>
   </section>
 </div>

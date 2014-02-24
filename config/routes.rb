@@ -10,6 +10,10 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create, :index]
   end
 
+  resources :generic_files, path: 'files' do
+    resources :events, only: [:index]
+  end
+
   devise_for :users
 
   resources :users  #, only: [:edit] do

@@ -1,0 +1,19 @@
+<% if !@institution.nil? %>
+    <ol class="breadcrumb">
+      <li><%= link_to @institution.name, @institution %></li>
+      <li class="active">Events</li>
+    </ol>
+<% elsif !@intellectual_object.nil? %>
+    <ol class="breadcrumb">
+      <li><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %></li>
+      <li><%= link_to @intellectual_object.title, @intellectual_object  %></li>
+      <li class="active">Events</li>
+    </ol>
+<% elsif !@generic_file.nil? %>
+    <ol class="breadcrumb">
+      <li><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %></li>
+      <li><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %></li>
+      <li><%= link_to @generic_file.uri, @generic_file %></li>
+      <li class="active">Events</li>
+    </ol>
+<% end %>
