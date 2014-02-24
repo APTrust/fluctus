@@ -28,7 +28,7 @@ footer {
   width: auto;
 }
 
-#header-navbar .navbar-brand {@include fix-title}
+#header-navbar .navbar-brand {@include fix-title;}
 
 /* MISC */
 .gravatar {
@@ -81,8 +81,7 @@ a.block-link {
   -moz-border-left-colors: none;
   -moz-border-right-colors: none;
   -moz-border-top-colors: none;
-  background-color: #F5F5F5;
-  background-image: linear-gradient(to bottom, #FFFFFF, #E6E6E6);
+  /*background-image: linear-gradient;*/
   background-repeat: repeat-x;
   border-color: #CCCCCC #CCCCCC #B3B3B3;
   border-image: none;
@@ -90,7 +89,6 @@ a.block-link {
   border-style: solid;
   border-width: 1px;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-  color: #333333;
   cursor: pointer;
   display: inline-block;
   font-size: 14px;
@@ -101,4 +99,27 @@ a.block-link {
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
   vertical-align: middle;
 }
+
+#sidebar .btn-danger,
+#main-container .btn-danger,
+#content .btn-danger{
+  background-image: linear-gradient(to bottom, #AE423F, #DD6461);
+  color: #FFFFFF;
+}
+
+#sidebar .btn-normal,
+#main-container .btn-normal,
+#content .btn-normal{
+  background-image: linear-gradient(to bottom, #FFFFFF, #E6E6E6);
+  color: #428bca;
+}
+
+#sidebar .btn-success,
+#main-container .btn-success,
+#content .btn-success{
+  background-image: linear-gradient(to bottom, #4A934A, #8DCD8D);
+  color: #FFFFFF;
+}
+
+
 
