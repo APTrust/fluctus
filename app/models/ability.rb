@@ -23,6 +23,7 @@ class Ability
       can :add_user, Role, name: 'institutional_admin'
       can [:read, :update, :destroy], User, institution_pid: current_user.institution_pid
       can [:create], User
+      can :generate_api_key, User, id: current_user.id
       can [:read, :update], Institution, pid: current_user.institution_pid
       can :create, GenericFile, :intellectual_object => { :institution_id => current_user.institution_pid }
       can :create, IntellectualObject, institution_id: current_user.institution_pid
@@ -35,4 +36,5 @@ class Ability
       can :read, Institution, pid: current_user.institution_pid
     end
   end
+
 end

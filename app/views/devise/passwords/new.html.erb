@@ -5,8 +5,10 @@
 
   <div><%= f.label :email %><br />
   <%= f.email_field :email, :autofocus => true %></div>
-
-  <div><%= f.submit "Send me reset password instructions" %></div>
+  <br>
+  <%= button_tag(type: 'submit', class: "btn doc-action-btn btn-normal") do %>
+      <i class="glyphicon glyphicon-envelope"></i> Send me reset password instructions
+  <% end %>
 <% end %>
 
 <%= render "devise/shared/links" %>

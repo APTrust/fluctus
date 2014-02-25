@@ -68,6 +68,26 @@ describe UsersController do
         response.should be_successful
         expect(assigns[:user].errors.include?(:phone_number)).to be_true
       end
+
+      it 'cannot set api_secret_key in an update' do
+        patch :update, id: institutional_admin, user: { name: 'Frankie', api_secret_key: '123' }
+        institutional_admin.reload
+
+        expect(institutional_admin.name).to eq 'Frankie'
+        expect(institutional_admin.encrypted_api_secret_key).to be_nil
+        expect(institutional_admin.api_secret_key).to be_nil
+        response.should redirect_to user_url(institutional_admin)
+      end
+
+      it 'cannot set encrypted_api_secret_key in an update' do
+        patch :update, id: institutional_admin, user: { name: 'Frankie', encrypted_api_secret_key: '123' }
+        institutional_admin.reload
+
+        expect(institutional_admin.name).to eq 'Frankie'
+        expect(institutional_admin.encrypted_api_secret_key).to be_nil
+        expect(institutional_admin.api_secret_key).to be_nil
+        response.should redirect_to user_url(institutional_admin)
+      end
     end
   end
 
@@ -191,6 +211,33 @@ describe UsersController do
         end
       end
     end
-
   end
+
+  describe "An Institutional User" do
+    let!(:user) { FactoryGirl.create(:user, :institutional_user)}
+    before { sign_in user }
+
+    it 'generates a new API key' do
+      patch :generate_api_key, id: user.id
+      user.reload
+
+      expect(assigns[:user]).to eq user
+      response.should redirect_to user_path(user)
+      expect(assigns[:user].api_secret_key).to_not be_nil
+      expect(user.encrypted_api_secret_key).to_not be_nil
+      flash[:notice].should =~ /#{assigns[:user].api_secret_key}/
+    end
+
+    it 'prints a message if it is unable to make the key' do
+      User.any_instance.should_receive(:save).and_return(false)
+      patch :generate_api_key, id: user.id
+      user.reload
+
+      response.should redirect_to user_path(user)
+      expect(flash[:alert]).to eq 'ERROR: Unable to create API key.'
+      expect(user.api_secret_key).to be_nil
+      expect(user.encrypted_api_secret_key).to be_nil
+    end
+  end
+
 end

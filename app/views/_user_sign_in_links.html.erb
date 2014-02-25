@@ -1,5 +1,7 @@
 <ul class="nav navbar-right">
   <li>
-    <%= link_to t('blacklight.header_links.login'), new_user_session_path %>
+    <%= link_to new_user_session_path, {class: "btn doc-action-btn btn-normal"} do %>
+        <i class="glyphicon glyphicon-log-in"></i> Login
+    <% end %>
   </li>
 </ul>
