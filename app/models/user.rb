@@ -79,6 +79,15 @@ class User < ActiveRecord::Base
     is? 'institutional_user'
   end
 
+  def role_id
+    if(admin?)
+      Role.where(name: 'admin').first_or_create.id
+    elsif(institutional_admin?)
+      Role.where(name: 'institutional_admin').first_or_create.id
+    elsif(institutional_user?)
+      Role.where(name: 'institutional_user').first_or_create.id
+    end
+  end
 
   # Since an Institution is an ActiveFedora Object, these two objects cannot be related as normal (i.e. belongs_to)
   # They will be connected through the User.institution_pid.
