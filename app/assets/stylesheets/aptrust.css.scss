@@ -44,6 +44,10 @@ a.block-link {
   margin-right: 0.5em;
 }
 
+form a {
+  padding-left: 10px;
+}
+
 .auditinfo h3 { font-weight: bold; }
 
 
@@ -118,6 +122,13 @@ a.block-link {
 #main-container .btn-success,
 #content .btn-success{
   background-image: linear-gradient(to bottom, #4A934A, #8DCD8D);
+  color: #FFFFFF;
+}
+
+#sidebar .btn-cancel,
+#main-container .btn-cancel,
+#content .btn-cancel{
+  background-image: linear-gradient(to bottom, #D89C46, #F3BD71);
   color: #FFFFFF;
 }
 
