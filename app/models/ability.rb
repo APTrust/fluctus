@@ -24,10 +24,10 @@ class Ability
       can [:read, :update, :destroy], User, institution_pid: current_user.institution_pid
       can [:create], User
       can :generate_api_key, User, id: current_user.id
+      can [:edit_password, :update_password], User, id: current_user.id
       can [:read, :update], Institution, pid: current_user.institution_pid
       can :create, GenericFile, :intellectual_object => { :institution_id => current_user.institution_pid }
       can :create, IntellectualObject, institution_id: current_user.institution_pid
-      can :manage, User, id: current_user.id
     end
   end
   
