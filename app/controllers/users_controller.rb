@@ -56,10 +56,12 @@ class UsersController < ApplicationController
 
     def build_role_ids
       [].tap do |role_ids|
-        roles = Role.find(params[:user][:role_ids].reject &:blank?)
-        roles.each do |role|
-          authorize!(:add_user, role)
-          role_ids << role.id
+        unless params[:user][:role_ids].empty?
+          roles = Role.find(params[:user][:role_ids])
+
+            authorize!(:add_user, roles)
+            role_ids << roles.id
+
         end
       end
     end
