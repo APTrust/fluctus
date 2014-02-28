@@ -5,6 +5,7 @@ FactoryGirl.define do
     phone_number { Faker::PhoneNumber.phone_number }
     password { "password" }
     institution_pid { FactoryGirl.create(:institution).pid }
+    roles { [Role.where(name: 'public').first_or_create] }
   
     factory :aptrust_user, class: "User" do
       institution_pid { 

@@ -20,7 +20,7 @@ class UsersController < ApplicationController
       flash[:notice] = "Successfully changed password."
     else
       redirect_to root_path
-      flash[:alert] = "Current password was incorrect, or passwords did not match. Password has not been changed."
+      flash[:alert] = "Current password was incorrect, new password was too short, or passwords did not match. Password has not been changed."
     end
   end
 
@@ -49,17 +49,21 @@ class UsersController < ApplicationController
     end
 
     def build_institution_pid
-      institution = Institution.find(params[:user][:institution_pid])
-      authorize!(:add_user, institution)
-      institution.id
+      unless params[:user][:institution_pid].empty?
+        institution = Institution.find(params[:user][:institution_pid])
+        authorize!(:add_user, institution)
+        institution.id
+      end
     end
 
     def build_role_ids
       [].tap do |role_ids|
-        roles = Role.find(params[:user][:role_ids].reject &:blank?)
-        roles.each do |role|
-          authorize!(:add_user, role)
-          role_ids << role.id
+        unless params[:user][:role_ids].empty?
+          roles = Role.find(params[:user][:role_ids])
+
+            authorize!(:add_user, roles)
+            role_ids << roles.id
+
         end
       end
     end
