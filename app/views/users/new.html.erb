@@ -3,7 +3,7 @@
 </div>
 
 <%= simple_form_for(@user, html: {class: 'form-horizontal'}) do |f| %>
-    <%= f.error_notification %>
+    <%= devise_error_messages! %>
 
     <div class="form-inputs">
       <%= f.input :name, autofocus: true %>

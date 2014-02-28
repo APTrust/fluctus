@@ -19,8 +19,8 @@ class UsersController < ApplicationController
       redirect_to root_path
       flash[:notice] = "Successfully changed password."
     else
-      redirect_to root_path
-      flash[:alert] = "Current password was incorrect, new password was too short, or passwords did not match. Password has not been changed."
+      render :edit_password
+      #flash[:alert] = "Current password was incorrect, new password was too short, or passwords did not match. Password has not been changed."
     end
   end
 
