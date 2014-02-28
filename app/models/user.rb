@@ -18,7 +18,7 @@ class User < ActiveRecord::Base
   # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :recoverable, :rememberable, :trackable, :timeoutable, :validatable
 
-  validates :email, :phone_number, presence: true
+  validates :email, :phone_number, :role_ids, presence: true
   validates :email, uniqueness: true
   validates :institution_pid, presence: true
   validate :institution_pid_points_at_institution

@@ -48,6 +48,18 @@ form a {
   padding-left: 10px;
 }
 
+.alert, .help-inline {
+  color: #FF0000;
+}
+
+form .alert {
+  padding: 0px;
+}
+
+.help-inline {
+  padding-left: 15px;
+}
+
 .auditinfo h3 { font-weight: bold; }
 
 

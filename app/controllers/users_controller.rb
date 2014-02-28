@@ -49,9 +49,11 @@ class UsersController < ApplicationController
     end
 
     def build_institution_pid
-      institution = Institution.find(params[:user][:institution_pid])
-      authorize!(:add_user, institution)
-      institution.id
+      unless params[:user][:institution_pid].empty?
+        institution = Institution.find(params[:user][:institution_pid])
+        authorize!(:add_user, institution)
+        institution.id
+      end
     end
 
     def build_role_ids
