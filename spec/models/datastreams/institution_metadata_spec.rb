@@ -12,7 +12,7 @@ describe InstitutionMetadata do
   it 'should retain properties' do
     @datastream.name.first.should == "Test"
     @datastream.brief_name.first.should == "tst"
-    @datastream.identifier.should == "test.edu"
+    @datastream.identifier.first.should == "test.edu"
   end
 
 end

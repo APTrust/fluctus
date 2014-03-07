@@ -8,7 +8,7 @@ namespace :fluctus do
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
     puts "trying to create initial APTrust institution"
-    i = Institution.create!(name: "APTrust")
+    i = FactoryGirl.create(:institution, name: "APTrust", brief_name: "apt", identifier: "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
