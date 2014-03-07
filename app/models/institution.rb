@@ -11,6 +11,8 @@ class Institution < ActiveFedora::Base
 
   validates :name, presence: true
   validate :name_is_unique
+  validates :identifier, presence: true
+  validate :identifier_is_unique
 
   before_destroy :check_for_associations
 
@@ -51,6 +53,10 @@ class Institution < ActiveFedora::Base
   # we must remove self from the array before testing for uniqueness.
   def name_is_unique
     errors.add(:name, "has already been taken") if Institution.where(desc_metadata__name_ssim: self.name).reject{|r| r == self}.any?
+  end
+
+  def identifier_is_unique
+    errors.add(:identifier, "has already been taken") if Institution.where(desc_metadata__identifier_ssim: self.identifier).reject{|r| r == self}.any?
   end
 
   def check_for_associations

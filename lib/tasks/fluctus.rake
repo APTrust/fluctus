@@ -7,6 +7,7 @@ namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
+    puts "trying to create initial APTrust institution"
     i = Institution.create!(name: "APTrust")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
@@ -72,13 +73,13 @@ namespace :fluctus do
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
-        ["Columbia University", "cul"], ["North Carolina State University", "ncsu"],
-        ["Johns Hopkins University", "jhu"], ["University of Maryland", "mdu"],
-        ["University of Michigan", "umich"], ["University of North Carolina at Chapel Hill", "unc"],
-        ["Syracuse University", "syr"], ["University of Virginia","uva"],
-        ["University of Notre Dame", "und"], ["Stanford University", "stnfd"],
-        ["University of Chicago", "uchi"], ["University of Miami", "um"],
-        ["University of Connecticut", "uconn"], ["University of Cinnicnati", "ucin"],
+        ["Columbia University", "cul", "columbia.edu"], ["North Carolina State University", "ncsu", "ncsu.edu"],
+        ["Johns Hopkins University", "jhu", "jhu.edu"], ["University of Maryland", "mdu", "umd.edu"],
+        ["University of Michigan", "umich", "umich.edu"], ["University of North Carolina at Chapel Hill", "unc", "unc.edu"],
+        ["Syracuse University", "syr", "syr.edu"], ["University of Virginia","uva", "virginia.edu"],
+        ["University of Notre Dame", "und", "nd.edu"], ["Stanford University", "stnfd", "stanford.edu"],
+        ["University of Chicago", "uchi", "uchicago.edu"], ["University of Miami", "um", "miami.edu"],
+        ["University of Connecticut", "uconn", "uconn.edu"], ["University of Cinnicnati", "ucin", "uc.edu"],
     ]
 
     args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
@@ -92,7 +93,8 @@ namespace :fluctus do
     puts "Creating #{numInsts} Institutions"
     numInsts.times.each do |count|
       puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
-      FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count].last)
+      FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1],
+                         identifier: partner_list[count].last)
     end
 
     puts "Creating Users for each Institution"

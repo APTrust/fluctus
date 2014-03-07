@@ -21,7 +21,7 @@ class InstitutionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def build_resource_params
-      params[:action] == 'new' ? [] : [params.require(:institution).permit(:name)]
+      params[:action] == 'new' ? [] : [params.require(:institution).permit(:name, :identifier)]
     end
 
 end
