@@ -3,12 +3,14 @@ class EventsController < ApplicationController
   before_filter :load_and_authorize_parent_object, only: [:create]
   load_and_authorize_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
   load_and_authorize_resource :institution, only: [:index], if: :inst_id_exists?
+  load_and_authorize_resource :generic_file, only: [:index], if: :generic_file_id_exists?
 
   include Aptrust::GatedSearch
 
   self.solr_search_params_logic += [:only_events]
   self.solr_search_params_logic += [:for_selected_institution]
   self.solr_search_params_logic += [:for_selected_object]
+  self.solr_search_params_logic += [:for_selected_file]
   self.solr_search_params_logic += [:sort_chronologically]
 
   def create
@@ -31,6 +33,10 @@ protected
     params['intellectual_object_id']
   end
 
+  def generic_file_id_exists?
+    params['generic_file_id']
+  end
+
   def load_and_authorize_parent_object
     parent_id = params['generic_file_id'] || params['intellectual_object_id']
     @parent_object = ActiveFedora::Base.find(parent_id)
@@ -47,6 +53,12 @@ protected
     return unless @intellectual_object
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << "intellectual_object_id_ssim:\"#{@intellectual_object.id}\""
+  end
+
+  def for_selected_file(solr_parameters, user_parameters)
+    return unless @generic_file
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << "generic_file_id_ssim:\"#{@generic_file.id}\""
   end
 
   def only_events(solr_parameters, user_parameters)

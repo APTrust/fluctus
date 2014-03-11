@@ -2,16 +2,8 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-.auditinfo {
-  table {
-    width: 90%;
-  }
-
-  table, th, td {
-    border: 1px solid #eee;
-  }
-
-  th, td {
-    padding: 0.5em;
-  }
+#gf-sidebar {
+    padding-left: 0px;
+    padding-bottom: 20px;
+    width: 100%;
 }
