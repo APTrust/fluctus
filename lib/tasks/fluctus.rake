@@ -7,8 +7,7 @@ namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
-    puts "trying to create initial APTrust institution"
-    i = FactoryGirl.create(:institution, name: "APTrust", brief_name: "apt", identifier: "aptrust.org")
+    i = FactoryGirl.create(:institution, name: "APTrust", brief_name: "apt", identifier: "aptrust")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
@@ -73,8 +72,8 @@ namespace :fluctus do
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
-        ["Columbia University", "cul", "columbia.edu"], ["North Carolina State University", "ncsu", "ncsu.edu"],
-        ["Johns Hopkins University", "jhu", "jhu.edu"], ["University of Maryland", "mdu", "umd.edu"],
+        ["Columbia University", "cul", "columbia"], ["North Carolina State University", "ncsu", "ncsu"],
+        ["Johns Hopkins University", "jhu", "jhu"], ["University of Maryland", "mdu", "umd"],
         ["University of Michigan", "umich", "umich.edu"], ["University of North Carolina at Chapel Hill", "unc", "unc.edu"],
         ["Syracuse University", "syr", "syr.edu"], ["University of Virginia","uva", "virginia.edu"],
         ["University of Notre Dame", "und", "nd.edu"], ["Stanford University", "stnfd", "stanford.edu"],

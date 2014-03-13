@@ -11,8 +11,8 @@
 
   <tbody>
     <% @institutions.each do |institution| %>
-      <tr id="<%= institution.id %>">
-        <td><%= link_to_if can?(:view, institution), institution.name, institution, class: "block-link" %></td>
+      <tr id="<%= institution.identifier %>">
+        <td><%= link_to_if can?(:view, institution), institution.name, institution_path(institution), class: "block-link" %></td>
         <td><%= edit_link institution %> <%= destroy_link institution %></td>
       </tr>
     <% end %>

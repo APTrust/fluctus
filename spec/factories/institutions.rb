@@ -13,6 +13,6 @@ FactoryGirl.define do
   factory :aptrust, class: "Institution" do
     name "APTrust"
     brief_name "apt"
-    identifier "aptrust.org"
+    identifier "aptrust"
   end
 end

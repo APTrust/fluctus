@@ -15,6 +15,10 @@ class Institution < ActiveFedora::Base
 
   before_destroy :check_for_associations
 
+  def to_param
+    identifier
+  end
+
   # Return the users that belong to this institution.  Sorted by name for display purposes primarily.
   def users
     User.where(institution_pid: self.pid).to_a.sort_by(&:name)
@@ -62,10 +66,7 @@ class Institution < ActiveFedora::Base
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end
-
-
-
-    #errors.add(:identifier, "has already been taken") if Institution.where(desc_metadata__identifier_ssim: self.identifier).reject{|r| r.identifier == self.identifier}.any?
+    #errors.add(:identifier, "has already been taken") if Institution.where(desc_metadata__identifier_tesim: self.identifier).reject{|r| r.identifier == self.identifier}.any?
   end
 
   def check_for_associations
