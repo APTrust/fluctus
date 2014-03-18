@@ -6,13 +6,13 @@ describe InstitutionMetadata do
     @datastream = InstitutionMetadata.new(@i)
     @datastream.name = "Test"
     @datastream.brief_name = "tst"
-    @datastream.identifier = "test.edu"
+    @datastream.institution_identifier = "test.edu"
   end
 
   it 'should retain properties' do
     @datastream.name.first.should == "Test"
     @datastream.brief_name.first.should == "tst"
-    @datastream.identifier.first.should == "test.edu"
+    @datastream.institution_identifier.first.should == "test.edu"
   end
 
 end

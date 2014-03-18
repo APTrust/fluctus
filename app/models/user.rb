@@ -47,6 +47,11 @@ class User < ActiveRecord::Base
     end
   end
 
+  def institution_identifier
+    institution = Institution.find(self.institution_pid)
+    institution.institution_identifier
+  end
+
   # Blacklight uses #to_s on youruser class to get a user-displayable 
   # login/identifier for the account. 
   #

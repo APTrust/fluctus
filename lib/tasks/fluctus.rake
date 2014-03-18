@@ -7,7 +7,7 @@ namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
-    i = FactoryGirl.create(:institution, name: "APTrust", brief_name: "apt", identifier: "aptrust")
+    i = FactoryGirl.create(:institution, name: "APTrust", brief_name: "apt", institution_identifier: "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
@@ -72,8 +72,8 @@ namespace :fluctus do
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
-        ["Columbia University", "cul", "columbia"], ["North Carolina State University", "ncsu", "ncsu"],
-        ["Johns Hopkins University", "jhu", "jhu"], ["University of Maryland", "mdu", "umd"],
+        ["Columbia University", "cul", "columbia.edu"], ["North Carolina State University", "ncsu", "ncsu.edu"],
+        ["Johns Hopkins University", "jhu", "jhu.edu"], ["University of Maryland", "mdu", "umd.edu"],
         ["University of Michigan", "umich", "umich.edu"], ["University of North Carolina at Chapel Hill", "unc", "unc.edu"],
         ["Syracuse University", "syr", "syr.edu"], ["University of Virginia","uva", "virginia.edu"],
         ["University of Notre Dame", "und", "nd.edu"], ["Stanford University", "stnfd", "stanford.edu"],
@@ -93,7 +93,7 @@ namespace :fluctus do
     numInsts.times.each do |count|
       puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
       FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1],
-                         identifier: partner_list[count].last)
+                         institution_identifier: partner_list[count].last)
     end
 
     puts "Creating Users for each Institution"

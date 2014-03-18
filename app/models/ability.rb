@@ -34,6 +34,7 @@ class Ability
     if current_user.is? :institutional_user
       can :manage, User, id: current_user.id
       can :read, Institution, pid: current_user.institution_pid
+      can :read, Institution, institution_identifier: current_user.institution_identifier
     end
   end
 

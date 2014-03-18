@@ -22,7 +22,7 @@ describe EventsController do
       end
 
       it "can view events, even if it's not my institution" do
-        get :index, institution_id: someone_elses_file.institution
+        get :index, institution_identifier: someone_elses_file.institution.institution_identifier
         expect(response).to be_success
         assigns(:institution).should == someone_elses_file.institution
         assigns(:document_list).length.should == 1
@@ -127,7 +127,7 @@ describe EventsController do
 
       describe 'events for an institution' do
         it 'shows the events for that institution, sorted by time' do
-          get :index, institution_id: file.institution
+          get :index, institution_identifier: file.institution.institution_identifier
           assigns(:institution).should == file.institution
           assigns(:document_list).length.should == 3
           assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
@@ -146,7 +146,7 @@ describe EventsController do
 
       describe "for an institution where you don't have permission" do
         it 'denies access' do
-          get :index, institution_id: someone_elses_file.institution
+          get :index, institution_identifier: someone_elses_file.institution.institution_identifier
           expect(response).to redirect_to root_url
           flash[:alert].should =~ /You are not authorized/
         end
@@ -179,7 +179,7 @@ describe EventsController do
 
     describe 'GET index' do
       before do
-        get :index, institution_id: file.institution
+        get :index, institution_identifier: file.institution.institution_identifier
       end
 
       it 'redirects to login' do

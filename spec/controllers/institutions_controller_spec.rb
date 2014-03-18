@@ -52,18 +52,18 @@ describe InstitutionsController do
       end
 
       it "responds successfully with an HTTP 200 status code" do
-        get :show, id: admin_user.institution
+        get :show, institution_identifier: admin_user.institution.institution_identifier
         expect(response).to be_success
         expect(response.status).to eq(200)
       end
 
       it "renders the index template" do
-        get :show, id: admin_user.institution
+        get :show, institution_identifier: admin_user.institution.institution_identifier
         expect(response).to render_template("show")
       end
 
       it "assigns the requested institution as @institution" do
-        get :show, id: admin_user.institution
+        get :show, institution_identifier: admin_user.institution.institution_identifier
         assigns(:institution).should eq( admin_user.institution)
       end
 
@@ -75,18 +75,18 @@ describe InstitutionsController do
       end
 
       it "responds successfully with an HTTP 200 status code" do
-        get :show, id: institutional_admin.institution
+        get :show, institution_identifier: institutional_admin.institution.institution_identifier
         expect(response).to be_success
         expect(response.status).to eq(200)
       end
 
       it "renders the index template" do
-        get :show, id: institutional_admin.institution
+        get :show, institution_identifier: institutional_admin.institution.institution_identifier
         expect(response).to render_template("show")
       end
 
       it "assigns the requested institution as @institution" do
-        get :show, id: institutional_admin.institution
+        get :show, institution_identifier: institutional_admin.institution.institution_identifier
         assigns(:institution).should eq(institutional_admin.institution)
       end
     end
@@ -96,18 +96,18 @@ describe InstitutionsController do
         sign_in institutional_user
       end
       it "responds successfully with an HTTP 200 status code" do
-        get :show, id: institutional_user.institution.to_param
+        get :show, institution_identifier: institutional_user.institution.to_param
         expect(response).to be_success
         expect(response.status).to eq(200)
       end
 
       it "renders the index template" do
-        get :show, id: institutional_user.institution.to_param
+        get :show, institution_identifier: institutional_user.institution.to_param
         expect(response).to render_template("show")
       end
 
       it "assigns the requested institution as @institution" do
-        get :show, id: institutional_user.institution.to_param
+        get :show, institution_identifier: institutional_user.institution.to_param
         assigns(:institution).should eq(institutional_user.institution)
       end
     end
@@ -121,7 +121,7 @@ describe InstitutionsController do
       end
 
       it "should be successful" do
-        delete :destroy, id: institution
+        delete :destroy, institution_identifier: institution.institution_identifier
         response.should redirect_to(institutions_url)
       end
     end

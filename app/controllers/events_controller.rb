@@ -2,7 +2,8 @@ class EventsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_and_authorize_parent_object, only: [:create]
   load_and_authorize_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
-  load_and_authorize_resource :institution, only: [:index], if: :inst_id_exists?
+  before_filter :load_and_authorize_institution, only: [:index], if: :inst_id_exists?
+  #load_and_authorize_resource :institution, only: [:index], if: :inst_id_exists?
 
   include Aptrust::GatedSearch
 
@@ -24,7 +25,7 @@ class EventsController < ApplicationController
 protected
 
   def inst_id_exists?
-    params['institution_id']
+    params['institution_identifier']
   end
 
   def intellectual_object_id_exists?
@@ -35,6 +36,11 @@ protected
     parent_id = params['generic_file_id'] || params['intellectual_object_id']
     @parent_object = ActiveFedora::Base.find(parent_id)
     authorize! :update, @parent_object
+  end
+
+  def load_and_authorize_institution
+    @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+    #authorize! [:show, :update, :edit, :destroy], @institution
   end
 
   def for_selected_institution(solr_parameters, user_parameters)

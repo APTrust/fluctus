@@ -11,7 +11,7 @@ describe "Institutions" do
       login_as(@user)
       visit('/institutions')
       expect {
-        within(:xpath, "//tr[@id='#{@institution.id}']") do
+        within(:xpath, "//tr[@id='#{@institution.institution_identifier}']") do
           click_link "Delete"
         end
       }.to change(Institution, :count).by(-1)

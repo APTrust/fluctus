@@ -4,7 +4,7 @@ describe Institution do
   subject { FactoryGirl.build(:institution) }
 
   it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:identifier) }
+  it { should validate_presence_of(:institution_identifier) }
 
   it 'should retun a proper solr_doc' do
     subject.to_solr['desc_metadata__name_tesim'].should == [subject.name]
@@ -15,7 +15,7 @@ describe Institution do
   end
 
   describe "#identifier_is_unique" do
-    it { should validate_uniqueness_of(:identifier) }
+    it { should validate_uniqueness_of(:institution_identifier) }
   end
 
   describe "bytes_by_format" do

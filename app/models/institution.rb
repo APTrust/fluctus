@@ -7,16 +7,16 @@ class Institution < ActiveFedora::Base
 
   has_many :intellectual_objects, property: :is_part_of
 
-  has_attributes :name, :brief_name, :identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :name, :brief_name, :institution_identifier, datastream: 'descMetadata', multiple: false
 
-  validates :name, :identifier, presence: true
+  validates :name, :institution_identifier, presence: true
   validate :name_is_unique
-  validate :identifier_is_unique
+  validate :institution_identifier_is_unique
 
   before_destroy :check_for_associations
 
   def to_param
-    identifier
+    institution_identifier
   end
 
   # Return the users that belong to this institution.  Sorted by name for display purposes primarily.
@@ -58,13 +58,13 @@ class Institution < ActiveFedora::Base
     errors.add(:name, "has already been taken") if Institution.where(desc_metadata__name_ssim: self.name).reject{|r| r == self}.any?
   end
 
-  def identifier_is_unique
+  def institution_identifier_is_unique
     count = 0;
     Institution.all.each do |inst|
-      count += 1 if inst.identifier == self.identifier
+      count += 1 if inst.institution_identifier == self.institution_identifier
     end
     if(count > 0)
-      errors.add(:identifier, "has already been taken")
+      errors.add(:institution_identifier, "has already been taken")
     end
     #errors.add(:identifier, "has already been taken") if Institution.where(desc_metadata__identifier_tesim: self.identifier).reject{|r| r.identifier == self.identifier}.any?
   end
