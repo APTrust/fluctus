@@ -2,8 +2,7 @@ class InstitutionsController < ApplicationController
   inherit_resources
   load_and_authorize_resource
   before_filter :authenticate_user!
-  before_action :set_institution, only: [:show, :edit, :update, :destroy]
-  #before_action :get_institution, only: [:show, :edit, :update, :destroy]
+  before_filter :set_institution, only: [:show, :edit, :update, :destroy]
 
   include Blacklight::SolrHelper
   
@@ -14,29 +13,16 @@ class InstitutionsController < ApplicationController
     destroy!(notice: "#{name} was successfully destroyed.")
   end
 
-  #def edit
-  #  @institution = get_institution
-  #end
-
-  #def show
-  #  @institution = get_institution
-  #end
-
-  #def update
-  #  @institution = get_institution
-  #  update!
-  #end
-
   private
     def set_institution
       if params[:institution_identifier].nil?
         @institution = current_user.institution
       elsif Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).empty?
-        @institution = current_user.institution
+        redirect_to root_url
         flash[:alert] = "That institution does not exist."
       else
         @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
-        #authorize! [:show], @institution
+        authorize! [:show, :edit, :update, :destroy], @institution if cannot? :read, @institution
       end
     end
 

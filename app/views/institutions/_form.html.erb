@@ -8,6 +8,8 @@
   
   <div class="form-actions">
     <%= f.button :submit, "Submit", {class: "btn btn-success"} %>
-    <%= show_link root_path, "Cancel" %>
+    <%= link_to @institution, {class: "btn doc-action-btn btn-cancel"} do %>
+        <i class="glyphicon glyphicon-remove"></i> Cancel
+    <% end %>
   </div>
 <% end %>
