@@ -23,9 +23,10 @@
       <dd> <%= @intellectual_object.modified_date %> </dd>
     </dl>
   </div>
-
+  <div id="io-sidebar" class="col-md-3">
+    <%= render_document_sidebar_partial %>
+  </div>
   <div class="object_events">
-    <h3> Events </h3>
     <%= link_to intellectual_object_events_path(@intellectual_object), class: 'btn doc-action-btn btn-normal' do %>
         <i class="glyphicon glyphicon-eye-open"></i> View Events
     <% end %>
@@ -46,8 +47,4 @@
 
     <% end %>
   </div>
-</div>
-
-<div id="sidebar" class="col-md-3">
-   <%= render_document_sidebar_partial %>
 </div>
