@@ -21,6 +21,10 @@ class IntellectualObject < ActiveFedora::Base
   before_save :set_permissions
   before_destroy :check_for_associations
 
+  def to_param
+    "#{self.institution.institution_identifier}/#{self.intellectualobject_identifier}"
+  end
+
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor
   def terms_for_editing
     [:title, :description, :rights]

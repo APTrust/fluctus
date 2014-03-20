@@ -3,6 +3,8 @@ class IntellectualObjectsController < ApplicationController
   load_and_authorize_resource :institution, only: [:index, :create]
   load_and_authorize_resource :through => :institution, only: :create
   load_and_authorize_resource except: [:index, :create]
+  before_filter :set_object, only: [:show, :edit, :update, :destroy]
+  before_filter :set_institution, only: [:index, :create]
 
   include Aptrust::GatedSearch
   apply_catalog_search_params
@@ -53,5 +55,34 @@ class IntellectualObjectsController < ApplicationController
   # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
   def search_action_url options = {}
     institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
+  end
+
+  def set_institution
+    if params[:institution_identifier].nil? || Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).empty?
+      redirect_to root_url
+      flash[:alert] = "Sonething wrong with institution_identifier."
+    else
+      @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+      #authorize! [:show, :edit, :update, :destroy], @institution if cannot? :read, @institution
+    end
+  end
+
+  def set_object
+    if params[:intellectualobject_identifier].nil? || IntellectualObject.where(desc_metadata__intellectualobject_identifier_tesim: params[:intellectualobject_identifier]).empty?
+      set_institution
+      flash[:alert] = "Something wrong with object identifier"
+    else
+      possible_objects = IntellectualObject.where(desc_metadata__intellectualobject_identifier_tesim: params[:intellectualobject_identifier])
+      possible_objects.each do |object|
+        if (object.institution.institution_identifier == params[:institution_identifier])
+          @intellectual_object = object
+        end
+      end
+      if @intellectual_object.nil?
+        set_institution
+        flash[:alert] = "Object not found."
+      end
+      #authorize! [:show, :edit, :update, :destroy], @institution if cannot? :read, @institution
+    end
   end
 end

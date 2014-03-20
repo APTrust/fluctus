@@ -11,19 +11,25 @@ Fluctus::Application.routes.draw do
   get "institutions/new", to: 'institutions#new', as: :new_institution
   get "institutions/:institution_identifier", to: 'institutions#show', as: :institution, :constraints => { :institution_identifier => /[\w+\.]+/ }
 
-  #resources :institutions do
-  #  resources :intellectual_objects, only: [:index, :create], path: 'objects'
-  #  resources :events, only: [:index]
+  #Intellectual Object Routes
+  get "objects/:institution_identifier", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => /[\w+\.]+/ }
+  post "objects/:institution_identifier", to: 'intellectual_objects#create', :constraints => { :institution_identifier => /[\w+\.]+/ }
+  patch "objects/:institution_identifier/:intellectualobject_identifier", to: 'intellectual_objects#update', :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+  put "objects/:institution_identifier/:intellectualobject_identifier", to: 'intellectual_objects#update', :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+  delete "objects/:institution_identifier/:intellectualobject_identifier", to: 'intellectual_objects#destroy', :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+  get "objects/:institution_identifier/:intellectualobject_identifier/edit", to: 'intellectual_objects#edit', as: :edit_intellectual_object, :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+  get "objects/:institution_identifier/:intellectualobject_identifier/events", to: 'events#index', as: :intellectual_object_events, :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+  post "objects/:institution_identifier/:intellectualobject_identifier/events", to: 'events#create', :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+  get "objects/:institution_identifier/:intellectualobject_identifier", to: 'intellectual_objects#show', as: :intellectual_object, :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+
+  #post "objects/institution_identifier/:intellectualobject_identifier/data", to: 'generic_files#create', as: intellectual_object_generic_files, :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+  #patch "objects/institution_identifier/:intellectualobject_identifier/data/:filename", to: 'generic_files#update', :constraints => { [:intellectualobject_identifier, :institution_identifier] => /[\w+\.]/ }
+
+  #resources :intellectual_objects, only: [:show, :edit, :update, :destroy], path: 'objects' do
+  #  resources :generic_files, only: :create, path: 'files'
+  #  patch "files/:id", to: 'generic_files#update', constraints: {id: /.*/}, trailing_slash: true, format: 'json'
+  #  resources :events, only: [:create, :index]
   #end
-
-  get "objects/institution_identifier", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => /[\w+\.]+/ }
-  post "objects/institution_identifier", to: 'intellectual_objects#create', :constraints => { :institution_identifier => /[\w+\.]+/ }
-
-  resources :intellectual_objects, only: [:show, :edit, :update, :destroy], path: 'objects' do
-    resources :generic_files, only: :create, path: 'files'
-    patch "files/:id", to: 'generic_files#update', constraints: {id: /.*/}, trailing_slash: true, format: 'json'
-    resources :events, only: [:create, :index]
-  end
 
   devise_for :users
 
