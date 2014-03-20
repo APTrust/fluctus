@@ -10,11 +10,11 @@ class IntellectualObject < ActiveFedora::Base
   has_many :generic_files, property: :is_part_of
 
   has_attributes :title, :rights, datastream: 'descMetadata', multiple: false
-  has_attributes :description, :identifier, datastream: 'descMetadata', multiple: true
+  has_attributes :description, :intellectualobject_identifier, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title
   validates_presence_of :institution
-  validates_presence_of :identifier
+  validates_presence_of :intellectualobject_identifier
   validates_presence_of :rights
   validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
 

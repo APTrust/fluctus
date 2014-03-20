@@ -66,7 +66,6 @@ class Institution < ActiveFedora::Base
     if(count > 0)
       errors.add(:institution_identifier, "has already been taken")
     end
-    #errors.add(:identifier, "has already been taken") if Institution.where(desc_metadata__identifier_tesim: self.identifier).reject{|r| r.identifier == self.identifier}.any?
   end
 
   def check_for_associations

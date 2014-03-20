@@ -29,10 +29,10 @@ describe IntellectualObjectMetadata do
   end
 
   it 'should properly set an identifier' do
-    @ds.identifier.should_not be_empty
+    @ds.intellectualobject_identifier.should_not be_empty
     exp = SecureRandom.uuid
-    @ds.identifier = exp
-    @ds.identifier.should == [exp]
+    @ds.intellectualobject_identifier = exp
+    @ds.intellectualobject_identifier.should == [exp]
   end
 
   it 'should properly set rights' do

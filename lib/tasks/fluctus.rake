@@ -111,8 +111,8 @@ namespace :fluctus do
       numItems = args[:numIntObjects].to_i
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
-        ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
-        item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
+        ident = "#{institution.institution_identifier}.#{SecureRandom.hex(8)}"
+        item = FactoryGirl.create(:intellectual_object, institution: institution, intellectualobject_identifier: ident)
         item.add_event(FactoryGirl.attributes_for(:premis_event_ingest, detail: "Metadata recieved from bag.", outcome_detail: "", outcome_information: "Parsed as part of bag submission."))
         item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: "Assigned by Fedora."))
 
@@ -134,7 +134,7 @@ namespace :fluctus do
 
           attrs = {
               format: "#{format[:type]}",
-              uri: "file:///#{item.identifier.first}/data/#{Faker::Lorem.characters(char_count=rand(5..15))}#{count}.#{format[:ext]}",
+              uri: "file:///#{item.intellectualobject_identifier.first}/data/#{Faker::Lorem.characters(char_count=rand(5..15))}#{count}.#{format[:ext]}",
           }
           f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri])
 

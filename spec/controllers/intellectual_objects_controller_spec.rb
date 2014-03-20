@@ -31,7 +31,7 @@ describe IntellectualObjectsController do
                                        institution: user.institution,
                                        title: "The 2nd Workers' Cultural Palace Station",
                                        description: 'a station of Line 2 of the Guangzhou Metro.',
-                                       identifier: 'jhu.d9abff425d09d5b0') }
+                                       intellectualobject_identifier: 'jhu.edu.d9abff425d09d5b0') }
       let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object,
                                        institution: another_institution) }
         
@@ -58,7 +58,7 @@ describe IntellectualObjectsController do
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
           it "should match an exact search on identifier" do
-            get :index, institution_id: user.institution_pid, q: 'jhu.d9abff425d09d5b0'
+            get :index, institution_id: user.institution_pid, q: 'jhu.edu.d9abff425d09d5b0'
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
@@ -206,18 +206,18 @@ describe IntellectualObjectsController do
       it "should show errors" do
         post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response.code).to eq '422' #Unprocessable Entity
-        expect(JSON.parse(response.body)).to eq({"identifier" => ["can't be blank"],"rights" => ["can't be blank"]})
+        expect(JSON.parse(response.body)).to eq({"intellectualobject_identifier" => ["can't be blank"],"rights" => ["can't be blank"]})
       end
 
       it "should update fields" do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', rights: 'restricted'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', intellectualobject_identifier: '123', rights: 'restricted'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
       it "should use the institution parameter in the URL, not from the json" do
         expect {
-          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', rights: 'restricted'}, format: 'json'
+          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', intellectualobject_identifier: '123', rights: 'restricted'}, format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Foo'
           expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid

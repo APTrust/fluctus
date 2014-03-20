@@ -6,7 +6,7 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
     map.description(in: RDF::DC) do |index|
       index.as :stored_searchable
     end
-    map.identifier(in: RDF::DC) do |index|
+    map.intellectualobject_identifier(in: RDF::DC, to: 'identifier') do |index|
       index.as :stored_searchable
     end
     map.rights(in: RDF::DC) do |index|
