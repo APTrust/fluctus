@@ -31,7 +31,7 @@ describe IntellectualObjectsController do
                                        institution: user.institution,
                                        title: "The 2nd Workers' Cultural Palace Station",
                                        description: 'a station of Line 2 of the Guangzhou Metro.',
-                                       intellectualobject_identifier: 'd9abff425d09d5b0') }
+                                       intellectualobject_identifier: 'jhu.edu/d9abff425d09d5b0') }
       let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object,
                                        institution: another_institution) }
         
@@ -58,7 +58,7 @@ describe IntellectualObjectsController do
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
           it "should match an exact search on identifier" do
-            get :index, institution_id: user.institution_pid, q: 'd9abff425d09d5b0'
+            get :index, institution_id: user.institution_pid, q: 'jhu.edu/d9abff425d09d5b0'
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
