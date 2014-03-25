@@ -9,12 +9,12 @@ class IntellectualObject < ActiveFedora::Base
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
 
-  has_attributes :title, :rights, datastream: 'descMetadata', multiple: false
-  has_attributes :description, :intellectualobject_identifier, datastream: 'descMetadata', multiple: true
+  has_attributes :title, :rights, :intellectual_object_identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :description, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title
   validates_presence_of :institution
-  validates_presence_of :intellectualobject_identifier
+  validates_presence_of :intellectual_object_identifier
   validates_presence_of :rights
   validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
 
@@ -22,7 +22,7 @@ class IntellectualObject < ActiveFedora::Base
   before_destroy :check_for_associations
 
   def to_param
-    intellectualobject_identifier
+    intellectual_object_identifier
   end
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor

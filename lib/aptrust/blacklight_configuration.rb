@@ -7,7 +7,7 @@ module Aptrust
       configure_blacklight do |config|
         title_field =       solr_name('desc_metadata__title', :stored_searchable)
         institution_field = solr_name('institution_name', :stored_sortable)
-        identifier_field =  solr_name('desc_metadata__intellectualobject_identifier', :stored_searchable)
+        identifier_field =  solr_name('desc_metadata__intellectual_object_identifier', :stored_searchable)
         description_field = solr_name('desc_metadata__description', :stored_searchable)
         rights_field = solr_name('desc_metadata__rights', :facetable)
         format_field = solr_name('format', :facetable)

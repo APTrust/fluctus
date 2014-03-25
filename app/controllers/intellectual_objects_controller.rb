@@ -1,7 +1,7 @@
 class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
   #load_and_authorize_resource :institution, only: [:index, :create]
-  #load_and_authorize_resource :through => :institution, only: :create
+  load_and_authorize_resource :through => :institution, only: :create
   #load_and_authorize_resource except: [:index, :create]
   before_filter :set_object, only: [:show, :edit, :update, :destroy]
   before_filter :set_institution, only: [:index, :create]
@@ -48,13 +48,24 @@ class IntellectualObjectsController < ApplicationController
   private
 
   def for_selected_institution(solr_parameters, user_parameters)
+    puts "In for_selected_institution------------------------------------------"
+    puts params[:institution_identifier]
+    puts params[:intellectual_object_identifier]
+    if(params[:institution_identifier])
+      institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+    else
+      io = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).first
+      institution = io.institution
+    end
+    puts institution.id
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{params[:institution_id]}")
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{institution.id}")
   end
 
   # Override Blacklight so that it has the "institution_identifier" set even when we're on a show page (e.g. /objects/foo:123)
   def search_action_url options = {}
-    institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution_identifier)
+    #puts "In Search_action_URL  -------------------------------------------------------------------------"
+    institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution.institution_identifier)
   end
 
   def set_institution
@@ -62,18 +73,19 @@ class IntellectualObjectsController < ApplicationController
       redirect_to root_url
       flash[:alert] = "Sonething wrong with institution_identifier."
     else
-      puts "In the else statement in set_institution----------------------------------"
+      #puts "In the else statement in set_institution----------------------------------"
       @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
       #authorize! [:create, :index], @institution if cannot? :read, @institution
     end
   end
 
   def set_object
-    if params[:intellectualobject_identifier].nil? || IntellectualObject.where(desc_metadata__intellectualobject_identifier_tesim: params[:intellectualobject_identifier]).empty?
+    if params[:intellectual_object_identifier].nil? || IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).empty?
       redirect_to root_url
-      flash[:alert] = "Something wrong with intellectualobject_identifier."
+      flash[:alert] = "Something wrong with intellectual_object_identifier."
     else
-      @intellectual_object = IntellectualObject.where(desc_metadata__intellectualobject_identifier_tesim: params[:intellectualobject_identifier]).first
+      @intellectual_object = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).first
+      @institution = @intellectual_object.institution
       #authorize! [:show, :edit, :update, :destroy], @institution if cannot? :read, @institution
     end
   end
