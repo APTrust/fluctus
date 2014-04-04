@@ -44,7 +44,7 @@ describe GenericFilesController do
     describe "when not signed in" do
       let(:obj1) { @intellectual_object }
       it "should redirect to login" do
-        post :create, intellectual_object_id: obj1, intellectual_object: {title: 'Foo' }
+        post :create, intellectual_object_identifier: obj1.intellectual_object_identifier, intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
@@ -58,14 +58,14 @@ describe GenericFilesController do
       describe "and assigning to an object you don't have access to" do
         let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
         it "should be forbidden" do
-          post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+          post :create, intellectual_object_identifier: obj1.intellectual_object_identifier, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
       end
 
       it "should show errors" do
-        post :create, intellectual_object_id: obj1, generic_file: {foo: 'bar'}, format: 'json'
+        post :create, intellectual_object_identifier: obj1.intellectual_object_identifier, generic_file: {foo: 'bar'}, format: 'json'
         expect(response.code).to eq '422' #Unprocessable Entity
         expect(JSON.parse(response.body)).to eq( {
           "checksum" => ["can't be blank"],
@@ -79,7 +79,7 @@ describe GenericFilesController do
       it "should update fields" do
         # and the parent's solr document should have been updated (but it's not stored, so we can't query it)
         #IntellectualObject.any_instance.should_receive(:update_index)
-        post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        post :create, intellectual_object_identifier: obj1.intellectual_object_identifier, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
         expect(response.code).to eq '201'
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/bag'
@@ -95,7 +95,7 @@ describe GenericFilesController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), trailing_slash: true
+        patch :update, intellectual_object_identifier: file.intellectual_object, id: file.uri.sub("file://", ''), trailing_slash: true
         expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
@@ -107,7 +107,7 @@ describe GenericFilesController do
       describe "and deleteing a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it "should be forbidden" do
-          patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_identifier: file.intellectual_object.intellectual_object_identifier, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
@@ -115,7 +115,7 @@ describe GenericFilesController do
 
       describe "and you have access to the file" do
         it "should delete the file" do
-          patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_identifier: file.intellectual_object.intellectual_object_identifier, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(assigns[:generic_file].size).to eq 99 
           expect(response.code).to eq '204'
         end

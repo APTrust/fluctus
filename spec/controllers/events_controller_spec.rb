@@ -30,7 +30,7 @@ describe EventsController do
       end
 
       it "can view events, even if it's not my intellectual object" do
-        get :index, intellectual_object_id: someone_elses_object
+        get :index, intellectual_object_identifier: someone_elses_object
         expect(response).to be_success
         assigns(:intellectual_object).should == someone_elses_object
         assigns(:document_list).length.should == 1
@@ -59,7 +59,7 @@ describe EventsController do
 
       it 'creates an event for an intellectual object' do
         object.premisEvents.events.count.should == 0
-        post :create, intellectual_object_id: object, event: event_attrs
+        post :create, intellectual_object_identifier: object, event: event_attrs
         object.reload
 
         object.premisEvents.events.count.should == 1
@@ -136,7 +136,7 @@ describe EventsController do
 
       describe 'events for an intellectual object' do
         it 'shows the events for that object, sorted by time' do
-          get :index, intellectual_object_id: object
+          get :index, intellectual_object_identifier: object
           expect(response).to be_success
           assigns(:intellectual_object).should == object
           assigns(:document_list).length.should == 3
@@ -154,7 +154,7 @@ describe EventsController do
 
       describe "for an intellectual object where you don't have permission" do
         it 'denies access' do
-          get :index, intellectual_object_id: someone_elses_object
+          get :index, intellectual_object_identifier: someone_elses_object
           expect(response).to redirect_to root_url
           flash[:alert].should =~ /You are not authorized/
         end

@@ -15,11 +15,11 @@ describe "Routes for Events" do
 
   it 'has a route to create events for an intellectual object' do
     expect(
-      post: 'objects/hello:123/events'
+      post: 'objects/apt.org/123/events'
     ).to(
       route_to(controller: 'events',
                action: 'create',
-               intellectual_object_id: 'hello:123'
+               intellectual_object_identifier: 'apt.org/123'
       )
     )
   end
@@ -37,11 +37,11 @@ describe "Routes for Events" do
 
   it "has an index for an intellectual object's events" do
     expect(
-      get: 'objects/obj:123/events'
+      get: 'objects/apt.org/123/events'
     ).to(
       route_to(controller: 'events',
                action: 'index',
-               intellectual_object_id: 'obj:123'
+               intellectual_object_identifier: 'apt.org/123'
       )
     )
   end

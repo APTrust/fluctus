@@ -10,7 +10,7 @@ describe IntellectualObjectsController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        get :index, institution_id: 'apt:123'
+        get :index, institution_identifier: 'apt.org'
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -40,7 +40,7 @@ describe IntellectualObjectsController do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
         describe "and viewing my institution" do
           it "should show the results that I have access to that belong to the institution" do
-            get :index, institution_id: user.institution_pid
+            get :index, institution_identifier: user.institution_identifier
             expect(response).to be_successful
             expect(assigns(:document_list).size).to eq 2
             assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
@@ -48,24 +48,24 @@ describe IntellectualObjectsController do
           end
 
           it "should match a partial search on title" do
-            get :index, institution_id: user.institution_pid, q: 'Rugby'
+            get :index, institution_identifier: user.institution_identifier, q: 'Rugby'
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj2.id]
           end
           it "should match a partial search on description" do
-            get :index, institution_id: user.institution_pid, q: 'Guangzhou'
+            get :index, institution_identifier: user.institution_identifier, q: 'Guangzhou'
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
           it "should match an exact search on identifier" do
-            get :index, institution_id: user.institution_pid, q: 'jhu.edu/d9abff425d09d5b0'
+            get :index, institution_identifier: user.institution_identifier, q: 'jhu.edu/d9abff425d09d5b0'
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
         end
         describe "and viewing another institution" do
           it "should redirect" do
-            get :index, institution_id: another_institution.pid
+            get :index, institution_identifier: another_institution.institution_identifier
             expect(response).to redirect_to root_url
             expect(flash[:alert]).to eq "You are not authorized to access this page."
           end
@@ -76,7 +76,7 @@ describe IntellectualObjectsController do
         let(:user) { FactoryGirl.create(:user, :admin) }
         describe "and viewing another institution" do
           it "should show the results that I have access to that belong to the institution " do
-            get :index, institution_id: another_institution.pid
+            get :index, institution_identifier: another_institution.institution_identifier
             expect(response).to be_successful
             expect(assigns(:document_list).size).to eq 3
             assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
@@ -93,7 +93,7 @@ describe IntellectualObjectsController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        get :show, id: obj1
+        get :show, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -103,7 +103,7 @@ describe IntellectualObjectsController do
       before { sign_in user }
         
       it "should show the object" do
-        get :show, id: obj1
+        get :show, intellectual_object_identifier: obj1
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
       end
@@ -116,7 +116,7 @@ describe IntellectualObjectsController do
     describe "when not signed in" do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
-        get :edit, id: obj1
+        get :edit, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -128,7 +128,7 @@ describe IntellectualObjectsController do
         before { sign_in user }
           
         it "should be unauthorized" do
-          get :edit, id: obj1
+          get :edit, intellectual_object_identifier: obj1
           expect(response).to redirect_to root_url
           expect(flash[:alert]).to eq "You are not authorized to access this page."
         end
@@ -138,7 +138,7 @@ describe IntellectualObjectsController do
         before { sign_in user }
           
         it "should show the object" do
-          get :edit, id: obj1
+          get :edit, intellectual_object_identifier: obj1
           expect(response).to be_successful
           expect(assigns(:intellectual_object)).to eq obj1
         end
@@ -152,7 +152,7 @@ describe IntellectualObjectsController do
     describe "when not signed in" do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
-        patch :update, id: obj1, intellectual_object: {title: 'Foo' }
+        patch :update, intellectual_object_identifier: obj1, intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -164,19 +164,19 @@ describe IntellectualObjectsController do
       before { sign_in user }
 
       it "should update the search counter" do
-        patch :update, id: obj1, counter: '5'
+        patch :update, intellectual_object_identifier: obj1.intellectual_object_identifier, counter: '5'
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(session[:search][:counter]).to eq '5'
       end
        
       it "should update fields" do
-        patch :update, id: obj1, intellectual_object: {title: 'Foo'}
+        patch :update, intellectual_object_identifier: obj1.intellectual_object_identifier, intellectual_object: {title: 'Foo'}
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
       it "should update via json" do
-        patch :update, id: obj1, intellectual_object: {title: 'Foo'}, format: 'json'
+        patch :update, intellectual_object_identifier: obj1.intellectual_object_identifier, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response).to be_successful
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
@@ -187,7 +187,7 @@ describe IntellectualObjectsController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        post :create, institution_id: FactoryGirl.create(:institution).pid, intellectual_object: {title: 'Foo' }
+        post :create, institution_identifier: FactoryGirl.create(:institution).institution_identifier, intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
@@ -198,26 +198,26 @@ describe IntellectualObjectsController do
       before { sign_in user }
         
       it "should only allow assigning institutions you have access to" do
-        post :create, institution_id: FactoryGirl.create(:institution).pid, intellectual_object: {title: 'Foo'}, format: 'json'
+        post :create, institution_identifier: FactoryGirl.create(:institution).institution_identifier, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response.code).to eq "403" # forbidden
         expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
        end
 
       it "should show errors" do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo'}, format: 'json'
+        post :create, institution_identifier: user.institution_identifier, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response.code).to eq '422' #Unprocessable Entity
         expect(JSON.parse(response.body)).to eq({"intellectual_object_identifier" => ["can't be blank"],"rights" => ["can't be blank"]})
       end
 
       it "should update fields" do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', intellectual_object_identifier: '123', rights: 'restricted'}, format: 'json'
+        post :create, institution_identifier: user.institution_identifier, intellectual_object: {title: 'Foo', intellectual_object_identifier: '123', rights: 'restricted'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
       it "should use the institution parameter in the URL, not from the json" do
         expect {
-          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', intellectual_object_identifier: '123', rights: 'restricted'}, format: 'json'
+          post :create, institution_identifier: user.institution_identifier, intellectual_object: {title: 'Foo', institution_id: user.institution_pid, intellectual_object_identifier: '123', rights: 'restricted'}, format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Foo'
           expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid
@@ -231,7 +231,7 @@ describe IntellectualObjectsController do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       after { obj1.destroy }
       it "should redirect to login" do
-        delete :destroy, id: obj1
+        delete :destroy, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -242,13 +242,13 @@ describe IntellectualObjectsController do
       before { sign_in user }
 
       it "should update via json" do
-        delete :destroy, id: obj1, format: 'json'
+        delete :destroy, intellectual_object_identifier: obj1.intellectual_object_identifier, format: 'json'
         expect(response.code).to eq '204'
         expect(assigns(:intellectual_object).state).to eq 'D'
       end
 
       it "should update via html" do
-        delete :destroy, id: obj1
+        delete :destroy, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_path
         expect(flash[:notice]).to eq "Delete job has been queued for object: #{obj1.title}"
         expect(assigns(:intellectual_object).state).to eq 'D'

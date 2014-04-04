@@ -4,6 +4,9 @@ describe EventsHelper do
 
   let(:id) { '123' }
   let(:uri) { 'uri for file' }
+  let!(:institution) {FactoryGirl.create(:institution)}
+  let!(:obj) { FactoryGirl.create(:consortial_intellectual_object,
+                                   institution: institution) }
 
   describe '#generic_file_link' do
     it 'returns a link for the GenericFile' do
@@ -22,8 +25,8 @@ describe EventsHelper do
 
   describe '#intellectual_object_link' do
     it 'returns a link for the IntellectualObject' do
-      solr_doc = { 'intellectual_object_id_ssim' => [id] }
-      expected_result =  "<a href=\"/objects/#{id}\">#{id}</a>"
+      solr_doc = { 'intellectual_object_id_ssim' => [obj.id] }
+      expected_result =  "<a href=\"/objects/#{obj.intellectual_object_identifier}\">#{obj.intellectual_object_identifier}</a>"
       helper.intellectual_object_link(solr_doc).should == expected_result
     end
   end

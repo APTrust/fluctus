@@ -44,7 +44,7 @@ describe IntellectualObject do
     it 'should properly set an identifier' do
       exp = SecureRandom.uuid
       subject.intellectual_object_identifier = exp
-      subject.intellectual_object_identifier.should == [exp]
+      subject.intellectual_object_identifier.should == exp
     end
 
     it "should have terms_for_editing" do
@@ -65,7 +65,7 @@ describe IntellectualObject do
         solr_doc['desc_metadata__title_tesim'].should == [subject.title]
         # sortable
         solr_doc['desc_metadata__title_si'].should == subject.title
-        solr_doc['desc_metadata__intellectual_object_identifier_tesim'].should == subject.intellectual_object_identifier
+        solr_doc['desc_metadata__intellectual_object_identifier_tesim'].should == [subject.intellectual_object_identifier]
         solr_doc['desc_metadata__description_tesim'].should == subject.description
         solr_doc['desc_metadata__rights_sim'].should == ["institution"] 
         solr_doc['format_sim'].should == ["application/xml"] 
