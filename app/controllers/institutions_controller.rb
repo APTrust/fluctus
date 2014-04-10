@@ -1,32 +1,19 @@
 class InstitutionsController < ApplicationController
   inherit_resources
-  before_filter :set_institution, only: [:show, :edit, :update, :destroy]
   before_filter :authenticate_user!
+  before_filter :set_institution
 
   include Blacklight::SolrHelper
 
   def destroy
-    authorize! :destory, @institution
     name = @institution.name
     destroy!(notice: "#{name} was successfully destroyed.")
   end
 
-  def show
-    authorize! :read, @institution
-  end
-
-  def edit
-    authorize! :edit, @institution
-  end
-
-  def update
-    authorize! :update, @institution
-  end
-
   private
-
     def set_institution
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+      authorize! params[:action].to_sym, @institution
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
