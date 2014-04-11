@@ -11,6 +11,7 @@ class IntellectualObject < ActiveFedora::Base
 
   has_attributes :title, :rights, :intellectual_object_identifier, datastream: 'descMetadata', multiple: false
   has_attributes :description, datastream: 'descMetadata', multiple: true
+  has_attributes :institution_identifier
 
   validates_presence_of :title
   validates_presence_of :institution
@@ -19,10 +20,11 @@ class IntellectualObject < ActiveFedora::Base
   validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
 
   before_save :set_permissions
+  before_save :set_institution_identifier
   before_destroy :check_for_associations
 
   def to_param
-    intellectual_object_identifier
+    "#{institution.institution_identifier}/#{intellectual_object_identifier}"
   end
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor
@@ -33,6 +35,9 @@ class IntellectualObject < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new)
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
+      Solrizer.set_field(doc, 'identifier', intellectual_object_identifier, :stored_searchable)
+      Solrizer.set_field(doc, 'institution_identifier', institution.institution_identifier, :stored_searchable)
+      Solrizer.set_field(doc, 'whole_identifier', whole_identifier, :stored_searchable)
       # TODO only generic_files in the active state
       Solrizer.insert_field(doc, 'format', generic_files.map(&:format), :facetable)
     end
@@ -62,6 +67,10 @@ class IntellectualObject < ActiveFedora::Base
           self.discover_groups = [inst_user_group]
           self.edit_groups = [inst_admin_group]
       end
+    end
+
+    def set_institution_identifier
+      self.institution_identifier = self.institution.institution_identifier
     end
 
     def check_for_associations
