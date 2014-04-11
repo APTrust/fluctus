@@ -61,7 +61,7 @@ protected
 
   def load_and_authorize_institution
     @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
-    authorize! [:show, :edit, :update, :destroy], @institution if cannot? :read, @institution
+    authorize! :read, @institution
   end
 
   def for_selected_institution(solr_parameters, user_parameters)
