@@ -1,22 +1,25 @@
 Fluctus::Application.routes.draw do
 
+
+
   #Institution Routes
+  ins_ptrn = /(\w+\.)*\w+(\.edu|\.com|\.org)/
   get "institutions/", to: 'institutions#index', as: :institutions
   post "institutions/", to: 'institutions#create'
-  patch "institutions/:institution_identifier", to: 'institutions#update', :constraints => { :institution_identifier => /[\w+\.]+/ }
-  put "institutions/:institution_identifier", to: 'institutions#update', :constraints => { :institution_identifier => /[\w+\.]+/ }
+  patch "institutions/:institution_identifier", to: 'institutions#update', :constraints => { :institution_identifier => ins_ptrn }
+  put "institutions/:institution_identifier", to: 'institutions#update', :constraints => { :institution_identifier => ins_ptrn }
   delete "institutions/:institution_identifier", to: 'institutions#destroy', :constraints => { :institution_identifier => /[\w+\.]+/ }
-  get "institutions/:institution_identifier/edit", to: 'institutions#edit', as: :edit_institution, :constraints => { :institution_identifier => /[\w+\.]+/ }
-  get "institutions/:institution_identifier/events", to: 'events#index', as: :institution_events, :constraints => { :institution_identifier => /[\w+\.]+/ }
+  get "institutions/:institution_identifier/edit", to: 'institutions#edit', as: :edit_institution, :constraints => { :institution_identifier => ins_ptrn }
+  get "institutions/:institution_identifier/events", to: 'events#index', as: :institution_events, :constraints => { :institution_identifier => ins_ptrn }
   get "institutions/new", to: 'institutions#new', as: :new_institution
-  get "institutions/:institution_identifier", to: 'institutions#show', as: :institution, :constraints => { :institution_identifier => /[\w+\.]+/ }
+  get "institutions/:institution_identifier", to: 'institutions#show', as: :institution, :constraints => { :institution_identifier => ins_ptrn }
 
-  get "institutions/:institution_identifier/objects", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => /[\w+\.]+/ }
-  post "institutions/:institution_identifier/objects", to: 'intellectual_objects#create', :constraints => { :institution_identifier => /[\w+\.]+/ }
+  get "institutions/:institution_identifier/objects", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => ins_ptrn }
+  post "institutions/:institution_identifier/objects", to: 'intellectual_objects#create', :constraints => { :institution_identifier => ins_ptrn }
 
   #Intellectual Object Routes
-  #get "objects/:institution_identifier", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => /[\w+\.]+/ }
-  #post "objects/:institution_identifier", to: 'intellectual_objects#create', :constraints => { :institution_identifier => /[\w+\.]+/ }
+  #get "objects/:institution_identifier", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => ins_ptrn }
+  #post "objects/:institution_identifier", to: 'intellectual_objects#create', :constraints => { :institution_identifier => ins_ptrn }
 
   patch "objects/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
   put "objects/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
