@@ -1,8 +1,7 @@
 class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource :institution, only: [:index, :create]
-  load_and_authorize_resource :through => :institution, only: :create
-  load_and_authorize_resource except: [:index, :create]
+  before_filter :set_institution, only: [:index, :create]
+  before_filter :set_intellectual_object, except: [:index, :create]
 
   include Aptrust::GatedSearch
   apply_catalog_search_params
@@ -45,17 +44,26 @@ class IntellectualObjectsController < ApplicationController
 
   private
 
-  def find_by_identifier
-    @intellectual_object = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier])
+  def set_institution
+    @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+    authorize! params[:action].to_sym, @institution
   end
 
+  # Convienence method for pulling back the intellectual object by
+  def set_intellectual_object
+    @intellectual_object = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).first
+    @institution = @intellectual_object.institution
+    authorize! params[:action].to_sym, @intellectual_object
+  end
+
+  # Set the search params for the page return based on the insitution.
   def for_selected_institution(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{params[:institution_id]}")
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{@institution.id}")
   end
 
   # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
   def search_action_url options = {}
-    institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
+    institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution.institution_identifier)
   end
 end
