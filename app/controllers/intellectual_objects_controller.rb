@@ -31,6 +31,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   protected
+
   # Override Hydra-editor to redirect to an alternate location after create
   def redirect_after_update
     intellectual_object_path(resource)
@@ -41,16 +42,6 @@ class IntellectualObjectsController < ApplicationController
   end
 
   private
-
-  def for_selected_institution(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{@institution.id}")
-  end
-
-  # Override Blacklight so that it has the "institution_identifier" set even when we're on a show page (e.g. /objects/foo:123)
-  def search_action_url options = {}
-    institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution_identifier)
-  end
 
   def set_institution
     @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
@@ -65,14 +56,14 @@ class IntellectualObjectsController < ApplicationController
     authorize! params[:action].to_sym, @intellectual_object
   end
 
-  # Set the search params for the page return based on the insitution.
   def for_selected_institution(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{@institution.id}")
   end
 
-  # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
+  # Override Blacklight so that it has the "institution_identifier" set even when we're on a show page (e.g. /objects/foo:123)
   def search_action_url options = {}
     institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution.institution_identifier)
   end
+
 end
