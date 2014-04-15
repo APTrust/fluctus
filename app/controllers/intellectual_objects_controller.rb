@@ -2,7 +2,7 @@ class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :set_object, except: [:index, :create]
   before_filter :set_institution, only: [:index, :create]
- # before_filter :set_object, through: @institution, only: :create
+  before_filter :set_intellectual_object, except: [:index, :create]
 
   include Aptrust::GatedSearch
   apply_catalog_search_params
@@ -30,8 +30,7 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
-  protected 
-
+  protected
   # Override Hydra-editor to redirect to an alternate location after create
   def redirect_after_update
     intellectual_object_path(resource)
@@ -58,27 +57,22 @@ class IntellectualObjectsController < ApplicationController
     authorize! params[:action].to_sym, @institution
   end
 
-  def set_object
-    #identifier = "#{params[:institution_identifier]}/#{params[:intellectual_object_identifier]}"
-    @intellectual_object = params[:intellectual_object_identifier].nil? ? current_user.institution : IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).first
+  # Convienence method for pulling back the intellectual object by
+  def set_intellectual_object
+    #add nil handling
+    @intellectual_object = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).first
     @institution = @intellectual_object.institution
     authorize! params[:action].to_sym, @intellectual_object
-    #if params[:intellectual_object_identifier].nil? || IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).empty?
-    #  redirect_to root_url
-    #  flash[:alert] = "Bad Identifier."
-    #else
-    #  io_options = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier])
-    #  io_options.each do |io|
-    #    if params[:intellectual_object_identifier] == io.intellectual_object_identifier
-    #      @intellectual_object = io
-    #      @institution = @intellectual_object.institution
-    #    end
-    #  end
-    #  if @intellectual_object.nil?
-    #    redirect_to root_url
-    #    flash[:alert] = "The object you requested does not exist."
-    #  end
-    #end
-    #authorize! params[:action].to_sym, @intellectual_object
+  end
+
+  # Set the search params for the page return based on the insitution.
+  def for_selected_institution(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{@institution.id}")
+  end
+
+  # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
+  def search_action_url options = {}
+    institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution.institution_identifier)
   end
 end

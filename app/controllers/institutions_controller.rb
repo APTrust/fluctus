@@ -1,7 +1,7 @@
 class InstitutionsController < ApplicationController
   inherit_resources
   before_filter :authenticate_user!
-  before_filter :set_institution, only: [:show, :edit, :update, :destroy]
+  before_filter :set_institution
 
   include Blacklight::SolrHelper
 
