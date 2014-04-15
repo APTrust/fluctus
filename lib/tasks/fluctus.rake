@@ -116,6 +116,7 @@ namespace :fluctus do
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
         ident = "#{SecureRandom.hex(8)}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, intellectual_object_identifier: ident)
+        item = FactoryGirl.create(:intellectual_object, institution: institution)
         item.add_event(FactoryGirl.attributes_for(:premis_event_ingest, detail: "Metadata recieved from bag.", outcome_detail: "", outcome_information: "Parsed as part of bag submission."))
         item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: "Assigned by Fedora."))
 

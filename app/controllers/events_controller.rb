@@ -56,12 +56,12 @@ protected
         @intellectual_object = io
       end
     end
-    authorize! [:show, :edit, :update, :destroy], @intellectual_object if cannot? :read, @intellectual_object
+    authorize! params[:action].to_sym, @intellectual_object
   end
 
   def load_and_authorize_institution
     @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
-    authorize! :read, @institution
+    authorize! params[:action].to_sym, @institution
   end
 
   def for_selected_institution(solr_parameters, user_parameters)

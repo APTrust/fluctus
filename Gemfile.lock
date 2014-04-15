@@ -68,7 +68,8 @@ GEM
       builder
       mime-types
       xml-simple
-    bcrypt (3.1.7)
+    atomic (1.1.14)
+    bcrypt-ruby (3.1.2)
     blacklight (5.0.0.pre4)
       bootstrap-sass (~> 3.0)
       deprecation
@@ -359,7 +360,6 @@ PLATFORMS
 
 DEPENDENCIES
   active-fedora (= 7.0.0.rc1)
-  aws-s3
   capybara
   coffee-rails (~> 4.0.0)
   coveralls
