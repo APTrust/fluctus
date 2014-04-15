@@ -62,7 +62,7 @@ class IntellectualObjectsController < ApplicationController
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{@institution.id}")
   end
 
-  # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
+  # Override Blacklight so that it has the "institution_identifier" set even when we're on a show page (e.g. /objects/foo:123)
   def search_action_url options = {}
     institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution.institution_identifier)
   end
