@@ -1,6 +1,5 @@
 class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :set_object, except: [:index, :create]
   before_filter :set_institution, only: [:index, :create]
   before_filter :set_intellectual_object, except: [:index, :create]
 
@@ -12,9 +11,11 @@ class IntellectualObjectsController < ApplicationController
 
   def update
     if params[:counter]
+      # They are just updating the search counter
       search_session[:counter] = params[:counter]
       redirect_to :action => "show", :status => 303
     else
+      # They are updating a record. Use the method defined in RecordsControllerBehavior
       super
     end
   end
@@ -44,7 +45,8 @@ class IntellectualObjectsController < ApplicationController
   private
 
   def set_institution
-    @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+    #@institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+    @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
     authorize! params[:action].to_sym, @institution
   end
 
@@ -56,6 +58,7 @@ class IntellectualObjectsController < ApplicationController
     authorize! params[:action].to_sym, @intellectual_object
   end
 
+  # Set the search params for the page return based on the insitution.
   def for_selected_institution(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{@institution.id}")
@@ -65,5 +68,4 @@ class IntellectualObjectsController < ApplicationController
   def search_action_url options = {}
     institution_intellectual_objects_path(params[:institution_identifier] || @intellectual_object.institution.institution_identifier)
   end
-
 end

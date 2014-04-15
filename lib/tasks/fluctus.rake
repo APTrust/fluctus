@@ -7,7 +7,6 @@ namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
-    puts "Setting up Fluctus"
     i = FactoryGirl.create(:institution, name: "APTrust", brief_name: "apt", institution_identifier: "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
@@ -35,7 +34,6 @@ namespace :fluctus do
   # Restricted only to non-production environments
   desc "Empty the database"
   task empty_db: :environment do
-    puts "Emptying database"
     if !Rails.env.production?
       [User, GenericFile, IntellectualObject, Institution, Role].each(&:destroy_all)
     end
@@ -43,7 +41,6 @@ namespace :fluctus do
 
   desc "Delete all solr documents"
   task clean_solr: :environment do
-    puts "Cleaning Solr"
     if !Rails.env.production?
       solr = ActiveFedora::SolrService.instance.conn
       solr.delete_by_query("*:*", params: { commit: true })

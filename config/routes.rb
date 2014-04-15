@@ -14,8 +14,8 @@ Fluctus::Application.routes.draw do
 
   #Intellectual Object Routes
   object_ptrn = /\w+\.\w+\/[\w\-]+/
-  get "objects/:institution_identifier", to: 'intellectual_object#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => institution_ptrn }
-  post "objects/:institution_identifier", to: 'intellectual_object#create', :constraints => { :institution_identifier => institution_ptrn }
+  get "objects/:institution_identifier", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => institution_ptrn }
+  post "objects/:institution_identifier", to: 'intellectual_objects#create', :constraints => { :institution_identifier => institution_ptrn }
   patch "objects/:institution_identifier/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => object_ptrn }
   put "objects/:institution_identifier/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => object_ptrn }
   delete "objects/:institution_identifier/:intellectual_object_identifier", to: 'intellectual_objects#destroy', :constraints => { :institution_identifier => institution_ptrn,:intellectual_object_identifier => object_ptrn }

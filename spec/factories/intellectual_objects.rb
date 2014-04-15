@@ -18,8 +18,7 @@ FactoryGirl.define do
     factory :restricted_intellectual_object, class: IntellectualObject do
       rights { 'restricted' }
     end
+
   end
-
-
 
 end
