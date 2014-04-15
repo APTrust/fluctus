@@ -56,9 +56,6 @@ gem 'phony_rails'
 gem 'inherited_resources'
 gem 'uuidtools'
 
-# S3 connector
-gem 'aws-s3'
-
 group :development do
   gem 'meta_request'
   # gem 'better_errors'

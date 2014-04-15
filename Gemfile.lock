@@ -65,10 +65,6 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.2)
     atomic (1.1.14)
-    aws-s3 (0.6.3)
-      builder
-      mime-types
-      xml-simple
     bcrypt-ruby (3.1.2)
     blacklight (5.0.0.pre4)
       bootstrap-sass (~> 3.0)
@@ -358,7 +354,6 @@ PLATFORMS
 
 DEPENDENCIES
   active-fedora (= 7.0.0.rc1)
-  aws-s3
   capybara
   coffee-rails (~> 4.0.0)
   coveralls
