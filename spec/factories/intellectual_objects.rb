@@ -5,8 +5,6 @@ FactoryGirl.define do
     title { Faker::Lorem.sentence }
     description { Faker::Lorem.paragraph }
     intellectual_object_identifier { "#{SecureRandom.uuid}" }
-    institution_identifier { institution.institution_identifier }
-    whole_identifier { "#{institution_identifier}/#{intellectual_object_identifier}" }
     rights { ['consortial', 'institution', 'restricted'].sample }
 
     factory :consortial_intellectual_object, class: IntellectualObject do
@@ -20,7 +18,6 @@ FactoryGirl.define do
     factory :restricted_intellectual_object, class: IntellectualObject do
       rights { 'restricted' }
     end
-
   end
 
 

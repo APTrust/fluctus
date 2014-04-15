@@ -11,7 +11,6 @@ class IntellectualObject < ActiveFedora::Base
 
   has_attributes :title, :rights, :intellectual_object_identifier, datastream: 'descMetadata', multiple: false
   has_attributes :description, datastream: 'descMetadata', multiple: true
-  has_attributes :institution_identifier
 
   validates_presence_of :title
   validates_presence_of :institution
@@ -20,7 +19,7 @@ class IntellectualObject < ActiveFedora::Base
   validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
 
   before_save :set_permissions
-  before_save :set_institution_identifier
+  #before_save :set_institution_identifier
   before_destroy :check_for_associations
 
   def to_param
@@ -69,9 +68,9 @@ class IntellectualObject < ActiveFedora::Base
       end
     end
 
-    def set_institution_identifier
-      self.institution_identifier = self.institution.institution_identifier
-    end
+    #def set_institution_identifier
+    #  self.institution_identifier = self.institution.institution_identifier
+    #end
 
     def check_for_associations
       # Check for related GenericFiles
