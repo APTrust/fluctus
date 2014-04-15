@@ -19,7 +19,6 @@ class IntellectualObject < ActiveFedora::Base
   validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
 
   before_save :set_permissions
-  #before_save :set_institution_identifier
   before_destroy :check_for_associations
 
   def to_param
@@ -65,9 +64,9 @@ class IntellectualObject < ActiveFedora::Base
       end
     end
 
-    #def set_institution_identifier
-    #  self.institution_identifier = self.institution.institution_identifier
-    #end
+    def institution_identifier
+      self.institution.institution_identifier
+    end
 
     def check_for_associations
       # Check for related GenericFiles
