@@ -21,8 +21,12 @@ class IntellectualObject < ActiveFedora::Base
   before_save :set_permissions
   before_destroy :check_for_associations
 
+  #def from_param
+  #  IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).first
+  #end
+
   def to_param
-    "#{institution.institution_identifier}/#{intellectual_object_identifier}"
+   "#{self.institution.institution_identifier}/#{self.intellectual_object_identifier}"
   end
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor

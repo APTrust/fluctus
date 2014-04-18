@@ -15,15 +15,18 @@ Fluctus::Application.routes.draw do
   get "institutions/:institution_identifier", to: 'institutions#show', as: :institution, :constraints => { :institution_identifier => institution_ptrn }
 
   #Intellectual Object Routes
+  object_identifier_ptrn = /(\w+\.)*\w+(\.edu|\.com|\.org)\/[\w\-\.]+/
   get "objects/:institution_identifier", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => institution_ptrn }
   post "objects/:institution_identifier", to: 'intellectual_objects#create', :constraints => { :institution_identifier => institution_ptrn }
-  patch "objects/:institution_identifier/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
-  put "objects/:institution_identifier/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
-  delete "objects/:institution_identifier/:intellectual_object_identifier", to: 'intellectual_objects#destroy', :constraints => { :institution_identifier => institution_ptrn,:intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
-  get "objects/:institution_identifier/:intellectual_object_identifier/edit", to: 'intellectual_objects#edit', as: :edit_intellectual_object, :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
-  get "objects/:institution_identifier/:intellectual_object_identifier/events", to: 'events#index', as: :intellectual_object_events, :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
-  post "objects/:institution_identifier/:intellectual_object_identifier/events", to: 'events#create', :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
-  get "objects/:institution_identifier/:intellectual_object_identifier", to: 'intellectual_objects#show', as: :intellectual_object, :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => /\w+\.\w+\/[\w\-]+/ }
+
+  get "objects/:intellectual_object_identifier", to: 'intellectual_objects#show', as: :intellectual_object, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  patch "objects/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  put "objects/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  delete "objects/:intellectual_object_identifier", to: 'intellectual_objects#destroy', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  get "objects/:intellectual_object_identifier/edit", to: 'intellectual_objects#edit', as: :edit_intellectual_object, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  get "objects/:intellectual_object_identifier/events", to: 'events#index', as: :intellectual_object_events, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  post "objects/:intellectual_object_identifier/events", to: 'events#create', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+
 
   devise_for :users
 
