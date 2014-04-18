@@ -9,7 +9,7 @@ class IntellectualObject < ActiveFedora::Base
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
 
-  has_attributes :title, :rights, :intellectual_object_identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :title, :rights, :intellectual_object_identifier, :institution_identifier, datastream: 'descMetadata', multiple: false
   has_attributes :description, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title
@@ -19,6 +19,7 @@ class IntellectualObject < ActiveFedora::Base
   validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
 
   before_save :set_permissions
+  before_save :set_institution_identifier
   before_destroy :check_for_associations
 
   def to_param
@@ -46,6 +47,10 @@ class IntellectualObject < ActiveFedora::Base
     OrderUp.push(DeleteIntellectualObjectJob.new(id))
   end
 
+  def set_institution_identifier
+    self.institution_identifier = self.institution.institution_identifier
+  end
+
   private
     def set_permissions
       inst_pid = clean_for_solr(self.institution.pid)
@@ -62,10 +67,6 @@ class IntellectualObject < ActiveFedora::Base
           self.discover_groups = [inst_user_group]
           self.edit_groups = [inst_admin_group]
       end
-    end
-
-    def institution_identifier
-      self.institution.institution_identifier
     end
 
     def check_for_associations
