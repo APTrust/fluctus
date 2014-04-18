@@ -68,6 +68,10 @@ class IntellectualObject < ActiveFedora::Base
       end
     end
 
+    def institution_identifier
+      self.institution.institution_identifier
+    end
+
     def check_for_associations
       # Check for related GenericFiles
 
