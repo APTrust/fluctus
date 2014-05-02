@@ -62,7 +62,11 @@ namespace :bagman do
   # and add each generic file to the intellectual object.
   def add_generic_files(data, int_obj)
     data['BagReadResult']['GenericFiles'].each do |gf|
-      int_obj.generic_files << new_generic_file(gf, int_obj)
+      begin
+        int_obj.generic_files << new_generic_file(gf, int_obj)
+      rescue StandardError => ex
+        puts "Error creating generic file #{gf['Path']}: #{ex}"
+      end
     end
   end
 
@@ -74,8 +78,8 @@ namespace :bagman do
                            format: gf['MimeType'],
                            uri: uri_prefix + gf['Path'],
                            size: gf['Size'],
-                           created: gf['Created'].gsub(' ', ''), #Time.parse(gf['Created'].gsub(' ', '')),
-                           modified: gf['Modified'].gsub(' ', '')) #Time.parse(gf['Modified'].gsub(' ', '')))
+                           created: gf['Created'].gsub(' ', ''),
+                           modified: gf['Modified'].gsub(' ', ''))
     file.techMetadata.checksum.build({
                      algorithm: 'md5',
                      datetime: Time.now.to_s,
