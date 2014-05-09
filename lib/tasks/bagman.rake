@@ -2,17 +2,22 @@ namespace :bagman do
 
   desc "Import data from bagman json log"
   task :import, [:json_file] => [:environment] do |t, args|
+    start = Time.now
+    imported = 0
     institutions = get_institutions
     File.open(args[:json_file]).each do |line|
       data = JSON.parse(line)
       if data['Error'].nil?
         obj = create_intellectual_object(data, institutions)
         puts obj.inspect
+        imported += 1
       else
         puts("Skipping #{data['S3File']['Key']['Key']} because " +
              "bag import failed with this error: #{data['Error']}")
       end
     end
+    finish = Time.now
+    puts("Imported #{imported} records in #{finish - start}")
   end
 
   # Returns a hash of institutions that already exist. Key is
