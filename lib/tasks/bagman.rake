@@ -66,7 +66,7 @@ namespace :bagman do
   # Parse all the GenericFile records out of the JSON structure
   # and add each generic file to the intellectual object.
   def add_generic_files(data, int_obj)
-    data['BagReadResult']['GenericFiles'].each do |gf|
+    data['TarResult']['GenericFiles'].each do |gf|
       begin
         int_obj.generic_files << new_generic_file(gf, int_obj)
       rescue StandardError => ex
@@ -96,9 +96,10 @@ namespace :bagman do
                      digest: gf['Sha256']
                  })
     file.save!
-    file.add_event(new_identifier_assignment(gf['Uuid']))
-    file.add_event(new_fixity_check(gf['Md5']))
-    file.add_event(new_fixity_generation(gf['Sha256']))
+    file.add_event(new_identifier_assignment(gf['Uuid'],
+                                             gf['UuidGenerated']))
+    file.add_event(new_fixity_generation(gf['Sha256'],
+                                         gf['Sha256Generated']))
     file.save!
     file
   end
@@ -106,10 +107,10 @@ namespace :bagman do
 
   # Returns a new identifier_assignment event with the specified
   # identifier.
-  def new_identifier_assignment(identifier)
+  def new_identifier_assignment(identifier, timestamp)
     {
       type: "identifier_assignment",
-      date_time: Time.now.to_s,
+      date_time: timestamp,
       detail: "S3 key generated for file",
       outcome: "success",
       outcome_detail: identifier,
@@ -119,27 +120,12 @@ namespace :bagman do
     }
   end
 
-  # Returns a new fixity_check event with the specified
-  # md5 sum.
-  def new_fixity_check(md5sum)
-    {
-      type: "fixity_check",
-      date_time: Time.now.to_s,
-      detail: "Fixity check against registered md5 hash",
-      outcome: "success",
-      outcome_detail: md5sum,
-      outcome_information: "Fixity matches",
-      object: "go 1.2.1 crypto/md5",
-      agent: "http://golang.org",
-    }
-  end
-
   # Returns a new fixity_generation event with the specified
   # sha256 sum.
-  def new_fixity_generation(sha256sum)
+  def new_fixity_generation(sha256sum, timestamp)
     {
       type: "fixity_generation",
-      date_time: Time.now.to_s,
+      date_time: timestamp,
       detail: "Calculated new fixity value",
       outcome: "success",
       outcome_detail: sha256sum,
