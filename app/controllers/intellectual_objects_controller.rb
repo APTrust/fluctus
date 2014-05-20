@@ -42,6 +42,20 @@ class IntellectualObjectsController < ApplicationController
     CanCan::ControllerResource
   end
 
+  # This overrides the invalid_solr_id_error handler defined in
+  # blacklight-5.0.0.pre4/lib/blacklight/catalog.rb, lines 229-234,
+  # which hides the actual error message and returns a generic message instead.
+  # This handler displays the actual error message and logs the exception and
+  # stack trace.
+  def invalid_solr_id_error(exception)
+    flash[:notice] = exception.message
+    logger.error(exception.message)
+    logger.error(exception.backtrace.join("\n"))
+    params.delete(:id)
+    index
+    render "index", :status => 404
+  end
+
   private
 
   def set_institution
