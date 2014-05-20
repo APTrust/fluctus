@@ -1,7 +1,8 @@
 class InstitutionsController < ApplicationController
   inherit_resources
   before_filter :authenticate_user!
-  before_filter :set_institution
+  before_filter :set_institution, only: [:edit, :update, :show, :destroy]
+  before_filter :authorize_user, only: [:create, :index]
 
   include Blacklight::SolrHelper
 
@@ -13,6 +14,11 @@ class InstitutionsController < ApplicationController
   private
     def set_institution
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+      params[:id] = @institution.id
+      authorize! params[:action].to_sym, @institution
+    end
+
+    def authorize_user
       authorize! params[:action].to_sym, @institution
     end
 

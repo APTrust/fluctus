@@ -2,7 +2,7 @@ FactoryGirl.define do
 
   sequence(:name) { |n| "#{Faker::Company.name} #{n}" }
   sequence(:brief_name) { |n|  "#{Faker::Lorem.characters rand(3..4)}#{n}"}
-  sequence(:institution_identifier) { |n| "#{Faker::Internet.domain_name}#{n}" }
+  sequence(:institution_identifier) { |n| "#{n}#{Faker::Internet.domain_word}.com" }
 
   factory :institution do 
     name

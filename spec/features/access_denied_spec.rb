@@ -11,7 +11,7 @@ feature "Access Denied" do
 
     # Visit the path of an institution that is not the user's
     visit(institution_path(@institution))
-    
+
     expect(page).to have_content "You are not authorized to access this page."
     current_path.should == root_path
   end

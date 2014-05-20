@@ -12,11 +12,11 @@ describe InstitutionsController do
     end
 
     it "routes to #show" do
-      get("/institutions/test").should route_to("institutions#show", :institution_identifier => "test")
+      get("/institutions/test.com").should route_to("institutions#show", :institution_identifier => "test.com")
     end
 
     it "routes to #edit" do
-      get("/institutions/test/edit").should route_to("institutions#edit", :institution_identifier => "test")
+      get("/institutions/test.com/edit").should route_to("institutions#edit", :institution_identifier => "test.com")
     end
 
     it "routes to #create" do
@@ -24,11 +24,11 @@ describe InstitutionsController do
     end
 
     it "routes to #update" do
-      put("/institutions/test").should route_to("institutions#update", :institution_identifier => "test")
+      put("/institutions/test.com").should route_to("institutions#update", :institution_identifier => "test.com")
     end
 
     it "routes to #destroy" do
-      delete("/institutions/test").should route_to("institutions#destroy", :institution_identifier => "test")
+      delete("/institutions/test.com").should route_to("institutions#destroy", :institution_identifier => "test.com")
     end
 
   end

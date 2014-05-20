@@ -8,7 +8,7 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :format, :created, :modified, datastream: 'techMetadata', multiple: false
+  has_attributes :uri, :size, :format, :created, :modified, :generic_file_identifier, :intellectual_object_identifier, :institution_identifier, datastream: 'techMetadata', multiple: false
   delegate :checksum_attributes=, :checksum, to: :techMetadata
 
   validates_presence_of :uri
@@ -17,11 +17,17 @@ class GenericFile < ActiveFedora::Base
   validates_presence_of :modified
   validates_presence_of :format
   validates_presence_of :checksum
+  validates_presence_of :generic_file_identifier
 
   before_save :copy_permissions_from_intellectual_object
+  before_save :set_identifiers
   after_save :update_parent_index
 
   delegate :institution, to: :intellectual_object
+
+  def to_param
+    generic_file_identifier
+  end
 
   def to_solr(solr_doc = {})
     super
@@ -37,6 +43,11 @@ class GenericFile < ActiveFedora::Base
     premisEvents.events.build(type: 'delete')
     save!
     OrderUp.push(DeleteGenericFileJob.new(id))
+  end
+
+  def set_identifiers
+    self.institution_identifier = self.intellectual_object.institution_identifier
+    self.intellectual_object_identifier = self.intellectual_object.intellectual_object_identifier
   end
 
   private 

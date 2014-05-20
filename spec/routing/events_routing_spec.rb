@@ -26,11 +26,11 @@ describe "Routes for Events" do
 
   it "has an index for an institution's events" do
     expect(
-      get: 'institutions/testinst/events'
+      get: 'institutions/testinst.com/events'
     ).to(
       route_to(controller: 'events',
                action: 'index',
-               institution_identifier: 'testinst'
+               institution_identifier: 'testinst.com'
       )
     )
   end

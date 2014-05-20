@@ -134,7 +134,7 @@ describe InstitutionsController do
         sign_in admin_user
       end
 
-      it "should reject no parameters" do
+      it "should reject when there are no parameters" do
         expect {
           post :create, {}
         }.to raise_error ActionController::ParameterMissing

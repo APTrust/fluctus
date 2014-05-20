@@ -47,14 +47,17 @@ class IntellectualObjectsController < ApplicationController
   def set_institution
     #@institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
     @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+    params[:id] = @institution.id
     authorize! params[:action].to_sym, @institution
   end
 
   # Convienence method for pulling back the intellectual object by
   def set_intellectual_object
     #add nil handling
-    @intellectual_object = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier]).first
+    search_param = params[:intellectual_object_identifier].split("/")
+    @intellectual_object = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: search_param[1], desc_metadata__institution_identifier_tesim: search_param[0]).first
     @institution = @intellectual_object.institution
+    params[:id] = @intellectual_object.id
     authorize! params[:action].to_sym, @intellectual_object
   end
 

@@ -16,9 +16,7 @@
       <dt>Rights</dt>
       <dd><%= @intellectual_object.rights %></dd>
       <dt>Identifier</dt>
-      <% @intellectual_object.intellectual_object_identifier.each do |ident| %>
-          <dd><%= ident %></dd>
-      <% end %>
+      <dd><%= @intellectual_object.intellectual_object_identifier %></dd>
       <dt> Last Modified </dt>
       <dd> <%= @intellectual_object.modified_date %> </dd>
     </dl>

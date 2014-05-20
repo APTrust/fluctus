@@ -160,23 +160,23 @@ describe IntellectualObjectsController do
 
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: user.institution) }
       before { sign_in user }
 
       it "should update the search counter" do
-        patch :update, intellectual_object_identifier: obj1.intellectual_object_identifier, counter: '5'
+        patch :update, intellectual_object_identifier: obj1, counter: '5'
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(session[:search][:counter]).to eq '5'
       end
        
       it "should update fields" do
-        patch :update, intellectual_object_identifier: obj1.intellectual_object_identifier, intellectual_object: {title: 'Foo'}
+        patch :update, intellectual_object_identifier: obj1, intellectual_object: {title: 'Foo'}
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
       it "should update via json" do
-        patch :update, intellectual_object_identifier: obj1.intellectual_object_identifier, intellectual_object: {title: 'Foo'}, format: 'json'
+        patch :update, intellectual_object_identifier: obj1, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response).to be_successful
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
@@ -238,11 +238,11 @@ describe IntellectualObjectsController do
 
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: user.institution) }
       before { sign_in user }
 
       it "should update via json" do
-        delete :destroy, intellectual_object_identifier: obj1.intellectual_object_identifier, format: 'json'
+        delete :destroy, intellectual_object_identifier: obj1, format: 'json'
         expect(response.code).to eq '204'
         expect(assigns(:intellectual_object).state).to eq 'D'
       end

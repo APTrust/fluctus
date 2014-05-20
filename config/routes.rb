@@ -4,12 +4,12 @@ Fluctus::Application.routes.draw do
   institution_ptrn = /(\w+\.)*\w+(\.edu|\.com|\.org)/
   get "institutions/", to: 'institutions#index', as: :institutions
   post "institutions/", to: 'institutions#create'
+  get "institutions/new", to: 'institutions#new', as: :new_institution
   patch "institutions/:institution_identifier", to: 'institutions#update', :constraints => { :institution_identifier => institution_ptrn }
   put "institutions/:institution_identifier", to: 'institutions#update', :constraints => { :institution_identifier => institution_ptrn }
   delete "institutions/:institution_identifier", to: 'institutions#destroy', :constraints => { :institution_identifier => institution_ptrn }
   get "institutions/:institution_identifier/edit", to: 'institutions#edit', as: :edit_institution, :constraints => { :institution_identifier => institution_ptrn }
   get "institutions/:institution_identifier/events", to: 'events#index', as: :institution_events, :constraints => { :institution_identifier => institution_ptrn }
-  get "institutions/new", to: 'institutions#new', as: :new_institution
   get "institutions/:institution_identifier", to: 'institutions#show', as: :institution, :constraints => { :institution_identifier => institution_ptrn }
 
   #Intellectual Object Routes
@@ -25,8 +25,13 @@ Fluctus::Application.routes.draw do
   get "objects/:intellectual_object_identifier/events", to: 'events#index', as: :intellectual_object_events, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
   post "objects/:intellectual_object_identifier/events", to: 'events#create', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
 
-  #post "objects/institution_identifier/:intellectual_object_identifier/data", to: 'generic_files#create', as: intellectual_object_generic_files, :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => object_identifier_ptrn }
-  #patch "objects/institution_identifier/:intellectual_object_identifier/data/:filename", to: 'generic_files#update', :constraints => { :institution_identifier => institution_ptrn, :intellectual_object_identifier => object_identifier_ptrn }
+  #Generic File Routes
+  file_ptrn = /(\w+\.)*\w+(\.edu|\.com|\.org)\/[\w\-\.]+/
+  post "objects/:intellectual_object_identifier/data", to: 'generic_files#create', as: :intellectual_object_generic_files, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  patch "objects/:generic_file_identifier", to: 'generic_files#update', :constraints => { :generic_file_identifier => file_ptrn }, trailing_slash: true, format: 'json'
+  get "files/:generic_file_identifier/events", to: 'events#index', as: :generic_file_events, :constraints => { :generic_file_identifier => file_ptrn }
+  get "files/:generic_file_identifier", to: 'generic_files#show', as: :generic_file, :constraints => { :generic_file_identifier => file_ptrn }
+  delete "files/:generic_file_identifier", to: 'generic_files#destroy', :constraints => { :generic_file_identifier => file_ptrn }
 
   devise_for :users
 
