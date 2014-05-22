@@ -30,7 +30,7 @@
   <div class="object_children">
     <h3>Preserved Files</h3>
     <% @intellectual_object.generic_files.each do |gf| %>
-          <h4><%= link_to gf.uri, gf  %></h4>
+          <h4><%= link_to gf.generic_file_identifier, gf  %></h4>
         <dl class="dl-horizontal dl-invert">
           <dt>Last Fixity</dt>
           <dd><span class="label label-success">Success</span></dd>
