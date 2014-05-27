@@ -26,6 +26,8 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create]
   end
 
+  get 'itemresults/', to: 'processing_queue#show', as: :processing_queue
+
   Blacklight.add_routes(self)
 
   mount Hydra::RoleManagement::Engine => '/'
