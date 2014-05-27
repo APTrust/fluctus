@@ -27,6 +27,7 @@ Fluctus::Application.routes.draw do
   end
 
   get 'itemresults/', to: 'processing_queue#show', as: :processing_queue
+  post 'itemresults/', to: 'processing_queue#show', format: 'json'
 
   Blacklight.add_routes(self)
 

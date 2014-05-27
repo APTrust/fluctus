@@ -1,7 +1,6 @@
-class ProcessingQueue < ActiveFedora::Base
+class ProcessingQueue < ActiveRecord::Base
 
-  has_metadata "queueMetadata", type: ProcessingQueueMetadata
-  has_attributes :table, datastream: 'queueMetadata', multiple: false
+  #has_attributes :table, multiple: false
   validates :table, presence: true
 
 end

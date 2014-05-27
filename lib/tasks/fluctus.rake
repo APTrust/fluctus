@@ -71,7 +71,8 @@ namespace :fluctus do
     Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
 
-    FactoryGirl.create(:processing_queue, table: 'rake test')
+    pq = ProcessingQueue.new(table: ["rake test"])
+    #FactoryGirl.create(:processing_queue, table: 'rake test')
 
     partner_list = [
         ["Columbia University", "cul"], ["North Carolina State University", "ncsu"],

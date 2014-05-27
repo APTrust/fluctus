@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140522124334) do
+ActiveRecord::Schema.define(version: 20140527180911) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -22,10 +22,8 @@ ActiveRecord::Schema.define(version: 20140522124334) do
     t.string   "user_type"
   end
 
-  create_table "processing_queues", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+# Could not dump table "processing_queues" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
 
   create_table "roles", force: true do |t|
     t.string "name"
