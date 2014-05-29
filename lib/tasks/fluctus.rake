@@ -71,9 +71,6 @@ namespace :fluctus do
     Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
 
-    pq = ProcessingQueue.new(table: ["rake test"])
-    #FactoryGirl.create(:processing_queue, table: 'rake test')
-
     partner_list = [
         ["Columbia University", "cul"], ["North Carolina State University", "ncsu"],
         ["Johns Hopkins University", "jhu"], ["University of Maryland", "mdu"],
@@ -150,6 +147,12 @@ namespace :fluctus do
         end
       end
 
+
+      #Add some processed item data here
+      numItems.times.each do |count|
+        puts "== Creating processed item #{count+1} of #{numItems} for #{institution.name}."
+        FactoryGirl.create(:processed_item)
+      end
     end
   end
 end

@@ -1,0 +1,46 @@
+<div id="content" class="col-md-10">
+  <ol class="breadcrumb">
+    <li><a href="#"><%= link_to current_user.institution.name, current_user.institution %></a></li>
+  </ol>
+
+  <section class="page-header">
+    <h2><%@processed_item.name%></h2>
+  </section>
+
+  <section class="queue">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Etag</th>
+        <th>Bag Date</th>
+        <th>Bucket</th>
+        <th>User</th>
+        <th>Institution</th>
+        <th>Date</th>
+        <th>Note</th>
+        <th>Type</th>
+        <th>Stage</th>
+        <th>Status</th>
+        <th>Outcome</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><%= @processed_item.name %></td>
+          <td><%= @processed_item.etag %></td>
+          <td><%= @processed_item.bag_date %></td>
+          <td><%= @processed_item.bucket %></td>
+          <td><%= @processed_item.user %></td>
+          <td><%= @processed_item.institution %></td>
+          <td><%= @processed_item.date %></td>
+          <td><%= @processed_item.note %></td>
+          <td><%= @processed_item.action %></td>
+          <td><%= @processed_item.stage %></td>
+          <td><%= @processed_item.status %></td>
+          <td><%= @processed_item.outcome %></td>
+          </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
