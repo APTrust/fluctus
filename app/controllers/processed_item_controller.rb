@@ -1,4 +1,5 @@
 class ProcessedItemController < ApplicationController
+  respond_to :html, :json
   inherit_resources
   before_filter :set_items, only: :index
   before_filter :set_item, only: :show
@@ -13,9 +14,6 @@ class ProcessedItemController < ApplicationController
     end
   end
 
-  def show
-    @json_item = @processed_item.to_json
-  end
 
   private
 
@@ -31,7 +29,7 @@ class ProcessedItemController < ApplicationController
 
   def set_item
     @institution = current_user.institution
-    @processed_item = ProcessedItem.where(etag: params[:etag], name: params[:name])
-    params[:id] = @processed_item.id
+    @processed_item = ProcessedItem.where(etag: params[:etag], name: params[:name]).first
+    params[:id] = @processed_item.id if @processed_item
   end
 end
