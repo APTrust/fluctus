@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token, :if => :api_request?
+  before_action :authenticate_api_key, if: :api_request?
 
    # If a User is denied access for an action, return them back to the last page they could view.
   rescue_from CanCan::AccessDenied do |exception|
@@ -20,6 +21,19 @@ class ApplicationController < ActionController::Base
       format.html { redirect_to root_url, alert: exception.message }
       format.json { render :json => { :status => "error", :message => exception.message }, :status => :forbidden }
     end 
+  end
+
+  def authenticate_api_key
+    api_user = request.headers["X-Fluctus-API-User"]
+    api_key = request.headers["X-Fluctus-API-Key"]
+    user = api_key && api_user && User.find_by_email(api_user)
+    if user && user.valid_api_key?(api_key)
+      # Notice we are passing store false, so the user is not
+      # actually stored in the session and a token is needed
+      # for every request. If you want the token to work as a
+      # sign in token, you can simply remove store: false.
+      sign_in user, store: false
+    end
   end
 
 end

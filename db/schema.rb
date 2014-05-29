@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140528144435) do
+ActiveRecord::Schema.define(version: 20140529174734) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 20140528144435) do
     t.datetime "updated_at"
     t.string   "name"
     t.string   "etag"
-    t.string   "bag_date"
+    t.datetime "bag_date",    limit: 255
     t.string   "bucket"
     t.string   "user"
     t.string   "institution"
