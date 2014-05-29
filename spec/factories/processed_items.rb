@@ -5,9 +5,9 @@ FactoryGirl.define do
     name { Faker::Lorem.word }
     etag { SecureRandom.uuid }
     bag_date { Faker::Number.number(8) }
-    bucket { SecureRandom.uuid }
     user { Faker::Name.name }
-    institution { FactoryGirl.create(:institution).name }
+    institution { FactoryGirl.create(:institution).pid }
+    bucket { "#{institution}/#{etag}" }
     date { Faker::Number.number(4) }
     note { Faker::Lorem.sentence }
     action { Faker::Lorem.word }

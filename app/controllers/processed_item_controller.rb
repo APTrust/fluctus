@@ -1,6 +1,8 @@
 class ProcessedItemController < ApplicationController
   respond_to :html, :json
   inherit_resources
+  load "config/pid_map.rb"
+  before_filter :authenticate_user!
   before_filter :set_items, only: :index
   before_filter :set_item, only: :show
 
@@ -19,7 +21,9 @@ class ProcessedItemController < ApplicationController
 
   def set_items
     @institution = current_user.institution
-    @processed_items = ProcessedItem.where(institution: @institution.name)
+    institution_bucket = PID_MAP[@institution.pid]
+    puts "BUCKET: #{institution_bucket}"
+    @processed_items = ProcessedItem.where(institution: institution_bucket)
     if(@institution.name == "APTrust")
       @processed_items = ProcessedItem.all()
     end

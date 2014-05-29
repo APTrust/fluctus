@@ -8,6 +8,7 @@ namespace :fluctus do
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
     i = Institution.create!(name: "APTrust")
+    PID_MAP.store(i.pid, "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
@@ -35,7 +36,7 @@ namespace :fluctus do
   desc "Empty the database"
   task empty_db: :environment do
     if !Rails.env.production?
-      [User, GenericFile, IntellectualObject, Institution, Role].each(&:destroy_all)
+      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem].each(&:destroy_all)
     end
   end
 
@@ -63,6 +64,7 @@ namespace :fluctus do
 
   desc "Empty DB and add dummy information"
   task :populate_db, [:numInstitutions, :numIntObjects, :numGenFiles] => [:environment] do |t, args|
+    load "config/pid_map.rb"
     if Rails.env.production?
       puts "Do not run in production!"
       return
@@ -72,13 +74,13 @@ namespace :fluctus do
     Rake::Task['fluctus:setup'].invoke
 
     partner_list = [
-        ["Columbia University", "cul"], ["North Carolina State University", "ncsu"],
-        ["Johns Hopkins University", "jhu"], ["University of Maryland", "mdu"],
-        ["University of Michigan", "umich"], ["University of North Carolina at Chapel Hill", "unc"],
-        ["Syracuse University", "syr"], ["University of Virginia","uva"],
-        ["University of Notre Dame", "und"], ["Stanford University", "stnfd"],
-        ["University of Chicago", "uchi"], ["University of Miami", "um"],
-        ["University of Connecticut", "uconn"], ["University of Cinnicnati", "ucin"],
+        ["Columbia University", "cul", "columbia.edu"], ["North Carolina State University", "ncsu", "ncsu.edu"],
+        ["Johns Hopkins University", "jhu", "jhu.edu"], ["University of Maryland", "mdu", "umd.edu"],
+        ["University of Michigan", "umich", "umich.edu"], ["University of North Carolina at Chapel Hill", "unc", "unc.edu"],
+        ["Syracuse University", "syr", "syr.edu"], ["University of Virginia","uva", "virginia.edu"],
+        ["University of Notre Dame", "und", "nd.edu"], ["Stanford University", "stnfd", "stanford.edu"],
+        ["University of Chicago", "uchi", "uchicago.edu"], ["University of Miami", "um", "miami.edu"],
+        ["University of Connecticut", "uconn", "uconn.edu"], ["University of Cinnicnati", "ucin", "uc.edu"],
     ]
 
     args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
@@ -92,7 +94,8 @@ namespace :fluctus do
     puts "Creating #{numInsts} Institutions"
     numInsts.times.each do |count|
       puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
-      FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count].last)
+      inst = FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1])
+      PID_MAP.store(inst.pid, partner_list[count][2])
     end
 
     puts "Creating Users for each Institution"
@@ -151,7 +154,7 @@ namespace :fluctus do
       #Add some processed item data here
       numItems.times.each do |count|
         puts "== Creating processed item #{count+1} of #{numItems} for #{institution.name}."
-        FactoryGirl.create(:processed_item)
+        FactoryGirl.create(:processed_item, institution: PID_MAP[institution.pid])
       end
     end
   end
