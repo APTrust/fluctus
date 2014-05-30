@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140529174734) do
+ActiveRecord::Schema.define(version: 20140530135301) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 20140529174734) do
     t.string   "bucket"
     t.string   "user"
     t.string   "institution"
-    t.string   "date"
+    t.datetime "date",        limit: 255
     t.string   "note"
     t.string   "action"
     t.string   "stage"
