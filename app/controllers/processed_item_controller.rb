@@ -5,21 +5,47 @@ class ProcessedItemController < ApplicationController
   before_filter :authenticate_user!
   before_filter :set_items, only: :index
   before_filter :set_item, only: :show
+  before_filter :init_from_params, only: :create
+  before_filter :find_and_update, only: :update
 
   def create
-    resource = ProcessedItem.new(processed_item_params)
-    resource.user = current_user.email
     respond_to do |format|
-      if resource.save
-        format.json { render json: resource, status: :created }
+      if @processed_item.save
+        format.json { render json: @processed_item, status: :created }
       else
-        format.json { render json: resource.errors, status: :unprocessable_entity }
+        format.json { render json: @processed_item.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def update
+    respond_to do |format|
+      if @processed_item.save
+        format.json { render json: @processed_item, status: :created }
+      else
+        format.json { render json: @processed_item.errors, status: :unprocessable_entity }
       end
     end
   end
 
 
   private
+
+  def init_from_params
+    @processed_item = ProcessedItem.new(processed_item_params)
+    @processed_item.user = current_user.email
+  end
+
+  def find_and_update
+    # Parse date explicitly, or ActiveRecord will not find records when date format string varies.
+    bag_date = Time.parse(params[:bag_date])
+    @processed_item = ProcessedItem.where(name: params[:name], etag: params[:etag], bag_date: bag_date).first
+    if @processed_item
+      @processed_item.update(processed_item_params)
+      @processed_item.user = current_user.email
+    end
+  end
+
 
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
@@ -42,7 +68,9 @@ class ProcessedItemController < ApplicationController
 
   def set_item
     @institution = current_user.institution
-    @processed_item = ProcessedItem.where(etag: params[:etag], name: params[:name]).first
+    # Parse date explicitly, or ActiveRecord will not find records when date format string varies.
+    bag_date = Time.parse(params[:bag_date])
+    @processed_item = ProcessedItem.where(etag: params[:etag], name: params[:name], bag_date: bag_date).first
     params[:id] = @processed_item.id if @processed_item
   end
 end
