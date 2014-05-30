@@ -4,7 +4,7 @@ FactoryGirl.define do
   factory :processed_item do
     name { Faker::Lorem.word }
     etag { SecureRandom.uuid }
-    bag_date { Faker::Number.number(8) }
+    datetime { Faker::Number.number(8) }
     user { Faker::Name.name }
     institution { FactoryGirl.create(:institution).pid }
     bucket { "#{institution}/#{etag}" }
