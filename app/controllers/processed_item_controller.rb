@@ -7,9 +7,11 @@ class ProcessedItemController < ApplicationController
   before_filter :set_item, only: :show
 
   def create
+    resource = ProcessedItem.new(processed_item_params)
+    resource.user = current_user.email
     respond_to do |format|
       if resource.save
-        format.json { render json: @processed_item, status: :created }
+        format.json { render json: resource, status: :created }
       else
         format.json { render json: resource.errors, status: :unprocessable_entity }
       end
@@ -18,6 +20,13 @@ class ProcessedItemController < ApplicationController
 
 
   private
+
+  def processed_item_params
+    params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
+                                           :institution, :date, :note, :action,
+                                           :stage, :status, :outcome)
+  end
+
 
   def set_items
     @institution = current_user.institution
