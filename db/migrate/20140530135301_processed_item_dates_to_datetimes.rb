@@ -1,5 +1,6 @@
 class ProcessedItemDatesToDatetimes < ActiveRecord::Migration
   def change
-    change_column(:processed_items, :date, :datetime)
+    remove_column(:processed_items, :date)
+    add_column(:processed_items, :date, :datetime)
   end
 end

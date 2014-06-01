@@ -63,7 +63,7 @@ group :development do
   gem 'meta_request'
   # gem 'better_errors'
 end
-group :development, :test do
+group :development, :test, :demo do
   gem 'factory_girl_rails'
   gem 'faker', github: 'stympy/faker'
   gem "jettywrapper"

@@ -1,5 +1,6 @@
 class ChangeBagDateToDate < ActiveRecord::Migration
   def change
-    change_column(:processed_items, :bag_date, :datetime)
+    remove_column(:processed_items, :bag_date)
+    add_column(:processed_items, :bag_date, :datetime)
   end
 end
