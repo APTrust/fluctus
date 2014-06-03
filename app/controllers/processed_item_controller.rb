@@ -66,9 +66,8 @@ class ProcessedItemController < ApplicationController
 
   def set_items
     @institution = current_user.institution
-    institution_bucket = PID_MAP[@institution.pid]
-    puts "BUCKET: #{institution_bucket}"
-    @processed_items = ProcessedItem.where(institution: institution_bucket)
+    institution_bucket = "aptrust.receiving."+ PID_MAP[@institution.name]
+    @processed_items = ProcessedItem.where(bucket: institution_bucket)
     if(@institution.name == "APTrust")
       @processed_items = ProcessedItem.all()
     end
