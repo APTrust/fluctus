@@ -28,6 +28,16 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def show
+    respond_to do |format|
+      if @processed_item.nil? == false
+        format.json { render json: @processed_item }
+      else
+        format.json { render :nothing => true, status: :not_found }
+      end
+    end
+  end
+
 
   private
 
