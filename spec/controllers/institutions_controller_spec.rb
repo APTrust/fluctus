@@ -130,6 +130,7 @@ describe InstitutionsController do
   describe "POST create" do
     describe "with admin user" do
       let (:attributes) { FactoryGirl.attributes_for(:institution) }
+
       before do
         sign_in admin_user
       end

@@ -7,10 +7,11 @@ class Institution < ActiveFedora::Base
 
   has_many :intellectual_objects, property: :is_part_of
 
-  has_attributes :name, :brief_name, datastream: 'descMetadata', multiple: false
+  has_attributes :name, :brief_name, :identifier, datastream: 'descMetadata', multiple: false
 
-  validates :name, presence: true
+  validates :name, :identifier, presence: true
   validate :name_is_unique
+  validate :identifier_is_unique
 
   before_destroy :check_for_associations
 
@@ -51,6 +52,18 @@ class Institution < ActiveFedora::Base
   # we must remove self from the array before testing for uniqueness.
   def name_is_unique
     errors.add(:name, "has already been taken") if Institution.where(desc_metadata__name_ssim: self.name).reject{|r| r == self}.any?
+  end
+
+  def identifier_is_unique
+    count = 0;
+    Institution.all.each do |inst|
+      if (inst.identifier == self.identifier) && (inst.id != self.id)
+        count += 1
+      end
+    end
+    if(count > 0)
+      errors.add(:identifier, "has already been taken")
+    end
   end
 
   def check_for_associations
