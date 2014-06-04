@@ -4,41 +4,52 @@
   </ol>
 
   <section class="page-header">
-    <h2><%@processed_item.name%></h2>
+    <h2><%= @processed_item.name %></h2>
   </section>
 
   <section class="queue">
     <table class="table">
-      <thead>
-      <tr>
-        <th>Name</th>
-        <th>Etag</th>
-        <th>Bag Date</th>
-        <th>Bucket</th>
-        <th>User</th>
-        <th>Institution</th>
-        <th>Date</th>
-        <th>Note</th>
-        <th>Action</th>
-        <th>Stage</th>
-        <th>Status</th>
-        <th>Outcome</th>
-      </tr>
-      </thead>
       <tbody>
         <tr>
-          <td><%= @processed_item.name %></td>
-          <td><%= @processed_item.etag %></td>
-          <td><%= @processed_item.bag_date %></td>
-          <td><%= @processed_item.bucket %></td>
-          <td><%= @processed_item.user %></td>
-          <td><%= @processed_item.institution %></td>
-          <td><%= @processed_item.date %></td>
-          <td><%= @processed_item.note %></td>
-          <td><%= @processed_item.action %></td>
-          <td><%= @processed_item.stage %></td>
-          <td><%= @processed_item.status %></td>
-          <td><%= @processed_item.outcome %></td>
+          <tr>
+            <th>Name</th>
+            <td><%= @processed_item.name %></td>
+          </tr>
+          <tr>
+            <th>Institution</th>
+            <td><%= @processed_item.institution %></td>
+          </tr>
+          <tr>
+            <th>Bucket</th>
+            <td><%= @processed_item.bucket %></td>
+          </tr>
+          <tr>
+            <th>Etag</th>
+            <td><%= @processed_item.etag %></td>
+          </tr>
+          <tr>
+            <th>Bag Date</th>
+            <td><%= @processed_item.bag_date %></td>
+          </tr>
+          <tr>
+            <th>Date Processed</th>
+            <td><%= @processed_item.date %></td>
+          </tr>
+          <tr>
+            <th>Action</th>
+            <td><%= @processed_item.action %></td>
+          </tr>
+          <tr>
+            <th>Stage</th>
+            <td><%= @processed_item.stage %></td>
+          </tr>
+          <tr class="<%= @processed_item.status %>">
+            <th>Status</th>
+            <td><%= @processed_item.status %></td>
+          </tr>
+          <tr>
+            <th>Note / Error</th>
+            <td><%= @processed_item.note %></td>
           </tr>
       </tbody>
     </table>

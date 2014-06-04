@@ -13,33 +13,21 @@
       <tr>
         <th>Name</th>
         <th>Etag</th>
-        <th>Bag Date</th>
-        <th>Bucket</th>
-        <th>User</th>
-        <th>Institution</th>
-        <th>Date</th>
-        <th>Note</th>
+        <th>Processing Date</th>
         <th>Action</th>
         <th>Stage</th>
         <th>Status</th>
-        <th>Outcome</th>
       </tr>
       </thead>
       <tbody>
       <% @processed_items.each do |item| %>
-          <tr>
-            <td><%= item.name %></td>
+          <tr class="<%= item.status %>">
+            <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
             <td><%= item.etag %></td>
-            <td><%= item.bag_date %></td>
-            <td><%= item.bucket %></td>
-            <td><%= item.user %></td>
-            <td><%= item.institution %></td>
             <td><%= item.date %></td>
-            <td><%= item.note %></td>
             <td><%= item.action %></td>
             <td><%= item.stage %></td>
             <td><%= item.status %></td>
-            <td><%= item.outcome %></td>
           </tr>
       <% end %>
       </tbody>

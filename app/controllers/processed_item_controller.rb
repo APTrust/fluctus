@@ -28,16 +28,6 @@ class ProcessedItemController < ApplicationController
     end
   end
 
-  def show
-    respond_to do |format|
-      if @processed_item.nil? == false
-        format.json { render json: @processed_item }
-      else
-        format.json { render :nothing => true, status: :not_found }
-      end
-    end
-  end
-
 
   private
 
@@ -75,11 +65,20 @@ class ProcessedItemController < ApplicationController
     puts "count: #{@processed_items.count}"
   end
 
+  # Users can hit the show route via /id or /etag/name/bag_date.
+  # We have to find the item either way.
   def set_item
     @institution = current_user.institution
-    # Parse date explicitly, or ActiveRecord will not find records when date format string varies.
-    bag_date = Time.parse(params[:bag_date])
-    @processed_item = ProcessedItem.where(etag: params[:etag], name: params[:name], bag_date: bag_date).first
-    params[:id] = @processed_item.id if @processed_item
+    if params[:id].blank? == false
+      @processedItem = ProcessedItem.find(params[:id])
+    else
+      # Parse date explicitly, or ActiveRecord will not find records
+      # when date format string varies.
+      bag_date = Time.parse(params[:bag_date])
+      @processed_item = ProcessedItem.where(etag: params[:etag],
+                                            name: params[:name],
+                                            bag_date: bag_date).first
+      params[:id] = @processed_item.id if @processed_item
+    end
   end
 end
