@@ -22,3 +22,7 @@
   -o-user-select: none;
   user-select: none;
 }
+
+tr.Failed { background-color: #f2dede; }
+tr.Succeeded { background-color: #dff0d8; }
+td.Processing { text-style: italic; }

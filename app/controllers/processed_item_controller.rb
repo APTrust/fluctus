@@ -56,9 +56,8 @@ class ProcessedItemController < ApplicationController
 
   def set_items
     @institution = current_user.institution
-    institution_bucket = PID_MAP[@institution.pid]
-    puts "BUCKET: #{institution_bucket}"
-    @processed_items = ProcessedItem.where(institution: institution_bucket)
+    institution_bucket = "aptrust.receiving."+ PID_MAP[@institution.name]
+    @processed_items = ProcessedItem.where(bucket: institution_bucket)
     if(@institution.name == "APTrust")
       @processed_items = ProcessedItem.all()
     end
@@ -67,11 +66,20 @@ class ProcessedItemController < ApplicationController
     @items = @processed_items.page(params[:page]).per(10)
   end
 
+  # Users can hit the show route via /id or /etag/name/bag_date.
+  # We have to find the item either way.
   def set_item
     @institution = current_user.institution
-    # Parse date explicitly, or ActiveRecord will not find records when date format string varies.
-    bag_date = Time.parse(params[:bag_date])
-    @processed_item = ProcessedItem.where(etag: params[:etag], name: params[:name], bag_date: bag_date).first
-    params[:id] = @processed_item.id if @processed_item
+    if params[:id].blank? == false
+      @processedItem = ProcessedItem.find(params[:id])
+    else
+      # Parse date explicitly, or ActiveRecord will not find records
+      # when date format string varies.
+      bag_date = Time.parse(params[:bag_date])
+      @processed_item = ProcessedItem.where(etag: params[:etag],
+                                            name: params[:name],
+                                            bag_date: bag_date).first
+      params[:id] = @processed_item.id if @processed_item
+    end
   end
 end
