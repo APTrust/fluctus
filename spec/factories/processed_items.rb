@@ -7,12 +7,12 @@ FactoryGirl.define do
     bag_date { Faker::Number.number(8) }
     user { Faker::Name.name }
     institution { FactoryGirl.create(:institution).pid }
-    bucket { "#{institution}/#{etag}" }
+    bucket { "aptrust.receiving.#{institution}" }
     date { Faker::Number.number(4) }
     note { Faker::Lorem.sentence }
     action { Faker::Lorem.word }
     stage { Faker::Lorem.word }
-    status { ["success", "failure"].sample }
+    status { ["Succeeded", "Failed", "Processing"].sample }
     outcome { Faker::Lorem.sentence }
   end
 end

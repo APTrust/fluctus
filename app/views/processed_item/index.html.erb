@@ -1,13 +1,13 @@
 <div id="content" class="col-md-10">
-  <ol class="breadcrumb">
-    <li><a href="#"><%= link_to current_user.institution.name, current_user.institution %></a></li>
-  </ol>
 
   <section class="page-header">
     <h2>Processed Items</h2>
   </section>
 
   <section class="queue">
+    <div class="paging">
+      <%= paginate @items %>
+    </div>
     <table class="table">
       <thead>
       <tr>
@@ -26,7 +26,7 @@
       </tr>
       </thead>
       <tbody>
-      <% @processed_items.each do |item| %>
+      <% @items.each do |item| %>
           <tr>
             <td><%= item.name %></td>
             <td><%= item.etag %></td>

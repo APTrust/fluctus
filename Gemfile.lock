@@ -373,6 +373,7 @@ DEPENDENCIES
   jbuilder (~> 1.2)
   jettywrapper
   jquery-rails
+  kaminari
   meta_request
   order_up (= 0.0.1)
   pg

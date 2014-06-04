@@ -13,9 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20140530135301) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
     t.string   "document_id"
@@ -42,17 +39,14 @@ ActiveRecord::Schema.define(version: 20140530135301) do
     t.datetime "date"
   end
 
-  add_index "processed_items", ["action"], name: "index_processed_items_on_action", using: :btree
-  add_index "processed_items", ["etag", "name"], name: "index_processed_items_on_etag_and_name", using: :btree
-  add_index "processed_items", ["institution"], name: "index_processed_items_on_institution", using: :btree
-  add_index "processed_items", ["stage"], name: "index_processed_items_on_stage", using: :btree
-  add_index "processed_items", ["status"], name: "index_processed_items_on_status", using: :btree
+  add_index "processed_items", ["action"], name: "index_processed_items_on_action"
+  add_index "processed_items", ["etag", "name"], name: "index_processed_items_on_etag_and_name"
+  add_index "processed_items", ["institution"], name: "index_processed_items_on_institution"
+  add_index "processed_items", ["stage"], name: "index_processed_items_on_stage"
+  add_index "processed_items", ["status"], name: "index_processed_items_on_status"
 
-  create_table "processing_queues", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "table"
-  end
+# Could not dump table "processing_queues" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
 
   create_table "roles", force: true do |t|
     t.string "name"
@@ -63,8 +57,8 @@ ActiveRecord::Schema.define(version: 20140530135301) do
     t.integer "user_id"
   end
 
-  add_index "roles_users", ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", using: :btree
-  add_index "roles_users", ["user_id", "role_id"], name: "index_roles_users_on_user_id_and_role_id", using: :btree
+  add_index "roles_users", ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id"
+  add_index "roles_users", ["user_id", "role_id"], name: "index_roles_users_on_user_id_and_role_id"
 
   create_table "searches", force: true do |t|
     t.text     "query_params"
@@ -74,7 +68,7 @@ ActiveRecord::Schema.define(version: 20140530135301) do
     t.string   "user_type"
   end
 
-  add_index "searches", ["user_id"], name: "index_searches_on_user_id", using: :btree
+  add_index "searches", ["user_id"], name: "index_searches_on_user_id"
 
   create_table "usage_samples", force: true do |t|
     t.string   "institution_id"
@@ -102,7 +96,7 @@ ActiveRecord::Schema.define(version: 20140530135301) do
     t.text     "encrypted_api_secret_key"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", unique: true
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
 
 end

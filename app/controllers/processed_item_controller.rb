@@ -64,6 +64,7 @@ class ProcessedItemController < ApplicationController
     end
     params[:id] = @institution.id
     puts "count: #{@processed_items.count}"
+    @items = @processed_items.page(params[:page]).per(10)
   end
 
   def set_item
