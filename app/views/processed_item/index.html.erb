@@ -13,6 +13,7 @@
       <tr>
         <th>Name</th>
         <th>Etag</th>
+        <th>Institution</th>
         <th>Processing Date</th>
         <th>Action</th>
         <th>Stage</th>
@@ -24,6 +25,7 @@
           <tr class="<%= item.status %>">
             <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
             <td><%= item.etag %></td>
+            <td><%= item.institution %></td>
             <td><%= item.date %></td>
             <td><%= item.action %></td>
             <td><%= item.stage %></td>
