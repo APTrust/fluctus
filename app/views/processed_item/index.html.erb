@@ -3,11 +3,45 @@
   <section class="page-header">
     <h2>Processed Items</h2>
   </section>
-
-  <section class="queue">
-    <div class="paging">
-      <%= paginate @items %>
+  <div id="facets" class="facets sidenav">
+    <h3> Filter By: </h3>
+    <div id="facet-panel-collapse" class="collapse panel-group">
+      <div class="filter"><span>
+        <h4>Status</h4>
+      </span>
+      <div id="status">
+        <ul>
+          <% @statuses.each do |status| %>
+              <li><a href="<%= processed_items_path(status: status) %>"><%= status %></a></li>
+          <% end %>
+        </ul>
+      </div></div>
+      <div class="filter"><span>
+        <h4>Stage</h4>
+      </span>
+      <div id="stage">
+        <ul>
+          <% @stages.each do |stage| %>
+              <li><a href="<%= processed_items_path(stage: stage) %>"><%= stage %></a></li>
+          <% end %>
+        </ul>
+      </div></div>
+      <div class="filter"><span>
+        <h4>Action</h4>
+      </span>
+      <div id="action">
+        <ul>
+          <% @actions.each do |action| %>
+              <li><a href="<%= processed_items_path(actions: action) %>"><%= action %></a></li>
+          <% end %>
+        </ul>
+      </div></div>
     </div>
+    <span id="remove">
+        <a class="btn btn-normal" href="<%= processed_items_path %>">Remove Filters</a>
+      </span>
+  </div>
+  <section class="queue">
     <table class="table">
       <thead>
       <tr>
@@ -34,5 +68,8 @@
       <% end %>
       </tbody>
     </table>
+    <div class="paging">
+      <%= paginate @items %>
+    </div>
   </section>
 </div>

@@ -2,6 +2,7 @@ class ProcessedItemController < ApplicationController
   respond_to :html, :json
   inherit_resources
   load "config/pid_map.rb"
+  load "processed_item_helper.rb"
   before_filter :authenticate_user!
   before_filter :set_items, only: :index
   before_filter :set_item, only: :show
@@ -46,6 +47,16 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def set_filter_values
+    @statuses = Array.new
+    @stages = Array.new
+    @actions = Array.new
+    @processed_items.each do |item|
+      @statuses.push(item.status) if !@statuses.include? item.status
+      @stages.push(item.stage) if !@stages.include? item.stage
+      @actions.push(item.action) if !@actions.include? item.action
+    end
+  end
 
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
@@ -61,9 +72,13 @@ class ProcessedItemController < ApplicationController
     if(@institution.name == "APTrust")
       @processed_items = ProcessedItem.all()
     end
+    @filtered_items = @processed_items
+    @filtered_items = @processed_items.where(status: params[:status]) if params[:status].present?
+    @filtered_items = @processed_items.where(stage: params[:stage]) if params[:stage].present?
+    @filtered_items = @processed_items.where(action: params[:actions]) if params[:actions].present?
     params[:id] = @institution.id
-    puts "count: #{@processed_items.count}"
-    @items = @processed_items.page(params[:page]).per(10)
+    @items = @filtered_items.page(params[:page]).per(10)
+    set_filter_values
   end
 
   # Users can hit the show route via /id or /etag/name/bag_date.

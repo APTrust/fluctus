@@ -26,3 +26,24 @@
 tr.Failed { background-color: #f2dede; }
 tr.Succeeded { background-color: #dff0d8; }
 td.Processing { text-style: italic; }
+
+.filter {
+  display: inline;
+  float: left;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+ #remove {
+   display: block;
+   float: none;
+ }
+
+ ul {
+   list-style-type: none;
+   padding: 5px;
+ }
+
+ .selected {
+
+ }
+
