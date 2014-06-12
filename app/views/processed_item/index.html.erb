@@ -7,32 +7,47 @@
     <h3> Filter By: </h3>
     <div id="facet-panel-collapse" class="collapse panel-group">
       <div class="filter"><span>
-        <h4>Status</h4>
+        <h4 id="status_title" class="btn btn-normal" onclick="statusToggle()">Status</h4>
       </span>
       <div id="status">
         <ul>
           <% @statuses.each do |status| %>
-              <li><a href="<%= processed_items_path(status: status) %>"><%= status %></a></li>
+              <% if status == @selected %>
+                  <% class_variable = "selected" %>
+              <% else %>
+                  <% class_variable = "" %>
+              <% end %>
+              <li><a href="<%= processed_items_path(status: status) %>" class="<%= class_variable %> filter"><%= status %></a></li>
           <% end %>
         </ul>
       </div></div>
       <div class="filter"><span>
-        <h4>Stage</h4>
+        <h4 id="stage_title" class="btn btn-normal" onclick="stageToggle()">Stage</h4>
       </span>
       <div id="stage">
         <ul>
           <% @stages.each do |stage| %>
-              <li><a href="<%= processed_items_path(stage: stage) %>"><%= stage %></a></li>
+              <% if stage == @selected %>
+                  <% class_variable = "selected" %>
+              <% else %>
+                  <% class_variable = "not" %>
+              <% end %>
+              <li><a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a></li>
           <% end %>
         </ul>
       </div></div>
       <div class="filter"><span>
-        <h4>Action</h4>
+        <h4 id="action_title" class="btn btn-normal" onclick="actionToggle()">Action</h4>
       </span>
       <div id="action">
         <ul>
           <% @actions.each do |action| %>
-              <li><a href="<%= processed_items_path(actions: action) %>"><%= action %></a></li>
+              <% if action == @selected %>
+                  <% class_variable = "selected" %>
+              <% else %>
+                  <% class_variable = "" %>
+              <% end %>
+              <li><a href="<%= processed_items_path(actions: action) %>" class="<%= class_variable %> filter"><%= action %></a></li>
           <% end %>
         </ul>
       </div></div>
@@ -72,4 +87,19 @@
       <%= paginate @items %>
     </div>
   </section>
+
+  <script>
+    function statusToggle () {
+        document.getElementById("status").toggle();
+    }
+
+    function stageToggle () {
+        document.getElementById("stage").toggle();
+    }
+
+    function actionToggle () {
+        document.getElementById("action").toggle();
+    }
+
+  </script>
 </div>

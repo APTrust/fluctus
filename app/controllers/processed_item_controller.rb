@@ -73,9 +73,18 @@ class ProcessedItemController < ApplicationController
       @processed_items = ProcessedItem.all()
     end
     @filtered_items = @processed_items
-    @filtered_items = @processed_items.where(status: params[:status]) if params[:status].present?
-    @filtered_items = @processed_items.where(stage: params[:stage]) if params[:stage].present?
-    @filtered_items = @processed_items.where(action: params[:actions]) if params[:actions].present?
+    if params[:status].present?
+      @filtered_items = @processed_items.where(status: params[:status])
+      @selected = params[:status]
+    end
+    if params[:stage].present?
+      @filtered_items = @processed_items.where(stage: params[:stage])
+      @selected = params[:stage]
+    end
+    if params[:actions].present?
+      @filtered_items = @processed_items.where(action: params[:actions])
+      @selected = params[:actions]
+    end
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
     set_filter_values

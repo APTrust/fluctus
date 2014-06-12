@@ -44,6 +44,17 @@ td.Processing { text-style: italic; }
  }
 
  .selected {
+   background-color: #dddddd;
+   border-color: #000000;
+   border: solid;
+   border-width: 1px;
+ }
+
+ .filter {
+   padding: 5px;
+ }
+
+ #status_title, #stage_title, #action_title {
 
  }
 
