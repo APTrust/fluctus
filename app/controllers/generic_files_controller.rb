@@ -43,7 +43,7 @@ class GenericFilesController < ApplicationController
   protected
 
   def filter_parameters
-    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :size, :created, :modified, :format, checksum_attributes: [:digest, :algorithm, :datetime])
+    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created, :modified, :format, checksum_attributes: [:digest, :algorithm, :datetime])
   end
 
   def resource

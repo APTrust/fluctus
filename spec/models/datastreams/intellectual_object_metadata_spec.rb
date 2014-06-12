@@ -35,11 +35,11 @@ describe IntellectualObjectMetadata do
     @ds.identifier.should == [exp]
   end
 
-  it 'should properly set rights' do
-    @ds.rights.should_not be_empty
+  it 'should properly set acccess' do
+    @ds.access.should_not be_empty
     exp = ['consortial', 'institution', 'restricted'].sample
-    @ds.rights = exp
-    @ds.rights.should == [exp]
+    @ds.access = exp
+    @ds.access.should == [exp]
   end
 end
 

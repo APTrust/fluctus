@@ -17,6 +17,12 @@ describe GenericFileMetadata do
     subject.uri.should == [uri]
   end
 
+  it 'should set an identifier' do
+    ident = "test.edu/12345678/data/filename.xml"
+    subject.identifier = ident
+    subject.identifier.should == [ident]
+  end
+
   it 'should set size attributes' do
     sz = rand(2000...50000000000)
     subject.size = sz

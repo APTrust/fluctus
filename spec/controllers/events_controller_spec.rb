@@ -2,12 +2,12 @@ require 'spec_helper'
 
 describe EventsController do
 
-  let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution, rights: 'institution') }
+  let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution, access: 'institution') }
   let(:file) { FactoryGirl.create(:generic_file, intellectual_object: object) }
   let(:event_attrs) { FactoryGirl.attributes_for(:premis_event_fixity_generation) }
 
   # An object and a file from a different institution:
-  let(:someone_elses_object) { FactoryGirl.create(:intellectual_object, rights: 'institution') }
+  let(:someone_elses_object) { FactoryGirl.create(:intellectual_object, access: 'institution') }
   let(:someone_elses_file) { FactoryGirl.create(:generic_file, intellectual_object: someone_elses_object) }
 
 

@@ -9,7 +9,7 @@ module Aptrust
         institution_field = solr_name('institution_name', :stored_sortable)
         identifier_field =  solr_name('desc_metadata__identifier', :stored_searchable)
         description_field = solr_name('desc_metadata__description', :stored_searchable)
-        rights_field = solr_name('desc_metadata__rights', :facetable)
+        access_field = solr_name('desc_metadata__access', :facetable)
         format_field = solr_name('format', :facetable)
         event_type_field = solr_name('event_type', :symbol)
         event_outcome_field = solr_name('event_outcome', :symbol)
@@ -29,7 +29,7 @@ module Aptrust
         config.show.display_type_field = 'has_model_ssim'
 
         config.add_facet_field institution_field, sort: 'index', label: "Institution"
-        config.add_facet_field rights_field, sort: 'index', label: "Rights"
+        config.add_facet_field access_field, sort: 'index', label: "Access"
         config.add_facet_field format_field, sort: 'index', label: "Format"
         config.add_facet_field event_type_field, sort: 'index', label: "Event Type"
         config.add_facet_field event_outcome_field, sort: 'index', label: "Event Outcome"

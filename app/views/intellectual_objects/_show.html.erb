@@ -13,12 +13,10 @@
     <dl class="dl-horizontal dl-invert">
       <dt>Institution</dt>
       <dd><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %> [<%= @intellectual_object.institution.brief_name %>]</dd>
-      <dt>Rights</dt>
-      <dd><%= @intellectual_object.rights %></dd>
+      <dt>Access</dt>
+      <dd><%= @intellectual_object.access %></dd>
       <dt>Identifier</dt>
-      <% @intellectual_object.identifier.each do |ident| %>
-          <dd><%= ident %></dd>
-      <% end %>
+      <dd><%= @intellectual_object.identifier %></dd>
       <dt> Last Modified </dt>
       <dd> <%= @intellectual_object.modified_date %> </dd>
     </dl>

@@ -47,7 +47,7 @@ namespace :bagman do
   # JSON record, and each record contains info about a single
   # intellectual object.
   def create_intellectual_object(data, institutions)
-    title, rights, description = get_title_rights_and_desc(data)
+    title, access, description = get_title_access_and_desc(data)
     inst_name = data['S3File']['BucketName'].sub('aptrust.receiving.', '')
     bag_name = data['S3File']['Key']['Key'].sub(/\.tar$/, '')
     #identifier = "#{inst_name}.#{bag_name}"
@@ -57,7 +57,7 @@ namespace :bagman do
     int_obj = IntellectualObject.new(institution: institution,
                                      title: title,
                                      description: description,
-                                     rights: rights,
+                                     access: access,
                                      identifier: identifier)
     add_generic_files(data, int_obj)
     int_obj
@@ -136,16 +136,16 @@ namespace :bagman do
   end
 
 
-  # Extracts the title, rights and description for the intellectual object
-  # from the Go data. If rights were not specified in the bag file, we
+  # Extracts the title, access and description for the intellectual object
+  # from the Go data. If access were not specified in the bag file, we
   # default to the most conservative: 'restricted'.
   #
   # Our bag specification says to use values Consortia, Institution, or
   # Restricted. Our Ruby spec says to use consortial, institution or
   # restricted. This method converts the bag values to the Ruby values.
   # It fixes the difference in case and converts "Consortia" to "consortial".
-  def get_title_rights_and_desc(data)
-    rights = 'restricted'
+  def get_title_access_and_desc(data)
+    access = 'restricted'
     title = nil
     description = nil
     data['BagReadResult']['Tags'].each do |tag|
@@ -153,19 +153,19 @@ namespace :bagman do
       if label == 'Title'
         title = tag['Value']
       elsif label == 'Rights'
-        _rights = tag['Value']
-        if !_rights.nil?
-          _rights = _rights.downcase
-          if _rights.start_with?('consortia')
-            _rights = 'consortial'
+        _access = tag['Value']
+        if !_access.nil?
+          _access = _access.downcase
+          if _access.start_with?('consortia')
+            _access = 'consortial'
           end
-          rights = _rights
+          access = _access
         end
       elsif label == 'Internal-Sender-Description'
         description = tag['Value']
       end
     end
-    return title, rights, description
+    return title, access, description
   end
 
 end

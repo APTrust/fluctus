@@ -9,21 +9,22 @@ class IntellectualObject < ActiveFedora::Base
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
 
-  has_attributes :title, :rights, datastream: 'descMetadata', multiple: false
-  has_attributes :description, :identifier, datastream: 'descMetadata', multiple: true
+  has_attributes :title, :access, datastream: 'descMetadata', multiple: false
+  has_attributes :description, :identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :alt_identifier, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title
   validates_presence_of :institution
   validates_presence_of :identifier
-  validates_presence_of :rights
-  validates_inclusion_of :rights, in: %w(consortial institution restricted), message: "#{:rights} is not a valid rights", if: :rights
+  validates_presence_of :access
+  validates_inclusion_of :access, in: %w(consortial institution restricted), message: "#{:access} is not a valid access", if: :access
 
   before_save :set_permissions
   before_destroy :check_for_associations
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor
   def terms_for_editing
-    [:title, :description, :rights]
+    [:title, :description, :access]
   end
 
   def to_solr(solr_doc=Hash.new)
@@ -47,7 +48,7 @@ class IntellectualObject < ActiveFedora::Base
       inst_pid = clean_for_solr(self.institution.pid)
       inst_admin_group = "Admin_At_#{inst_pid}"
       inst_user_group = "User_At_#{inst_pid}"
-      case rights
+      case access
         when 'consortial'
           self.read_groups = %w(institutional_admin institutional_user)
           self.edit_groups = [inst_admin_group]

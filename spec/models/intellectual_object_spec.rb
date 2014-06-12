@@ -9,7 +9,7 @@ describe IntellectualObject do
   it { should validate_presence_of(:title) }
   it { should validate_presence_of(:identifier) }
   it { should validate_presence_of(:institution) }
-  it { should validate_presence_of(:rights)}
+  it { should validate_presence_of(:access)}
 
   describe "An instance" do
     it 'should have a descMetadata datastream' do
@@ -25,30 +25,30 @@ describe IntellectualObject do
       subject.title.should == 'War and Peace'
     end
 
-    it 'should properly set rights' do
-      subject.rights = 'consortial'
-      subject.rights.should == 'consortial'
+    it 'should properly set access' do
+      subject.access = 'consortial'
+      subject.access.should == 'consortial'
     end
 
-    it 'must be one of the standard rights' do
-      subject.rights = 'error'
+    it 'must be one of the standard access' do
+      subject.access = 'error'
       subject.should_not be_valid
     end
 
     it 'should properly set a description' do
       exp = Faker::Lorem.paragraph
       subject.description = exp
-      subject.description.should == [exp]
+      subject.description.should == exp
     end
 
     it 'should properly set an identifier' do
       exp = SecureRandom.uuid
       subject.identifier = exp
-      subject.identifier.should == [exp]
+      subject.identifier.should == exp
     end
 
     it "should have terms_for_editing" do
-      expect(subject.terms_for_editing).to eq [:title, :description, :rights]
+      expect(subject.terms_for_editing).to eq [:title, :description, :access]
     end
 
     describe "#to_solr" do
@@ -65,9 +65,9 @@ describe IntellectualObject do
         solr_doc['desc_metadata__title_tesim'].should == [subject.title]
         # sortable
         solr_doc['desc_metadata__title_si'].should == subject.title
-        solr_doc['desc_metadata__identifier_tesim'].should == subject.identifier
-        solr_doc['desc_metadata__description_tesim'].should == subject.description
-        solr_doc['desc_metadata__rights_sim'].should == ["institution"] 
+        solr_doc['desc_metadata__identifier_tesim'].should == [subject.identifier]
+        solr_doc['desc_metadata__description_tesim'].should == [subject.description]
+        solr_doc['desc_metadata__access_sim'].should == ["institution"]
         solr_doc['format_sim'].should == ["application/xml"] 
       end
     end
