@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140530135301) do
+ActiveRecord::Schema.define(version: 20140605190009) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -27,19 +27,21 @@ ActiveRecord::Schema.define(version: 20140530135301) do
     t.datetime "updated_at"
     t.string   "name"
     t.string   "etag"
+    t.datetime "bag_date",    limit: 255
     t.string   "bucket"
     t.string   "user"
     t.string   "institution"
-    t.string   "note"
+    t.datetime "date",        limit: 255
+    t.text     "note",        limit: 255
     t.string   "action"
     t.string   "stage"
     t.string   "status"
-    t.string   "outcome"
-    t.datetime "bag_date"
-    t.datetime "date"
+    t.text     "outcome",     limit: 255
+    t.boolean  "retry",                   default: false, null: false
   end
 
   add_index "processed_items", ["action"], name: "index_processed_items_on_action"
+  add_index "processed_items", ["date"], name: "index_processed_items_on_date"
   add_index "processed_items", ["etag", "name"], name: "index_processed_items_on_etag_and_name"
   add_index "processed_items", ["institution"], name: "index_processed_items_on_institution"
   add_index "processed_items", ["stage"], name: "index_processed_items_on_stage"
