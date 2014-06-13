@@ -61,7 +61,7 @@ class ProcessedItemController < ApplicationController
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
-                                           :stage, :status, :outcome)
+                                           :stage, :status, :outcome, :retry)
   end
 
 
