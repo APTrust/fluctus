@@ -1,0 +1,108 @@
+<div id="content" class="col-md-10">
+
+  <section class="page-header">
+    <h2>Processed Items</h2>
+  </section>
+  <div id="facets" class="facets sidenav">
+    <h3> Filter By: </h3>
+    <div id="facet-panel-collapse" class="collapse panel-group">
+      <div class="filter"><span>
+        <h4 id="status_title" class="btn btn-normal" onclick="statusToggle()">Status</h4>
+      </span>
+      <div id="status" class="filter_div">
+        <ul>
+          <% @statuses.each do |status| %>
+              <% if status == @selected %>
+                  <% class_variable = "selected" %>
+              <% else %>
+                  <% class_variable = "" %>
+              <% end %>
+              <li><a href="<%= processed_items_path(status: status) %>" class="<%= class_variable %> filter"><%= status %></a></li>
+          <% end %>
+        </ul>
+      </div></div>
+      <div class="filter"><span>
+        <h4 id="stage_title" class="btn btn-normal" onclick="stageToggle()">Stage</h4>
+      </span>
+      <div id="stage" class="filter_div">
+        <ul>
+          <% @stages.each do |stage| %>
+              <% if stage == @selected %>
+                  <% class_variable = "selected" %>
+              <% else %>
+                  <% class_variable = "" %>
+              <% end %>
+              <li><a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a></li>
+          <% end %>
+        </ul>
+      </div></div>
+      <div class="filter"><span>
+        <h4 id="action_title" class="btn btn-normal" onclick="actionToggle()">Action</h4>
+      </span>
+      <div id="action" class="filter_div">
+        <ul>
+          <% @actions.each do |action| %>
+              <% if action == @selected %>
+                  <% class_variable = "selected" %>
+              <% else %>
+                  <% class_variable = "" %>
+              <% end %>
+              <li><a href="<%= processed_items_path(actions: action) %>" class="<%= class_variable %> filter"><%= action %></a></li>
+          <% end %>
+        </ul>
+      </div></div>
+    </div>
+    <script>
+      $(".filter_div").toggle()
+    </script>
+    <span id="remove">
+        <a class="btn btn-normal" href="<%= processed_items_path %>">Remove Filters</a>
+      </span>
+  </div>
+  <section class="queue">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Etag</th>
+        <th>Institution</th>
+        <th>Processing Date</th>
+        <th>Action</th>
+        <th>Stage</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @items.each do |item| %>
+          <tr class="<%= item.status %>">
+            <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
+            <td><%= item.etag %></td>
+            <td><%= item.institution %></td>
+            <td><%= item.date %></td>
+            <td><%= item.action %></td>
+            <td><%= item.stage %></td>
+            <td><%= item.status %></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <div class="paging">
+      <%= paginate @items %>
+    </div>
+  </section>
+
+  <script>
+    function statusToggle () {
+        $("#status").toggle();
+    }
+
+    function stageToggle () {
+        $("#stage").toggle();
+    }
+
+    function actionToggle () {
+        $("#action").toggle();
+    }
+
+  </script>
+</div>

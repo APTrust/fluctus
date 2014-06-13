@@ -29,6 +29,8 @@ group :doc do
   gem 'sdoc', require: false
 end
 
+gem 'kaminari'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
@@ -63,7 +65,7 @@ group :development do
   gem 'meta_request'
   # gem 'better_errors'
 end
-group :development, :test do
+group :development, :test, :demo do
   gem 'factory_girl_rails'
   gem 'faker', github: 'stympy/faker'
   gem "jettywrapper"

@@ -5,6 +5,7 @@
 #   git config --global core.excludesfile '~/.gitignore_global'
 
 .rvmrc
+.ruby-version
 
 # Ignore bundler config.
 /.bundle

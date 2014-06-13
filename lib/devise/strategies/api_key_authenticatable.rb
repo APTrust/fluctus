@@ -12,14 +12,15 @@ module Devise
       end
 
       def authenticate!
-        user = User.where(email: params[:user][:email]).first
-
+        api_user = request.headers["X-Fluctus-API-User"]
+        api_key = request.headers["X-Fluctus-API-Key"]
+        user = User.find_by_email(api_user)
         unless user
           fail! 
           return
         end
-
-        user.valid_api_key?(params[:user][:api_secret_key]) ? success!(user) : fail!
+        authenticated = api_key.nil? == false && user.valid_api_key?(api_key)
+        authenticated ? success!(user) : fail!
       end
 
     end

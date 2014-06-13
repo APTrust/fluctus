@@ -7,7 +7,9 @@ namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
+
     i = Institution.create!(name: "APTrust", identifier: "aptrust.org")
+    PID_MAP.store(i.pid, "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
@@ -35,7 +37,7 @@ namespace :fluctus do
   desc "Empty the database"
   task empty_db: :environment do
     if !Rails.env.production?
-      [User, GenericFile, IntellectualObject, Institution, Role].each(&:destroy_all)
+      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem].each(&:destroy_all)
     end
   end
 
@@ -63,6 +65,7 @@ namespace :fluctus do
 
   desc "Empty DB and add dummy information"
   task :populate_db, [:numInstitutions, :numIntObjects, :numGenFiles] => [:environment] do |t, args|
+    load "config/pid_map.rb"
     if Rails.env.production?
       puts "Do not run in production!"
       return
@@ -92,8 +95,9 @@ namespace :fluctus do
     puts "Creating #{numInsts} Institutions"
     numInsts.times.each do |count|
       puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
-      FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1],
+      inst = FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1],
                          identifier: partner_list[count].last)
+      PID_MAP.store(inst.pid, partner_list[count][2])
     end
 
     puts "Creating Users for each Institution"
@@ -134,10 +138,10 @@ namespace :fluctus do
           name = Faker::Lorem.characters(char_count=rand(5..15))
           attrs = {
               format: "#{format[:type]}",
-              uri: "file:///#{item.identifier.first}/data/#{name}#{count}.#{format[:ext]}",
-              identifier: "#{item.identifier.first}/data/#{name}#{count}.#{format[:ext]}",
+              uri: "file:///#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
+              identifier: "#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
           }
-          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri])
+          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri], identifier: attrs[:identifier])
 
           f.save!
 
@@ -149,6 +153,12 @@ namespace :fluctus do
         end
       end
 
+
+      #Add some processed item data here
+      numItems.times.each do |count|
+        puts "== Creating processed item #{count+1} of #{numItems} for #{institution.name}."
+        FactoryGirl.create(:processed_item, institution: institution.identifier)
+      end
     end
   end
 end
