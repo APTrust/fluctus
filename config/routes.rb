@@ -1,5 +1,5 @@
 Fluctus::Application.routes.draw do
-  resources :institutions do
+  resources :institutions, except: [:destroy] do
     resources :intellectual_objects, only: [:index, :create], path: 'objects'
     resources :events, only: [:index]
   end

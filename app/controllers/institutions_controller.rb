@@ -6,13 +6,6 @@ class InstitutionsController < ApplicationController
 
   include Blacklight::SolrHelper
   
-  # DELETE /institutions/1
-  # DELETE /institutions/1.json
-  def destroy
-    name = @institution.name
-    destroy!(notice: "#{name} was successfully destroyed.")
-  end
-  
   private
     # If an id is passed through params, use it.  Otherwise default to show a current user's institution.
     def set_institution
