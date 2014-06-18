@@ -82,6 +82,7 @@ namespace :fluctus do
         ["University of Notre Dame", "und", "nd.edu"], ["Stanford University", "stnfd", "stanford.edu"],
         ["University of Chicago", "uchi", "uchicago.edu"], ["University of Miami", "um", "miami.edu"],
         ["University of Connecticut", "uconn", "uconn.edu"], ["University of Cinnicnati", "ucin", "uc.edu"],
+        ["Pennsylvania State University", "psu", "psu.edu"],
     ]
 
     args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
