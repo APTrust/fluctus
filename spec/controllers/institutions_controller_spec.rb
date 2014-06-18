@@ -113,23 +113,10 @@ describe InstitutionsController do
     end
   end
 
-  describe "DELETE destroy" do
-    describe "with admin user" do
-      let(:institution) { FactoryGirl.create(:institution) }
-      before do
-        sign_in admin_user
-      end
-
-      it "should be successful" do
-        delete :destroy, id: institution
-        response.should redirect_to(institutions_url)
-      end
-    end
-  end
-
   describe "POST create" do
     describe "with admin user" do
       let (:attributes) { FactoryGirl.attributes_for(:institution) }
+
       before do
         sign_in admin_user
       end

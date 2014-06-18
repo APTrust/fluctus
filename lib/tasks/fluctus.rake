@@ -7,7 +7,8 @@ namespace :fluctus do
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
-    i = Institution.create!(name: "APTrust")
+
+    i = Institution.create!(name: "APTrust", identifier: "aptrust.org")
     PID_MAP.store(i.pid, "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
@@ -81,6 +82,7 @@ namespace :fluctus do
         ["University of Notre Dame", "und", "nd.edu"], ["Stanford University", "stnfd", "stanford.edu"],
         ["University of Chicago", "uchi", "uchicago.edu"], ["University of Miami", "um", "miami.edu"],
         ["University of Connecticut", "uconn", "uconn.edu"], ["University of Cinnicnati", "ucin", "uc.edu"],
+        ["Pennsylvania State University", "psu", "psu.edu"],
     ]
 
     args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
@@ -94,7 +96,8 @@ namespace :fluctus do
     puts "Creating #{numInsts} Institutions"
     numInsts.times.each do |count|
       puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
-      inst = FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1])
+      inst = FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1],
+                         identifier: partner_list[count].last)
       PID_MAP.store(inst.pid, partner_list[count][2])
     end
 
@@ -113,7 +116,7 @@ namespace :fluctus do
       numItems = args[:numIntObjects].to_i
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
-        ident = "#{institution.brief_name}.#{SecureRandom.hex(8)}"
+        ident = "#{institution.identifier}/#{SecureRandom.hex(8)}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
         item.add_event(FactoryGirl.attributes_for(:premis_event_ingest, detail: "Metadata recieved from bag.", outcome_detail: "", outcome_information: "Parsed as part of bag submission."))
         item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: "Assigned by Fedora."))
@@ -133,12 +136,13 @@ namespace :fluctus do
               {ext: "wav", type: "audio/wav"},
               {ext: "pdf", type: "application/pdf"}
           ].sample
-
+          name = Faker::Lorem.characters(char_count=rand(5..15))
           attrs = {
               format: "#{format[:type]}",
-              uri: "file:///#{item.identifier.first}/data/#{Faker::Lorem.characters(char_count=rand(5..15))}#{count}.#{format[:ext]}",
+              uri: "file:///#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
+              identifier: "#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
           }
-          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri])
+          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri], identifier: attrs[:identifier])
 
           f.save!
 
@@ -154,7 +158,7 @@ namespace :fluctus do
       #Add some processed item data here
       numItems.times.each do |count|
         puts "== Creating processed item #{count+1} of #{numItems} for #{institution.name}."
-        FactoryGirl.create(:processed_item, institution: PID_MAP[institution.pid])
+        FactoryGirl.create(:processed_item, institution: institution.identifier)
       end
     end
   end

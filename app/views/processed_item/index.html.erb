@@ -9,7 +9,7 @@
       <div class="filter"><span>
         <h4 id="status_title" class="btn btn-normal" onclick="statusToggle()">Status</h4>
       </span>
-      <div id="status">
+      <div id="status" class="filter_div">
         <ul>
           <% @statuses.each do |status| %>
               <% if status == @selected %>
@@ -24,13 +24,13 @@
       <div class="filter"><span>
         <h4 id="stage_title" class="btn btn-normal" onclick="stageToggle()">Stage</h4>
       </span>
-      <div id="stage">
+      <div id="stage" class="filter_div">
         <ul>
           <% @stages.each do |stage| %>
               <% if stage == @selected %>
                   <% class_variable = "selected" %>
               <% else %>
-                  <% class_variable = "not" %>
+                  <% class_variable = "" %>
               <% end %>
               <li><a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a></li>
           <% end %>
@@ -39,7 +39,7 @@
       <div class="filter"><span>
         <h4 id="action_title" class="btn btn-normal" onclick="actionToggle()">Action</h4>
       </span>
-      <div id="action">
+      <div id="action" class="filter_div">
         <ul>
           <% @actions.each do |action| %>
               <% if action == @selected %>
@@ -52,6 +52,9 @@
         </ul>
       </div></div>
     </div>
+    <script>
+      $(".filter_div").toggle()
+    </script>
     <span id="remove">
         <a class="btn btn-normal" href="<%= processed_items_path %>">Remove Filters</a>
       </span>
@@ -90,15 +93,15 @@
 
   <script>
     function statusToggle () {
-        document.getElementById("status").toggle();
+        $("#status").toggle();
     }
 
     function stageToggle () {
-        document.getElementById("stage").toggle();
+        $("#stage").toggle();
     }
 
     function actionToggle () {
-        document.getElementById("action").toggle();
+        $("#action").toggle();
     }
 
   </script>

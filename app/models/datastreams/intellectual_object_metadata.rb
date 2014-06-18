@@ -6,10 +6,13 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
     map.description(in: RDF::DC) do |index|
       index.as :stored_searchable
     end
-    map.identifier(in: RDF::DC) do |index|
+    map.identifier(in: RDF::DC, to: 'relation') do |index|
       index.as :stored_searchable
     end
-    map.rights(in: RDF::DC) do |index|
+    map.alt_identifier(in: RDF::DC, to: 'identifier') do |index|
+      index.as :stored_searchable
+    end
+    map.access(in: RDF::DC, to: 'rights') do |index|
       index.as :facetable
     end
   end

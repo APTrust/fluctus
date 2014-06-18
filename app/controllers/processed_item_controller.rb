@@ -61,13 +61,13 @@ class ProcessedItemController < ApplicationController
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
-                                           :stage, :status, :outcome)
+                                           :stage, :status, :outcome, :retry)
   end
 
 
   def set_items
     @institution = current_user.institution
-    institution_bucket = "aptrust.receiving."+ PID_MAP[@institution.name]
+    institution_bucket = "aptrust.receiving."+ @institution.identifier
     @processed_items = ProcessedItem.where(bucket: institution_bucket)
     if(@institution.name == "APTrust")
       @processed_items = ProcessedItem.all()

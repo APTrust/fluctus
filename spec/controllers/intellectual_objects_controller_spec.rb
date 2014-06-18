@@ -206,18 +206,18 @@ describe IntellectualObjectsController do
       it "should show errors" do
         post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response.code).to eq '422' #Unprocessable Entity
-        expect(JSON.parse(response.body)).to eq({"identifier" => ["can't be blank"],"rights" => ["can't be blank"]})
+        expect(JSON.parse(response.body)).to eq({"identifier" => ["can't be blank"],"access" => ["can't be blank"]})
       end
 
       it "should update fields" do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', rights: 'restricted'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', access: 'restricted'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
       it "should use the institution parameter in the URL, not from the json" do
         expect {
-          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', rights: 'restricted'}, format: 'json'
+          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', access: 'restricted'}, format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Foo'
           expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid

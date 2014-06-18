@@ -8,7 +8,7 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :format, :created, :modified, datastream: 'techMetadata', multiple: false
+  has_attributes :uri, :size, :format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
   delegate :checksum_attributes=, :checksum, to: :techMetadata
 
   validates_presence_of :uri
@@ -17,6 +17,7 @@ class GenericFile < ActiveFedora::Base
   validates_presence_of :modified
   validates_presence_of :format
   validates_presence_of :checksum
+  validates_presence_of :identifier
 
   before_save :copy_permissions_from_intellectual_object
   after_save :update_parent_index

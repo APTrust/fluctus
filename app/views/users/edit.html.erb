@@ -10,9 +10,13 @@
       <%= f.input :email %>
       <%= f.input :phone_number %>
 
-      <%= f.input :institution_pid, collection: institutions_for_select, as: :select, label: "Institution" %>
+      <% if current_user.admin?  %>
+        <%= f.input :institution_pid, collection: institutions_for_select, as: :select, label: "Institution" %>
+      <% end %>
 
-      <%= f.association :roles, collection: roles_for_select, as: :radio_buttons, :checked => @user.role_id %>
+      <% if current_user.admin? || current_user.institutional_admin? %>
+        <%= f.association :roles, collection: roles_for_select, as: :radio_buttons, :checked => @user.role_id %>
+      <% end %>
 
     </div>
     <br>

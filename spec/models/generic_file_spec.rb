@@ -26,6 +26,7 @@ describe GenericFile do
   it { should validate_presence_of(:created) }
   it { should validate_presence_of(:modified) }
   it { should validate_presence_of(:format) }
+  it { should validate_presence_of(:identifier)}
   it "should validate presence of checksum" do 
     expect(subject.valid?).to be_false
     expect(subject.errors[:checksum]).to eq ["can't be blank"]

@@ -28,6 +28,7 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
     map.created(in: FileVocabulary)
     map.modified(in: FileVocabulary)
     map.checksum(in: FileVocabulary, class_name: "Checksum")
+    map.identifier(in: RDF::DC) { |index| index.as :symbol, :stored_searchable }
   end
 
   accepts_nested_attributes_for :checksum
