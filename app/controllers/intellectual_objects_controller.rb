@@ -64,14 +64,11 @@ class IntellectualObjectsController < ApplicationController
 
   # Override Fedora's default JSON serialization for our API
   def object_as_json
-    {
-        pid: resource.pid,
-        institution_id: resource.institution_id,
-        title: resource.title,
-        description: resource.description,
-        access: resource.access,
-        alt_identifier: resource.alt_identifier,
-    }
+    if params[:include_all]
+      @intellectual_object.serializable_hash(include: :generic_files)
+    else
+      @intellectual_object.serializable_hash()
+    end
   end
 
   def intellectual_object_params

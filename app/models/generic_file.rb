@@ -40,7 +40,47 @@ class GenericFile < ActiveFedora::Base
     OrderUp.push(DeleteGenericFileJob.new(id))
   end
 
-  private 
+  # This is for serializing JSON in the API
+  def serializable_hash(options={})
+    {
+      uri: uri,
+      size: size,
+      created: created,
+      modified: modified,
+      format: format,
+      checksum_attributes: serialize_checksums,
+      identifier: identifier,
+      premisEvents: serialize_events,
+    }
+  end
+
+  def serialize_checksums
+    checksum.map do |cs|
+      {
+        algorithm: cs.algorithm.first,
+        digest: cs.digest.first,
+        datetime: cs.datetime.first,
+      }
+    end
+  end
+
+  def serialize_events
+    premisEvents.events.map do |event|
+      {
+        identifier: event.identifier.first,
+        type: event.type.first,
+        date_time: event.date_time.first,
+        detail: event.detail.first,
+        outcome: event.outcome.first,
+        outcome_detail: event.outcome_detail.first,
+        object: event.object.first,
+        agent: event.agent.first,
+        outcome_information: event.outcome_information.first,
+      }
+    end
+  end
+
+  private
 
   def update_parent_index
     #TODO in order to improve performance, you can put this work in a background job
