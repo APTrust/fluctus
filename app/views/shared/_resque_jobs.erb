@@ -1,25 +1,23 @@
-<h4>Jobs Processing for <%= @institution.name %></h4>
+<h4>Most Recent Jobs for <%= @institution.name %></h4>
 <table class="table table-striped">
   <tr>
-    <th>Item</th>
+    <th>Name</th>
+    <th>Etag</th>
+    <th>Institution</th>
+    <th>Processing Date</th>
+    <th>Action</th>
+    <th>Stage</th>
     <th>Status</th>
-    <th>Processes</th>
-    <th>Started</th>
   </tr>
-  <% 10.times do %>
-      <tr>
-        <td>
-          <%= @institution.brief_name %>:<%= SecureRandom.uuid%>
-        </td>
-        <td class="text-success">
-          Running
-        </td>
-        <td>
-          APTrust::Jobs::Bag Processing
-        </td>
-        <td>
-          <%= time_ago_in_words(Time.now - rand(200..2500)) %> ago
-        </td>
+  <% @items.each do |item| %>
+      <tr class="<%= item.status %>">
+        <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
+        <td><%= item.etag %></td>
+        <td><%= item.institution %></td>
+        <td><%= item.date %></td>
+        <td><%= item.action %></td>
+        <td><%= item.stage %></td>
+        <td><%= item.status %></td>
       </tr>
   <% end %>
 </table>

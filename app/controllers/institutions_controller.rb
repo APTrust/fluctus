@@ -17,6 +17,7 @@ class InstitutionsController < ApplicationController
     # If an id is passed through params, use it.  Otherwise default to show a current user's institution.
     def set_institution
       @institution = params[:id].nil? ? current_user.institution : Institution.find(params[:id])
+      set_recent_objects
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
@@ -24,4 +25,12 @@ class InstitutionsController < ApplicationController
       params[:action] == 'new' ? [] : [params.require(:institution).permit(:name)]
     end
 
+    def set_recent_objects
+      bucket = "aptrust.receiving"+ @institution.identifier
+      if(@institution.name == "APTrust")
+        @items = ProcessedItem.order("date").limit(10)
+      else
+        @items = ProcessedItem.where(bucket: bucket).order("date").limit(10)
+      end
+    end
 end
