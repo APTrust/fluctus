@@ -19,7 +19,7 @@ class InstitutionsController < ApplicationController
     end
 
     def set_recent_objects
-      bucket = "aptrust.receiving"+ @institution.identifier
+      bucket = "aptrust.receiving."+ @institution.identifier
       if(@institution.name == "APTrust")
         @items = ProcessedItem.order("date").limit(10)
       else
