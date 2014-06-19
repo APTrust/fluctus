@@ -9,6 +9,7 @@
     <th>Stage</th>
     <th>Status</th>
   </tr>
+  <% if !@items.nil? %>
   <% @items.each do |item| %>
       <tr class="<%= item.status %>">
         <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
@@ -19,5 +20,6 @@
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
       </tr>
+  <% end %>
   <% end %>
 </table>
