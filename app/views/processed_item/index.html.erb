@@ -51,6 +51,23 @@
           <% end %>
         </ul>
       </div></div>
+     <% if current_user.admin? %>
+      <div class="filter"><span>
+        <h4 id="institution_title" class="btn btn-normal" onclick="institutionToggle()">Institution</h4>
+      </span>
+        <div id="institution" class="filter_div">
+          <ul>
+            <% @institutions.each do |inst| %>
+                <% if inst == @selected %>
+                    <% class_variable = "selected" %>
+                <% else %>
+                    <% class_variable = "" %>
+                <% end %>
+                <li><a href="<%= processed_items_path(institution: inst) %>" class="<%= class_variable %> filter"><%= inst %></a></li>
+            <% end %>
+          </ul>
+        </div></div>
+       <% end %>
     </div>
     <script>
       $(".filter_div").toggle()
@@ -102,6 +119,10 @@
 
     function actionToggle () {
         $("#action").toggle();
+    }
+
+    function institutionToggle () {
+        $("#institution").toggle();
     }
 
   </script>

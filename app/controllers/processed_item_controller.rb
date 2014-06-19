@@ -51,10 +51,12 @@ class ProcessedItemController < ApplicationController
     @statuses = Array.new
     @stages = Array.new
     @actions = Array.new
+    @institutions = Array.new
     @processed_items.each do |item|
       @statuses.push(item.status) if !@statuses.include? item.status
       @stages.push(item.stage) if !@stages.include? item.stage
       @actions.push(item.action) if !@actions.include? item.action
+      @institutions.push(item.institution) if !@institutions.include? item.institution
     end
   end
 
@@ -84,6 +86,10 @@ class ProcessedItemController < ApplicationController
     if params[:actions].present?
       @filtered_items = @processed_items.where(action: params[:actions])
       @selected = params[:actions]
+    end
+    if params[:institution].present?
+      @filtered_items = @processed_items.where(institution: params[:institution])
+      @selected = params[:institution]
     end
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
