@@ -47,16 +47,20 @@ class GenericFile < ActiveFedora::Base
   # from Fedora are strings that are not in ISO8601
   # format, so we have to parse & reformat them.
   def serializable_hash(options={})
-    {
+    data = {
       uri: uri,
       size: size,
       created: Time.parse(created).iso8601,
       modified: Time.parse(modified).iso8601,
       format: format,
-      checksum_attributes: serialize_checksums,
       identifier: identifier,
-      premisEvents: serialize_events,
     }
+    puts options.inspect
+    if options.has_key?(:include)
+      data.merge!(checksum_attributes: serialize_checksums) if options[:include].include?(:checksum_attributes)
+      data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
+    end
+    data
   end
 
   def serialize_checksums
