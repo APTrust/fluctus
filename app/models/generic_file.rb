@@ -48,6 +48,7 @@ class GenericFile < ActiveFedora::Base
   # format, so we have to parse & reformat them.
   def serializable_hash(options={})
     data = {
+      id: id,
       uri: uri,
       size: size,
       created: Time.parse(created).iso8601,
