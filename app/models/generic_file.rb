@@ -40,13 +40,18 @@ class GenericFile < ActiveFedora::Base
     OrderUp.push(DeleteGenericFileJob.new(id))
   end
 
-  # This is for serializing JSON in the API
+  # This is for serializing JSON in the API.
+  # Be sure all datetimes are formatted as ISO8601,
+  # or some JSON parsers (like the golang parser)
+  # will choke on them. The datetimes we pull back
+  # from Fedora are strings that are not in ISO8601
+  # format, so we have to parse & reformat them.
   def serializable_hash(options={})
     {
       uri: uri,
       size: size,
-      created: created,
-      modified: modified,
+      created: Time.parse(created).iso8601,
+      modified: Time.parse(modified).iso8601,
       format: format,
       checksum_attributes: serialize_checksums,
       identifier: identifier,
@@ -59,7 +64,7 @@ class GenericFile < ActiveFedora::Base
       {
         algorithm: cs.algorithm.first,
         digest: cs.digest.first,
-        datetime: cs.datetime.first,
+        datetime: Time.parse(cs.datetime.first).iso8601,
       }
     end
   end
@@ -69,7 +74,7 @@ class GenericFile < ActiveFedora::Base
       {
         identifier: event.identifier.first,
         type: event.type.first,
-        date_time: event.date_time.first,
+        date_time: Time.parse(event.date_time.first).iso8601,
         detail: event.detail.first,
         outcome: event.outcome.first,
         outcome_detail: event.outcome_detail.first,
