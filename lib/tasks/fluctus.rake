@@ -156,8 +156,9 @@ namespace :fluctus do
 
 
       #Add some processed item data here
-      numItems.times.each do |count|
-        puts "== Creating processed item #{count+1} of #{numItems} for #{institution.name}."
+      procItems = 15
+      procItems.times.each do |count|
+        puts "== Creating processed item #{count+1} of #{procItems} for #{institution.name}."
         FactoryGirl.create(:processed_item, institution: institution.identifier)
       end
     end

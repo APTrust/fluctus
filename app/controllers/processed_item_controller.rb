@@ -48,15 +48,12 @@ class ProcessedItemController < ApplicationController
   end
 
   def set_filter_values
-    @statuses = Array.new
-    @stages = Array.new
-    @actions = Array.new
+    @statuses = ['Succeeded', 'Processing', 'Failed']
+    @stages = ['Fetch', 'Unpack', 'Validate', 'Store', 'Record']
+    @actions = ['Ingest', 'Fixity Check', 'Retrieval', 'Deletion']
     @institutions = Array.new
-    @processed_items.each do |item|
-      @statuses.push(item.status) if !@statuses.include? item.status
-      @stages.push(item.stage) if !@stages.include? item.stage
-      @actions.push(item.action) if !@actions.include? item.action
-      @institutions.push(item.institution) if !@institutions.include? item.institution
+    Institution.all.each do |inst|
+      @institutions.push(inst.identifier) unless inst.identifier == 'aptrust.org'
     end
   end
 
@@ -69,9 +66,9 @@ class ProcessedItemController < ApplicationController
 
   def set_items
     @institution = current_user.institution
-    institution_bucket = "aptrust.receiving."+ @institution.identifier
+    institution_bucket = 'aptrust.receiving.'+ @institution.identifier
     @processed_items = ProcessedItem.where(bucket: institution_bucket)
-    if(@institution.name == "APTrust")
+    if(@institution.name == 'APTrust')
       @processed_items = ProcessedItem.all()
     end
     @filtered_items = @processed_items
