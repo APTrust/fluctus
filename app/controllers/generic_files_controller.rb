@@ -1,6 +1,7 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
+  before_filter :load_intellectual_object, only: [:update]
   load_and_authorize_resource :intellectual_object, only: [:create, :update]
   load_and_authorize_resource through: :intellectual_object, only: [:create]
   load_and_authorize_resource except: [:create, :update]
@@ -27,7 +28,7 @@ class GenericFilesController < ApplicationController
 
   def update
     @generic_file = @intellectual_object.generic_files.where(uri: params[:id]).first
-    authorize! :update, resource 
+    authorize! :update, resource
     if resource.update(params[:generic_file])
       head :no_content
     else
@@ -54,6 +55,10 @@ class GenericFilesController < ApplicationController
 
   def resource
     @generic_file
+  end
+
+  def load_intellectual_object
+    @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
   end
 
   # Override Fedora's default JSON serialization for our API
