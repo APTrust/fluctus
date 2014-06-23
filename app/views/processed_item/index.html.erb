@@ -101,9 +101,9 @@
             <td><%= item.action %></td>
             <td><%= item.stage %></td>
             <td><%= item.status %></td>
-            <td><input type="checkbox" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction()"></td>
+            <td><input type="checkbox" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<% item.id %>)"></td>
             <td><% if item.status == "Failed" %>
-              <input type="checkbox" name="purge" value="purge" id="p_<%= item.id %>" onclick="purgeAction()">
+              <input type="checkbox" name="purge" value="purge" disabled=true id="p_<%= item.id %>" onclick="purgeAction()">
             <% end %></td>
           </tr>
       <% end %>
@@ -131,8 +131,9 @@
         $("#institution").toggle();
     }
 
-    function reviewAction () {
-
+    function reviewAction (id) {
+        purgeID = "p_"+id;
+        $("#"+purgeID).prop('disabled', false)
     }
 
     function purgeAction () {
