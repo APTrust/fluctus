@@ -87,6 +87,8 @@
         <th>Action</th>
         <th>Stage</th>
         <th>Status</th>
+        <th>Mark as Reviewed</th>
+        <th>Purge from S3</th>
       </tr>
       </thead>
       <tbody>
@@ -99,6 +101,10 @@
             <td><%= item.action %></td>
             <td><%= item.stage %></td>
             <td><%= item.status %></td>
+            <td><input type="checkbox" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction()"></td>
+            <td><% if item.status == "Failed" %>
+              <input type="checkbox" name="purge" value="purge" id="p_<%= item.id %>" onclick="purgeAction()">
+            <% end %></td>
           </tr>
       <% end %>
       </tbody>
@@ -123,6 +129,14 @@
 
     function institutionToggle () {
         $("#institution").toggle();
+    }
+
+    function reviewAction () {
+
+    }
+
+    function purgeAction () {
+
     }
 
   </script>
