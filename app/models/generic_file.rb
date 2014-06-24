@@ -56,7 +56,6 @@ class GenericFile < ActiveFedora::Base
       format: format,
       identifier: identifier,
     }
-    puts options.inspect
     if options.has_key?(:include)
       data.merge!(checksum_attributes: serialize_checksums) if options[:include].include?(:checksum_attributes)
       data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
@@ -76,17 +75,7 @@ class GenericFile < ActiveFedora::Base
 
   def serialize_events
     premisEvents.events.map do |event|
-      {
-        identifier: event.identifier.first,
-        type: event.type.first,
-        date_time: Time.parse(event.date_time.first).iso8601,
-        detail: event.detail.first,
-        outcome: event.outcome.first,
-        outcome_detail: event.outcome_detail.first,
-        object: event.object.first,
-        agent: event.agent.first,
-        outcome_information: event.outcome_information.first,
-      }
+      event.serializable_hash
     end
   end
 

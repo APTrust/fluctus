@@ -13,14 +13,29 @@ class EventsController < ApplicationController
   self.solr_search_params_logic += [:for_selected_file]
   self.solr_search_params_logic += [:sort_chronologically]
 
+  def index
+    respond_to do |format|
+      obj = @generic_file.nil? ? @intellectual_object : @generic_file
+      format.json { render json: obj.premisEvents.events.map { |event| event.serializable_hash } }
+      # TODO: Code review. Can't get the HTML rendering to work without super,
+      # but do I really want to call super within this block???
+      format.html { super }
+    end
+  end
+
   def create
     @event = @parent_object.add_event(params['event'])
-    if @parent_object.save
-      flash[:notice] = "Successfully created new event: #{@event.identifier}"
-    else
-      flash[:alert] = "Unable to create event for #{@parent_object.id} using input parameters: #{params['event']}"
+    respond_to do |format|
+      format.json { render json: @event.serializable_hash }
+      format.html {
+        if @parent_object.save
+          flash[:notice] = "Successfully created new event: #{@event.identifier}"
+        else
+          flash[:alert] = "Unable to create event for #{@parent_object.id} using input parameters: #{params['event']}"
+        end
+        redirect_to @parent_object
+      }
     end
-    redirect_to @parent_object
   end
 
 protected
@@ -74,6 +89,18 @@ protected
     end
 
     solr_parameters[:sort] = chron_sort
+  end
+
+  def event_params
+    params.require(:intellectual_object).permit(:eventIdentifier,
+                :eventType,
+                :eventOutcome,
+                :eventOutcomeDetail,
+                :eventOutcomeInformation,
+                :eventDateTime,
+                :eventDetail,
+                :linkingObject,
+                :linkingAgent)
   end
 
 end
