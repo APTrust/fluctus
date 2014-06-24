@@ -77,12 +77,6 @@ class GenericFilesController < ApplicationController
     @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
   end
 
-  # Remove checksum attributes if this is an update.
-  # Those should only be
-  def remove_checksum_attributes
-    params[:checksum_attributes].delete
-  end
-
   # Override Fedora's default JSON serialization for our API
   def object_as_json
     if params[:include_relations]
