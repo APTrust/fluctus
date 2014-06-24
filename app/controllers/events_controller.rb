@@ -26,7 +26,7 @@ class EventsController < ApplicationController
   def create
     @event = @parent_object.add_event(params['event'])
     respond_to do |format|
-      format.json { render json: @event.serializable_hash }
+      format.json { render json: @event.serializable_hash, status: :created }
       format.html {
         if @parent_object.save
           flash[:notice] = "Successfully created new event: #{@event.identifier}"
@@ -92,15 +92,16 @@ protected
   end
 
   def event_params
-    params.require(:intellectual_object).permit(:eventIdentifier,
-                :eventType,
-                :eventOutcome,
-                :eventOutcomeDetail,
-                :eventOutcomeInformation,
-                :eventDateTime,
-                :eventDetail,
-                :linkingObject,
-                :linkingAgent)
+    params.require(:intellectual_object).permit(
+                :identifier,
+                :type,
+                :outcome,
+                :outcome_detail,
+                :outcome_information,
+                :date_time,
+                :detail,
+                :object,
+                :agent)
   end
 
 end
