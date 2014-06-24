@@ -29,7 +29,7 @@ class GenericFilesController < ApplicationController
   def update
     @generic_file = @intellectual_object.generic_files.where(uri: params[:id]).first
     authorize! :update, resource
-    if resource.update(params[:generic_file])
+    if resource.update(params_for_update)
       head :no_content
     else
       render json: resource.errors, status: :unprocessable_entity
@@ -50,7 +50,23 @@ class GenericFilesController < ApplicationController
   protected
 
   def filter_parameters
-    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created, :modified, :format, checksum_attributes: [:digest, :algorithm, :datetime])
+    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
+                                                                   :modified, :format,
+                                                                   checksum_attributes: [:digest, :algorithm, :datetime])
+  end
+
+  # When updating a generic file, the client will likely send back
+  # copy of the GenericFile object that includes checksum attributes.
+  # If we don't filter those out, Hydra will simply append those
+  # checksums to the original checksums, and every time the GenericFile
+  # is updated, the number of checksums doubles. We really only want
+  # to save the checksums when the GenericFile is created. After that,
+  # we'll do fixity checks to make sure they haven't changed, and those
+  # checks will be recorded as PremisEvents.
+  # Fixes bug https://www.pivotaltracker.com/story/show/73796812
+  def params_for_update
+    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
+                                                                   :modified, :format)
   end
 
   def resource
@@ -59,6 +75,12 @@ class GenericFilesController < ApplicationController
 
   def load_intellectual_object
     @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
+  end
+
+  # Remove checksum attributes if this is an update.
+  # Those should only be
+  def remove_checksum_attributes
+    params[:checksum_attributes].delete
   end
 
   # Override Fedora's default JSON serialization for our API
