@@ -40,7 +40,46 @@ class GenericFile < ActiveFedora::Base
     OrderUp.push(DeleteGenericFileJob.new(id))
   end
 
-  private 
+  # This is for serializing JSON in the API.
+  # Be sure all datetimes are formatted as ISO8601,
+  # or some JSON parsers (like the golang parser)
+  # will choke on them. The datetimes we pull back
+  # from Fedora are strings that are not in ISO8601
+  # format, so we have to parse & reformat them.
+  def serializable_hash(options={})
+    data = {
+      id: id,
+      uri: uri,
+      size: size,
+      created: Time.parse(created).iso8601,
+      modified: Time.parse(modified).iso8601,
+      format: format,
+      identifier: identifier,
+    }
+    if options.has_key?(:include)
+      data.merge!(checksum_attributes: serialize_checksums) if options[:include].include?(:checksum_attributes)
+      data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
+    end
+    data
+  end
+
+  def serialize_checksums
+    checksum.map do |cs|
+      {
+        algorithm: cs.algorithm.first,
+        digest: cs.digest.first,
+        datetime: Time.parse(cs.datetime.first).iso8601,
+      }
+    end
+  end
+
+  def serialize_events
+    premisEvents.events.map do |event|
+      event.serializable_hash
+    end
+  end
+
+  private
 
   def update_parent_index
     #TODO in order to improve performance, you can put this work in a background job
