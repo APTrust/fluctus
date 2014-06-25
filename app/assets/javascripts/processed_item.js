@@ -1,14 +1,24 @@
-var statusElement = document.getElementById("status_title")
-statusElement.click(function() {
-    document.getElementById("status").toggle();
-})
+function statusToggle () {
+    $("#status").toggle();
+}
 
-var stageElement = document.getElementById("stage_title")
-stageElement.click(function() {
-    document.getElementById("stage").toggle();
-})
+function stageToggle () {
+    $("#stage").toggle();
+}
 
-var actionElement = document.getElementById("action_title")
-actionElement.click(function() {
-    document.getElementById("action").toggle();
-})
+function actionToggle () {
+    $("#action").toggle();
+}
+
+function institutionToggle () {
+    $("#institution").toggle();
+}
+
+function reviewAction (id) {
+    purgeID = "p_"+id;
+    $("#"+purgeID).prop('disabled', false)
+}
+
+function purgeAction () {
+
+}

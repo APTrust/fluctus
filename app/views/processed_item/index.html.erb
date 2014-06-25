@@ -101,7 +101,7 @@
             <td><%= item.action %></td>
             <td><%= item.stage %></td>
             <td><%= item.status %></td>
-            <td><input type="checkbox" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<% item.id %>)"></td>
+            <td><input type="checkbox" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)"></td>
             <td><% if item.status == "Failed" %>
               <input type="checkbox" name="purge" value="purge" disabled=true id="p_<%= item.id %>" onclick="purgeAction()">
             <% end %></td>
@@ -113,32 +113,5 @@
       <%= paginate @items %>
     </div>
   </section>
-
-  <script>
-    function statusToggle () {
-        $("#status").toggle();
-    }
-
-    function stageToggle () {
-        $("#stage").toggle();
-    }
-
-    function actionToggle () {
-        $("#action").toggle();
-    }
-
-    function institutionToggle () {
-        $("#institution").toggle();
-    }
-
-    function reviewAction (id) {
-        purgeID = "p_"+id;
-        $("#"+purgeID).prop('disabled', false)
-    }
-
-    function purgeAction () {
-
-    }
-
-  </script>
+  <script src="app/assets/javascript/processed_item.js"></script>
 </div>
