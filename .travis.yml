@@ -12,6 +12,7 @@ notifications:
     recipients:
       - "scott.turnbull@aptrust.org"
       - "kelly.croswell@aptrust.org"
+      - "andrew.diamond@aptrust.org"
     on_success: "change"
     on_failure: "always"
 branches:
