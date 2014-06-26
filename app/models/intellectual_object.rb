@@ -9,8 +9,7 @@ class IntellectualObject < ActiveFedora::Base
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
 
-  has_attributes :title, :access, datastream: 'descMetadata', multiple: false
-  has_attributes :description, :identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :title, :access, :description, :identifier, datastream: 'descMetadata', multiple: false
   has_attributes :alt_identifier, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title

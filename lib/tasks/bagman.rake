@@ -85,12 +85,12 @@ namespace :bagman do
                            size: gf['Size'],
                            created: gf['Created'].gsub(' ', ''),
                            modified: gf['Modified'].gsub(' ', ''))
-    file.techMetadata.checksum.build({
+    file.techMetadata.md5.build({
                      algorithm: 'md5',
                      datetime: Time.now.to_s,
                      digest: gf['Md5']
                  })
-    file.techMetadata.checksum.build({
+    file.techMetadata.sha256.build({
                      algorithm: 'sha256',
                      datetime: Time.now.to_s,
                      digest: gf['Sha256']

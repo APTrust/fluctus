@@ -25,9 +25,13 @@
       <dd><%= @generic_file.created %></dd>
       <dt>Modified</dt>
       <dd><%= @generic_file.modified %></dd>
-      <dt>Checksum</dt>
-      <% @generic_file.checksum.each do |checksum| %>
+      <dt>MD5</dt>
+      <% @generic_file.md5.each do |checksum| %>
       <dd><%= checksum.algorithm.first %>:<%= checksum.digest.first %> generated <%= time_ago_in_words(checksum.datetime.first) %> ago</dd>
+      <% end %>
+      <dt>SHA256</dt>
+      <% @generic_file.sha256.each do |checksum| %>
+          <dd><%= checksum.algorithm.first %>:<%= checksum.digest.first %> generated <%= time_ago_in_words(checksum.datetime.first) %> ago</dd>
       <% end %>
     </dl>
   </section>

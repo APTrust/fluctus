@@ -11,6 +11,10 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
   property :Checksum
   property :checksum
   property :checksumValue
+  property :md5
+  property :Md5
+  property :sha256
+  property :Sha256
 
   property :File
 end
@@ -27,15 +31,29 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
     end
     map.created(in: FileVocabulary)
     map.modified(in: FileVocabulary)
-    map.checksum(in: FileVocabulary, class_name: "Checksum")
+    map.md5(in: FileVocabulary, class_name: "Md5")
+    map.sha256(in: FileVocabulary, class_name: "Sha256")
     map.identifier(in: RDF::DC) { |index| index.as :symbol, :stored_searchable }
   end
 
-  accepts_nested_attributes_for :checksum
-  class Checksum
+  accepts_nested_attributes_for :md5
+  class Md5
     include ActiveFedora::RdfObject
 
-    rdf_type FileVocabulary.Checksum
+    rdf_type FileVocabulary.Md5
+
+    map_predicates do |map|
+      map.algorithm(to: :Algorithm, in: WorldNetVocabulary)
+      map.datetime(to: :created, in: RDF::DC)
+      map.digest(to: :checksumValue, in: FileVocabulary)
+    end
+  end
+
+  accepts_nested_attributes_for :sha256
+  class Sha256
+    include ActiveFedora::RdfObject
+
+    rdf_type FileVocabulary.Sha256
 
     map_predicates do |map|
       map.algorithm(to: :Algorithm, in: WorldNetVocabulary)

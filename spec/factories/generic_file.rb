@@ -10,11 +10,16 @@ FactoryGirl.define do
     modified { "#{Time.now}" }
 
     after(:build) do  |generic_file|
-      generic_file.techMetadata.checksum.build({
+      generic_file.techMetadata.md5.build({
                      algorithm: 'md5',
                      datetime: Time.now.to_s,
                      digest: SecureRandom.hex
                  })
+      generic_file.techMetadata.sha256.build({
+                     algorithm: 'sha256',
+                     datetime: Time.now.to_s,
+                     digest: SecureRandom.hex
+                  })
     end
 
   end

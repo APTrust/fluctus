@@ -11,9 +11,16 @@ FactoryGirl.define do
     size { rand(20000..500000000) }
     created { "#{Time.now}" }
     modified { "#{Time.now}" }
-    checksum_attributes {
+    md5_attributes {
       [{
            algorithm: 'md5',
+           datetime: Time.now.to_s,
+           digest: SecureRandom.hex
+       }]
+    }
+    sha256_attributes {
+      [{
+           algorithm: 'sha256',
            datetime: Time.now.to_s,
            digest: SecureRandom.hex
        }]

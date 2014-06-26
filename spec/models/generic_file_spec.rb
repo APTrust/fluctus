@@ -27,13 +27,14 @@ describe GenericFile do
   it { should validate_presence_of(:modified) }
   it { should validate_presence_of(:format) }
   it { should validate_presence_of(:identifier)}
-  it "should validate presence of checksum" do 
+  it "should validate presence of a checksum" do
     expect(subject.valid?).to be_false
-    expect(subject.errors[:checksum]).to eq ["can't be blank"]
-    subject.checksum_attributes = [{digest: '1234'}]
+    expect(subject.errors[:md5]).to eq ["either this or the sha256 needs a value"]
+    expect(subject.errors[:sha256]).to eq ["either this or the md5 needs a value"]
+    subject.md5_attributes = [{digest: '1234'}]
     # other fields cause the object to not be valid. This forces recalculating errors
     expect(subject.valid?).to be_false
-    expect(subject.errors[:checksum]).to be_empty
+    expect(subject.errors[:md5]).to be_empty
   end
 
   describe "with an intellectual object" do
