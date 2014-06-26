@@ -37,7 +37,7 @@ describe IntellectualObjectMetadata do
 
   it 'should properly set acccess' do
     @ds.access.should_not be_empty
-    exp = ['consortial', 'institution', 'restricted'].sample
+    exp = ['consortia', 'institution', 'restricted'].sample
     @ds.access = exp
     @ds.access.should == [exp]
   end
