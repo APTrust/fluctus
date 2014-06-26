@@ -75,7 +75,11 @@ class GenericFilesController < ApplicationController
   end
 
   def load_intellectual_object
-    @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
+    if params[:intellectual_object_id]
+      @intellectual_object ||= IntellectualObject.find(params[:intellectual_object_id])
+    else
+      @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
+    end
   end
 
   # Override Fedora's default JSON serialization for our API
