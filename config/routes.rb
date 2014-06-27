@@ -33,6 +33,11 @@ Fluctus::Application.routes.draw do
   put 'itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
   #delete 'itemresults/:etag/:name', to: 'processed_item#destroy'
 
+  # This route is defined above, but this definition allows for a more
+  # liberal intellectual_object_id pattern.
+  post '/objects/:intellectual_object_id/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_id: /[^\/]*/
+
+
   Blacklight.add_routes(self)
 
   mount Hydra::RoleManagement::Engine => '/'

@@ -3,9 +3,18 @@ class InstitutionsController < ApplicationController
   load_and_authorize_resource
   before_filter :authenticate_user!
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
+  respond_to :json, :html
+
+  def index
+    respond_to do |format|
+      @institutions = collection
+      format.json { render json: collection.map { |inst| inst.serializable_hash } }
+      format.html { render "index" }
+    end
+  end
 
   include Blacklight::SolrHelper
-  
+
   private
     # If an id is passed through params, use it.  Otherwise default to show a current user's institution.
     def set_institution

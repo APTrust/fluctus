@@ -20,6 +20,10 @@ class Institution < ActiveFedora::Base
     User.where(institution_pid: self.pid).to_a.sort_by(&:name)
   end
 
+  def serializable_hash(options={})
+    { pid: pid, name: name, brief_name: brief_name, identifier: identifier }
+  end
+
   def bytes_by_format
     resp = ActiveFedora::SolrService.instance.conn.get 'select', :params => {
       'q' => 'tech_metadata__size_isi:[* TO *]',

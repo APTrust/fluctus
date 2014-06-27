@@ -26,8 +26,8 @@ describe IntellectualObject do
     end
 
     it 'should properly set access' do
-      subject.access = 'consortial'
-      subject.access.should == 'consortial'
+      subject.access = 'consortia'
+      subject.access.should == 'consortia'
     end
 
     it 'must be one of the standard access' do
