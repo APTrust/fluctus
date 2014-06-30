@@ -87,6 +87,9 @@
         <th>Action</th>
         <th>Stage</th>
         <th>Status</th>
+        <% if current_user.admin? %>
+          <th>Reviewed?</th>
+        <% end %>
         <th>Mark as Reviewed</th>
         <th>Purge from S3</th>
       </tr>
@@ -101,14 +104,31 @@
             <td><%= item.action %></td>
             <td><%= item.stage %></td>
             <td><%= item.status %></td>
-            <td><input type="checkbox" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)"></td>
+            <% if current_user.admin? %>
+              <td><%= item.reviewed %></td>
+            <% end %>
+            <td><input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)"></td>
             <td><% if item.status == "Failed" %>
-              <input type="checkbox" name="purge" value="purge" disabled=true id="p_<%= item.id %>" onclick="purgeAction()">
+              <input type="checkbox" name="purge" value="purge" class="purge" disabled=true id="p_<%= item.id %>" onclick="purgeAction()">
             <% end %></td>
           </tr>
       <% end %>
       </tbody>
     </table>
+    <div >
+      <%= button_to "Mark All as Reviewed", { :controller => "processed_item", :action => "reviewAll"} %>
+      <%= button_to "Mark All for Purge", { :controller => "processed_item", action: "purgeAll" }, :data => {confirm: "Are you sure?"}%>
+
+
+      <button type="button" class="btn btn-normal">Mark Selected as Reviewed</button>
+      <button type="button" class="btn btn-normal">Mark All as Reviewed</button>
+      <br/>
+      <button type="button" class="btn btn-danger">Mark Selected for Purge</button>
+      <button type="button" class="btn btn-danger">Mark All for Purge</button>
+      <p>(Purge refers to failed items only)</p>
+
+
+    </div>
     <div class="paging">
       <%= paginate @items %>
     </div>

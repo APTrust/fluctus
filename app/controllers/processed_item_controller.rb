@@ -67,7 +67,7 @@ class ProcessedItemController < ApplicationController
   def set_items
     @institution = current_user.institution
     institution_bucket = 'aptrust.receiving.'+ @institution.identifier
-    @processed_items = ProcessedItem.where(bucket: institution_bucket)
+    @processed_items = ProcessedItem.where(bucket: institution_bucket, review: false)
     if(@institution.name == 'APTrust')
       @processed_items = ProcessedItem.all()
     end
@@ -107,6 +107,31 @@ class ProcessedItemController < ApplicationController
                                             name: params[:name],
                                             bag_date: bag_date).first
       params[:id] = @processed_item.id if @processed_item
+    end
+  end
+
+  def mark_selected
+
+  end
+
+  def purge_selected
+
+  end
+
+  def reviewAll
+    items = ProcessedItem.all()
+    items.each do |item|
+      item.reviewed = true;
+      item.save!
+    end
+    redirect_to processed_items_path()
+  end
+
+  def purgeAll
+    items = ProcessedItem.all()
+    items.each do |item|
+      item.purge = true;
+      item.save!
     end
   end
 end

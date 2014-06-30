@@ -31,6 +31,9 @@ Fluctus::Application.routes.draw do
   get 'itemresults/:id', to: 'processed_item#show', as: :processed_item
   get 'itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
   put 'itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
+  post 'itemresults/reviewAll', to: 'processed_item#reviewAll'
+  post 'itemresults/purgeAll', to: 'processed_item#purgeAll'
+
   #delete 'itemresults/:etag/:name', to: 'processed_item#destroy'
 
   Blacklight.add_routes(self)

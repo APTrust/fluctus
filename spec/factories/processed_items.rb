@@ -14,5 +14,7 @@ FactoryGirl.define do
     stage { ['Fetch', 'Unpack', 'Validate', 'Store', 'Record'].sample }
     status { ['Succeeded', 'Failed', 'Processing'].sample }
     outcome { Faker::Lorem.sentence }
+    reviewed { false }
+    purge { false }
   end
 end
