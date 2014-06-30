@@ -8,9 +8,8 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :format, :created, :modified, :identifier, :md5, :sha256, datastream: 'techMetadata', multiple: false
-  delegate :md5_attributes=, :md5, to: :techMetadata
-  delegate :sha256_attributes=, :sha256, to: :techMetadata
+  has_attributes :uri, :size, :format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
+  delegate :checksum_attributes=, :checksum, to: :techMetadata
 
   validates_presence_of :uri
   validates_presence_of :size
@@ -59,29 +58,18 @@ class GenericFile < ActiveFedora::Base
       identifier: identifier,
     }
     if options.has_key?(:include)
-      data.merge!(md5_attributes: serialize_md5) if options[:include].include?(:md5_attributes)
-      data.merge!(sha256_attributes: serialize_sha256) if options[:include].include?(:sha256_attributes)
+      data.merge!(checksum_attributes: serialize_checksums) if options[:include].include?(:checksum_attributes)
       data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
     end
     data
   end
 
-  def serialize_md5
-    md5.map do |cs|
+  def serialize_checksums
+    checksum.map do |cs|
       {
         algorithm: cs.algorithm.first,
         digest: cs.digest.first,
         datetime: Time.parse(cs.datetime.first).iso8601,
-      }
-    end
-  end
-
-  def serialize_sha256
-    sha256.map do |cs|
-      {
-          algorithm: cs.algorithm.first,
-          digest: cs.digest.first,
-          datetime: Time.parse(cs.datetime.first).iso8601,
       }
     end
   end
@@ -108,18 +96,17 @@ class GenericFile < ActiveFedora::Base
   end
 
   def has_right_number_of_checksums
-    if(md5.count == 0 && sha256.count == 0)
-      errors.add(:md5, "either this or the sha256 needs a value")
-      errors.add(:sha256, "either this or the md5 needs a value")
-    elsif(md5.count > 1 || sha256.count > 1)
-      if(md5.count > 1)
-        errors.add(:md5, "there can only be one value in this field")
-      else
-        errors.add(:sha256, "there can only be one value in this field")
+    if(checksum.count == 0)
+      errors.add(:checksum, "can't be blank")
+    else
+      algorithms = Array.new
+      checksum.each do |cs|
+        if (algorithms.include? cs)
+          errors.add(:checksum, "can't have multiple checksums with same algorithm")
+        else
+          algorithms.push(cs)
+        end
       end
-    elsif(md5.count > 1 && sha256.count > 1)
-      errors.add(:md5, "there can only be one value in this field")
-      errors.add(:sha256, "there can only be one value in this field")
     end
   end
 
