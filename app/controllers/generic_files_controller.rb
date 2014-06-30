@@ -52,8 +52,7 @@ class GenericFilesController < ApplicationController
   def filter_parameters
     params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
                                                                    :modified, :format,
-                                                                   md5_attributes: [:digest, :algorithm, :datetime],
-                                                                   sha256_attributes: [:digest, :algorithm, :datetime])
+                                                                   checksum_attributes: [:digest, :algorithm, :datetime])
   end
 
   # When updating a generic file, the client will likely send back
@@ -85,7 +84,7 @@ class GenericFilesController < ApplicationController
   # Override Fedora's default JSON serialization for our API
   def object_as_json
     if params[:include_relations]
-      @generic_file.serializable_hash(include: [:md5_attributes, :sha256_attributes, :premisEvents])
+      @generic_file.serializable_hash(include: [:cheksum_attributes, :premisEvents])
     else
       @generic_file.serializable_hash()
     end
