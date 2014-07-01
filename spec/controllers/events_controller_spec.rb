@@ -36,6 +36,15 @@ describe EventsController do
         assigns(:document_list).length.should == 1
         assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
       end
+
+      it "can view objects events by object identifier" do
+        get :index, intellectual_object_identifier: someone_elses_object.identifier, use_route: 'events_by_object_identifier_path'
+        expect(response).to be_success
+        assigns(:intellectual_object).should == someone_elses_object
+        assigns(:document_list).length.should == 1
+        assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
+      end
+
     end
   end
 

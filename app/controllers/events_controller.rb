@@ -63,12 +63,12 @@ protected
   end
 
   def load_intellectual_object
-    @parent_object = IntellectualObject.where(desc_metadata__identifier_tesim: params[:identifier]).first
+    @parent_object = IntellectualObject.where(desc_metadata__identifier_tesim: params[:intellectual_object_identifier]).first
     params[:intellectual_object_id] = @parent_object.id
   end
 
   def load_generic_file
-    @parent_object = GenericFile.where(tech_metadata__identifier_tesim: params[:identifier]).first
+    @parent_object = GenericFile.where(tech_metadata__identifier_tesim: params[:generic_file_identifier]).first
     params['generic_file_id'] = @parent_object.id
   end
 
