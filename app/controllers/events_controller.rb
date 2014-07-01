@@ -28,7 +28,13 @@ class EventsController < ApplicationController
   def create
     @event = @parent_object.add_event(params['event'])
     respond_to do |format|
-      format.json { render json: @event.serializable_hash, status: :created }
+      format.json {
+        if @parent_object.save
+          render json: @event.serializable_hash, status: :created
+        else
+          render json: @event.errors, status: :unprocessable_entity
+        end
+      }
       format.html {
         if @parent_object.save
           flash[:notice] = "Successfully created new event: #{@event.identifier}"
@@ -68,7 +74,7 @@ protected
   end
 
   def load_generic_file
-    @parent_object = GenericFile.where(tech_metadata__identifier_tesim: params[:generic_file_identifier]).first
+    @parent_object = GenericFile.where(tech_metadata__identifier_ssim: params[:generic_file_identifier]).first
     params['generic_file_id'] = @parent_object.id
   end
 

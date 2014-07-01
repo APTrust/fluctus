@@ -106,7 +106,7 @@ class GenericFilesController < ApplicationController
   # a urn, a colon, and an integer. They will not include a slash.
   def load_generic_file
     if params[:identifier] && params[:id].blank?
-      @generic_file ||= GenericFile.where(tech_metadata__identifier_tesim: params[:identifier]).first
+      @generic_file ||= GenericFile.where(tech_metadata__identifier_ssim: params[:identifier]).first
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
       params[:id] = @generic_file.id
