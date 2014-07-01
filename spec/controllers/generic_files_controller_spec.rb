@@ -14,7 +14,7 @@ describe GenericFilesController do
     GenericFile.delete_all
   end
 
-  describe "GET #show" do
+  describe "GET #index" do
     before do
       sign_in user
       file.premisEvents.events_attributes = [
@@ -154,7 +154,7 @@ describe GenericFilesController do
       end
 
       describe "and you have access to the file" do
-        it "should delete the file" do
+        it "should update the file" do
           patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(assigns[:generic_file].size).to eq 99 
           expect(response.code).to eq '204'
