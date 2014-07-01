@@ -107,6 +107,13 @@ describe IntellectualObjectsController do
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
       end
+
+      it "should show the object by identifier for API users" do
+        get :show, identifier: URI.encode(obj1.identifier)
+        expect(response).to be_successful
+        expect(assigns(:intellectual_object)).to eq obj1
+      end
+
     end
   end
 
