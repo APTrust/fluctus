@@ -95,6 +95,17 @@ describe GenericFilesController do
           expect(file.identifier).to eq 'test.edu/12345678/data/mybucket/puppy.jpg'
         end
       end
+
+      it "should add generic file using API identifier" do
+        post :create, intellectual_object_identifier: URI.escape(obj1.identifier), generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/puppy.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        expect(response.code).to eq '201'
+        assigns(:generic_file).tap do |file|
+          expect(file.uri).to eq 'path/within/bag'
+          expect(file.content.dsLocation).to eq 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg'
+          expect(file.identifier).to eq 'test.edu/12345678/data/mybucket/puppy.jpg'
+        end
+      end
+
     end
   end
 
