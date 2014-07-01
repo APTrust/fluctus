@@ -18,6 +18,26 @@ describe GenericFilesController do
     before do
       sign_in user
       file.premisEvents.events_attributes = [
+          FactoryGirl.attributes_for(:premis_event_ingest),
+          FactoryGirl.attributes_for(:premis_event_fixity_generation)
+      ]
+      file.save!
+      get :show, id: file.pid
+    end
+
+    it 'can index files by intel obj identifier' do
+      get :index, intellectual_object_identifier: URI.encode(@intellectual_object.identifier), format: :json
+      expect(response).to be_successful
+      expect(assigns(:intellectual_object)).to eq @intellectual_object
+    end
+
+  end
+
+
+  describe "GET #show" do
+    before do
+      sign_in user
+      file.premisEvents.events_attributes = [
         FactoryGirl.attributes_for(:premis_event_ingest),
         FactoryGirl.attributes_for(:premis_event_fixity_generation)
       ]
