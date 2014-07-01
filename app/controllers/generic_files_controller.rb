@@ -1,10 +1,17 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
-  before_filter :load_intellectual_object, only: [:update]
+  before_filter :load_generic_file, only: [:show]
+  before_filter :load_intellectual_object, only: [:update, :create, :index]
   load_and_authorize_resource :intellectual_object, only: [:create, :update]
   load_and_authorize_resource through: :intellectual_object, only: [:create]
   load_and_authorize_resource except: [:create, :update]
+
+  def index
+    respond_to do |format|
+      format.json { render json: @intellectual_object.generic_files.map do |f| f.serializable_hash end }
+    end
+  end
 
   def show
     respond_to do |format|
@@ -24,7 +31,7 @@ class GenericFilesController < ApplicationController
         format.json { render json: resource.errors, status: :unprocessable_entity }
       end
     end
-  end
+ end
 
   def update
     @generic_file = @intellectual_object.generic_files.where(uri: params[:id]).first
@@ -69,6 +76,7 @@ class GenericFilesController < ApplicationController
                                                                    :modified, :format)
   end
 
+
   def resource
     @generic_file
   end
@@ -87,6 +95,20 @@ class GenericFilesController < ApplicationController
       @generic_file.serializable_hash(include: [:cheksum_attributes, :premisEvents])
     else
       @generic_file.serializable_hash()
+    end
+  end
+
+  # Load generic file by identifier, if we got that, or by id if we got an id.
+  # Identifiers always start with data/, so we can look for a slash. Ids include
+  # a urn, a colon, and an integer. They will not include a slash.
+  def load_generic_file
+    if params[:identifier] && params[:id].blank?
+      @generic_file ||= GenericFile.where(tech_metadata__identifier_tesim: params[:identifier]).first
+      # Solr permissions handler expects params[:id] to be the object ID,
+      # and will blow up if it's not. So humor it.
+      params[:id] = @generic_file.id
+    else
+      @generic_file ||= GenericFile.find(params[:id])
     end
   end
 

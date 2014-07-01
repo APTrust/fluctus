@@ -33,11 +33,25 @@ Fluctus::Application.routes.draw do
   put 'itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
   #delete 'itemresults/:etag/:name', to: 'processed_item#destroy'
 
-  # This route is defined above, but this definition allows for a more
-  # liberal intellectual_object_id pattern.
-  post '/objects/:intellectual_object_id/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_id: /[^\/]*/
-  post '/objects/:intellectual_object_id/events(.:format)', to: 'events#create', format: 'json', intellectual_object_id: /[^\/]*/
 
+  # ----------------------------------------------------------------------
+  # These routes are for the API. They allow for more liberal identifier patterns.
+  # Intel Obj identifier pattern includes dots. Intel Obj id pattern does not. Same for Generic File identifiers.
+  # E.g. Obj Identifier = "virginia.edu.sample_bag"; Obj Id = "28337" or "urn:mace:aptrust:28337"
+  # File Identifier = "virginia.edu.sample_bag/data/file.pdf"; File Id = "28999" or "urn:mace:aptrust:28999"
+  #
+
+  post '/objects/:identifier/files(.:format)', to: 'generic_files#create', format: 'json', identifier: /[^\/]*/
+  get '/objects/:identifier/files(.:format)', to: 'generic_files#index', format: 'json', identifier: /[^\/]*/
+  get '/objects/:identifier', to: 'intellectual_objects#show', format: 'json', identifier: /[^\/]*/
+  post '/objects/:intellectual_object_identifier/events(.:format)', to: 'events#create', format: 'json', intellectual_object_identifier: /[^\/\.]*\.[^\/]*/
+
+  get '/files/:identifier', to: 'generic_files#show', format: 'json', identifier: /[^\/]*/
+  post '/files/:generic_file_identifier/events(.:format)', to: 'events#create', format: 'json', generic_file_identifier: /[^\/\.]*\.[^\/]*/
+
+  #
+  # End of API routes
+  # ----------------------------------------------------------------------
 
   Blacklight.add_routes(self)
 
