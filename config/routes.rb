@@ -42,11 +42,11 @@ Fluctus::Application.routes.draw do
   #
 
   post '/objects/:identifier/files(.:format)', to: 'generic_files#create', format: 'json', identifier: /[^\/]*/
-  get '/objects/:identifier/files(.:format)', to: 'generic_files#index', format: 'json', identifier: /[^\/]*/
-  get '/objects/:identifier', to: 'intellectual_objects#show', format: 'json', identifier: /[^\/]*/
+  get  '/objects/:identifier/files(.:format)', to: 'generic_files#index', format: 'json', identifier: /[^\/]*/
+  get  '/objects/:identifier', to: 'intellectual_objects#show', format: 'json', identifier: /[^\/]*/
   post '/objects/:intellectual_object_identifier/events(.:format)', to: 'events#create', format: 'json', intellectual_object_identifier: /[^\/\.]*\.[^\/]*/
 
-  get '/files/:identifier', to: 'generic_files#show', format: 'json', identifier: /[^\/]*/
+  get  '/files/:identifier', to: 'generic_files#show', format: 'json', identifier: /[^\/]*/, as: 'file_by_identifier'
   post '/files/:generic_file_identifier/events(.:format)', to: 'events#create', format: 'json', generic_file_identifier: /[^\/\.]*\.[^\/]*/
 
   #

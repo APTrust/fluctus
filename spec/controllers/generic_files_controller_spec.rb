@@ -37,6 +37,13 @@ describe GenericFilesController do
     it 'assigns events' do
       assigns(:events).count.should == file.premisEvents.events.count
     end
+
+    it "should show the file by identifier for API users" do
+      get :show, identifier: URI.encode(file.identifier), use_route: 'file_by_identifier_path'
+      expect(response).to be_successful
+      expect(assigns(:generic_file)).to eq file
+    end
+
   end
 
 
