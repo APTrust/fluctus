@@ -59,6 +59,21 @@ class Event
     solr_doc
   end
 
+  # Serialize JSON for the API
+  def serializable_hash(options={})
+    {
+        identifier: identifier.first,
+        type: type.first,
+        date_time: Time.parse(date_time.first).iso8601,
+        detail: detail.first,
+        outcome: outcome.first,
+        outcome_detail: outcome_detail.first,
+        object: object.first,
+        agent: agent.first,
+        outcome_information: outcome_information.first,
+    }
+  end
+
 private
   def init_time
     self.date_time = Time.now.utc.iso8601 if self.date_time.empty?

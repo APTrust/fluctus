@@ -27,30 +27,32 @@ ActiveRecord::Schema.define(version: 20140630134547) do
     t.datetime "updated_at"
     t.string   "name"
     t.string   "etag"
-    t.datetime "bag_date",    limit: 255
     t.string   "bucket"
     t.string   "user"
     t.string   "institution"
-    t.datetime "date",        limit: 255
     t.text     "note",        limit: 255
     t.string   "action"
     t.string   "stage"
     t.string   "status"
     t.text     "outcome",     limit: 255
+    t.datetime "bag_date"
+    t.datetime "date"
     t.boolean  "retry",                   default: false, null: false
     t.boolean  "reviewed"
     t.boolean  "purge"
   end
 
   add_index "processed_items", ["action"], name: "index_processed_items_on_action"
-  add_index "processed_items", ["date"], name: "index_processed_items_on_date"
   add_index "processed_items", ["etag", "name"], name: "index_processed_items_on_etag_and_name"
   add_index "processed_items", ["institution"], name: "index_processed_items_on_institution"
   add_index "processed_items", ["stage"], name: "index_processed_items_on_stage"
   add_index "processed_items", ["status"], name: "index_processed_items_on_status"
 
-# Could not dump table "processing_queues" because of following NoMethodError
-#   undefined method `[]' for nil:NilClass
+  create_table "processing_queues", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "table"
+  end
 
   create_table "roles", force: true do |t|
     t.string "name"

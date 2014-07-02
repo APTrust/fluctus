@@ -13,7 +13,7 @@ FactoryGirl.define do
     modified { "#{Time.now}" }
     checksum_attributes {
       [{
-           algorithm: 'md5',
+           algorithm: 'sha256',
            datetime: Time.now.to_s,
            digest: SecureRandom.hex
        }]

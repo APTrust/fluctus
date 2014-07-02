@@ -37,6 +37,12 @@ Fluctus::Application.routes.draw do
 
   #delete 'itemresults/:etag/:name', to: 'processed_item#destroy'
 
+  # This route is defined above, but this definition allows for a more
+  # liberal intellectual_object_id pattern.
+  post '/objects/:intellectual_object_id/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_id: /[^\/]*/
+  post '/objects/:intellectual_object_id/events(.:format)', to: 'events#create', format: 'json', intellectual_object_id: /[^\/]*/
+
+
   Blacklight.add_routes(self)
 
   mount Hydra::RoleManagement::Engine => '/'

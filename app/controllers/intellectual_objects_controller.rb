@@ -10,6 +10,13 @@ class IntellectualObjectsController < ApplicationController
 
   self.solr_search_params_logic += [:for_selected_institution]
 
+  def show
+    respond_to do |format|
+      format.json { render json: object_as_json }
+      format.html { render "show" }
+    end
+  end
+
   def update
     if params[:counter]
       # They are just updating the search counter
@@ -32,7 +39,7 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
-  protected 
+  protected
 
   # Override Hydra-editor to redirect to an alternate location after create
   def redirect_after_update
@@ -54,4 +61,20 @@ class IntellectualObjectsController < ApplicationController
   def search_action_url options = {}
     institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
   end
+
+  # Override Fedora's default JSON serialization for our API
+  def object_as_json
+    if params[:include_relations]
+      @intellectual_object.serializable_hash(include: {generic_files: { include: [:checksum_attributes, :premisEvents]}})
+    else
+      @intellectual_object.serializable_hash()
+    end
+  end
+
+  def intellectual_object_params
+    params.require(:intellectual_object).permit(:pid, :institution_id, :title,
+                                                :description, :access,
+                                                :alt_identifier)
+  end
+
 end

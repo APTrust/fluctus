@@ -5,10 +5,10 @@ FactoryGirl.define do
     title { Faker::Lorem.sentence }
     description { Faker::Lorem.paragraph }
     identifier { "#{institution.identifier}/#{SecureRandom.uuid}" }
-    access { ['consortial', 'institution', 'restricted'].sample }
+    access { ['consortia', 'institution', 'restricted'].sample }
 
     factory :consortial_intellectual_object, class: IntellectualObject do
-      access { 'consortial' }
+      access { 'consortia' }
     end
 
     factory :institutional_intellectual_object, class: IntellectualObject do

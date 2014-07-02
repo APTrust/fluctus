@@ -9,15 +9,14 @@ class IntellectualObject < ActiveFedora::Base
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
 
-  has_attributes :title, :access, datastream: 'descMetadata', multiple: false
-  has_attributes :description, :identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :title, :access, :description, :identifier, datastream: 'descMetadata', multiple: false
   has_attributes :alt_identifier, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title
   validates_presence_of :institution
   validates_presence_of :identifier
   validates_presence_of :access
-  validates_inclusion_of :access, in: %w(consortial institution restricted), message: "#{:access} is not a valid access", if: :access
+  validates_inclusion_of :access, in: %w(consortia institution restricted), message: "#{:access} is not a valid access", if: :access
 
   before_save :set_permissions
   before_destroy :check_for_associations
@@ -49,7 +48,7 @@ class IntellectualObject < ActiveFedora::Base
       inst_admin_group = "Admin_At_#{inst_pid}"
       inst_user_group = "User_At_#{inst_pid}"
       case access
-        when 'consortial'
+        when 'consortia'
           self.read_groups = %w(institutional_admin institutional_user)
           self.edit_groups = [inst_admin_group]
         when 'institution'
