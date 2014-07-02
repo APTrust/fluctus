@@ -1,7 +1,7 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
-  before_filter :load_generic_file, only: [:show]
+  before_filter :load_generic_file, only: [:show, :update]
   before_filter :load_intellectual_object, only: [:update, :create, :index]
   load_and_authorize_resource :intellectual_object, only: [:create, :update]
   load_and_authorize_resource through: :intellectual_object, only: [:create]
@@ -34,7 +34,6 @@ class GenericFilesController < ApplicationController
  end
 
   def update
-    @generic_file = @intellectual_object.generic_files.where(uri: params[:id]).first
     authorize! :update, resource
     if resource.update(params_for_update)
       head :no_content
@@ -105,12 +104,12 @@ class GenericFilesController < ApplicationController
   # Identifiers always start with data/, so we can look for a slash. Ids include
   # a urn, a colon, and an integer. They will not include a slash.
   def load_generic_file
-    if params[:identifier] && params[:id].blank?
-      @generic_file ||= GenericFile.where(tech_metadata__identifier_ssim: params[:identifier]).first
+    if params[:generic_file_identifier]
+      @generic_file ||= GenericFile.where(tech_metadata__identifier_ssim: params[:generic_file_identifier]).first
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
       params[:id] = @generic_file.id
-    else
+    elsif params[:id]
       @generic_file ||= GenericFile.find(params[:id])
     end
   end

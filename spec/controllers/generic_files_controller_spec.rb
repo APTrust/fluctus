@@ -135,7 +135,7 @@ describe GenericFilesController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), trailing_slash: true
+        patch :update, intellectual_object_id: file.intellectual_object, id: file.id, trailing_slash: true
         expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
@@ -147,7 +147,7 @@ describe GenericFilesController do
       describe "and deleteing a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it "should be forbidden" do
-          patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_id: file.intellectual_object, id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
@@ -155,10 +155,17 @@ describe GenericFilesController do
 
       describe "and you have access to the file" do
         it "should update the file" do
-          patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_id: file.intellectual_object, id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(assigns[:generic_file].size).to eq 99 
           expect(response.code).to eq '204'
         end
+
+        it "should update the file by identifier (API)" do
+          patch :update, identifier: URI.escape(file.identifier), id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
+          expect(assigns[:generic_file].size).to eq 99
+          expect(response.code).to eq '204'
+        end
+
       end
     end
   end

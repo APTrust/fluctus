@@ -49,7 +49,8 @@ Fluctus::Application.routes.draw do
   put  '/objects/:identifier', to: 'intellectual_objects#update', format: 'json', identifier: /[^\/]*/
   post '/objects/:intellectual_object_identifier/events(.:format)', to: 'events#create', format: 'json', intellectual_object_identifier: /[^\/\.]*\.[^\/]*/, as: 'events_by_object_identifier'
 
-  get  '/files/:identifier', to: 'generic_files#show', format: 'json', identifier: /[^\/]*/, as: 'file_by_identifier'
+  get  '/files/:generic_file_identifier', to: 'generic_files#show', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_by_identifier'
+  put  '/files/:generic_file_identifier', to: 'generic_files#update', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_update_by_identifier'
 
   # The pattern for generic_file_identifier is tricky, because we do not want it to
   # conflict with /files/:generic_file_id/events. The pattern is: non-slash characters,
