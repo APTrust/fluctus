@@ -76,6 +76,7 @@ class ProcessedItemController < ApplicationController
       items = ProcessedItem.where(status: "Failed")
     end
     items.each do |item|
+      item.reviewed = true;
       item.purge = true;
       item.save!
     end
@@ -126,7 +127,7 @@ class ProcessedItemController < ApplicationController
     end
     @institution = current_user.institution
     institution_bucket = 'aptrust.receiving.'+ @institution.identifier
-    @processed_items = ProcessedItem.where(bucket: institution_bucket, review: false)
+    @processed_items = ProcessedItem.where(bucket: institution_bucket, reviewed: false)
     if(@institution.name == 'APTrust')
       @processed_items = ProcessedItem.all()
     end
