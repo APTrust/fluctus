@@ -44,6 +44,7 @@ class ProcessedItemController < ApplicationController
       purge_list.each do |item|
         id = item.split("_")[1]
         proc_item = ProcessedItem.find(id)
+        proc_item.reviewed = true;
         proc_item.purge = true;
         proc_item.save!
       end
