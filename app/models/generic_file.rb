@@ -16,7 +16,6 @@ class GenericFile < ActiveFedora::Base
   validates_presence_of :created
   validates_presence_of :modified
   validates_presence_of :format
-  #validates_presence_of :checksum
   validates_presence_of :identifier
   validate :has_right_number_of_checksums
 
@@ -58,7 +57,7 @@ class GenericFile < ActiveFedora::Base
       identifier: identifier,
     }
     if options.has_key?(:include)
-      data.merge!(checksum_attributes: serialize_checksums) if options[:include].include?(:checksum_attributes)
+      data.merge!(checksum: serialize_checksums) if options[:include].include?(:checksum)
       data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
     end
     data

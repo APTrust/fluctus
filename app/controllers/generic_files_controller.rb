@@ -94,7 +94,7 @@ class GenericFilesController < ApplicationController
   # Override Fedora's default JSON serialization for our API
   def object_as_json
     if params[:include_relations]
-      @generic_file.serializable_hash(include: [:cheksum_attributes, :premisEvents])
+      @generic_file.serializable_hash(include: [:checksum, :premisEvents])
     else
       @generic_file.serializable_hash()
     end
