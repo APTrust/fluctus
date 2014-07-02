@@ -29,6 +29,60 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def handle_selected
+    review_list = params[:review]
+    purge_list = params[:purge]
+    unless review_list.nil?
+      review_list.each do |item|
+        id = item.split("_")[1]
+        proc_item = ProcessedItem.find(id)
+        proc_item.reviewed = true;
+        proc_item.save!
+      end
+    end
+    unless purge_list.nil?
+      purge_list.each do |item|
+        id = item.split("_")[1]
+        proc_item = ProcessedItem.find(id)
+        proc_item.purge = true;
+        proc_item.save!
+      end
+    end
+    set_items
+    session[:select_notice] = 'Selected items have been marked for review or purge from S3 as indicated.'
+    respond_to do |format|
+      format.js {}
+    end
+  end
+
+  def review_all
+    institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
+    items = ProcessedItem.where(bucket: institution_bucket)
+    if(current_user.admin?)
+      items = ProcessedItem.all()
+    end
+    items.each do |item|
+      item.reviewed = true;
+      item.save!
+    end
+    redirect_to :back
+    flash[:notice] = 'All items have been marked as reviewed.'
+  end
+
+  def purge_all
+    institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
+    items = ProcessedItem.where(bucket: institution_bucket, status: "Failed")
+    if(current_user.admin?)
+      items = ProcessedItem.where(status: "Failed")
+    end
+    items.each do |item|
+      item.purge = true;
+      item.save!
+    end
+    redirect_to :back
+    flash[:notice] = 'All failed items have been marked for purge from the S3 receiving bucket.'
+  end
+
 
   private
 
@@ -65,6 +119,11 @@ class ProcessedItemController < ApplicationController
 
 
   def set_items
+    puts "Notice: #{session[:select_notice]}"
+    unless (session[:select_notice].nil? || session[:select_notice] == "")
+      flash[:notice] = session[:select_notice]
+      session[:select_notice] = ""
+    end
     @institution = current_user.institution
     institution_bucket = 'aptrust.receiving.'+ @institution.identifier
     @processed_items = ProcessedItem.where(bucket: institution_bucket, review: false)
@@ -107,31 +166,6 @@ class ProcessedItemController < ApplicationController
                                             name: params[:name],
                                             bag_date: bag_date).first
       params[:id] = @processed_item.id if @processed_item
-    end
-  end
-
-  def mark_selected
-
-  end
-
-  def purge_selected
-
-  end
-
-  def reviewAll
-    items = ProcessedItem.all()
-    items.each do |item|
-      item.reviewed = true;
-      item.save!
-    end
-    redirect_to processed_items_path()
-  end
-
-  def purgeAll
-    items = ProcessedItem.all()
-    items.each do |item|
-      item.purge = true;
-      item.save!
     end
   end
 end

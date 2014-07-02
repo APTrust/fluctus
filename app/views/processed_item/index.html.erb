@@ -9,129 +9,74 @@
       <div class="filter"><span>
         <h4 id="status_title" class="btn btn-normal" onclick="statusToggle()">Status</h4>
       </span>
-      <div id="status" class="filter_div">
-        <ul>
-          <% @statuses.each do |status| %>
-              <% if status == @selected %>
-                  <% class_variable = "selected" %>
-              <% else %>
-                  <% class_variable = "" %>
-              <% end %>
-              <li><a href="<%= processed_items_path(status: status) %>" class="<%= class_variable %> filter"><%= status %></a></li>
-          <% end %>
-        </ul>
-      </div></div>
-      <div class="filter"><span>
-        <h4 id="stage_title" class="btn btn-normal" onclick="stageToggle()">Stage</h4>
-      </span>
-      <div id="stage" class="filter_div">
-        <ul>
-          <% @stages.each do |stage| %>
-              <% if stage == @selected %>
-                  <% class_variable = "selected" %>
-              <% else %>
-                  <% class_variable = "" %>
-              <% end %>
-              <li><a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a></li>
-          <% end %>
-        </ul>
-      </div></div>
-      <div class="filter"><span>
-        <h4 id="action_title" class="btn btn-normal" onclick="actionToggle()">Action</h4>
-      </span>
-      <div id="action" class="filter_div">
-        <ul>
-          <% @actions.each do |action| %>
-              <% if action == @selected %>
-                  <% class_variable = "selected" %>
-              <% else %>
-                  <% class_variable = "" %>
-              <% end %>
-              <li><a href="<%= processed_items_path(actions: action) %>" class="<%= class_variable %> filter"><%= action %></a></li>
-          <% end %>
-        </ul>
-      </div></div>
-     <% if current_user.admin? %>
-      <div class="filter"><span>
-        <h4 id="institution_title" class="btn btn-normal" onclick="institutionToggle()">Institution</h4>
-      </span>
-        <div id="institution" class="filter_div">
+        <div id="status" class="filter_div">
           <ul>
-            <% @institutions.each do |inst| %>
-                <% if inst == @selected %>
+            <% @statuses.each do |status| %>
+                <% if status == @selected %>
                     <% class_variable = "selected" %>
                 <% else %>
                     <% class_variable = "" %>
                 <% end %>
-                <li><a href="<%= processed_items_path(institution: inst) %>" class="<%= class_variable %> filter"><%= inst %></a></li>
+                <li><a href="<%= processed_items_path(status: status) %>" class="<%= class_variable %> filter"><%= status %></a></li>
             <% end %>
           </ul>
         </div></div>
-       <% end %>
+      <div class="filter"><span>
+        <h4 id="stage_title" class="btn btn-normal" onclick="stageToggle()">Stage</h4>
+      </span>
+        <div id="stage" class="filter_div">
+          <ul>
+            <% @stages.each do |stage| %>
+                <% if stage == @selected %>
+                    <% class_variable = "selected" %>
+                <% else %>
+                    <% class_variable = "" %>
+                <% end %>
+                <li><a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a></li>
+            <% end %>
+          </ul>
+        </div></div>
+      <div class="filter"><span>
+        <h4 id="action_title" class="btn btn-normal" onclick="actionToggle()">Action</h4>
+      </span>
+        <div id="action" class="filter_div">
+          <ul>
+            <% @actions.each do |action| %>
+                <% if action == @selected %>
+                    <% class_variable = "selected" %>
+                <% else %>
+                    <% class_variable = "" %>
+                <% end %>
+                <li><a href="<%= processed_items_path(actions: action) %>" class="<%= class_variable %> filter"><%= action %></a></li>
+            <% end %>
+          </ul>
+        </div></div>
+      <% if current_user.admin? %>
+          <div class="filter"><span>
+        <h4 id="institution_title" class="btn btn-normal" onclick="institutionToggle()">Institution</h4>
+      </span>
+            <div id="institution" class="filter_div">
+              <ul>
+                <% @institutions.each do |inst| %>
+                    <% if inst == @selected %>
+                        <% class_variable = "selected" %>
+                    <% else %>
+                        <% class_variable = "" %>
+                    <% end %>
+                    <li><a href="<%= processed_items_path(institution: inst) %>" class="<%= class_variable %> filter"><%= inst %></a></li>
+                <% end %>
+              </ul>
+            </div></div>
+      <% end %>
     </div>
     <script>
-      $(".filter_div").toggle()
+        $(".filter_div").toggle()
     </script>
     <span id="remove">
         <a class="btn btn-normal" href="<%= processed_items_path %>">Remove Filters</a>
       </span>
   </div>
-  <section class="queue">
-    <table class="table">
-      <thead>
-      <tr>
-        <th>Name</th>
-        <th>Etag</th>
-        <th>Institution</th>
-        <th>Processing Date</th>
-        <th>Action</th>
-        <th>Stage</th>
-        <th>Status</th>
-        <% if current_user.admin? %>
-          <th>Reviewed?</th>
-        <% end %>
-        <th>Mark as Reviewed</th>
-        <th>Purge from S3</th>
-      </tr>
-      </thead>
-      <tbody>
-      <% @items.each do |item| %>
-          <tr class="<%= item.status %>">
-            <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
-            <td><%= item.etag %></td>
-            <td><%= item.institution %></td>
-            <td><%= item.date %></td>
-            <td><%= item.action %></td>
-            <td><%= item.stage %></td>
-            <td><%= item.status %></td>
-            <% if current_user.admin? %>
-              <td><%= item.reviewed %></td>
-            <% end %>
-            <td><input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)"></td>
-            <td><% if item.status == "Failed" %>
-              <input type="checkbox" name="purge" value="purge" class="purge" disabled=true id="p_<%= item.id %>" onclick="purgeAction()">
-            <% end %></td>
-          </tr>
-      <% end %>
-      </tbody>
-    </table>
-    <div >
-      <%= button_to "Mark All as Reviewed", { :controller => "processed_item", :action => "reviewAll"} %>
-      <%= button_to "Mark All for Purge", { :controller => "processed_item", action: "purgeAll" }, :data => {confirm: "Are you sure?"}%>
-
-
-      <button type="button" class="btn btn-normal">Mark Selected as Reviewed</button>
-      <button type="button" class="btn btn-normal">Mark All as Reviewed</button>
-      <br/>
-      <button type="button" class="btn btn-danger">Mark Selected for Purge</button>
-      <button type="button" class="btn btn-danger">Mark All for Purge</button>
-      <p>(Purge refers to failed items only)</p>
-
-
-    </div>
-    <div class="paging">
-      <%= paginate @items %>
-    </div>
+  <section id="itemTable" class="queue">
+     <%= render 'item_table' %>
   </section>
-  <script src="app/assets/javascript/processed_item.js"></script>
 </div>
