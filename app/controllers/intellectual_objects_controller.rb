@@ -1,6 +1,6 @@
 class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :load_object, only: [:show]
+  before_filter :load_object, only: [:show, :update]
   load_and_authorize_resource :institution, only: [:index, :create]
   load_and_authorize_resource :through => :institution, only: :create
   load_and_authorize_resource except: [:index, :create]

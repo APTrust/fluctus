@@ -182,6 +182,11 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
+      it "should update fields when called with identifier (API)" do
+        patch :update, identifier: obj1.identifier, intellectual_object: {title: 'Foo'}
+        expect(assigns(:intellectual_object).title).to eq 'Foo'
+      end
+
       it "should update via json" do
         patch :update, id: obj1, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response).to be_successful
