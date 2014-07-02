@@ -83,7 +83,7 @@ class GenericFilesController < ApplicationController
 
   def load_intellectual_object
     if params[:intellectual_object_identifier]
-      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_tesim: params[:intellectual_object_identifier]).first
+      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
       params[:intellectual_object_id] = @intellectual_object.id
     elsif params[:intellectual_object_id]
       @intellectual_object ||= IntellectualObject.find(params[:intellectual_object_id])

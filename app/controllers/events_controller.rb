@@ -69,7 +69,7 @@ protected
   end
 
   def load_intellectual_object
-    @parent_object = IntellectualObject.where(desc_metadata__identifier_tesim: params[:intellectual_object_identifier]).first
+    @parent_object = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
     params[:intellectual_object_id] = @parent_object.id
   end
 
