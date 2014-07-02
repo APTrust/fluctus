@@ -1,5 +1,7 @@
 class EventsController < ApplicationController
   before_filter :authenticate_user!
+  before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
+  before_filter :load_generic_file, if: :generic_file_identifier_exists?
   before_filter :load_and_authorize_parent_object, only: [:create]
   load_and_authorize_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
   load_and_authorize_resource :institution, only: [:index], if: :inst_id_exists?
@@ -26,7 +28,13 @@ class EventsController < ApplicationController
   def create
     @event = @parent_object.add_event(params['event'])
     respond_to do |format|
-      format.json { render json: @event.serializable_hash, status: :created }
+      format.json {
+        if @parent_object.save
+          render json: @event.serializable_hash, status: :created
+        else
+          render json: @event.errors, status: :unprocessable_entity
+        end
+      }
       format.html {
         if @parent_object.save
           flash[:notice] = "Successfully created new event: #{@event.identifier}"
@@ -52,9 +60,29 @@ protected
     params['generic_file_id']
   end
 
+  def intellectual_object_identifier_exists?
+    params['intellectual_object_identifier']
+  end
+
+  def generic_file_identifier_exists?
+    params['generic_file_identifier']
+  end
+
+  def load_intellectual_object
+    @parent_object = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
+    params[:intellectual_object_id] = @parent_object.id
+  end
+
+  def load_generic_file
+    @parent_object = GenericFile.where(tech_metadata__identifier_ssim: params[:generic_file_identifier]).first
+    params['generic_file_id'] = @parent_object.id
+  end
+
   def load_and_authorize_parent_object
-    parent_id = params['generic_file_id'] || params['intellectual_object_id']
-    @parent_object = ActiveFedora::Base.find(parent_id)
+    if @parent_object.nil?
+      parent_id = params['generic_file_id'] || params['intellectual_object_id']
+      @parent_object = ActiveFedora::Base.find(parent_id)
+    end
     authorize! :update, @parent_object
   end
 

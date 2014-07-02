@@ -107,6 +107,13 @@ describe IntellectualObjectsController do
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
       end
+
+      it "should show the object by identifier for API users" do
+        get :show, identifier: URI.encode(obj1.identifier)
+        expect(response).to be_successful
+        expect(assigns(:intellectual_object)).to eq obj1
+      end
+
     end
   end
 
@@ -172,6 +179,11 @@ describe IntellectualObjectsController do
       it "should update fields" do
         patch :update, id: obj1, intellectual_object: {title: 'Foo'}
         expect(response).to redirect_to intellectual_object_path(obj1)
+        expect(assigns(:intellectual_object).title).to eq 'Foo'
+      end
+
+      it "should update fields when called with identifier (API)" do
+        patch :update, identifier: obj1.identifier, intellectual_object: {title: 'Foo'}
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 

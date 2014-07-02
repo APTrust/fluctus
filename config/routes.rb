@@ -37,11 +37,34 @@ Fluctus::Application.routes.draw do
 
   #delete 'itemresults/:etag/:name', to: 'processed_item#destroy'
 
-  # This route is defined above, but this definition allows for a more
-  # liberal intellectual_object_id pattern.
-  post '/objects/:intellectual_object_id/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_id: /[^\/]*/
-  post '/objects/:intellectual_object_id/events(.:format)', to: 'events#create', format: 'json', intellectual_object_id: /[^\/]*/
 
+  # ----------------------------------------------------------------------
+  # These routes are for the API. They allow for more liberal identifier patterns.
+  # Intel Obj identifier pattern includes dots. Intel Obj id pattern does not. Same for Generic File identifiers.
+  # E.g. Obj Identifier = "virginia.edu.sample_bag"; Obj Id = "28337" or "urn:mace:aptrust:28337"
+  # File Identifier = "virginia.edu.sample_bag/data/file.pdf"; File Id = "28999" or "urn:mace:aptrust:28999"
+  #
+  # Some of these routes are named because rspec cannot find them unless we explicitly name them.
+  #
+
+  post '/objects/:intellectual_object_identifier/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_identifier: /[^\/]*/
+  get  '/objects/:intellectual_object_identifier/files(.:format)', to: 'generic_files#index', format: 'json', intellectual_object_identifier: /[^\/]*/
+  get  '/objects/:identifier', to: 'intellectual_objects#show', format: 'json', identifier: /[^\/]*/
+  put  '/objects/:identifier', to: 'intellectual_objects#update', format: 'json', identifier: /[^\/]*/
+  post '/objects/:intellectual_object_identifier/events(.:format)', to: 'events#create', format: 'json', intellectual_object_identifier: /[^\/\.]*\.[^\/]*/, as: 'events_by_object_identifier'
+
+  get  '/files/:generic_file_identifier', to: 'generic_files#show', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_by_identifier'
+  put  '/files/:generic_file_identifier', to: 'generic_files#update', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_update_by_identifier'
+
+  # The pattern for generic_file_identifier is tricky, because we do not want it to
+  # conflict with /files/:generic_file_id/events. The pattern is: non-slash characters,
+  # followed by a period, followed by more non-slash characters. For example,
+  # virginia.edu.bagname/data/file.txt will not conflict with urn:mace:aptrust:12345
+  post '/files/:generic_file_identifier/events(.:format)', to: 'events#create', format: 'json', generic_file_identifier: /[^\/]*\.[^\/]*/, as: 'events_by_file_identifier'
+
+  #
+  # End of API routes
+  # ----------------------------------------------------------------------
 
   Blacklight.add_routes(self)
 
