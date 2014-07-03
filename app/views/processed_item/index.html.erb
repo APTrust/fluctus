@@ -72,6 +72,11 @@
     <script>
         $(".filter_div").toggle()
     </script>
+    <div>
+      <label>Show Reviewed Items? </label>
+      <input type="checkbox" id="toggleReviewed" onclick="showReviewed()" >
+      <script> $("#toggleReviewed").prop('checked', <%= session[:show_reviewed] %>) </script>
+    </div>
     <span id="remove">
         <a class="btn btn-normal" href="<%= processed_items_path %>">Remove Filters</a>
       </span>

@@ -10,6 +10,7 @@
     <th>Status</th>
     <% if current_user.admin? %>
         <th>Reviewed?</th>
+        <th>Purged?</th>
     <% end %>
     <th>Mark as Reviewed</th>
     <th>Purge from S3</th>
@@ -26,7 +27,8 @@
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
         <% if current_user.admin? %>
-            <td><%= item.reviewed %>  <%= item.purge %></td>
+            <td><%= item.reviewed %></td>
+            <td><%= item.purge %></td>
         <% end %>
         <td><input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)"></td>
         <td><% if item.status == "Failed" %>
@@ -36,6 +38,9 @@
   <% end %>
   </tbody>
 </table>
+<% if (@items.length == 0) %>
+    <p>There are no items to display at this time.</p>
+<% end %>
 <div >
   <button type="submit" class="btn btn-normal" onclick="callHandleSelected()">Mark Selected as Reviewed and/or for Purge</button>
   <br/>

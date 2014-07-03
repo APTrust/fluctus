@@ -29,6 +29,13 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def show_reviewed
+    session[:show_reviewed] = params[:show]
+    respond_to do |format|
+      format.js {}
+    end
+  end
+
   def handle_selected
     review_list = params[:review]
     purge_list = params[:purge]
@@ -63,7 +70,7 @@ class ProcessedItemController < ApplicationController
       items = ProcessedItem.all()
     end
     items.each do |item|
-      item.reviewed = true;
+      item.reviewed = true
       item.save!
     end
     redirect_to :back
@@ -72,15 +79,20 @@ class ProcessedItemController < ApplicationController
 
   def purge_all
     institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
-    items = ProcessedItem.where(bucket: institution_bucket, status: "Failed")
+    puts "Session Time: #{session[:purge_datetime]}"
+    items = ProcessedItem.where(bucket: institution_bucket, status: "Failed" )
     if(current_user.admin?)
       items = ProcessedItem.where(status: "Failed")
     end
     items.each do |item|
-      item.reviewed = true;
-      item.purge = true;
-      item.save!
+      puts "Purge Time: #{session[:purge_datetime]}, Item Time: #{item.date}"
+      if(item.date < session[:purge_datetime])
+        item.reviewed = true
+        item.purge = true
+        item.save!
+      end
     end
+    session[:purge_datetime] = Time.now
     redirect_to :back
     flash[:notice] = 'All failed items have been marked for purge from the S3 receiving bucket.'
   end
@@ -121,14 +133,18 @@ class ProcessedItemController < ApplicationController
 
 
   def set_items
-    puts "Notice: #{session[:select_notice]}"
+    puts "Session: #{session[:show_reviewed]} --------------"
     unless (session[:select_notice].nil? || session[:select_notice] == "")
       flash[:notice] = session[:select_notice]
       session[:select_notice] = ""
     end
     @institution = current_user.institution
     institution_bucket = 'aptrust.receiving.'+ @institution.identifier
-    @processed_items = ProcessedItem.where(bucket: institution_bucket, reviewed: false)
+    if(session[:show_reviewed] == 'true')
+      @processed_items = ProcessedItem.where(bucket: institution_bucket)
+    else
+      @processed_items = ProcessedItem.where(bucket: institution_bucket, reviewed: false)
+    end
     if(@institution.name == 'APTrust')
       @processed_items = ProcessedItem.all()
     end

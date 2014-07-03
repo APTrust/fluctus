@@ -34,9 +34,19 @@ function callHandleSelected () {
             purge_list.push(purge_elements[i].id);
         }
     }
-    $.post('/itemresults/handle_selected', { review: review_list, purge: purge_list },
-        function(data) {
-            //alert(data);
-        });
+    makeCall = confirm("Are you sure you want to mark as reviewed and/or purge these items?")
+    if(makeCall == true){
+        $.post('/itemresults/handle_selected', { review: review_list, purge: purge_list },
+            function(data) {
+                //alert(data);
+            });
+    }
+}
 
+function showReviewed () {
+    show_reviewed = $("#toggleReviewed").prop('checked');
+    $.post('/itemresults/show_reviewed', { show: show_reviewed },
+        function(data){
+
+        });
 }
