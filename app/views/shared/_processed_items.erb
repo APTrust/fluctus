@@ -14,7 +14,7 @@
   <tbody>
   <% @items.each do |item| %>
       <tr class="<%= item.status %>">
-        <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
+        <td><%= link_to item.name, processed_item_path(id: item.id) %></td>
         <td><%= item.etag %></td>
         <td><%= item.institution %></td>
         <td><%= time_ago_in_words item.date %></td>

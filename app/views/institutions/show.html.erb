@@ -21,7 +21,8 @@
       <dd><%= @institution.intellectual_objects.count %></dd>
     </dl>
 
-    <%= render "shared/processed_items" %>
+    <%= render(:partial => "shared/processed_items", :collection => @items) || "No processed items to display" %>
+
     <%= link_to 'View All Jobs', processed_items_path %>
   </div>
 
