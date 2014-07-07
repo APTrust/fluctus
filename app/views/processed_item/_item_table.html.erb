@@ -1,6 +1,7 @@
 <table class="table">
   <thead>
   <tr>
+    <th></th>
     <th>Name</th>
     <th>Etag</th>
     <th>Institution</th>
@@ -11,13 +12,14 @@
     <% if current_user.admin? %>
         <th>Reviewed?</th>
     <% end %>
-    <th>Reviewed</th>
-    <th>Purge</th>
   </tr>
   </thead>
   <tbody>
   <% @items.each do |item| %>
       <tr class="<%= item.status %>">
+        <td>
+          <input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)">
+        </td>
         <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
         <td><%= item.etag %></td>
         <td><%= item.institution %></td>
@@ -28,25 +30,11 @@
         <% if current_user.admin? %>
             <td><%= item.reviewed %>  <%= item.purge %></td>
         <% end %>
-        <td><input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)"></td>
-        <td><% if item.status == "Failed" %>
-              <input type="checkbox" name="purge" value="purge" class="purge" disabled=true id="p_<%= item.id %>" >
-          <% end %></td>
       </tr>
   <% end %>
   </tbody>
 </table>
-<div >
-  <button type="submit" class="btn btn-normal" onclick="callHandleSelected()">Mark Selected as Reviewed and/or for Purge</button>
-  <br/>
-  <%= button_to "Mark All as Reviewed", { :controller => "processed_item", :action => "review_all"}, {class: "btn btn-normal" } %>
-  <%= button_to "Mark All for Purge", { :controller => "processed_item", action: "purge_all" }, {class: "btn btn-normal"}%>
 
-
-  <p>(Purge refers to failed items only)</p>
-
-
-</div>
 <div class="paging">
   <%= paginate @items %>
 </div>
