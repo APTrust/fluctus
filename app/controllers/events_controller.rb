@@ -73,8 +73,13 @@ protected
     params[:intellectual_object_id] = @parent_object.id
   end
 
+  # Loads the generic file to which the event being created is related.
+  # In dev environment, using WebBrick, converting '%2F' to '/' is not
+  # necessary, but it is required when running under Apache + Passenger,
+  # because they leave the '%2F' unescaped.
   def load_generic_file
-    @parent_object = GenericFile.where(tech_metadata__identifier_ssim: params[:generic_file_identifier]).first
+    gfid = params[:generic_file_identifier].gsub(/%2F/i, '/')
+    @parent_object = GenericFile.where(tech_metadata__identifier_ssim: gfid).first
     params['generic_file_id'] = @parent_object.id
   end
 
