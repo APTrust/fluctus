@@ -78,10 +78,12 @@ describe GenericFile do
           subject.destroy
           intellectual_object.destroy
         end
-        it "should reindex" do
-          intellectual_object.should_receive(:update_index)
-          subject.save!
-        end
+
+        # TURNED OFF BY A.D. 7/7/2014 BECAUSE SYSTEM IS UNUSABLE IN PRODUCTION WITH REINDEXING ON!
+        #it "should reindex" do
+        #  intellectual_object.should_receive(:update_index)
+        #  subject.save!
+        #end
       end
 
       describe "soft_delete" do

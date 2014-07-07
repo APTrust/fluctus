@@ -86,8 +86,10 @@ class GenericFile < ActiveFedora::Base
 
     # Force the generic_files to be reloaded
     # These could have been deleted, but they're still in solr
-    intellectual_object.generic_files(true)
-    intellectual_object.update_index
+
+    # TURNED OFF BY A.D. 7/7/2014 BECAUSE SYSTEM IS UNUSABLE IN PRODUCTION WITH REINDEXING ON!
+    # intellectual_object.generic_files(true)
+    # intellectual_object.update_index
   end
 
   def copy_permissions_from_intellectual_object
