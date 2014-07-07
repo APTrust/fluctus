@@ -27,26 +27,33 @@
       <dd><%= @intellectual_object.description %></dd>
     </dl>
   </div>
-  <div id="io-sidebar" class="col-md-3">
-    <%= link_to intellectual_object_events_path(@intellectual_object), class: 'btn doc-action-btn btn-normal' do %>
+
+  <div class="panel">
+    <%= link_to intellectual_object_events_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
         <i class="glyphicon glyphicon-eye-open"></i> View Events
     <% end %>
     <%= render_document_sidebar_partial %>
   </div>
 
-  <div class="object_children">
-    <h3>Preserved Files</h3>
-    <% @intellectual_object.generic_files.each do |gf| %>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <%= @intellectual_object.generic_files.count %> Files Preserved
+    </h3>
+    </div>
+    <div class="panel-body">
+      <% @intellectual_object.generic_files.each do |gf| %>
           <h4><%= link_to gf.identifier, gf  %></h4>
-        <dl class="dl-horizontal dl-invert">
-          <dt>Last Fixity</dt>
-          <dd><span class="label label-success">Success</span></dd>
-          <dt>MimeType<dt>
-          <dd><%= gf.format %></dd>
-          <dt>Filesize<dt>
-          <dd><%= number_to_human_size(gf.size) %></dd>
-        </dl>
-
-    <% end %>
+          <dl class="dl-horizontal dl-invert">
+            <dt>Last Fixity</dt>
+            <dd><span class="label label-success">Success</span></dd>
+            <dt>MimeType<dt>
+            <dd><%= gf.format %></dd>
+            <dt>Filesize<dt>
+            <dd><%= number_to_human_size(gf.size) %></dd>
+          </dl>
+      <% end %>
+    </div>
   </div>
+
 </div>
