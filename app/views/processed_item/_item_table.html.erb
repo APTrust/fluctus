@@ -4,15 +4,15 @@
     <th>Name</th>
     <th>Etag</th>
     <th>Institution</th>
-    <th>Processing Date</th>
+    <th>Processed</th>
     <th>Action</th>
     <th>Stage</th>
     <th>Status</th>
     <% if current_user.admin? %>
         <th>Reviewed?</th>
     <% end %>
-    <th>Mark as Reviewed</th>
-    <th>Purge from S3</th>
+    <th>Reviewed</th>
+    <th>Purge</th>
   </tr>
   </thead>
   <tbody>
@@ -21,7 +21,7 @@
         <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
         <td><%= item.etag %></td>
         <td><%= item.institution %></td>
-        <td><%= item.date %></td>
+        <td><%= time_ago_in_words item.date %></td>
         <td><%= item.action %></td>
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
