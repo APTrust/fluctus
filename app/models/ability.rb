@@ -28,6 +28,7 @@ class Ability
       can [:read, :update], Institution, pid: current_user.institution_pid
       can :create, GenericFile, :intellectual_object => { :institution_id => current_user.institution_pid }
       can :create, IntellectualObject, institution_id: current_user.institution_pid
+      can [:handle_selected, :review_all, :purge_all], ProcessedItem, institution: current_user.institution.identifier
     end
   end
   

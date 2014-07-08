@@ -27,20 +27,13 @@ tr.Failed { background-color: #f2dede; }
 tr.Succeeded { background-color: #dff0d8; }
 td.Processing { text-style: italic; }
 
-.filter {
-  display: inline;
-  float: left;
-  padding-left: 10px;
-  padding-right: 10px;
-}
  #remove {
    display: block;
    float: none;
  }
 
  ul {
-   list-style-type: none;
-   padding: 5px;
+
  }
 
  .selected {
@@ -50,11 +43,32 @@ td.Processing { text-style: italic; }
    border-width: 1px;
  }
 
- .filter {
+ #buttons table td, #buttons table {
+   float: right;
+  }
+
+ #buttons td {
    padding: 5px;
  }
 
- #status_title, #stage_title, #action_title {
+ #itemTable, #itemSidebar {
+   float: left;
+ }
 
+ #outerDiv {
+   overflow: hidden;
+   width: 1150px;
+ }
+
+ #itemSidebar {
+   width: 15%;
+ }
+
+ #itemTable {
+   width: 85%;
+ }
+
+ #header {
+   width: 1150px;
  }
 

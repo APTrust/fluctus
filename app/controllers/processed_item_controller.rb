@@ -37,6 +37,7 @@ class ProcessedItemController < ApplicationController
   end
 
   def handle_selected
+    check_user
     review_list = params[:review]
     purge_list = params[:purge]
     unless review_list.nil?
@@ -64,6 +65,7 @@ class ProcessedItemController < ApplicationController
   end
 
   def review_all
+    check_user
     institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
     items = ProcessedItem.where(bucket: institution_bucket)
     if(current_user.admin?)
@@ -78,6 +80,7 @@ class ProcessedItemController < ApplicationController
   end
 
   def purge_all
+    check_user
     institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
     puts "Session Time: #{session[:purge_datetime]}"
     items = ProcessedItem.where(bucket: institution_bucket, status: "Failed" )
@@ -103,6 +106,12 @@ class ProcessedItemController < ApplicationController
   def init_from_params
     @processed_item = ProcessedItem.new(processed_item_params)
     @processed_item.user = current_user.email
+  end
+
+  def check_user
+    if (current_user.institutional_user?)
+
+    end
   end
 
   def find_and_update

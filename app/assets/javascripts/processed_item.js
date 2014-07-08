@@ -1,17 +1,25 @@
 function statusToggle () {
     $("#status").toggle();
+    prettyToggle();
 }
 
 function stageToggle () {
     $("#stage").toggle();
+    prettyToggle();
 }
 
 function actionToggle () {
     $("#action").toggle();
+    prettyToggle();
 }
 
 function institutionToggle () {
     $("#institution").toggle();
+    prettyToggle();
+}
+
+function prettyToggle () {
+
 }
 
 function reviewAction (id) {
@@ -49,4 +57,9 @@ function showReviewed () {
         function(data){
 
         });
+}
+
+function addClassesToBtns () {
+    $("#buttons input").addClass('btn');
+    $("#buttons input").addClass('btn-normal');
 }

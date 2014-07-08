@@ -41,15 +41,14 @@
 <% if (@items.length == 0) %>
     <p>There are no items to display at this time.</p>
 <% end %>
-<div >
-  <button type="submit" class="btn btn-normal" onclick="callHandleSelected()">Mark Selected as Reviewed and/or for Purge</button>
-  <br/>
-  <%= button_to "Mark All as Reviewed", { :controller => "processed_item", :action => "review_all"}, {class: "btn btn-normal" } %>
-  <%= button_to "Mark All for Purge", { :controller => "processed_item", action: "purge_all" }, {class: "btn btn-normal"}%>
-
-
-  <p>(Purge refers to failed items only)</p>
-
+<div id="buttons">
+      <table>
+        <tr><td><button type="submit" class="btn btn-normal" onclick="callHandleSelected()">Mark Selected as Reviewed and/or for Purge</button></td><tr/>
+        <tr><td><%= button_to "Mark All as Reviewed", { :controller => "processed_item", :action => "review_all"}, data:  {confirm: 'Are you sure you want to mark these items as reviewed?'} %></td>
+        <td><%= button_to "Mark All for Purge", { :controller => "processed_item", action: "purge_all" }, data: {confirm: 'Are you sure you want to purge these items?'}%></td></tr>
+        <tr><td><p>(Purge refers to failed items only)</p></td></tr>
+      </table>
+      <script>addClassesToBtns()</script>
 
 </div>
 <div class="paging">

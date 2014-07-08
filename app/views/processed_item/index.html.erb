@@ -1,87 +1,86 @@
 <div id="content" class="col-md-10">
 
-  <section class="page-header">
+  <section class="page-header" id="header">
     <h2>Processed Items</h2>
   </section>
-  <div id="facets" class="facets sidenav">
-    <h3> Filter By: </h3>
+  <div id="outerDiv">
+  <div id="itemSidebar" class="facets sidenav col-md-3">
+    <div class="top-panel-heading panel-heading"><h4> Filter By: </h4></div>
     <div id="facet-panel-collapse" class="collapse panel-group">
-      <div class="filter"><span>
-        <h4 id="status_title" class="btn btn-normal" onclick="statusToggle()">Status</h4>
-      </span>
-        <div id="status" class="filter_div">
-          <ul>
+      <div class="filter panel panel-default facet_limit">
+        <div class="collapse-toggle panel-heading collapsed"><h5 id="status_title" class="panel-title" onclick="statusToggle()">Status</h5></div>
+        <div id="status" class="filter_div panel-collapse facet-content">
+          <div class="panel-body"><ul class="facet-values list-unstyled">
             <% @statuses.each do |status| %>
                 <% if status == @selected %>
                     <% class_variable = "selected" %>
                 <% else %>
                     <% class_variable = "" %>
                 <% end %>
-                <li><a href="<%= processed_items_path(status: status) %>" class="<%= class_variable %> filter"><%= status %></a></li>
+                <li><span class="facet-label"><a href="<%= processed_items_path(status: status) %>" class="<%= class_variable %> filter"><%= status %></a></span></li>
             <% end %>
-          </ul>
+          </ul></div>
         </div></div>
-      <div class="filter"><span>
-        <h4 id="stage_title" class="btn btn-normal" onclick="stageToggle()">Stage</h4>
-      </span>
-        <div id="stage" class="filter_div">
-          <ul>
+      <div class="filter panel panel-default facet_limit">
+        <div class="collapse-toggle panel-heading collapsed"><h5 id="stage_title" class="panel-title" onclick="stageToggle()">Stage</h5></div>
+        <div id="stage" class="filter_div panel-collapse facet-content">
+          <div class="panel-body"><ul class="facet-values list-unstyled">
             <% @stages.each do |stage| %>
                 <% if stage == @selected %>
                     <% class_variable = "selected" %>
                 <% else %>
                     <% class_variable = "" %>
                 <% end %>
-                <li><a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a></li>
+                <li><span class="facet-label"><a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a></span></li>
             <% end %>
-          </ul>
+          </ul></div>
         </div></div>
-      <div class="filter"><span>
-        <h4 id="action_title" class="btn btn-normal" onclick="actionToggle()">Action</h4>
-      </span>
-        <div id="action" class="filter_div">
-          <ul>
+      <div class="filter panel panel-default facet_limit">
+        <div class="collapse-toggle panel-heading collapsed"><h5 id="action_title" class="panel-title" onclick="actionToggle()">Action</h5></div>
+        <div id="action" class="filter_div panel-collapse facet-content">
+          <div class="panel-body"><ul class="facet-values list-unstyled">
             <% @actions.each do |action| %>
                 <% if action == @selected %>
                     <% class_variable = "selected" %>
                 <% else %>
                     <% class_variable = "" %>
                 <% end %>
-                <li><a href="<%= processed_items_path(actions: action) %>" class="<%= class_variable %> filter"><%= action %></a></li>
+                <li><span class="facet-label"><a href="<%= processed_items_path(actions: action) %>" class="<%= class_variable %> filter"><%= action %></a></span></li>
             <% end %>
-          </ul>
+          </ul></div>
         </div></div>
       <% if current_user.admin? %>
-          <div class="filter"><span>
-        <h4 id="institution_title" class="btn btn-normal" onclick="institutionToggle()">Institution</h4>
-      </span>
-            <div id="institution" class="filter_div">
-              <ul>
-                <% @institutions.each do |inst| %>
-                    <% if inst == @selected %>
-                        <% class_variable = "selected" %>
-                    <% else %>
-                        <% class_variable = "" %>
-                    <% end %>
-                    <li><a href="<%= processed_items_path(institution: inst) %>" class="<%= class_variable %> filter"><%= inst %></a></li>
-                <% end %>
-              </ul>
-            </div></div>
+        <div class="filter panel panel-default facet_limit">
+          <div class="collapse-toggle panel-heading collapsed"><h5 id="institution_title" class="panel-title" onclick="institutionToggle()">Institution</h5></div>
+              <div id="institution" class="filter_div panel-collapse facet-content">
+                <div class="panel-body"><ul class="facet-values list-unstyled">
+                  <% @institutions.each do |inst| %>
+                      <% if inst == @selected %>
+                          <% class_variable = "selected" %>
+                      <% else %>
+                          <% class_variable = "" %>
+                      <% end %>
+                      <li><span class="facet-label"><a href="<%= processed_items_path(institution: inst) %>" class="<%= class_variable %> filter"><%= inst %></a></span></li>
+                  <% end %>
+                </ul></div>
+              </div></div>
       <% end %>
     </div>
     <script>
         $(".filter_div").toggle()
     </script>
+    <span id="remove">
+        <a class="btn btn-normal" href="<%= processed_items_path %>">Remove Filters</a>
+      </span>
     <div>
+      <br/>
       <label>Show Reviewed Items? </label>
       <input type="checkbox" id="toggleReviewed" onclick="showReviewed()" >
       <script> $("#toggleReviewed").prop('checked', <%= session[:show_reviewed] %>) </script>
     </div>
-    <span id="remove">
-        <a class="btn btn-normal" href="<%= processed_items_path %>">Remove Filters</a>
-      </span>
   </div>
-  <section id="itemTable" class="queue">
+  <div id="itemTable" class="queue col-md-10">
      <%= render 'item_table' %>
-  </section>
+  </div>
+  </div>
 </div>
