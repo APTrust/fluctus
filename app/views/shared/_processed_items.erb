@@ -12,16 +12,20 @@
   </tr>
   </thead>
   <tbody>
-  <% @items.each do |item| %>
-      <tr class="<%= item.status %>">
-        <td><%= link_to item.name, processed_item_path(id: item.id) %></td>
-        <td><%= item.etag %></td>
-        <td><%= item.institution %></td>
-        <td><%= time_ago_in_words item.date %></td>
-        <td><%= item.action %></td>
-        <td><%= item.stage %></td>
-        <td><%= item.status %></td>
-      </tr>
-  <% end %>
+  <% if @items.empty? %>
+          No Processed Items to display.
+  <% else %>
+      <% @items.each do |item| %>
+          <tr class="<%= item.status %>">
+            <td><%= link_to item.name, processed_item_path(id: item.id) %></td>
+            <td><%= item.etag %></td>
+            <td><%= item.institution %></td>
+            <td><%= time_ago_in_words item.date %></td>
+            <td><%= item.action %></td>
+            <td><%= item.stage %></td>
+            <td><%= item.status %></td>
+          </tr>
+      <% end %>
+      <% end %>
   </tbody>
 </table>

@@ -148,13 +148,12 @@ class ProcessedItemController < ApplicationController
       session[:select_notice] = ""
     end
     @institution = current_user.institution
-    institution_bucket = 'aptrust.receiving.'+ @institution.identifier
     if(session[:show_reviewed] == 'true')
-      @processed_items = ProcessedItem.where(bucket: institution_bucket)
+      @processed_items = ProcessedItem.where(institution: @institution.identifier)
     else
-      @processed_items = ProcessedItem.where(bucket: institution_bucket, reviewed: false)
+      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false)
     end
-    if(@institution.name == 'APTrust')
+    if current_user.admin?
       @processed_items = ProcessedItem.all()
     end
     @filtered_items = @processed_items

@@ -28,11 +28,11 @@ class InstitutionsController < ApplicationController
     end
 
     def set_recent_objects
-      bucket = "aptrust.receiving."+ @institution.identifier
-      if(@institution.name == "APTrust")
+      if current_user.admin?
         @items = ProcessedItem.order("date").limit(10)
       else
-        @items = ProcessedItem.where(bucket: bucket).order("date").limit(10)
+        @items = ProcessedItem.where(institution: @institution.identifier).order("date").limit(10)
       end
+      @failed = @items.where(status: "Failed")
     end
 end
