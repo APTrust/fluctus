@@ -1,25 +1,16 @@
-function statusToggle () {
-    $("#status").toggle();
-    prettyToggle();
-}
-
-function stageToggle () {
-    $("#stage").toggle();
-    prettyToggle();
-}
-
-function actionToggle () {
-    $("#action").toggle();
-    prettyToggle();
-}
-
-function institutionToggle () {
-    $("#institution").toggle();
-    prettyToggle();
-}
-
-function prettyToggle () {
-
+function selected (category, filter) {
+    $("#filter-"+category+" ul li").remove();
+    var parent = $("#"+category+"-parent")[0];
+    $(parent).addClass("facet_limit-active");
+    jQuery('<li/>').appendTo("#filter-"+category+" ul");
+    jQuery('<span/>', {
+        class: "facet-label"
+    }).appendTo("#filter-"+category+" ul li");
+    jQuery('<span/>', {
+        class: "selected",
+        text: filter
+    }).appendTo("#filter-"+category+" ul li span");
+    $("#filter-title-"+category).click();
 }
 
 function reviewAction (id) {

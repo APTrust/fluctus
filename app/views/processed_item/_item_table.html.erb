@@ -10,8 +10,8 @@
     <th>Stage</th>
     <th>Status</th>
     <% if current_user.admin? %>
-        <th>Reviewed?</th>
-        <th>Purged?</th>
+        <th>Reviewed?
+        Purged?</th>
     <% end %>
   </tr>
   </thead>
@@ -29,8 +29,8 @@
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
         <% if current_user.admin? %>
-            <td><%= item.reviewed %></td>
-            <td><%= item.purge %></td>
+            <td><%= item.reviewed %><br/>
+            <%= item.purge %></td>
         <% end %>
       </tr>
   <% end %>

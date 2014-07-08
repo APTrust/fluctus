@@ -4,66 +4,66 @@
 
     <div id="facet-panel-collapse" class="collapse panel-group">
 
-      <div class="panel panel-default">
-        <div class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-status">
+      <div id="status-parent" class="panel panel-default">
+        <div id="filter-title-status" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-status">
           <h5 class="panel-title">Status</h5>
         </div>
         <div id="filter-status" class="panel-collapse facet-content collapse" style="height: 0px;">
           <div class="panel-body">
             <ul class="facet-values list-unstyle">
               <% @statuses.each do |status| %>
-                  <% if status == @selected %>
-                      <% class_variable = "selected" %>
-                  <% else %>
-                      <% class_variable = "" %>
-                  <% end %>
                   <li>
-                    <a href="<%= processed_items_path(status: status) %>" class="<%= class_variable %> filter"><%= status %></a>
+                    <span class="facet-label"><a href="<%= processed_items_path(status: status) %>" ><%= status %></a></span>
                   </li>
+              <% end %>
+              <% @statuses.each do |status| %>
+                  <% if status == @selected %>
+                      <script>selected("status", "<%= status %>")</script>
+                  <% end %>
               <% end %>
             </ul>
           </div>
         </div>
       </div>
 
-      <div class="panel panel-default">
-        <div class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-stage">
+      <div id="stage-parent" class="panel panel-default">
+        <div id="filter-title-stage" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-stage">
           <h5 class="panel-title">Stage</h5>
         </div>
         <div id="filter-stage" class="panel-collapse facet-content collapse" style="height: 0px;">
           <div class="panel-body">
             <ul class="facet-values list-unstyle">
               <% @stages.each do |stage| %>
-                  <% if stage == @selected %>
-                      <% class_variable = "selected" %>
-                  <% else %>
-                      <% class_variable = "" %>
-                  <% end %>
                   <li>
-                    <a href="<%= processed_items_path(stage: stage) %>" class="<%= class_variable %> filter"><%= stage %></a>
+                    <span class="facet-label"><a href="<%= processed_items_path(stage: stage) %>" ><%= stage %></a></span>
                   </li>
+              <% end %>
+              <% @stages.each do |stage| %>
+                  <% if stage == @selected %>
+                      <script>selected("stage", "<%= stage %>")</script>
+                  <% end %>
               <% end %>
             </ul>
           </div>
         </div>
       </div>
 
-      <div class="panel panel-default">
-        <div class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-action">
+      <div id="action-parent" class="panel panel-default">
+        <div id="filter-title-action" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-action">
           <h5 class="panel-title">Action</h5>
         </div>
         <div id="filter-action" class="panel-collapse facet-content collapse" style="height: 0px;">
           <div class="panel-body">
             <ul class="facet-values list-unstyle">
               <% @actions.each do |action| %>
-                  <% if action == @selected %>
-                      <% class_variable = "selected" %>
-                  <% else %>
-                      <% class_variable = "" %>
-                  <% end %>
                   <li>
-                    <a href="<%= processed_items_path(actions: action) %>" class="<%= class_variable %> filter"><%= action %></a>
+                    <span class="facet-label"><a href="<%= processed_items_path(actions: action) %>" ><%= action %></a></span>
                   </li>
+              <% end %>
+              <% @actions.each do |action| %>
+                  <% if action == @selected %>
+                     <script>selected("action", "<%= action %>")</script>
+                  <% end %>
               <% end %>
             </ul>
           </div>
@@ -71,22 +71,22 @@
       </div>
 
       <% if current_user.admin? %>
-          <div class="panel panel-default">
-            <div class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-institution">
+          <div id="institution-parent" class="panel panel-default">
+            <div id="filter-title-institution" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-institution">
               <h5 class="panel-title">Institution</h5>
             </div>
             <div id="filter-institution" class="panel-collapse facet-content collapse" style="height: 0px;">
               <div class="panel-body">
                 <ul class="facet-values list-unstyle">
                   <% @institutions.each do |inst| %>
-                      <% if inst == @selected %>
-                          <% class_variable = "selected" %>
-                      <% else %>
-                          <% class_variable = "" %>
-                      <% end %>
                       <li>
-                        <a href="<%= processed_items_path(institution: inst) %>" class="<%= class_variable %> filter"><%= inst %></a>
+                        <span class="facet-label"><a href="<%= processed_items_path(institution: inst) %>" ><%= inst %></a></span>
                       </li>
+                  <% end %>
+                  <% @institutions.each do |inst| %>
+                      <% if inst == @selected %>
+                         <script>selected("institution", "<%= inst %>")</script>
+                      <% end %>
                   <% end %>
                 </ul>
               </div>

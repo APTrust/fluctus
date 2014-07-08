@@ -27,48 +27,22 @@ tr.Failed { background-color: #f2dede; }
 tr.Succeeded { background-color: #dff0d8; }
 td.Processing { text-style: italic; }
 
- #remove {
-   display: block;
-   float: none;
- }
+#remove {
+  display: block;
+  float: none;
+}
 
- ul {
+ul {
+  list-style-type: none;
+  padding: 5px;
+}
 
- }
+//.selected {
+//  background-color: #dddddd;
+//  border-color: #000000;
+//  border: solid;
+//  border-width: 1px;
+//}
 
- .selected {
-   background-color: #dddddd;
-   border-color: #000000;
-   border: solid;
-   border-width: 1px;
- }
 
- #buttons table td, #buttons table {
-   float: right;
-  }
-
- #buttons td {
-   padding: 5px;
- }
-
- #itemTable, #itemSidebar {
-   float: left;
- }
-
- #outerDiv {
-   overflow: hidden;
-   width: 1150px;
- }
-
- #itemSidebar {
-   width: 15%;
- }
-
- #itemTable {
-   width: 85%;
- }
-
- #header {
-   width: 1150px;
- }
 
