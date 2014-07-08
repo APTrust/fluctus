@@ -1,4 +1,4 @@
-$logo_image: 'aptrust/aptrust_nodes_icon.png';
+$logo_image: '';
 $apt_red: #800000;
 $apt_black: #180000;
 
@@ -7,15 +7,16 @@ $apt_black: #180000;
 
 #header-navbar .navbar-brand {
   width: auto;
-  text-indent: 45px;
   font-size: 2em;
   font-weight: bold;
   color: $apt_black;
+  text-indent: 0;
+  padding: 0;
+  height: 75px;
 }
 
-#header-navbar .navbar-brand em {
-  color: $apt_red;
-  font-style: normal;
+#search-navbar {
+  margin-left: 25px;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {

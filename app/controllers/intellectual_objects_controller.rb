@@ -1,5 +1,6 @@
 class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
+  before_filter :load_object, only: [:show, :update]
   load_and_authorize_resource :institution, only: [:index, :create]
   load_and_authorize_resource :through => :institution, only: :create
   load_and_authorize_resource except: [:index, :create]
@@ -65,7 +66,7 @@ class IntellectualObjectsController < ApplicationController
   # Override Fedora's default JSON serialization for our API
   def object_as_json
     if params[:include_relations]
-      @intellectual_object.serializable_hash(include: {generic_files: { include: [:checksum_attributes, :premisEvents]}})
+      @intellectual_object.serializable_hash(include: {generic_files: { include: [:checksum, :premisEvents]}})
     else
       @intellectual_object.serializable_hash()
     end
@@ -77,4 +78,14 @@ class IntellectualObjectsController < ApplicationController
                                                 :alt_identifier)
   end
 
+  def load_object
+    if params[:identifier] && params[:id].blank?
+      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: params[:identifier]).first
+      # Solr permissions handler expects params[:id] to be the object ID,
+      # and will blow up if it's not. So humor it.
+      params[:id] = @intellectual_object.id
+    else
+      @intellectual_object ||= IntellectualObject.find(params[:id])
+    end
+  end
 end

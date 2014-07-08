@@ -1,25 +1,27 @@
 <h4>Most Recent Jobs for <%= @institution.name %></h4>
-<table class="table table-striped">
+<table class="table">
+  <thead>
   <tr>
     <th>Name</th>
     <th>Etag</th>
     <th>Institution</th>
-    <th>Processing Date</th>
+    <th>Processed</th>
     <th>Action</th>
     <th>Stage</th>
     <th>Status</th>
   </tr>
-  <% if !@items.nil? %>
+  </thead>
+  <tbody>
   <% @items.each do |item| %>
       <tr class="<%= item.status %>">
-        <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
+        <td><%= link_to item.name, processed_item_path(id: item.id) %></td>
         <td><%= item.etag %></td>
         <td><%= item.institution %></td>
-        <td><%= item.date %></td>
+        <td><%= time_ago_in_words item.date %></td>
         <td><%= item.action %></td>
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
       </tr>
   <% end %>
-  <% end %>
+  </tbody>
 </table>

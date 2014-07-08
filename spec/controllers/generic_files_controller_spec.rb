@@ -14,6 +14,26 @@ describe GenericFilesController do
     GenericFile.delete_all
   end
 
+  describe "GET #index" do
+    before do
+      sign_in user
+      file.premisEvents.events_attributes = [
+          FactoryGirl.attributes_for(:premis_event_ingest),
+          FactoryGirl.attributes_for(:premis_event_fixity_generation)
+      ]
+      file.save!
+      get :show, id: file.pid
+    end
+
+    it 'can index files by intel obj identifier' do
+      get :index, intellectual_object_identifier: URI.encode(@intellectual_object.identifier), format: :json
+      expect(response).to be_successful
+      expect(assigns(:intellectual_object)).to eq @intellectual_object
+    end
+
+  end
+
+
   describe "GET #show" do
     before do
       sign_in user
@@ -37,6 +57,13 @@ describe GenericFilesController do
     it 'assigns events' do
       assigns(:events).count.should == file.premisEvents.events.count
     end
+
+    it "should show the file by identifier for API users" do
+      get :show, identifier: URI.encode(file.identifier), use_route: 'file_by_identifier_path'
+      expect(response).to be_successful
+      expect(assigns(:generic_file)).to eq file
+    end
+
   end
 
 
@@ -88,6 +115,17 @@ describe GenericFilesController do
           expect(file.identifier).to eq 'test.edu/12345678/data/mybucket/puppy.jpg'
         end
       end
+
+      it "should add generic file using API identifier" do
+        post :create, intellectual_object_identifier: URI.escape(obj1.identifier), generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/puppy.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        expect(response.code).to eq '201'
+        assigns(:generic_file).tap do |file|
+          expect(file.uri).to eq 'path/within/bag'
+          expect(file.content.dsLocation).to eq 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg'
+          expect(file.identifier).to eq 'test.edu/12345678/data/mybucket/puppy.jpg'
+        end
+      end
+
     end
   end
 
@@ -97,7 +135,7 @@ describe GenericFilesController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), trailing_slash: true
+        patch :update, intellectual_object_id: file.intellectual_object, id: file.id, trailing_slash: true
         expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
@@ -109,18 +147,25 @@ describe GenericFilesController do
       describe "and deleteing a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it "should be forbidden" do
-          patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_id: file.intellectual_object, id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
       end
 
       describe "and you have access to the file" do
-        it "should delete the file" do
-          patch :update, intellectual_object_id: file.intellectual_object, id: file.uri.sub("file://", ''), generic_file: {size: 99}, format: 'json', trailing_slash: true
+        it "should update the file" do
+          patch :update, intellectual_object_id: file.intellectual_object, id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(assigns[:generic_file].size).to eq 99 
           expect(response.code).to eq '204'
         end
+
+        it "should update the file by identifier (API)" do
+          patch :update, identifier: URI.escape(file.identifier), id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
+          expect(assigns[:generic_file].size).to eq 99
+          expect(response.code).to eq '204'
+        end
+
       end
     end
   end

@@ -1,10 +1,17 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
-  before_filter :load_intellectual_object, only: [:update]
+  before_filter :load_generic_file, only: [:show, :update]
+  before_filter :load_intellectual_object, only: [:update, :create, :index]
   load_and_authorize_resource :intellectual_object, only: [:create, :update]
   load_and_authorize_resource through: :intellectual_object, only: [:create]
   load_and_authorize_resource except: [:create, :update]
+
+  def index
+    respond_to do |format|
+      format.json { render json: @intellectual_object.generic_files.map do |f| f.serializable_hash end }
+    end
+  end
 
   def show
     respond_to do |format|
@@ -24,10 +31,9 @@ class GenericFilesController < ApplicationController
         format.json { render json: resource.errors, status: :unprocessable_entity }
       end
     end
-  end
+ end
 
   def update
-    @generic_file = @intellectual_object.generic_files.where(uri: params[:id]).first
     authorize! :update, resource
     if resource.update(params_for_update)
       head :no_content
@@ -69,12 +75,16 @@ class GenericFilesController < ApplicationController
                                                                    :modified, :format)
   end
 
+
   def resource
     @generic_file
   end
 
   def load_intellectual_object
-    if params[:intellectual_object_id]
+    if params[:intellectual_object_identifier]
+      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
+      params[:intellectual_object_id] = @intellectual_object.id
+    elsif params[:intellectual_object_id]
       @intellectual_object ||= IntellectualObject.find(params[:intellectual_object_id])
     else
       @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
@@ -84,9 +94,23 @@ class GenericFilesController < ApplicationController
   # Override Fedora's default JSON serialization for our API
   def object_as_json
     if params[:include_relations]
-      @generic_file.serializable_hash(include: [:cheksum_attributes, :premisEvents])
+      @generic_file.serializable_hash(include: [:checksum, :premisEvents])
     else
       @generic_file.serializable_hash()
+    end
+  end
+
+  # Load generic file by identifier, if we got that, or by id if we got an id.
+  # Identifiers always start with data/, so we can look for a slash. Ids include
+  # a urn, a colon, and an integer. They will not include a slash.
+  def load_generic_file
+    if params[:generic_file_identifier]
+      @generic_file ||= GenericFile.where(tech_metadata__identifier_ssim: params[:generic_file_identifier]).first
+      # Solr permissions handler expects params[:id] to be the object ID,
+      # and will blow up if it's not. So humor it.
+      params[:id] = @generic_file.id
+    elsif params[:id]
+      @generic_file ||= GenericFile.find(params[:id])
     end
   end
 

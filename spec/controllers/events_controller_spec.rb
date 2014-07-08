@@ -36,6 +36,15 @@ describe EventsController do
         assigns(:document_list).length.should == 1
         assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
       end
+
+      it "can view objects events by object identifier (API)" do
+        get :index, intellectual_object_identifier: someone_elses_object.identifier, use_route: 'events_by_object_identifier_path'
+        expect(response).to be_success
+        assigns(:intellectual_object).should == someone_elses_object
+        assigns(:document_list).length.should == 1
+        assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
+      end
+
     end
   end
 
@@ -57,6 +66,17 @@ describe EventsController do
         flash[:notice].should =~ /Successfully created new event/
       end
 
+      it 'creates an event for the generic file using generic file identifier (API)' do
+        file.premisEvents.events.count.should == 0
+        post :create, generic_file_identifier: URI.escape(file.identifier), event: event_attrs, format: :json, use_route: 'events_by_file_identifier_path'
+        file.reload
+
+        file.premisEvents.events.count.should == 1
+        assigns(:parent_object).should == file
+        # API response should be 201/created instead of redirect that the HTML client gets
+        expect(response.status).to eq(201)
+      end
+
       it 'creates an event for an intellectual object' do
         object.premisEvents.events.count.should == 0
         post :create, intellectual_object_id: object, event: event_attrs
@@ -68,6 +88,20 @@ describe EventsController do
         assigns(:event).should_not be_nil
         flash[:notice].should =~ /Successfully created new event/
       end
+
+
+      it 'creates an event for an intellectual object by object identifier' do
+        object.premisEvents.events.count.should == 0
+        post :create, intellectual_object_identifier: URI.escape(object.identifier), event: event_attrs, use_route: 'events_by_object_identifier_path'
+        object.reload
+
+        object.premisEvents.events.count.should == 1
+        response.should redirect_to intellectual_object_path(object)
+        assigns(:parent_object).should == object
+        assigns(:event).should_not be_nil
+        flash[:notice].should =~ /Successfully created new event/
+      end
+
 
       it 'if it fails, it prints a fail message' do
         file.premisEvents.events.count.should == 0

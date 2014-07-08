@@ -1,10 +1,11 @@
 <table class="table">
   <thead>
   <tr>
+    <th></th>
     <th>Name</th>
     <th>Etag</th>
     <th>Institution</th>
-    <th>Processing Date</th>
+    <th>Processed</th>
     <th>Action</th>
     <th>Stage</th>
     <th>Status</th>
@@ -12,17 +13,18 @@
         <th>Reviewed?</th>
         <th>Purged?</th>
     <% end %>
-    <th>Mark as Reviewed</th>
-    <th>Purge from S3</th>
   </tr>
   </thead>
   <tbody>
   <% @items.each do |item| %>
       <tr class="<%= item.status %>">
+        <td>
+          <input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)">
+        </td>
         <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
         <td><%= item.etag %></td>
         <td><%= item.institution %></td>
-        <td><%= item.date %></td>
+        <td><%= time_ago_in_words item.date %></td>
         <td><%= item.action %></td>
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
@@ -30,10 +32,6 @@
             <td><%= item.reviewed %></td>
             <td><%= item.purge %></td>
         <% end %>
-        <td><input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)"></td>
-        <td><% if item.status == "Failed" %>
-              <input type="checkbox" name="purge" value="purge" class="purge" disabled=true id="p_<%= item.id %>" >
-          <% end %></td>
       </tr>
   <% end %>
   </tbody>
@@ -41,16 +39,6 @@
 <% if (@items.length == 0) %>
     <p>There are no items to display at this time.</p>
 <% end %>
-<div id="buttons">
-      <table>
-        <tr><td><button type="submit" class="btn btn-normal" onclick="callHandleSelected()">Mark Selected as Reviewed and/or for Purge</button></td><tr/>
-        <tr><td><%= button_to "Mark All as Reviewed", { :controller => "processed_item", :action => "review_all"}, data:  {confirm: 'Are you sure you want to mark these items as reviewed?'} %></td>
-        <td><%= button_to "Mark All for Purge", { :controller => "processed_item", action: "purge_all" }, data: {confirm: 'Are you sure you want to purge these items?'}%></td></tr>
-        <tr><td><p>(Purge refers to failed items only)</p></td></tr>
-      </table>
-      <script>addClassesToBtns()</script>
-
-</div>
 <div class="paging">
   <%= paginate @items %>
 </div>

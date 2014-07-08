@@ -16,7 +16,6 @@ class GenericFile < ActiveFedora::Base
   validates_presence_of :created
   validates_presence_of :modified
   validates_presence_of :format
-  #validates_presence_of :checksum
   validates_presence_of :identifier
   validate :has_right_number_of_checksums
 
@@ -58,7 +57,7 @@ class GenericFile < ActiveFedora::Base
       identifier: identifier,
     }
     if options.has_key?(:include)
-      data.merge!(checksum_attributes: serialize_checksums) if options[:include].include?(:checksum_attributes)
+      data.merge!(checksum: serialize_checksums) if options[:include].include?(:checksum)
       data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
     end
     data
@@ -87,8 +86,10 @@ class GenericFile < ActiveFedora::Base
 
     # Force the generic_files to be reloaded
     # These could have been deleted, but they're still in solr
-    intellectual_object.generic_files(true)
-    intellectual_object.update_index
+
+    # TURNED OFF BY A.D. 7/7/2014 BECAUSE SYSTEM IS UNUSABLE IN PRODUCTION WITH REINDEXING ON!
+    # intellectual_object.generic_files(true)
+    # intellectual_object.update_index
   end
 
   def copy_permissions_from_intellectual_object

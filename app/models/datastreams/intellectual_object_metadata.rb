@@ -7,7 +7,7 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
       index.as :stored_searchable
     end
     map.identifier(in: RDF::DC, to: 'relation') do |index|
-      index.as :stored_searchable
+      index.as :symbol, :stored_searchable
     end
     map.alt_identifier(in: RDF::DC, to: 'identifier') do |index|
       index.as :stored_searchable
