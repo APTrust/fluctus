@@ -11,7 +11,7 @@ FactoryGirl.define do
     date { Time.now.utc }
     note { Faker::Lorem.sentence }
     action { ['Ingest', 'Fixity Check', 'Retrieval', 'Deletion'].sample }
-    stage { ['Fetch', 'Unpack', 'Validate', 'Store', 'Record'].sample }
+    stage { ['Receive', 'Fetch', 'Unpack', 'Validate', 'Store', 'Record'].sample }
     status { ['Succeeded', 'Failed', 'Processing'].sample }
     outcome { Faker::Lorem.sentence }
     reviewed { false }

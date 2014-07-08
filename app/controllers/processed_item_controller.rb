@@ -105,7 +105,7 @@ class ProcessedItemController < ApplicationController
 
   def set_filter_values
     @statuses = ['Succeeded', 'Processing', 'Failed']
-    @stages = ['Fetch', 'Unpack', 'Validate', 'Store', 'Record']
+    @stages = ['Receive', 'Fetch', 'Unpack', 'Validate', 'Store', 'Record']
     @actions = ['Ingest', 'Fixity Check', 'Retrieval', 'Deletion']
     @institutions = Array.new
     Institution.all.each do |inst|
