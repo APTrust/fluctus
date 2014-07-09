@@ -82,7 +82,8 @@ class GenericFilesController < ApplicationController
 
   def load_intellectual_object
     if params[:intellectual_object_identifier]
-      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
+      objId = params[:intellectual_object_identifier].gsub(/%2F/i, '/')
+      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: objId).first
       params[:intellectual_object_id] = @intellectual_object.id
     elsif params[:intellectual_object_id]
       @intellectual_object ||= IntellectualObject.find(params[:intellectual_object_id])
@@ -105,7 +106,8 @@ class GenericFilesController < ApplicationController
   # a urn, a colon, and an integer. They will not include a slash.
   def load_generic_file
     if params[:generic_file_identifier]
-      @generic_file ||= GenericFile.where(tech_metadata__identifier_ssim: params[:generic_file_identifier]).first
+      gfid = params[:generic_file_identifier].gsub(/%2F/i, '/')
+      @generic_file ||= GenericFile.where(tech_metadata__identifier_ssim: gfid).first
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
       params[:id] = @generic_file.id
