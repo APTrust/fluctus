@@ -49,9 +49,15 @@ Fluctus::Application.routes.draw do
 
   post '/objects/:intellectual_object_identifier/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_identifier: /[^\/]*/
   get  '/objects/:intellectual_object_identifier/files(.:format)', to: 'generic_files#index', format: 'json', intellectual_object_identifier: /[^\/]*/
-  get  '/objects/:identifier', to: 'intellectual_objects#show', format: 'json', identifier: /[^\/]*/
-  put  '/objects/:identifier', to: 'intellectual_objects#update', format: 'json', identifier: /[^\/]*/
-  post '/objects/:intellectual_object_identifier/events(.:format)', to: 'events#create', format: 'json', intellectual_object_identifier: /[^\/\.]*\.[^\/]*/, as: 'events_by_object_identifier'
+
+  # We should NOT have to use the pattern /.*/ to match the identifier for showing and updating
+  # intellectual objects. The much safer pattern /[^\/]*/ works just fine in external integration
+  # tests from the Go client. However, spec cannot match the routes when we use the /[^\/]*/ pattern,
+  # even when we tell spec the name of the route to use. Spec always fails, until we use the
+  # more dangerous /.*/ pattern. Way to go!
+  get  '/objects/:identifier', to: 'intellectual_objects#show', format: 'json', identifier: /.*/, as: 'object_by_identifier'
+  put  '/objects/:identifier', to: 'intellectual_objects#update', format: 'json', identifier: /.*/, as: 'object_update_by_identifier'
+  post '/objects/:intellectual_object_identifier/events(.:format)', to: 'events#create', format: 'json', intellectual_object_identifier: /[^\/]*/, as: 'events_by_object_identifier'
 
   get  '/files/:generic_file_identifier', to: 'generic_files#show', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_by_identifier'
   put  '/files/:generic_file_identifier', to: 'generic_files#update', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_update_by_identifier'

@@ -34,7 +34,7 @@ describe IntellectualObjectsController do
                                        identifier: 'jhu.d9abff425d09d5b0') }
       let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object,
                                        institution: another_institution) }
-        
+
       before { sign_in user }
       describe "as an institutional user" do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
@@ -101,7 +101,7 @@ describe IntellectualObjectsController do
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_user) }
       before { sign_in user }
-        
+
       it "should show the object" do
         get :show, id: obj1
         expect(response).to be_successful
@@ -109,7 +109,7 @@ describe IntellectualObjectsController do
       end
 
       it "should show the object by identifier for API users" do
-        get :show, identifier: URI.encode(obj1.identifier)
+        get :show, identifier: obj1.identifier, use_route: 'object_by_identifier'
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
       end
@@ -133,7 +133,7 @@ describe IntellectualObjectsController do
       describe "as an institutional_user" do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
         before { sign_in user }
-          
+
         it "should be unauthorized" do
           get :edit, id: obj1
           expect(response).to redirect_to root_url
@@ -143,7 +143,7 @@ describe IntellectualObjectsController do
       describe "as an institutional_admin" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin) }
         before { sign_in user }
-          
+
         it "should show the object" do
           get :edit, id: obj1
           expect(response).to be_successful
@@ -175,7 +175,7 @@ describe IntellectualObjectsController do
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(session[:search][:counter]).to eq '5'
       end
-       
+
       it "should update fields" do
         patch :update, id: obj1, intellectual_object: {title: 'Foo'}
         expect(response).to redirect_to intellectual_object_path(obj1)
@@ -183,7 +183,7 @@ describe IntellectualObjectsController do
       end
 
       it "should update fields when called with identifier (API)" do
-        patch :update, identifier: obj1.identifier, intellectual_object: {title: 'Foo'}
+        patch :update, identifier: obj1.identifier, intellectual_object: {title: 'Foo'}, use_route: 'object_update_by_identifier'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
@@ -208,7 +208,7 @@ describe IntellectualObjectsController do
     describe "when signed in" do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
       before { sign_in user }
-        
+
       it "should only allow assigning institutions you have access to" do
         post :create, institution_id: FactoryGirl.create(:institution), intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response.code).to eq "403" # forbidden
