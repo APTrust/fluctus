@@ -69,7 +69,8 @@ protected
   end
 
   def load_intellectual_object
-    @parent_object = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
+    objId = params[:intellectual_object_identifier].gsub(/%2F/i, '/')
+    @parent_object = IntellectualObject.where(desc_metadata__identifier_ssim: objId).first
     params[:intellectual_object_id] = @parent_object.id
   end
 
