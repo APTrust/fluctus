@@ -13,7 +13,7 @@
     <ol class="breadcrumb">
       <li><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %></li>
       <li><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %></li>
-      <li><%= link_to @generic_file.uri, @generic_file %></li>
+      <li><%= link_to @generic_file.display, @generic_file %></li>
       <li class="active">Events</li>
     </ol>
 <% end %>

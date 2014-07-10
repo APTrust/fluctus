@@ -29,6 +29,10 @@ class GenericFile < ActiveFedora::Base
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
   end
 
+  def display
+    identifier
+  end
+
   def content_uri= uri
     content.dsLocation = uri
   end
