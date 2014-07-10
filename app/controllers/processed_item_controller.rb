@@ -41,7 +41,7 @@ class ProcessedItemController < ApplicationController
       review_list.each do |item|
         id = item.split("_")[1]
         proc_item = ProcessedItem.find(id)
-        if(proc_item.status != 'Processing')
+        unless proc_item.status == Fluctus::Application::PROC_ITEM_STATUSES[1]
           proc_item.reviewed = true;
           proc_item.save!
         end
@@ -62,7 +62,7 @@ class ProcessedItemController < ApplicationController
     end
     items.each do |item|
       puts "Item date: #{item.date}, <? System Purge Date: #{session[:purge_datetime]}: #{item.date < session[:purge_datetime]}"
-      if(item.date < session[:purge_datetime] && item.status != 'Processing')
+      if (item.date < session[:purge_datetime] && item.status != Fluctus::Application::PROC_ITEM_STATUSES[1])
         item.reviewed = true
         item.save!
       end
