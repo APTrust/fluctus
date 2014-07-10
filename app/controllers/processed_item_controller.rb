@@ -29,8 +29,8 @@ class ProcessedItemController < ApplicationController
   end
 
   # This is an API call for the bucket reader that queues up work for
-  # the bag processor. It returns all of the ProcessedItems *successfully*
-  # ingested since the specified timestamp.
+  # the bag processor. It returns all of the items that have started
+  # the ingest process since the specified timestamp.
   def ingested_since
     since = params[:since]
     begin
@@ -43,8 +43,7 @@ class ProcessedItemController < ApplicationController
         err = { 'error' => 'Param since must be a valid datetime' }
         format.json { render json: err, status: :bad_request }
       else
-        where = "action='Ingest' and stage='Record' and status='Succeeded' and date >= ?"
-        @items = ProcessedItem.where(where, dtSince)
+        @items = ProcessedItem.where("action='Ingest' and date >= ?", dtSince)
         format.json { render json: @items, status: :ok }
       end
     end
