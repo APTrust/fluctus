@@ -27,34 +27,31 @@ tr.Failed { background-color: #f2dede; }
 tr.Succeeded { background-color: #dff0d8; }
 td.Processing { text-style: italic; }
 
-.filter {
-  display: inline;
-  float: left;
-  padding-left: 10px;
-  padding-right: 10px;
+#remove {
+  display: block;
+  float: none;
 }
- #remove {
-   display: block;
-   float: none;
- }
 
- ul {
-   list-style-type: none;
-   padding: 5px;
- }
+ul {
+  list-style-type: none;
+  padding: 5px;
+}
 
- .selected {
-   background-color: #dddddd;
-   border-color: #000000;
-   border: solid;
-   border-width: 1px;
- }
+.page-header {
+  width: 110%;
+}
 
- .filter {
-   padding: 5px;
- }
+ul li input {
+  border: 0px;
+  background-color: #ffffff;
+  padding-left: 20px;
+  padding-right: 61px;
+}
 
- #status_title, #stage_title, #action_title {
+ul.dropdown-menu input:hover {
+  background-color: #F5F5F5;
+  padding-right: 61px;
+}
 
- }
+
 

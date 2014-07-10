@@ -32,8 +32,8 @@ Fluctus::Application.routes.draw do
   get 'itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
   put 'itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
   post '/itemresults/review_all', to: 'processed_item#review_all'
-  post '/itemresults/purge_all', to: 'processed_item#purge_all'
   post '/itemresults/handle_selected', to: 'processed_item#handle_selected', as: :handle_selected
+  post '/itemresults/show_reviewed', to: 'processed_item#show_reviewed'
 
   #delete 'itemresults/:etag/:name', to: 'processed_item#destroy'
 

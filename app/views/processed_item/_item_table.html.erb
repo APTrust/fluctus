@@ -20,7 +20,7 @@
         <td>
           <input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" onclick="reviewAction(<%= item.id %>)">
         </td>
-        <td><a href="<%= processed_item_path(id: item.id) %>"><%= item.name %></a></td>
+        <td><a href="<%= processed_item_path(id: item.id) %>" ><%= item.name %></a></td>
         <td><%= item.etag %></td>
         <td><%= item.institution %></td>
         <td><%= time_ago_in_words item.date %></td>
@@ -28,13 +28,15 @@
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
         <% if current_user.admin? %>
-            <td><%= item.reviewed %>  <%= item.purge %></td>
+            <td><%= item.reviewed %></td>
         <% end %>
       </tr>
   <% end %>
   </tbody>
 </table>
-
+<% if (@items.length == 0) %>
+    <p>There are no items to display at this time.</p>
+<% end %>
 <div class="paging">
   <%= paginate @items %>
 </div>
