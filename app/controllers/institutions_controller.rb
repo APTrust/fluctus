@@ -28,7 +28,7 @@ class InstitutionsController < ApplicationController
     end
 
     def set_recent_objects
-      if current_user.admin?
+      if (current_user.admin? && current_user.institution.identifier == @institution.identifier)
         @items = ProcessedItem.order("date").limit(10)
       else
         @items = ProcessedItem.where(institution: @institution.identifier).order("date").limit(10)

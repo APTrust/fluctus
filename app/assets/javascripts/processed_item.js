@@ -13,11 +13,6 @@ function selected (category, filter) {
     $("#filter-title-"+category).click();
 }
 
-function reviewAction (id) {
-    purgeID = "p_"+id;
-    $("#"+purgeID).prop('disabled', false);
-}
-
 function callHandleSelected () {
     review_elements = $(".review");
     review_list = [];
@@ -26,16 +21,9 @@ function callHandleSelected () {
             review_list.push(review_elements[i].id);
         }
     }
-    purge_elements = $(".purge");
-    purge_list = [];
-    for(i = 0; i < purge_elements.length; i++){
-        if(purge_elements[i].checked == true){
-            purge_list.push(purge_elements[i].id);
-        }
-    }
     makeCall = confirm("Are you sure you want to mark as reviewed and/or purge these items?")
     if(makeCall == true){
-        $.post('/itemresults/handle_selected', { review: review_list, purge: purge_list },
+        $.post('/itemresults/handle_selected', { review: review_list },
             function(data) {
                 //alert(data);
             });

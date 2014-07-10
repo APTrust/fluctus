@@ -107,6 +107,14 @@
         </div>
       </div>
 
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h5 class="panel-title">Show Reviewed Items?</h5>
+          <input type="checkbox" id="toggleReviewed" onclick="showReviewed()" >
+          <script> $("#toggleReviewed").prop('checked', <%= session[:show_reviewed] %>) </script>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -125,15 +133,9 @@
                     {tabindex: -1, role: "menuitem", onclick: "callHandleSelected()"} %>
       </li>
       <li role="presentation">
-        <%= link_to raw("All as Reviewed"),
+        <%= button_to raw("All as Reviewed"),
                     {:controller => "processed_item", :action => "review_all"},
-                    {tabindex: -1, role: "menuitem"} %>
-      </li>
-      <li role="presentation" class="divider"></li>
-      <li role="presentation">
-        <%= link_to raw("All failed for Purge"),
-                    {:controller => "processed_item", :action => "purge_all"},
-                    {tabindex: -1, role: "menuitem"} %>
+                    :data => {confirm: "Are you sure you want to mark all items as reviewed?"}  %>
       </li>
     </ul>
   </div>

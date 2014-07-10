@@ -1,7 +1,6 @@
 class ProcessedItemController < ApplicationController
   respond_to :html, :json
   inherit_resources
-  load "config/pid_map.rb"
   load "processed_item_helper.rb"
   before_filter :authenticate_user!
   before_filter :set_items, only: :index
@@ -37,24 +36,15 @@ class ProcessedItemController < ApplicationController
   end
 
   def handle_selected
-    check_user
     review_list = params[:review]
-    purge_list = params[:purge]
     unless review_list.nil?
       review_list.each do |item|
         id = item.split("_")[1]
         proc_item = ProcessedItem.find(id)
-        proc_item.reviewed = true;
-        proc_item.save!
-      end
-    end
-    unless purge_list.nil?
-      purge_list.each do |item|
-        id = item.split("_")[1]
-        proc_item = ProcessedItem.find(id)
-        proc_item.reviewed = true;
-        proc_item.purge = true;
-        proc_item.save!
+        if(proc_item.status != 'Processing')
+          proc_item.reviewed = true;
+          proc_item.save!
+        end
       end
     end
     set_items
@@ -65,53 +55,28 @@ class ProcessedItemController < ApplicationController
   end
 
   def review_all
-    check_user
     institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
     items = ProcessedItem.where(bucket: institution_bucket)
     if(current_user.admin?)
       items = ProcessedItem.all()
     end
     items.each do |item|
-      item.reviewed = true
-      item.save!
-    end
-    redirect_to :back
-    flash[:notice] = 'All items have been marked as reviewed.'
-  end
-
-  def purge_all
-    check_user
-    institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
-    puts "Session Time: #{session[:purge_datetime]}"
-    items = ProcessedItem.where(bucket: institution_bucket, status: "Failed" )
-    if(current_user.admin?)
-      items = ProcessedItem.where(status: "Failed")
-    end
-    items.each do |item|
-      puts "Purge Time: #{session[:purge_datetime]}, Item Time: #{item.date}"
-      if(item.date < session[:purge_datetime])
+      puts "Item date: #{item.date}, <? System Purge Date: #{session[:purge_datetime]}: #{item.date < session[:purge_datetime]}"
+      if(item.date < session[:purge_datetime] && item.status != 'Processing')
         item.reviewed = true
-        item.purge = true
         item.save!
       end
     end
-    session[:purge_datetime] = Time.now
+    session[:purge_datetime] = Time.now.utc
     redirect_to :back
-    flash[:notice] = 'All failed items have been marked for purge from the S3 receiving bucket.'
+    flash[:notice] = 'All items have been marked as reviewed.'
   end
-
 
   private
 
   def init_from_params
     @processed_item = ProcessedItem.new(processed_item_params)
     @processed_item.user = current_user.email
-  end
-
-  def check_user
-    if (current_user.institutional_user?)
-
-    end
   end
 
   def find_and_update
@@ -125,9 +90,9 @@ class ProcessedItemController < ApplicationController
   end
 
   def set_filter_values
-    @statuses = ['Succeeded', 'Processing', 'Failed']
-    @stages = ['Receive', 'Fetch', 'Unpack', 'Validate', 'Store', 'Record']
-    @actions = ['Ingest', 'Fixity Check', 'Retrieval', 'Deletion']
+    @statuses = Fluctus::Application::PROC_ITEM_STATUSES
+    @stages = Fluctus::Application::PROC_ITEM_STAGES
+    @actions = Fluctus::Application::PROC_ITEM_ACTIONS
     @institutions = Array.new
     Institution.all.each do |inst|
       @institutions.push(inst.identifier) unless inst.identifier == 'aptrust.org'
@@ -142,7 +107,6 @@ class ProcessedItemController < ApplicationController
 
 
   def set_items
-    puts "Session: #{session[:show_reviewed]} --------------"
     unless (session[:select_notice].nil? || session[:select_notice] == "")
       flash[:notice] = session[:select_notice]
       session[:select_notice] = ""

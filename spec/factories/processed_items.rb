@@ -10,11 +10,10 @@ FactoryGirl.define do
     bucket { "aptrust.receiving.#{institution}" }
     date { Time.now.utc }
     note { Faker::Lorem.sentence }
-    action { ['Ingest', 'Fixity Check', 'Retrieval', 'Deletion'].sample }
-    stage { ['Receive', 'Fetch', 'Unpack', 'Validate', 'Store', 'Record'].sample }
-    status { ['Succeeded', 'Failed', 'Processing'].sample }
+    action { Fluctus::Application::PROC_ITEM_ACTIONS.sample }
+    stage { Fluctus::Application::PROC_ITEM_STAGES.sample }
+    status { Fluctus::Application::PROC_ITEM_STATUSES.sample }
     outcome { Faker::Lorem.sentence }
     reviewed { false }
-    purge { false }
   end
 end

@@ -30,5 +30,12 @@ module Fluctus
     # config.i18n.default_locale = :de
 
     VERSION = "0.5.dev"
+
+    #GLOBALS
+    PROC_ITEM_STATUSES = %w(Succeeded Processing Failed)
+    PROC_ITEM_STAGES = %w(Receive Fetch Unpack Validate Store Record)
+    PROC_ITEM_ACTIONS = %w(Ingest Fixity Check Retrieval Deletion)
+    APTRUST_NAME = 'APTrust'
+
   end
 end
