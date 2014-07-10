@@ -16,4 +16,21 @@ FactoryGirl.define do
     outcome { Faker::Lorem.sentence }
     reviewed { false }
   end
+
+  factory :ingested_item, class: "ProcessedItem" do
+    name { SecureRandom.uuid + ".tar" }
+    etag { SecureRandom.hex }
+    bag_date { Time.now.utc }
+    user { Faker::Name.name }
+    institution { FactoryGirl.create(:institution).pid }
+    bucket { "aptrust.receiving.#{institution}" }
+    date { Time.now.utc }
+    note { Faker::Lorem.sentence }
+    action { 'Ingest' }
+    stage { 'Record' }
+    status { 'Succeeded' }
+    outcome { Faker::Lorem.sentence }
+    reviewed { false }
+  end
+
 end

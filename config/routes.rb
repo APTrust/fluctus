@@ -28,6 +28,7 @@ Fluctus::Application.routes.draw do
 
   get 'itemresults/', to: 'processed_item#index', as: :processed_items
   post 'itemresults/', to: 'processed_item#create', format: 'json'
+  get '/itemresults/ingested_since', to: 'processed_item#ingested_since', as: :processed_items_ingested_since
   get 'itemresults/:id', to: 'processed_item#show', as: :processed_item
   get 'itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
   put 'itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
