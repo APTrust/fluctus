@@ -3,6 +3,9 @@ module DeviseHelper
     return "" if resource.errors.empty?
 
     messages = resource.errors.full_messages.map { |msg| content_tag(:li, msg) }.join
+    if messages.include? 'Email not found'
+      message = messages
+    end
 
     html = <<-HTML
     <br/>
@@ -10,7 +13,7 @@ module DeviseHelper
       <div class="alert alert-error">Please review the problems below:</div>
       <div class="controls help-inline">
            <ul>
-
+             #{message}
            </ul>
       </div>
     </div>
