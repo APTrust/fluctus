@@ -12,16 +12,14 @@ module EventsHelper
 
   def generic_file_link(solr_doc)
     id  = Array(solr_doc['generic_file_id_ssim']).first
-    gf = GenericFile.find(id)
-    identifier = gf.identifier
+    identifier = Array(solr_doc['generic_file_identifier_ssim']).first
     link_name = identifier ? identifier : id
     link_to link_name, generic_file_path(id)
   end
 
   def intellectual_object_link(solr_doc)
     id  = Array(solr_doc['intellectual_object_id_ssim']).first
-    io = IntellectualObject.find(id)
-    identifier = io.identifier
+    identifier = Array(solr_doc['intellectual_object_identifier_ssim']).first
     link_name = identifier ? identifier : id
     link_to link_name, intellectual_object_path(id)
   end

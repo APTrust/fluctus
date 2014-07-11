@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ProcessedItemController do
   #let(:user) { FactoryGirl.create(:user, :admin, institution_pid: @institution.pid) }
-  let(:item) { FactoryGirl.create(:processed_item) }
+  let(:item) { FactoryGirl.create(:processed_item, status: 'Failed') }
 
   before(:all) do
     #@institution = FactoryGirl.create(:institution)
