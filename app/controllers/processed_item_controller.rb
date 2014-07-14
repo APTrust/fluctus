@@ -63,8 +63,8 @@ class ProcessedItemController < ApplicationController
         id = item.split("_")[1]
         proc_item = ProcessedItem.find(id)
         unless proc_item.status == Fluctus::Application::PROC_ITEM_STATUSES[1]
-          proc_item.reviewed = true;
-          proc_item.save!
+          proc_item.reviewed = true
+          proc_item.save
         end
       end
     end
@@ -82,7 +82,6 @@ class ProcessedItemController < ApplicationController
       items = ProcessedItem.all()
     end
     items.each do |item|
-      puts "Item date: #{item.date}, <? System Purge Date: #{session[:purge_datetime]}: #{item.date < session[:purge_datetime]}"
       if (item.date < session[:purge_datetime] && item.status != Fluctus::Application::PROC_ITEM_STATUSES[1])
         item.reviewed = true
         item.save!
@@ -90,6 +89,8 @@ class ProcessedItemController < ApplicationController
     end
     session[:purge_datetime] = Time.now.utc
     redirect_to :back
+  rescue ActionController::RedirectBackError
+    redirect_to root_path
     flash[:notice] = 'All items have been marked as reviewed.'
   end
 
@@ -134,12 +135,12 @@ class ProcessedItemController < ApplicationController
     end
     @institution = current_user.institution
     if(session[:show_reviewed] == 'true')
-      @processed_items = ProcessedItem.where(institution: @institution.identifier)
+      @processed_items = ProcessedItem.where(institution: @institution.identifier).order('date')
     else
-      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false)
+      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order('date')
     end
     if current_user.admin?
-      @processed_items = ProcessedItem.all()
+      @processed_items = ProcessedItem.order('date')
     end
     @filtered_items = @processed_items
     if params[:status].present?

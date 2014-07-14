@@ -1,21 +1,180 @@
 require 'spec_helper'
 
 describe ProcessedItemController do
-  #let(:user) { FactoryGirl.create(:user, :admin, institution_pid: @institution.pid) }
-  let(:item) { FactoryGirl.create(:processed_item, action: 'Fixity') }
+  let(:institution) { FactoryGirl.create(:institution) }
+  let(:admin_user) { FactoryGirl.create(:user, :admin) }
+  let(:institutional_admin) { FactoryGirl.create(:user, :institutional_admin, institution_pid: institution.id) }
 
-  before(:all) do
-    #@institution = FactoryGirl.create(:institution)
-    10.times do FactoryGirl.create(:ingested_item) end
+  let!(:item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Failed') }
+  let!(:user_item) { FactoryGirl.create(:processed_item, action: 'Fixity', institution: institution.identifier, status: 'Failed') }
+
+
+  after do
+    ProcessedItem.destroy_all
+    Institution.destroy_all
+    User.destroy_all
   end
 
-  after :all do
-    ProcessedItem.delete_all
+  describe "GET #index" do
+    describe "for admin user" do
+      before do
+        sign_in admin_user
+      end
+
+      it "responds successfully with an HTTP 200 status code" do
+        get :index
+        expect(response).to be_success
+      end
+
+      it "renders the index template" do
+        get :index
+        expect(response).to render_template("index")
+      end
+
+      it "assigns the requested institution as @institution" do
+        get :index
+        assigns(:institution).should eq( admin_user.institution)
+      end
+    end
+
+    describe "for institutional admin" do
+      before do
+        sign_in institutional_admin
+      end
+
+      it "assigns the requested items as @items" do
+        get :index
+        assigns(:items).should include(user_item)
+      end
+    end
+  end
+
+  describe "GET #show" do
+    describe "for admin user" do
+      before do
+        sign_in admin_user
+      end
+      it "responds successfully with an HTTP 200 status code" do
+        get :show, id: item.id
+        expect(response).to be_success
+      end
+
+      it "renders the show template" do
+        get :show, id: item.id
+        expect(response).to render_template("show")
+      end
+
+      it "assigns the requested item as @processedItem" do
+        get :show, id: item.id
+        assigns(:processedItem).id.should eq(item.id)
+      end
+
+      it "assigns the requested institution as @institution" do
+        get :show, id: item.id
+        assigns(:institution).should eq( admin_user.institution)
+      end
+    end
+  end
+
+  describe "Post #create" do
+    describe "for admin user" do
+      let (:attributes) { FactoryGirl.attributes_for(:processed_item) }
+      before do
+        sign_in admin_user
+      end
+
+      it "should reject no parameters" do
+        expect {
+          post :create, {}
+        }.to raise_error ActionController::ParameterMissing
+      end
+
+      it 'should reject a status, stage or action that is not allowed' do
+        post :create, processed_item: {name: "123456.tar", etag: "1234567890", bag_date: Time.now.utc, user: "Kelly Croswell", institution: institution.identifier,
+                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: "File",
+                                       stage: "Entry", status: "Finalized", outcome: "Outcome", reviewed: false}, format: 'json'
+        expect(response.code).to eq '422' #Unprocessable Entity
+        expect(JSON.parse(response.body)).to eq( { "status" => ["Status is not one of the allowed options"],
+                                                   "stage" => ["Stage is not one of the allowed options"],
+                                                   "action" => ["Action is not one of the allowed options"]})
+      end
+
+      it 'should accept good parameters via json' do
+        expect {
+          post :create, processed_item: {name: "123456.tar", etag: "1234567890", bag_date: Time.now.utc, user: "Kelly Croswell", institution: institution.identifier,
+                                         bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: "Fixity",
+                                         stage: "Fetch", status: "Failed", outcome: "Outcome", reviewed: false}, format: 'json'
+        }.to change(ProcessedItem, :count).by(1)
+        expect(response.status).to eq(201)
+        assigns[:processed_item].should be_kind_of ProcessedItem
+        expect(assigns(:processed_item).name).to eq '123456.tar'
+      end
+    end
+  end
+
+  describe "Post #handle_selected" do
+    describe "as admin user" do
+      let!(:processing_item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Processing') }
+      let(:item_id) { "r_#{item.id}" }
+      let(:proc_id) { "r_#{processing_item.id}" }
+      before do
+        sign_in admin_user
+      end
+
+      it "should update an item's review field to true" do
+        post :handle_selected, review: [item_id], format: 'js'
+        expect(response.status).to eq(200)
+        ProcessedItem.find(item.id).reviewed.should eq(true)
+      end
+
+      it "should not review a processing item" do
+        post :handle_selected, review: [proc_id], format: 'js'
+        expect(response.status).to eq(200)
+        ProcessedItem.find(processing_item.id).reviewed.should eq(false)
+      end
+    end
+
+    describe "as institutional_admin" do
+      let(:user_id) { "r_#{user_item.id}" }
+      before do
+        sign_in institutional_admin
+      end
+
+      it "should update an item's review field to true" do
+        post :handle_selected, review: [user_id], format: 'js'
+        expect(response.status).to eq(200)
+        ProcessedItem.find(user_item.id).reviewed.should eq(true)
+      end
+    end
+
+  end
+
+  describe "Post #review_all" do
+    let!(:failed_item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Failed') }
+    describe "as admin user" do
+      before do
+        sign_in admin_user
+        session[:purge_datetime] = Time.now.utc
+      end
+
+      it "should reset the purge datetime in the session variable" do
+        time_before = session[:purge_datetime]
+        post :review_all
+        session[:purge_datetime].should_not eq(time_before)
+      end
+
+      it "should update all item's review fields to true" do
+        post :review_all
+        expect(response.status).to eq(302)
+        ProcessedItem.find(failed_item.id).reviewed.should eq(true)
+      end
+    end
   end
 
   describe "GET #ingested_since" do
     let(:user) { FactoryGirl.create(:user, :admin) }
     before do
+      10.times do FactoryGirl.create(:ingested_item) end
       sign_in user
       get :show, id: item.id
     end

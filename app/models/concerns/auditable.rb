@@ -15,16 +15,17 @@ module Auditable
     solr_doc = event.to_solr
     Solrizer.insert_field(solr_doc, 'institution_id', institution.id, :symbol)
     Solrizer.insert_field(solr_doc, "#{namespaced_solr_field_base}_id", self.id, :symbol)
-    Solrizer.insert_field(solr_doc, "#{namespaced_solr_field_base}_identifier", self.identifier, :symbol)
 
     if self.respond_to?(:uri)
       Solrizer.insert_field(solr_doc, "#{namespaced_solr_field_base}_uri", self.uri, :symbol)
     end
 
+    if self.respond_to?(:identifier)
+      Solrizer.insert_field(solr_doc, "#{namespaced_solr_field_base}_identifier", self.identifier, :symbol)
+    end
+
     if self.respond_to?(:intellectual_object_id)
       Solrizer.insert_field(solr_doc, "intellectual_object_id", self.intellectual_object_id, :symbol)
-      io = IntellectualObject.find(self.intellectual_object_id)
-      Solrizer.insert_field(solr_doc, "intellectual_object_identifier", io.identifier, :symbol)
     end
 
     ActiveFedora::SolrService.add(solr_doc)
