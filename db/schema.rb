@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140709201448) do
+ActiveRecord::Schema.define(version: 20140714203114) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20140709201448) do
     t.string   "status"
     t.text     "outcome",     limit: 255
     t.boolean  "retry",                   default: false, null: false
-    t.boolean  "reviewed"
+    t.boolean  "reviewed",                default: true
   end
 
   add_index "processed_items", ["action"], name: "index_processed_items_on_action"
