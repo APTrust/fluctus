@@ -135,12 +135,12 @@ class ProcessedItemController < ApplicationController
     end
     @institution = current_user.institution
     if(session[:show_reviewed] == 'true')
-      @processed_items = ProcessedItem.where(institution: @institution.identifier).order('date')
+      @processed_items = ProcessedItem.where(institution: @institution.identifier).order('date').reverse_order
     else
-      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order('date')
+      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order('date').reverse_order
     end
     if current_user.admin?
-      @processed_items = ProcessedItem.order('date')
+      @processed_items = ProcessedItem.order('date').reverse_order
     end
     @filtered_items = @processed_items
     if params[:status].present?

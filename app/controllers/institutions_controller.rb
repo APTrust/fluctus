@@ -29,9 +29,9 @@ class InstitutionsController < ApplicationController
 
     def set_recent_objects
       if (current_user.admin? && current_user.institution.identifier == @institution.identifier)
-        @items = ProcessedItem.order('date').limit(10)
+        @items = ProcessedItem.order('date').limit(10).reverse_order
       else
-        @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10)
+        @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
       end
       @failed = @items.where(status: Fluctus::Application::PROC_ITEM_STATUSES[2])
     end
