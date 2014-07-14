@@ -1,7 +1,5 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
-  factory :processed_item do
+  factory :processed_item, class: ProcessedItem do
     name { SecureRandom.uuid + ".tar" }
     etag { SecureRandom.hex }
     bag_date { Time.now.utc }
@@ -17,7 +15,7 @@ FactoryGirl.define do
     reviewed { false }
   end
 
-  factory :ingested_item, class: "ProcessedItem" do
+  factory :ingested_item, class: ProcessedItem do
     name { SecureRandom.uuid + ".tar" }
     etag { SecureRandom.hex }
     bag_date { Time.now.utc }
@@ -32,5 +30,4 @@ FactoryGirl.define do
     outcome { Faker::Lorem.sentence }
     reviewed { false }
   end
-
 end
