@@ -26,6 +26,13 @@ class PremisEventsMetadata < ActiveFedora::RdfxmlRDFDatastream
   end
 
   accepts_nested_attributes_for :events
+
+  def serializable_hash(options={})
+    events.map do |event|
+      event.serializable_hash
+    end
+  end
+
 end
 
 class Event

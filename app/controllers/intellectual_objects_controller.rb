@@ -66,7 +66,7 @@ class IntellectualObjectsController < ApplicationController
   # Override Fedora's default JSON serialization for our API
   def object_as_json
     if params[:include_relations]
-      @intellectual_object.serializable_hash(include: {generic_files: { include: [:checksum, :premisEvents]}})
+      @intellectual_object.serializable_hash(include: [ :premisEvents, generic_files: { include: [:checksum, :premisEvents]}])
     else
       @intellectual_object.serializable_hash()
     end
