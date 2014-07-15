@@ -5,7 +5,7 @@ describe ProcessedItemController do
   let(:admin_user) { FactoryGirl.create(:user, :admin) }
   let(:institutional_admin) { FactoryGirl.create(:user, :institutional_admin, institution_pid: institution.id) }
 
-  let!(:item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Failed') }
+  let!(:item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Succeeded') }
   let!(:user_item) { FactoryGirl.create(:processed_item, action: 'Fixity', institution: institution.identifier, status: 'Failed') }
 
 
