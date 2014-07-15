@@ -32,10 +32,8 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   end
 
   accepts_nested_attributes_for :checksum
-  class Checksum
-    include ActiveFedora::RdfObject
-
-    rdf_type FileVocabulary.Checksum
+  class Checksum < ActiveFedora::RdfObject
+    configure :type => RDF::DC.FileVocabulary.Checksum
 
     map_predicates do |map|
       map.algorithm(to: :Algorithm, in: WorldNetVocabulary)

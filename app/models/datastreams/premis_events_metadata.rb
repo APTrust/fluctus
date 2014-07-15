@@ -35,10 +35,8 @@ class PremisEventsMetadata < ActiveFedora::RdfxmlRDFDatastream
 
 end
 
-class Event
-  include ActiveFedora::RdfObject
-
-  rdf_type EventVocabulary
+class Event < ActiveFedora::Rdf::Resource
+  configure :type => RDF::DC.EventVocabulary
 
   map_predicates do |map|
     map.identifier(to: :eventIdentifier, in: EventVocabulary)
