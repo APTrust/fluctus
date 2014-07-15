@@ -17,7 +17,6 @@ describe ProcessedItem do
   it { should validate_presence_of(:stage) }
   it { should validate_presence_of(:status) }
   it { should validate_presence_of(:outcome) }
-  it { should validate_presence_of(:reviewed) }
 
   it 'should properly set a name' do
     subject.name = 'Test Name'
