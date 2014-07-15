@@ -109,6 +109,15 @@ describe ProcessedItemController do
         assigns[:processed_item].should be_kind_of ProcessedItem
         expect(assigns(:processed_item).name).to eq '123456.tar'
       end
+
+      it 'should fix an item with a null reviewed flag' do
+        post :create, processed_item: {name: "123456.tar", etag: "1234567890", bag_date: Time.now.utc, user: "Kelly Croswell", institution: institution.identifier,
+                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: "Fixity",
+                                       stage: "Fetch", status: "Failed", outcome: "Outcome", reviewed: nil}, format: 'json'
+        expect(response.status).to eq(201)
+        assigns[:processed_item].should be_kind_of ProcessedItem
+        expect(assigns(:processed_item).reviewed).to eq(false)
+      end
     end
   end
 

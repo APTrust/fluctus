@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20140714203114) do
     t.string   "status"
     t.text     "outcome",     limit: 255
     t.boolean  "retry",                   default: false, null: false
-    t.boolean  "reviewed",                default: true
+    t.boolean  "reviewed",                default: false
   end
 
   add_index "processed_items", ["action"], name: "index_processed_items_on_action"

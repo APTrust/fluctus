@@ -6,6 +6,7 @@ class ProcessedItem < ActiveRecord::Base
   validate :status_is_allowed
   validate :stage_is_allowed
   validate :action_is_allowed
+  validate :reviewed_not_nil
 
   def to_param
     "#{etag}/#{name}"
@@ -27,6 +28,10 @@ class ProcessedItem < ActiveRecord::Base
     if !Fluctus::Application::PROC_ITEM_ACTIONS.include?(self.action)
       errors.add(:action, 'Action is not one of the allowed options')
     end
+  end
+
+  def reviewed_not_nil
+    self.reviewed = false if self.reviewed.nil?
   end
 
 end
