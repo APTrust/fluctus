@@ -40,6 +40,15 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
+  def create
+    if params[:include_nested]
+      object = JSON.parse(params[:intellectual_object])
+      IntellectualObject.create!(object)
+    else
+      super
+    end
+  end
+
   protected
 
   # Override Hydra-editor to redirect to an alternate location after create
