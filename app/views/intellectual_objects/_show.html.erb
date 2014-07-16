@@ -43,7 +43,7 @@
     </div>
     <div class="panel-body">
       <% @intellectual_object.generic_files.each do |gf| %>
-          <h4><%= link_to gf.identifier, gf  %></h4>
+          <h4><%= link_to gf.display, gf  %></h4>
           <dl class="dl-horizontal dl-invert">
             <dt>Last Fixity</dt>
             <dd><span class="label label-success">Success</span></dd>
