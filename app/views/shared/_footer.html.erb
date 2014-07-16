@@ -6,9 +6,9 @@
     </small>
     <nav>
       <ul>
-        <li><%= link_to "About", "" %></li>
-        <li><%= link_to "Contact", "" %></li>
-        <li><%= link_to "Help", "" %></li>
+        <li><%= link_to "About", "http://aptrust.org/about", {target: "_blank"} %></li>
+        <li><%= link_to "Contact", "http://aptrust.org/contact", {target: "_blank"} %></li>
+        <li><%= mail_to "help@aptrust.org", "help@aptrust.org",  subject: "Admin Interface Help Request" %></li>
       </ul>
     </nav>
   </div>
