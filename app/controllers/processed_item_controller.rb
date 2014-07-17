@@ -161,6 +161,7 @@ class ProcessedItemController < ApplicationController
     end
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
+    session[:purge_datetime] = Time.now.utc if params[:page] == 1 || params[:page].nil?
     set_filter_values
   end
 
