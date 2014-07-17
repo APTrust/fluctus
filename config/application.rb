@@ -8,7 +8,7 @@ Bundler.require(:default, Rails.env)
 
 module Fluctus
   class Application < Rails::Application
-    
+
     config.generators do |g|
       g.test_framework :rspec, :spec => true
     end
@@ -32,8 +32,8 @@ module Fluctus
     VERSION = "0.5.dev"
 
     #GLOBALS
-    PROC_ITEM_STATUSES = %w(Succeeded Processing Failed)
-    PROC_ITEM_STAGES = %w(Receive Fetch Unpack Validate Store Record)
+    PROC_ITEM_STATUSES = %w(Succeeded Processing Failed Resolved)
+    PROC_ITEM_STAGES = %w(Receive Fetch Unpack Validate Store Record Cleanup)
     PROC_ITEM_ACTIONS = %w(Ingest Fixity Check Retrieval Deletion)
     APTRUST_NAME = 'APTrust'
 
