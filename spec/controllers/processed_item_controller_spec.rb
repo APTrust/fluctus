@@ -76,6 +76,42 @@ describe ProcessedItemController do
     end
   end
 
+
+  describe "GET #get_reviewed" do
+    describe "for admin user" do
+      before do
+        sign_in admin_user
+        ProcessedItem.update_all(reviewed: true)
+      end
+
+      it "responds successfully with an HTTP 200 status code" do
+        get :get_reviewed, format: :json
+        expect(response).to be_success
+      end
+
+      it "assigns the correct @items" do
+        get :get_reviewed, format: :json
+        assigns(:items).should have(ProcessedItem.count).items
+      end
+
+    end
+
+    describe "for institutional admin" do
+      before do
+        sign_in institutional_admin
+        ProcessedItem.update_all(reviewed: true)
+      end
+
+      it "assigns the requested items as @items" do
+        get :get_reviewed, format: :json
+        assigns(:items).should include(user_item)
+        assigns(:items).should have(1).items
+      end
+    end
+  end
+
+
+
   describe "Post #create" do
     describe "for admin user" do
       let (:attributes) { FactoryGirl.attributes_for(:processed_item) }

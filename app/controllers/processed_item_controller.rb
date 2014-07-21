@@ -56,6 +56,20 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  # This is an API call. The Go code will periodically get a list
+  # of reviewed items and delete the original uploaded files
+  # from the reveiving bucket.
+  def get_reviewed
+    @items = ProcessedItem.where(reviewed: true)
+    if(current_user.admin? == false)
+      @items = @items.where(institution: current_user.institution.identifier)
+    end
+    respond_to do |format|
+      format.json { render json: @items, status: :ok }
+    end
+  end
+
+
   def handle_selected
     review_list = params[:review]
     unless review_list.nil?
