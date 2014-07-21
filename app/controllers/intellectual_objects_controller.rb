@@ -54,7 +54,6 @@ class IntellectualObjectsController < ApplicationController
         elsif (attr_name == 'generic_files')
           object_files = attr_value
         else
-          puts "#{attr_name}: #{attr_value}"
           new_object[attr_name.to_s] = attr_value.to_s
         end
       end
