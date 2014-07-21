@@ -246,7 +246,7 @@ describe IntellectualObjectsController do
 
       it 'should create all nested items when include relations flag is true' do
         expect {
-          post :create, institution_id: any_institution.id, include_nested: true, intellectual_object: {
+          post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [{
             institution_id: any_institution.id,
             title: 'Test Title',
             access: 'consortia',
@@ -277,7 +277,7 @@ describe IntellectualObjectsController do
             ],
             generic_files: [
               { uri: 'https://s3.amazonaws.com/aptrust.test.preservation/47e00844-a53a-46de-5d93-d8ecff0e0e4b',
-                size: 4853,
+                size: '4853',
                 created: '2014-04-25T14:06:39-04:00',
                 modified: '2014-04-25T14:06:39-04:00',
                 format: 'application/xml',
@@ -346,8 +346,8 @@ describe IntellectualObjectsController do
                 ]
               },
             ]
-          }, format: 'json'
-          expect(response.code).to eq '201'
+          }], format: 'json'
+          expect(response.code).to eq '200'
           expect(assigns(:intellectual_object).title).to eq 'Test Title'
         }.to change(IntellectualObject, :count).by(1)
 

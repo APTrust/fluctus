@@ -16,4 +16,6 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
       index.as :facetable
     end
   end
+
+  accepts_nested_attributes_for :events
 end

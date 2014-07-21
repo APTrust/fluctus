@@ -4,7 +4,7 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:index]
   end
 
-  post 'objects/include_nested', to: 'intellectual_objects#create', format: 'json'
+  post 'objects/include_nested', to: 'intellectual_objects#create_from_json', format: 'json'
 
   resources :intellectual_objects, only: [:show, :edit, :update, :destroy], path: 'objects' do
     resources :generic_files, only: :create, path: 'files'

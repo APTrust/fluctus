@@ -8,6 +8,7 @@ class IntellectualObject < ActiveFedora::Base
 
   belongs_to :institution, property: :is_part_of
   has_many :generic_files, property: :is_part_of
+  accepts_nested_attributes_for :generic_files
 
   has_attributes :title, :access, :description, :identifier, datastream: 'descMetadata', multiple: false
   has_attributes :alt_identifier, datastream: 'descMetadata', multiple: true

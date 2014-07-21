@@ -40,12 +40,54 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
-  def create
-    if params[:include_nested]
-      object = JSON.parse(params[:intellectual_object])
-      IntellectualObject.create!(object)
-    else
-      super
+  def create_from_json
+    if params[:include_nested] == 'true'
+      object = JSON.parse(params[:intellectual_object].to_json).first
+      new_object = IntellectualObject.new()
+      object_events = ""
+      object_files = ""
+      object.each do |attr_name, attr_value|
+        if(attr_name == 'institution_id')
+          new_object.institution = Institution.find(attr_value.to_s)
+        elsif (attr_name == 'premisEvents')
+          object_events = attr_value
+        elsif (attr_name == 'generic_files')
+          object_files = attr_value
+        else
+          puts "#{attr_name}: #{attr_value}"
+          new_object[attr_name.to_s] = attr_value.to_s
+        end
+      end
+      new_object.save!
+      object_events.each do |event|
+        new_object.add_event(event)
+      end
+      object_files.each do |file|
+        new_file = GenericFile.new()
+        file_events = ""
+        file_checksums = ""
+        file.each do |file_attr_name, file_attr_value|
+          if(file_attr_name == 'premisEvents')
+            file_events = file_attr_value
+          elsif(file_attr_name == 'checksum')
+            file_checksums = file_attr_value
+          else
+            new_file[file_attr_name.to_s] = file_attr_value.to_s
+          end
+        end
+        file_checksums.each do |checksum|
+          new_file.techMetadata.checksum.build(checksum)
+        end
+        new_file.intellectual_object = new_object
+        new_file.save!
+        file_events.each do |event|
+          new_file.add_event(event)
+        end
+      end
+      @intellectual_object = new_object
+      respond_to do |format|
+        format.json { render json: object_as_json }
+      end
     end
   end
 
