@@ -59,6 +59,7 @@ module Fluctus
     }
 
     APTRUST_NAME = 'APTrust'
+    APTRUST_ID = 'aptrust.org'
 
   end
 end
