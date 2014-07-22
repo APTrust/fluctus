@@ -18,23 +18,11 @@ describe IntellectualObjectsController do
 
     describe 'when some objects are in the repository and signed in' do
       let(:another_institution) { FactoryGirl.create(:institution) }
-
-      let!(:obj1) { FactoryGirl.create(:consortial_intellectual_object,
-                                       institution: another_institution) }
-      let!(:obj2) { FactoryGirl.create(:institutional_intellectual_object,
-                                       institution: user.institution,
-                                       title: 'Aberdeen Wanderers Rugby Football Club',
-                                       description: 'a Scottish rugby union club. It was founded in Aberdeen in 1928.') }
-      let!(:obj3) { FactoryGirl.create(:institutional_intellectual_object,
-                                       institution: another_institution) }
-      let!(:obj4) { FactoryGirl.create(:restricted_intellectual_object,
-                                       institution: user.institution,
-                                       title: "The 2nd Workers' Cultural Palace Station",
-                                       description: 'a station of Line 2 of the Guangzhou Metro.',
-                                       identifier: 'jhu.d9abff425d09d5b0') }
-      let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object,
-                                       institution: another_institution) }
-
+      let!(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: another_institution) }
+      let!(:obj2) { FactoryGirl.create(:institutional_intellectual_object, institution: user.institution, title: 'Aberdeen Wanderers Rugby Football Club', description: 'a Scottish rugby union club. It was founded in Aberdeen in 1928.') }
+      let!(:obj3) { FactoryGirl.create(:institutional_intellectual_object,  institution: another_institution) }
+      let!(:obj4) { FactoryGirl.create(:restricted_intellectual_object, institution: user.institution, title: "The 2nd Workers' Cultural Palace Station", description: 'a station of Line 2 of the Guangzhou Metro.') }
+      let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object, institution: another_institution) }
       before { sign_in user }
       describe 'as an institutional user' do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
@@ -58,7 +46,7 @@ describe IntellectualObjectsController do
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
           it 'should match an exact search on identifier' do
-            get :index, institution_id: user.institution, q: 'jhu.d9abff425d09d5b0'
+            get :index, institution_id: user.institution, q: obj4.identifier
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
@@ -231,7 +219,7 @@ describe IntellectualObjectsController do
 
       it 'should use the institution parameter in the URL, not from the json' do
         expect {
-          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', access: 'restricted'}, format: 'json'
+          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: 'test.edu/123', access: 'restricted'}, format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Foo'
           expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid

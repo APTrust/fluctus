@@ -144,6 +144,10 @@ describe IntellectualObject do
           expect(subject.discover_groups).to eq ["User_At_#{inst_pid}"]
         end
       end
+
+      describe "#identifier_is_unique" do
+        it { should validate_uniqueness_of(:identifier) }
+      end
     end
   end
 

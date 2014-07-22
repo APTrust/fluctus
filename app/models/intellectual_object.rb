@@ -18,6 +18,7 @@ class IntellectualObject < ActiveFedora::Base
   validates_presence_of :identifier
   validates_presence_of :access
   validates_inclusion_of :access, in: %w(consortia institution restricted), message: "#{:access} is not a valid access", if: :access
+  validate :identifier_is_unique
 
   before_save :set_permissions
   before_destroy :check_for_associations
@@ -44,31 +45,41 @@ class IntellectualObject < ActiveFedora::Base
   end
 
   private
-    def set_permissions
-      inst_pid = clean_for_solr(self.institution.pid)
-      inst_admin_group = "Admin_At_#{inst_pid}"
-      inst_user_group = "User_At_#{inst_pid}"
-      case access
-        when 'consortia'
-          self.read_groups = %w(institutional_admin institutional_user)
-          self.edit_groups = [inst_admin_group]
-        when 'institution'
-          self.read_groups = [inst_user_group]
-          self.edit_groups = [inst_admin_group]
-        when 'restricted'
-          self.discover_groups = [inst_user_group]
-          self.edit_groups = [inst_admin_group]
+  def identifier_is_unique
+    count = 0;
+    IntellectualObject.all.each do |io|
+      if (io.identifier == self.identifier) && (io.id != self.id)
+        count += 1
       end
     end
-
-    def check_for_associations
-      # Check for related GenericFiles
-
-      unless generic_file_ids.empty?
-        errors[:base] << "Cannot delete #{self.pid} because Generic Files are associated with it"
-      end
-
-      errors[:base].empty?
+    if(count > 0)
+      errors.add(:identifier, "has already been taken")
     end
+  end
+
+  def set_permissions
+    inst_pid = clean_for_solr(self.institution.pid)
+    inst_admin_group = "Admin_At_#{inst_pid}"
+    inst_user_group = "User_At_#{inst_pid}"
+    case access
+      when 'consortia'
+        self.read_groups = %w(institutional_admin institutional_user)
+        self.edit_groups = [inst_admin_group]
+      when 'institution'
+        self.read_groups = [inst_user_group]
+        self.edit_groups = [inst_admin_group]
+      when 'restricted'
+        self.discover_groups = [inst_user_group]
+        self.edit_groups = [inst_admin_group]
+    end
+  end
+
+  def check_for_associations
+    # Check for related GenericFiles
+    unless generic_file_ids.empty?
+      errors[:base] << "Cannot delete #{self.pid} because Generic Files are associated with it"
+    end
+    errors[:base].empty?
+  end
 
 end

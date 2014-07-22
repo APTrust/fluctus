@@ -18,6 +18,7 @@ class GenericFile < ActiveFedora::Base
   validates_presence_of :format
   validates_presence_of :identifier
   validate :has_right_number_of_checksums
+  validate :identifier_is_unique
 
   before_save :copy_permissions_from_intellectual_object
   after_save :update_parent_index
@@ -115,5 +116,16 @@ class GenericFile < ActiveFedora::Base
     end
   end
 
+  def identifier_is_unique
+    count = 0;
+    GenericFile.all.each do |gf|
+      if (gf.identifier == self.identifier) && (gf.id != self.id)
+        count += 1
+      end
+    end
+    if(count > 0)
+      errors.add(:identifier, "has already been taken")
+    end
+  end
 
 end
