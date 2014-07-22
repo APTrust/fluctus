@@ -416,7 +416,7 @@ describe IntellectualObjectsController do
               },
             ]
           }], format: 'json'
-          expect(response.code).to eq '200'
+          expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Test Title'
         }.to change(IntellectualObject, :count).by(1)
 

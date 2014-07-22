@@ -77,7 +77,7 @@ class IntellectualObjectsController < ApplicationController
         file_events.each { |event| new_file.add_event(event) }
       end
       @intellectual_object = new_object
-      respond_to { |format| format.json { render json: object_as_json } }
+      respond_to { |format| format.json { render json: object_as_json, status: :created } }
     end
   end
 
