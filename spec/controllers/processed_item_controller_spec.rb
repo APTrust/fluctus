@@ -5,8 +5,8 @@ describe ProcessedItemController do
   let(:admin_user) { FactoryGirl.create(:user, :admin) }
   let(:institutional_admin) { FactoryGirl.create(:user, :institutional_admin, institution_pid: institution.id) }
 
-  let!(:item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Failed') }
-  let!(:user_item) { FactoryGirl.create(:processed_item, action: 'Fixity', institution: institution.identifier, status: 'Failed') }
+  let!(:item) { FactoryGirl.create(:processed_item, action: 'Fixity Check', status: 'Failed') }
+  let!(:user_item) { FactoryGirl.create(:processed_item, action: 'Fixity Check', institution: institution.identifier, status: 'Failed') }
 
 
   after do
@@ -102,7 +102,7 @@ describe ProcessedItemController do
       it 'should accept good parameters via json' do
         expect {
           post :create, processed_item: {name: "123456.tar", etag: "1234567890", bag_date: Time.now.utc, user: "Kelly Croswell", institution: institution.identifier,
-                                         bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: "Fixity",
+                                         bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: "Fixity Check",
                                          stage: "Fetch", status: "Failed", outcome: "Outcome", reviewed: false}, format: 'json'
         }.to change(ProcessedItem, :count).by(1)
         expect(response.status).to eq(201)
@@ -112,7 +112,7 @@ describe ProcessedItemController do
 
       it 'should fix an item with a null reviewed flag' do
         post :create, processed_item: {name: "123456.tar", etag: "1234567890", bag_date: Time.now.utc, user: "Kelly Croswell", institution: institution.identifier,
-                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: "Fixity",
+                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: "Fixity Check",
                                        stage: "Fetch", status: "Failed", outcome: "Outcome", reviewed: nil}, format: 'json'
         expect(response.status).to eq(201)
         assigns[:processed_item].should be_kind_of ProcessedItem
@@ -123,7 +123,7 @@ describe ProcessedItemController do
 
   describe "Post #handle_selected" do
     describe "as admin user" do
-      let!(:processing_item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Processing') }
+      let!(:processing_item) { FactoryGirl.create(:processed_item, action: 'Fixity Check', status: 'Started') }
       let(:item_id) { "r_#{item.id}" }
       let(:proc_id) { "r_#{processing_item.id}" }
       before do
@@ -159,7 +159,7 @@ describe ProcessedItemController do
   end
 
   describe "Post #review_all" do
-    let!(:failed_item) { FactoryGirl.create(:processed_item, action: 'Fixity', status: 'Failed') }
+    let!(:failed_item) { FactoryGirl.create(:processed_item, action: 'Fixity Check', status: 'Failed') }
     describe "as admin user" do
       before do
         sign_in admin_user

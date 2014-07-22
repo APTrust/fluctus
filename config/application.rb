@@ -32,9 +32,30 @@ module Fluctus
     VERSION = "0.5.dev"
 
     #GLOBALS
-    PROC_ITEM_STATUSES = %w(Succeeded Processing Failed)
-    PROC_ITEM_STAGES = %w(Receive Fetch Unpack Validate Store Record)
-    PROC_ITEM_ACTIONS = %w(Ingest Fixity Check Retrieval Deletion)
+    FLUCTUS_STATUSES = {
+        'pend' => 'Pending',
+        'start' => 'Started',
+        'success' => 'Success',
+        'fail' => 'Failed',
+        'cancel' => 'Cancelled'
+    }
+
+    FLUCTUS_STAGES = {
+        'receive' => 'Receive',
+        'fetch' => 'Fetch',
+        'unpack' => 'Unpack',
+        'validate' => 'Validate',
+        'store' => 'Store',
+        'record' => 'Record',
+        'resolve' => 'Resolve'
+      }
+    FLUCTUS_ACTIONS = {
+        'ingest' => 'Ingest',
+        'fixity' => 'Fixity Check',
+        'restore' => 'Restore',
+        'delete' => 'Delete'
+    }
+
     APTRUST_NAME = 'APTrust'
 
   end
