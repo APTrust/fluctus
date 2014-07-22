@@ -128,12 +128,12 @@
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
       <li role="presentation">
-        <%= link_to raw("Selected as Reviewed"),
+        <%= link_to raw("Selected as Reviewed/Resolve"),
                     '#',
                     {tabindex: -1, role: "menuitem", onclick: "callHandleSelected()"} %>
       </li>
       <li role="presentation">
-        <%= button_to raw("All as Reviewed"),
+        <%= button_to raw("All as Reviewed/Resolve"),
                     {:controller => "processed_item", :action => "review_all"},
                     :data => {confirm: "Are you sure you want to mark all items as reviewed?"}  %>
       </li>

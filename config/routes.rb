@@ -27,6 +27,7 @@ Fluctus::Application.routes.draw do
   end
 
   get 'itemresults/', to: 'processed_item#index', as: :processed_items
+  get '/itemresults/get_reviewed', to: 'processed_item#get_reviewed', as: :processed_items_get_reviewed
   post 'itemresults/', to: 'processed_item#create', format: 'json'
   get '/itemresults/ingested_since/:since', to: 'processed_item#ingested_since', as: :processed_items_ingested_since
   get 'itemresults/:id', to: 'processed_item#show', as: :processed_item

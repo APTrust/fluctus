@@ -8,7 +8,7 @@ Bundler.require(:default, Rails.env)
 
 module Fluctus
   class Application < Rails::Application
-    
+
     config.generators do |g|
       g.test_framework :rspec, :spec => true
     end
@@ -47,8 +47,10 @@ module Fluctus
         'validate' => 'Validate',
         'store' => 'Store',
         'record' => 'Record',
+        'clean' => 'Cleanup',
         'resolve' => 'Resolve'
       }
+
     FLUCTUS_ACTIONS = {
         'ingest' => 'Ingest',
         'fixity' => 'Fixity Check',

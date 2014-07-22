@@ -24,9 +24,9 @@ FactoryGirl.define do
     bucket { "aptrust.receiving.#{institution}" }
     date { Time.now.utc }
     note { Faker::Lorem.sentence }
-    action { 'Ingest' }
-    stage { 'Record' }
-    status { 'Success' }
+    action { Fluctus::Application::FLUCTUS_ACTIONS['ingest'] }
+    stage { Fluctus::Application::FLUCTUS_STAGES['record'] }
+    status { Fluctus::Application::FLUCTUS_STATUSES['success'] }
     outcome { Faker::Lorem.sentence }
     reviewed { false }
   end
