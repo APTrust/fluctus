@@ -42,13 +42,23 @@ class IntellectualObjectsController < ApplicationController
 
   def create_from_json
     if params[:include_nested] == 'true'
-      object = JSON.parse(params[:intellectual_object].to_json).first
+      # Web request has [:_json], rspec request does not
+      if params[:intellectual_object].is_a?(Array)
+        json_param = params[:intellectual_object]
+      else
+        json_param = params[:intellectual_object][:_json]
+      end
+      object = JSON.parse(json_param.to_json).first
       new_object = IntellectualObject.new()
       object_events = ""
       object_files = ""
       object.each do |attr_name, attr_value|
         if(attr_name == 'institution_id')
-          new_object.institution = Institution.find(attr_value.to_s)
+          if attr_value.to_s.include?(':')
+            new_object.institution = Institution.find(attr_value.to_s)
+          else
+            new_object.institution = Institution.where(desc_metadata__identifier_ssim: attr_value.to_s).first
+          end
         elsif (attr_name == 'premisEvents')
           object_events = attr_value
         elsif (attr_name == 'generic_files')
