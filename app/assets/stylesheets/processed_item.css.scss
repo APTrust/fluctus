@@ -24,8 +24,8 @@
 }
 
 tr.Failed { background-color: #f2dede; }
-tr.Succeeded { background-color: #dff0d8; }
-td.Processing { text-style: italic; }
+tr.Success { background-color: #dff0d8; }
+td.Started, td.Cancelled, td.Pending { text-style: italic; }
 
 #remove {
   display: block;

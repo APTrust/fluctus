@@ -76,9 +76,9 @@ class ProcessedItemController < ApplicationController
       review_list.each do |item|
         id = item.split("_")[1]
         proc_item = ProcessedItem.find(id)
-        unless proc_item.status == Fluctus::Application::PROC_ITEM_STATUSES[1]
+        if (proc_item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || proc_item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'])
           proc_item.reviewed = true
-          proc_item.save
+          proc_item.save!
         end
       end
     end
@@ -96,7 +96,7 @@ class ProcessedItemController < ApplicationController
       items = ProcessedItem.all()
     end
     items.each do |item|
-      if (item.date < session[:purge_datetime] && item.status != Fluctus::Application::PROC_ITEM_STATUSES[1])
+      if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
         item.reviewed = true
         item.save!
       end
@@ -126,9 +126,9 @@ class ProcessedItemController < ApplicationController
   end
 
   def set_filter_values
-    @statuses = Fluctus::Application::PROC_ITEM_STATUSES
-    @stages = Fluctus::Application::PROC_ITEM_STAGES
-    @actions = Fluctus::Application::PROC_ITEM_ACTIONS
+    @statuses = Fluctus::Application::FLUCTUS_STATUSES.values
+    @stages = Fluctus::Application::FLUCTUS_STAGES.values
+    @actions = Fluctus::Application::FLUCTUS_ACTIONS.values
     @institutions = Array.new
     Institution.all.each do |inst|
       @institutions.push(inst.identifier) unless inst.identifier == 'aptrust.org'
