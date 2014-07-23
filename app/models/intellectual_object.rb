@@ -46,12 +46,12 @@ class IntellectualObject < ActiveFedora::Base
 
   private
   def identifier_is_unique
+    return if self.identifier.nil?
     count = 0;
-    IntellectualObject.all.each do |io|
-      if (io.identifier == self.identifier) && (io.id != self.id)
-        count += 1
-      end
-    end
+    objects = IntellectualObject.where(desc_metadata__identifier_ssim: self.identifier)
+    count +=1 if objects.count == 1 && objects.first.id != self.id
+    count = objects.count if objects.count > 1
+    #puts "Count: #{count}, Identifier: #{self.identifier}"
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end

@@ -60,11 +60,9 @@ class Institution < ActiveFedora::Base
 
   def identifier_is_unique
     count = 0;
-    Institution.all.each do |inst|
-      if (inst.identifier == self.identifier) && (inst.id != self.id)
-        count += 1
-      end
-    end
+    insts = Institution.where(desc_metadata__identifier_ssim: self.identifier)
+    count +=1 if insts.count == 1 && insts.first.id != self.id
+    count = insts.count if insts.count > 1
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end

@@ -117,12 +117,11 @@ class GenericFile < ActiveFedora::Base
   end
 
   def identifier_is_unique
+    return if self.identifier.nil?
     count = 0;
-    GenericFile.all.each do |gf|
-      if (gf.identifier == self.identifier) && (gf.id != self.id)
-        count += 1
-      end
-    end
+    files = GenericFile.where(tech_metadata__identifier_ssim: self.identifier)
+    count +=1 if files.count == 1 && files.first.id != self.id
+    count = files.count if files.count > 1
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end
