@@ -36,6 +36,10 @@ describe GenericFile do
     expect(subject.errors[:checksum]).to be_empty
   end
 
+  describe "#identifier_is_unique" do
+    it { should validate_uniqueness_of(:identifier) }
+  end
+
   describe "with an intellectual object" do
     before do
       subject.intellectual_object = intellectual_object

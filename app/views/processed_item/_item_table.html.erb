@@ -17,7 +17,7 @@
   <tbody>
   <% @items.each do |item| %>
       <tr class="<%= item.status %>">
-        <td><% unless item.status == Fluctus::Application::PROC_ITEM_STATUSES[1] %>
+        <td><% if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'] %>
           <input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" >
         <% end %></td>
         <td><a href="<%= processed_item_path(id: item.id) %>" ><%= item.name %></a></td>

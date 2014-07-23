@@ -33,6 +33,6 @@ class InstitutionsController < ApplicationController
       else
         @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
       end
-      @failed = @items.where(status: Fluctus::Application::PROC_ITEM_STATUSES[2])
+      @failed = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES['fail'])
     end
 end

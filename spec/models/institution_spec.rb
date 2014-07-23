@@ -27,8 +27,8 @@ describe Institution do
         subject.save!
       end
       let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: subject) }
-      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: '166311750.0') }
-      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, format: 'audio/wav', size: '143732461.0' ) }
+      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: '166311750.0', identifier: 'test.edu/123/data/file.xml') }
+      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, format: 'audio/wav', size: '143732461.0', identifier: 'test.edu/123/data/file.wav') }
       it "should return a hash" do
         expect(subject.bytes_by_format).to eq({"all"=>310044211.0,
                                                'application/xml' => 166311750,

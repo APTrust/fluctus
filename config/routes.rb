@@ -4,6 +4,8 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:index]
   end
 
+  post 'objects/include_nested', to: 'intellectual_objects#create_from_json', format: 'json'
+
   resources :intellectual_objects, only: [:show, :edit, :update, :destroy], path: 'objects' do
     resources :generic_files, only: :create, path: 'files'
     patch "files/:id", to: 'generic_files#update', constraints: {id: /.*/}, trailing_slash: true, format: 'json'
@@ -27,6 +29,7 @@ Fluctus::Application.routes.draw do
   end
 
   get 'itemresults/', to: 'processed_item#index', as: :processed_items
+  get '/itemresults/get_reviewed', to: 'processed_item#get_reviewed', as: :processed_items_get_reviewed
   post 'itemresults/', to: 'processed_item#create', format: 'json'
   get '/itemresults/ingested_since/:since', to: 'processed_item#ingested_since', as: :processed_items_ingested_since
   get 'itemresults/:id', to: 'processed_item#show', as: :processed_item

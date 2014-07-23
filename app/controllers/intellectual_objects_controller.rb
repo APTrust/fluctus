@@ -40,6 +40,47 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
+  def create_from_json
+    if params[:include_nested] == 'true'
+      params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
+      object = JSON.parse(json_param.to_json).first
+      new_object = IntellectualObject.new()
+      object_events, object_files = []
+      object.each { |attr_name, attr_value|
+        case attr_name
+          when 'institution_id'
+            attr_value.to_s.include?(':') ? new_object.institution = Institution.find(attr_value.to_s) : new_object.institution = Institution.where(desc_metadata__identifier_ssim: attr_value.to_s).first
+          when 'premisEvents'
+            object_events = attr_value
+          when 'generic_files'
+            object_files = attr_value
+          else
+            new_object[attr_name.to_s] = attr_value.to_s
+        end }
+      new_object.save!
+      object_events.each { |event| new_object.add_event(event) }
+      object_files.each do |file|
+        new_file = GenericFile.new()
+        file_events, file_checksums = []
+        file.each { |file_attr_name, file_attr_value|
+          case file_attr_name
+            when 'premisEvents'
+              file_events = file_attr_value
+            when 'checksum'
+              file_checksums = file_attr_value
+            else
+              new_file[file_attr_name.to_s] = file_attr_value.to_s
+          end }
+        file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
+        new_file.intellectual_object = new_object
+        new_file.save!
+        file_events.each { |event| new_file.add_event(event) }
+      end
+      @intellectual_object = new_object
+      respond_to { |format| format.json { render json: object_as_json, status: :created } }
+    end
+  end
+
   protected
 
   # Override Hydra-editor to redirect to an alternate location after create

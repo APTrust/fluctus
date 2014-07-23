@@ -41,4 +41,6 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
       map.digest(to: :checksumValue, in: FileVocabulary)
     end
   end
+
+  accepts_nested_attributes_for :events
 end

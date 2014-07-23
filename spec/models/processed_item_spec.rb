@@ -16,7 +16,7 @@ describe ProcessedItem do
   it { should validate_presence_of(:action) }
   it { should validate_presence_of(:stage) }
   it { should validate_presence_of(:status) }
-  it { should validate_presence_of(:outcome)}
+  it { should validate_presence_of(:outcome) }
 
   it 'should properly set a name' do
     subject.name = 'Test Name'
@@ -76,6 +76,11 @@ describe ProcessedItem do
   it 'should properly set an outcome' do
     subject.outcome = 'Bag was not processed'
     subject.outcome.should == 'Bag was not processed'
+  end
+
+  it 'should properly set the reviewed flag' do
+    subject.reviewed = false
+    subject.reviewed.should == false
   end
 
 end

@@ -56,15 +56,29 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  # This is an API call. The Go code will periodically get a list
+  # of reviewed items and delete the original uploaded files
+  # from the reveiving bucket.
+  def get_reviewed
+    @items = ProcessedItem.where(reviewed: true)
+    if(current_user.admin? == false)
+      @items = @items.where(institution: current_user.institution.identifier)
+    end
+    respond_to do |format|
+      format.json { render json: @items, status: :ok }
+    end
+  end
+
+
   def handle_selected
     review_list = params[:review]
     unless review_list.nil?
       review_list.each do |item|
         id = item.split("_")[1]
         proc_item = ProcessedItem.find(id)
-        unless proc_item.status == Fluctus::Application::PROC_ITEM_STATUSES[1]
+        if (proc_item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || proc_item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'])
           proc_item.reviewed = true
-          proc_item.save
+          proc_item.save!
         end
       end
     end
@@ -82,7 +96,7 @@ class ProcessedItemController < ApplicationController
       items = ProcessedItem.all()
     end
     items.each do |item|
-      if (item.date < session[:purge_datetime] && item.status != Fluctus::Application::PROC_ITEM_STATUSES[1])
+      if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
         item.reviewed = true
         item.save!
       end
@@ -103,8 +117,7 @@ class ProcessedItemController < ApplicationController
 
   def find_and_update
     # Parse date explicitly, or ActiveRecord will not find records when date format string varies.
-    bag_date = Time.parse(params[:bag_date])
-    @processed_item = ProcessedItem.where(name: params[:name], etag: params[:etag], bag_date: bag_date).first
+    set_item
     if @processed_item
       @processed_item.update(processed_item_params)
       @processed_item.user = current_user.email
@@ -112,9 +125,9 @@ class ProcessedItemController < ApplicationController
   end
 
   def set_filter_values
-    @statuses = Fluctus::Application::PROC_ITEM_STATUSES
-    @stages = Fluctus::Application::PROC_ITEM_STAGES
-    @actions = Fluctus::Application::PROC_ITEM_ACTIONS
+    @statuses = Fluctus::Application::FLUCTUS_STATUSES.values
+    @stages = Fluctus::Application::FLUCTUS_STAGES.values
+    @actions = Fluctus::Application::FLUCTUS_ACTIONS.values
     @institutions = Array.new
     Institution.all.each do |inst|
       @institutions.push(inst.identifier) unless inst.identifier == 'aptrust.org'
@@ -124,7 +137,7 @@ class ProcessedItemController < ApplicationController
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
-                                           :stage, :status, :outcome, :retry)
+                                           :stage, :status, :outcome, :retry, :reviewed)
   end
 
 
@@ -161,6 +174,7 @@ class ProcessedItemController < ApplicationController
     end
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
+    session[:purge_datetime] = Time.now.utc if params[:page] == 1 || params[:page].nil?
     set_filter_values
   end
 
@@ -171,13 +185,27 @@ class ProcessedItemController < ApplicationController
     if params[:id].blank? == false
       @processedItem = ProcessedItem.find(params[:id])
     else
-      # Parse date explicitly, or ActiveRecord will not find records
-      # when date format string varies.
-      bag_date = Time.parse(params[:bag_date])
-      @processed_item = ProcessedItem.where(etag: params[:etag],
-                                            name: params[:name],
-                                            bag_date: bag_date).first
+      if Rails.env.test? || Rails.env.development?
+        set_item_sqlite
+      else
+        @processed_item = ProcessedItem.where(etag: params[:etag],
+                                              name: params[:name],
+                                              bag_date: params[:bag_date]).first
+      end
       params[:id] = @processed_item.id if @processed_item
     end
+  end
+
+  # SQLite is f***ed up with date times, since it saves them as strings,
+  # and the nanoseconds are wrong. We have to pull records out and do our
+  # own time comparison.
+  def set_item_sqlite
+    bag_date = Time.parse(params[:bag_date])
+    items = ProcessedItem.where(etag: params[:etag],
+                                  name: params[:name])
+    pattern = "%Y-%m-%d %H:%M:%S %Z"
+    @processed_item = items.select { |item|
+      bag_date.utc.strftime(pattern) == item.bag_date.utc.strftime(pattern)
+    }.first
   end
 end
