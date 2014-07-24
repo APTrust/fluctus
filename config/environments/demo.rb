@@ -31,7 +31,18 @@ Fluctus::Application.configure do
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
   # send password reset emails to a file
-  config.action_mailer.delivery_method = :file
+  config.action_mailer.default_url_options = {:host => 'test.aptrust.org'}
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.smtp_settings = {
+    :address => "127.0.0.1",
+    :port    => 25,
+    :domain  => 'test.aptrust.org',
+    enable_starttls_auto: false
+  }
+
 
   # log only errors, otherwise, we end up with huge log files
   # that eat up all our disk space.
