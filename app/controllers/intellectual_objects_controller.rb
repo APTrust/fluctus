@@ -121,7 +121,8 @@ class IntellectualObjectsController < ApplicationController
 
   def load_object
     if params[:identifier] && params[:id].blank?
-      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: params[:identifier]).first
+      identifier = params[:identifier].gsub(/%2F/i, "/")
+      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
       if @intellectual_object.nil?
