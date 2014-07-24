@@ -124,7 +124,12 @@ class IntellectualObjectsController < ApplicationController
       @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: params[:identifier]).first
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
-      params[:id] = @intellectual_object.id
+      if @intellectual_object.nil?
+        msg = "IntellectualObject '#{params[:identifier]}' not found"
+        raise ActionController::RoutingError.new(msg)
+      else
+        params[:id] = @intellectual_object.id if @intellectual_object
+      end
     else
       @intellectual_object ||= IntellectualObject.find(params[:id])
     end
