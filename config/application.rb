@@ -31,6 +31,8 @@ module Fluctus
 
     VERSION = "0.5.dev"
 
+    config.i18n.enforce_available_locales = true
+
     #GLOBALS
     FLUCTUS_STATUSES = {
         'pend' => 'Pending',

@@ -1,7 +1,6 @@
 class ProcessedItemController < ApplicationController
   respond_to :html, :json
   inherit_resources
-  load "processed_item_helper.rb"
   before_filter :authenticate_user!
   before_filter :set_items, only: :index
   before_filter :set_item, only: :show

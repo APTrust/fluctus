@@ -9,7 +9,6 @@ namespace :fluctus do
     desc "Creating an initial institution names 'APTrust'..."
 
     i = Institution.create!(name: "APTrust", identifier: "aptrust.org")
-    PID_MAP.store(i.pid, "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
@@ -65,7 +64,6 @@ namespace :fluctus do
 
   desc "Empty DB and add dummy information"
   task :populate_db, [:numInstitutions, :numIntObjects, :numGenFiles] => [:environment] do |t, args|
-    load "config/pid_map.rb"
     if Rails.env.production?
       puts "Do not run in production!"
       return
@@ -98,7 +96,6 @@ namespace :fluctus do
       puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
       inst = FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1],
                          identifier: partner_list[count].last)
-      PID_MAP.store(inst.pid, partner_list[count][2])
     end
 
     puts "Creating Users for each Institution"

@@ -11,6 +11,9 @@ function selected (category, filter) {
         text: filter
     }).appendTo("#filter-"+category+" ul li span");
     $("#filter-title-"+category).click();
+    $("#filter-"+category).addClass("in");
+    $("#filter-title-"+category).removeClass("collapsed");
+
 }
 
 function callHandleSelected () {
