@@ -16,31 +16,29 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
 end
 
 class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
-  map_predicates do |map|
-    map.format(in: FileVocabulary) do |index|
-      index.as :stored_sortable
-    end
-    map.uri(to: :absoluteURI, in: RDF::HTTP)
-    map.size(in: FileVocabulary) do |index|
-      index.as :stored_sortable
-      index.type :integer
-    end
-    map.created(in: FileVocabulary)
-    map.modified(in: FileVocabulary)
-    map.checksum(in: FileVocabulary, class_name: "Checksum")
-    map.identifier(in: RDF::DC) { |index| index.as :symbol, :stored_searchable }
+  #noinspection RubyArgCount
+  property :format, predicate: FileVocabulary.format do |index|
+    index.as :stored_sortable
+  end
+  property :uri, predicate: RDF::HT.absoluteURI
+  property :size, predicate: FileVocabulary.size do |index|
+    index.as :stored_sortable
+    index.type :integer
+  end
+  property :created, predicate: FileVocabulary.created
+  property :modified, predicate: FileVocabulary.modified
+  property :checksum, predicate: FileVocabulary.checksum, class_name: 'Checksum'
+  property :identifier, predicate: RDF::DC.identifier do |index|
+    index.as :stored_searchable
+    index.as :symbol
   end
 
   accepts_nested_attributes_for :checksum
-  class Checksum < ActiveFedora::RdfObject
-    configure :type => RDF::DC.FileVocabulary.Checksum
+  class Checksum < ActiveFedora::Rdf::Resource
+    configure :type => FileVocabulary.Checksum
 
-    map_predicates do |map|
-      map.algorithm(to: :Algorithm, in: WorldNetVocabulary)
-      map.datetime(to: :created, in: RDF::DC)
-      map.digest(to: :checksumValue, in: FileVocabulary)
-    end
+    property :algorithm, predicate: WorldNetVocabulary.Algorithm
+    property :datetime, predicate: RDF::DC.created
+    property :digest, predicate: FileVocabulary.checksumValue
   end
-
-  accepts_nested_attributes_for :events
 end

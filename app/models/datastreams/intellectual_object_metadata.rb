@@ -1,21 +1,19 @@
 class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
-  map_predicates do |map|
-    map.title(in: RDF::DC) do |index|
-      index.as :stored_searchable, :sortable
-    end
-    map.description(in: RDF::DC) do |index|
-      index.as :stored_searchable
-    end
-    map.identifier(in: RDF::DC, to: 'identifier') do |index|
-      index.as :symbol, :stored_searchable
-    end
-    map.alt_identifier(in: RDF::DC, to: 'relation') do |index|
-      index.as :stored_searchable
-    end
-    map.access(in: RDF::DC, to: 'rights') do |index|
-      index.as :facetable
-    end
+  property :title, predicate: RDF::DC.title do |index|
+    index.as :sortable
+    index.as :stored_searchable
   end
-
-  accepts_nested_attributes_for :events
+  property :description, predicate: RDF::DC.description do |index|
+    index.as :stored_searchable
+  end
+  property :identifier, predicate: RDF::DC.identifier do |index|
+    index.as :stored_searchable
+    index.as :symbol
+  end
+  property :alt_identifier, predicate: RDF::DC11.identifier do |index|
+    index.as :stored_searchable
+  end
+  property :access, predicate: RDF::DC.rights do |index|
+    index.as :facetable
+  end
 end

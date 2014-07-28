@@ -21,35 +21,30 @@ class EventVocabulary < RDF::Vocabulary("http://multimedialab.elis.ugent.be/user
 end
 
 class PremisEventsMetadata < ActiveFedora::RdfxmlRDFDatastream
-  map_predicates do |map|
-    map.events(to: :Event, in: EventVocabulary, class_name: "Event")
-  end
-
-  accepts_nested_attributes_for :events
+  property :events, predicate: EventVocabulary.Event, class_name: 'Event'
 
   def serializable_hash(options={})
     events.map do |event|
       event.serializable_hash
     end
   end
-
+  accepts_nested_attributes_for :events
 end
 
 class Event < ActiveFedora::Rdf::Resource
-  configure :type => RDF::DC.EventVocabulary
+  configure :type => EventVocabulary
 
-  map_predicates do |map|
-    map.identifier(to: :eventIdentifier, in: EventVocabulary)
-    map.type(to: :eventType, in: EventVocabulary)
-    map.date_time(to: :eventDateTime, in: EventVocabulary)
-    map.detail(to: :eventDetail, in: EventVocabulary)
-    map.outcome(to: :eventOutcome, in: EventVocabulary)
-    map.outcome_detail(to: :eventOutcomeDetail, in: EventVocabulary)
-    map.outcome_information(to: :eventOutcomeInformation, in: EventVocabulary)
-    map.object(to: :linkingObject, in: EventVocabulary)
-    map.agent(to: :linkingAgent, in: EventVocabulary)
-  end
+  property :identifier, predicate: EventVocabulary.eventIdentifier
+  property :type, predicate: EventVocabulary.eventType
+  property :date_time, predicate: EventVocabulary.eventDateTime
+  property :detail, predicate: EventVocabulary.eventDetail
+  property :outcome, predicate: EventVocabulary.eventOutcome
+  property :outcome_detail, predicate: EventVocabulary.eventOutcomeDetail
+  property :outcome_information, predicate: EventVocabulary.eventOutcomeInformation
+  property :object, predicate: EventVocabulary.linkingObject
+  property :agent, predicate: EventVocabulary.linkingAgent
 
+  #noinspection RubyArgCount
   def initialize(graph=RDF::Graph.new, subject=nil)
     super
     init_identifier
@@ -85,10 +80,7 @@ private
   end
 
   def init_identifier
-    if self.identifier.empty?
-      uuid = UUIDTools::UUID.timestamp_create
-      self.identifier = uuid
-    end
+    self.identifier = UUIDTools::UUID.timestamp_create.to_s if self.identifier.empty?
   end
 
 end

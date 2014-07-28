@@ -212,7 +212,7 @@ describe IntellectualObjectsController do
       end
 
       it 'should update fields' do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', access: 'restricted'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: 'test.edu/124', access: 'restricted'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
