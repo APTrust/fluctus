@@ -29,8 +29,7 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :modified, predicate: FileVocabulary.modified
   property :checksum, predicate: FileVocabulary.checksum, class_name: 'Checksum'
   property :identifier, predicate: RDF::DC.identifier do |index|
-    index.as :stored_searchable
-    index.as :symbol
+    index.as :stored_searchable, :symbol
   end
 
   accepts_nested_attributes_for :checksum

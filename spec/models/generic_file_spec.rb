@@ -37,7 +37,12 @@ describe GenericFile do
   end
 
   describe "#identifier_is_unique" do
-    it { should validate_uniqueness_of(:identifier) }
+    it "should validate uniqueness of the identifier" do
+      one = FactoryGirl.create(:generic_file, identifier: "test.edu")
+      two = FactoryGirl.build(:generic_file, identifier: "test.edu")
+      two.should_not be_valid
+      two.errors[:identifier].should include("has already been taken")
+    end
   end
 
   describe "with an intellectual object" do

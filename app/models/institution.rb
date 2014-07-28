@@ -55,10 +55,12 @@ class Institution < ActiveFedora::Base
   # becomes problematic on update because the name exists already and the validation fails.  Therefore
   # we must remove self from the array before testing for uniqueness.
   def name_is_unique
+    return if self.name.nil?
     errors.add(:name, "has already been taken") if Institution.where(desc_metadata__name_ssim: self.name).reject{|r| r == self}.any?
   end
 
   def identifier_is_unique
+    return if self.identifier.nil?
     count = 0;
     insts = Institution.where(desc_metadata__identifier_ssim: self.identifier)
     count +=1 if insts.count == 1 && insts.first.id != self.id

@@ -212,9 +212,10 @@ describe IntellectualObjectsController do
       end
 
       it 'should update fields' do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: 'test.edu/124', access: 'restricted'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: { identifier: 'test.edu/124', title: 'Foo', access: 'restricted'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
+        expect(assigns(:intellectual_object).identifier).to eq 'test.edu/124'
       end
 
       it 'should use the institution parameter in the URL, not from the json' do

@@ -41,6 +41,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def create_from_json
+    puts "Object is nil? #{params[:intellectual_object].nil?}"
     if params[:include_nested] == 'true'
       params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
       object = JSON.parse(json_param.to_json).first
@@ -115,7 +116,7 @@ class IntellectualObjectsController < ApplicationController
 
   def intellectual_object_params
     params.require(:intellectual_object).permit(:pid, :institution_id, :title,
-                                                :description, :access,
+                                                :description, :access, :identifier,
                                                 :alt_identifier)
   end
 

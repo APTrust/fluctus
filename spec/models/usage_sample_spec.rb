@@ -7,7 +7,8 @@ describe UsageSample do
   end
 
   describe "on an institution" do
-    before(:all) { @file =  FactoryGirl.create(:generic_file, size: 184512282.0 ) }
+    size = 184512282.0.to_i
+    before(:all) { @file =  FactoryGirl.create(:generic_file, size: size ) }
     after :all do
       @file.delete
       # active_fedora is clearning out the relationship when it's deleted so we can't use it, so cache.
@@ -25,6 +26,7 @@ describe UsageSample do
        "application/xml" => 184512282.0})
     end
     it "should have to_flot" do
+      #noinspection RubyArgCount
       subject.stub(:created_at => DateTime.parse('Thu, 16 Jan 2014 20:31:53 UTC +00:00'))
       expect(subject.to_flot).to eq [1389904313, 184512282.0]
     end

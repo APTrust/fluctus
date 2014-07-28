@@ -11,11 +11,21 @@ describe Institution do
   end
 
   describe "#name_is_unique" do
-    it { should validate_uniqueness_of(:name) }
+    it "should validate uniqueness of the name" do
+      one = FactoryGirl.create(:institution, name: "test")
+      two = FactoryGirl.build(:institution, name: "test")
+      two.should_not be_valid
+      two.errors[:name].should include("has already been taken")
+    end
   end
 
   describe "#identifier_is_unique" do
-    it { should validate_uniqueness_of(:identifier) }
+    it "should validate uniqueness of the identifier" do
+      one = FactoryGirl.create(:institution, identifier: "test.edu")
+      two = FactoryGirl.build(:institution, identifier: "test.edu")
+      two.should_not be_valid
+      two.errors[:identifier].should include("has already been taken")
+    end
   end
 
   describe "bytes_by_format" do
@@ -27,8 +37,8 @@ describe Institution do
         subject.save!
       end
       let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: subject) }
-      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: '166311750.0', identifier: 'test.edu/123/data/file.xml') }
-      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, format: 'audio/wav', size: '143732461.0', identifier: 'test.edu/123/data/file.wav') }
+      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: 166311750.0.to_i, identifier: 'test.edu/123/data/file.xml') }
+      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, format: 'audio/wav', size: 143732461.0.to_i, identifier: 'test.edu/123/data/file.wav') }
       it "should return a hash" do
         expect(subject.bytes_by_format).to eq({"all"=>310044211.0,
                                                'application/xml' => 166311750,
@@ -38,7 +48,7 @@ describe Institution do
   end
 
   describe "a saved instance" do
-    before do 
+    before do
       subject.save
     end
 
@@ -47,12 +57,11 @@ describe Institution do
     end
     describe "with an associated user" do
       let!(:user) { FactoryGirl.create(:user, name: "Zeke", institution_pid: subject.pid)  }
-
       it "should contain the appropriate User" do
         subject.users.should eq [user]
       end
 
-      it 'deleting should be blocked' do 
+      it 'deleting should be blocked' do
         subject.destroy.should be_false
         expect(Institution.exists?(subject.pid)).to be_true
       end
@@ -73,6 +82,5 @@ describe Institution do
         expect(Institution.exists?(subject.pid)).to be_true
       end
     end
-
   end
 end
