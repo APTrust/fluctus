@@ -1,9 +1,9 @@
 class IntellectualObjectsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_object, only: [:show, :update]
-  load_and_authorize_resource :institution, only: [:index, :create]
-  load_and_authorize_resource :through => :institution, only: :create
-  load_and_authorize_resource except: [:index, :create]
+  load_and_authorize_resource :institution, only: [:index, :create, :create_from_json]
+  load_and_authorize_resource :through => :institution, only: [:create]
+  load_and_authorize_resource except: [:index, :create, :create_from_json]
 
   include Aptrust::GatedSearch
   apply_catalog_search_params
@@ -41,7 +41,6 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def create_from_json
-    puts "Object is nil? #{params[:intellectual_object].nil?}"
     if params[:include_nested] == 'true'
       params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
       object = JSON.parse(json_param.to_json).first
@@ -78,6 +77,8 @@ class IntellectualObjectsController < ApplicationController
         file_events.each { |event| new_file.add_event(event) }
       end
       @intellectual_object = new_object
+      @institution = @intellectual_object.institution
+      authorize! :create, @intellectual_object
       respond_to { |format| format.json { render json: object_as_json, status: :created } }
     end
   end
