@@ -96,12 +96,11 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object)).to eq obj1
       end
 
-      # TODO: Figure out fix so spec understands routing!
-      # it "should show the object by identifier for API users" do
-      #   get :show, identifier: obj1.identifier, use_route: 'object_by_identifier'
-      #   expect(response).to be_successful
-      #   expect(assigns(:intellectual_object)).to eq obj1
-      # end
+      it "should show the object by identifier for API users" do
+        get :show, identifier: CGI.escape(obj1.identifier), use_route: 'object_by_identifier'
+        expect(response).to be_successful
+        expect(assigns(:intellectual_object)).to eq obj1
+      end
 
     end
   end
@@ -171,11 +170,10 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
-      # TODO: Figure out fix so spec understands routing
-      # it "should update fields when called with identifier (API)" do
-      #   patch :update, identifier: obj1.identifier, intellectual_object: {title: 'Foo'}, use_route: 'object_update_by_identifier'
-      #   expect(assigns(:intellectual_object).title).to eq 'Foo'
-      # end
+      it "should update fields when called with identifier (API)" do
+        patch :update, identifier: CGI.escape(obj1.identifier), intellectual_object: {title: 'Foo'}, use_route: 'object_update_by_identifier'
+        expect(assigns(:intellectual_object).title).to eq 'Foo'
+      end
 
       it 'should update via json' do
         patch :update, id: obj1, intellectual_object: {title: 'Foo'}, format: 'json'
