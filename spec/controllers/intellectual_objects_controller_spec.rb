@@ -210,10 +210,11 @@ describe IntellectualObjectsController do
       end
 
       it 'should update fields' do
-        post :create, institution_id: user.institution_pid, intellectual_object: { identifier: 'test.edu/124', title: 'Foo', access: 'restricted'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: { identifier: 'test.edu/124', title: 'Foo', access: 'restricted', bag_name: '124'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
         expect(assigns(:intellectual_object).identifier).to eq 'test.edu/124'
+        expect(assigns(:intellectual_object).bag_name).to eq '124'
       end
 
       it 'should use the institution parameter in the URL, not from the json' do
@@ -240,6 +241,7 @@ describe IntellectualObjectsController do
             description: '',
             identifier: 'ncsu.edu/ncsu.1840.16-388',
             alt_identifier: [],
+            bag_name: '',
             premisEvents: [
               { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
                 type: 'ingest',
@@ -405,6 +407,7 @@ describe IntellectualObjectsController do
           }], format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Test Title'
+          expect(assigns(:intellectual_object).bag_name).to eq 'ncsu.1840.16-388'
         }.to change(IntellectualObject, :count).by(1)
 
       end

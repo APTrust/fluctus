@@ -118,7 +118,7 @@ class IntellectualObjectsController < ApplicationController
   def intellectual_object_params
     params.require(:intellectual_object).permit(:pid, :institution_id, :title,
                                                 :description, :access, :identifier,
-                                                :alt_identifier)
+                                                :bag_name, :alt_identifier)
   end
 
   def load_object

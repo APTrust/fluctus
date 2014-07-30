@@ -14,4 +14,7 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :access, predicate: RDF::DC.rights do |index|
     index.as :facetable
   end
+  property :bag_name, predicate: RDF::DC.alternative do |index|
+    index.as :stored_searchable, :symbol
+  end
 end

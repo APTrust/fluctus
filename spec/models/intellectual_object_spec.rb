@@ -47,6 +47,18 @@ describe IntellectualObject do
       subject.identifier.should == exp
     end
 
+    it 'should properly set an alternative identifier' do
+      exp = 'test.edu/123456'
+      subject.alt_identifier = exp
+      subject.alt_identifier.should == [exp]
+    end
+
+    it 'should properly set a bag name' do
+      exp = 'bag_name'
+      subject.bag_name = exp
+      subject.bag_name.should == exp
+    end
+
     it "should have terms_for_editing" do
       expect(subject.terms_for_editing).to eq [:title, :description, :access]
     end
