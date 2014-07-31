@@ -79,14 +79,9 @@ class IntellectualObject < ActiveFedora::Base
     return if self.identifier.nil?
     if self.bag_name.nil? || self.bag_name == ''
       pieces = self.identifier.split("/")
-      name = ""
       i = 1
       while i < pieces.count do
-        if i == 1
-          name = pieces[1]
-        else
-          name = "#{name}/#{pieces[i]}"
-        end
+        (i == 1) ? name = pieces[1] : name = "#{name}/#{pieces[i]}"
         i = i+1
       end
       self.bag_name = name
