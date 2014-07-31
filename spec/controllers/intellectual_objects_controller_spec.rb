@@ -231,9 +231,8 @@ describe IntellectualObjectsController do
       let(:any_institution) { FactoryGirl.create(:institution) }
       before { sign_in admin_user }
 
-      it 'should create all nested items when include relations flag is true' do
-        expect {
-          post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [{
+      def sample_object
+        {
             institution_id: any_institution.id,
             title: 'Test Title',
             access: 'consortia',
@@ -402,12 +401,36 @@ describe IntellectualObjectsController do
                 ]
               },
             ]
-          }], format: 'json'
+          }
+      end
+
+      it 'should create all nested items when include relations flag is true' do
+        expect {
+          post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [sample_object], format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Test Title'
         }.to change(IntellectualObject, :count).by(1)
-
       end
+
+      it 'should roll back when nested items are invalid' do
+        obj = sample_object()
+        obj[:identifier] = "ncsu.edu/ncsu.ahchoo"
+        obj[:premisEvents].each { |pe| pe[:identifier] += "_1" }
+        obj[:generic_files].each { |gf|
+          gf[:identifier] += "_1"
+          gf[:premisEvents].each { |pe| pe[:identifier] += "_1" }
+        }
+        # Missing format is invalid. This will cause create_from_json
+        # to fail after it's already built up some generic files and
+        # events.
+        obj[:generic_files][1][:format] = ""
+        expect {
+          post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [obj], format: 'json'
+          expect(response.code).to eq '422'
+        }.to change(IntellectualObject, :count).by(0)
+      end
+
+
     end
   end
 
