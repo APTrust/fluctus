@@ -55,7 +55,7 @@ class GenericFile < ActiveFedora::Base
     data = {
       id: id,
       uri: uri,
-      size: size,
+      size: size.to_i,
       created: Time.parse(created).iso8601,
       modified: Time.parse(modified).iso8601,
       format: format,
