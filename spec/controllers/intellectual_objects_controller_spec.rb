@@ -23,6 +23,7 @@ describe IntellectualObjectsController do
       let!(:obj3) { FactoryGirl.create(:institutional_intellectual_object,  institution: another_institution) }
       let!(:obj4) { FactoryGirl.create(:restricted_intellectual_object, institution: user.institution, title: "The 2nd Workers' Cultural Palace Station", description: 'a station of Line 2 of the Guangzhou Metro.') }
       let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object, institution: another_institution) }
+      let!(:obj6) { FactoryGirl.create(:institutional_intellectual_object, institution: user.institution, bag_name: '12345-abcde', alt_identifier: ['test.edu/some-bag']) }
       before { sign_in user }
       describe 'as an institutional user' do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
@@ -30,9 +31,9 @@ describe IntellectualObjectsController do
           it 'should show the results that I have access to that belong to the institution' do
             get :index, institution_id: user.institution
             expect(response).to be_successful
-            expect(assigns(:document_list).size).to eq 2
+            expect(assigns(:document_list).size).to eq 3
             assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
-            expect(assigns(:document_list).map &:id).to match_array [obj2.id, obj4.id]
+            expect(assigns(:document_list).map &:id).to match_array [obj2.id, obj4.id, obj6.id]
           end
 
           it 'should match a partial search on title' do
@@ -49,6 +50,16 @@ describe IntellectualObjectsController do
             get :index, institution_id: user.institution, q: obj4.identifier
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
+          end
+          it 'should match an exact search on bag name' do
+            get :index, institution_id: user.institution, q: '12345-abcde'
+            expect(response).to be_successful
+            expect(assigns(:document_list).map &:id).to match_array [obj6.id]
+          end
+          it 'should match an exact search on alternate identifiers' do
+            get :index, institution_id: user.institution, q: 'test.edu/some-bag'
+            expect(response).to be_successful
+            expect(assigns(:document_list).map &:id).to match_array [obj6.id]
           end
         end
         describe 'and viewing another institution' do
@@ -210,10 +221,11 @@ describe IntellectualObjectsController do
       end
 
       it 'should update fields' do
-        post :create, institution_id: user.institution_pid, intellectual_object: { identifier: 'test.edu/124', title: 'Foo', access: 'restricted'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: { identifier: 'test.edu/124', title: 'Foo', access: 'restricted', bag_name: '124'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
         expect(assigns(:intellectual_object).identifier).to eq 'test.edu/124'
+        expect(assigns(:intellectual_object).bag_name).to eq '124'
       end
 
       it 'should use the institution parameter in the URL, not from the json' do
@@ -239,6 +251,7 @@ describe IntellectualObjectsController do
             description: '',
             identifier: 'ncsu.edu/ncsu.1840.16-388',
             alt_identifier: [],
+            bag_name: '',
             premisEvents: [
               { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
                 type: 'ingest',
@@ -409,6 +422,7 @@ describe IntellectualObjectsController do
           post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [sample_object], format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Test Title'
+          expect(assigns(:intellectual_object).bag_name).to eq 'ncsu.1840.16-388'
         }.to change(IntellectualObject, :count).by(1)
       end
 

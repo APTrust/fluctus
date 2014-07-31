@@ -1,11 +1,9 @@
-var activate_tabs;
-activate_tabs = function() {
+var activate_tabs = function() {
   $('ul.nav-tabs li:first').addClass('active');
   $('ul.nav-tabs + div.tab-content div.tab-pane:first').addClass('active');
 };
 
-var dropdown;
-dropdown = function() {
+var dropdown = function() {
     $('.dropdown-toggle').dropdown();
 };
 

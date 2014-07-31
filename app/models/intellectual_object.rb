@@ -10,7 +10,7 @@ class IntellectualObject < ActiveFedora::Base
   has_many :generic_files, property: :is_part_of
   accepts_nested_attributes_for :generic_files
 
-  has_attributes :title, :access, :description, :identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :title, :access, :description, :identifier, :bag_name, datastream: 'descMetadata', multiple: false
   has_attributes :alt_identifier, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title
@@ -21,6 +21,7 @@ class IntellectualObject < ActiveFedora::Base
   validate :identifier_is_unique
 
   before_save :set_permissions
+  before_save :set_bag_name
   before_destroy :check_for_associations
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor
@@ -71,6 +72,19 @@ class IntellectualObject < ActiveFedora::Base
       when 'restricted'
         self.discover_groups = [inst_user_group]
         self.edit_groups = [inst_admin_group]
+    end
+  end
+
+  def set_bag_name
+    return if self.identifier.nil?
+    if self.bag_name.nil? || self.bag_name == ''
+      pieces = self.identifier.split("/")
+      i = 1
+      while i < pieces.count do
+        (i == 1) ? name = pieces[1] : name = "#{name}/#{pieces[i]}"
+        i = i+1
+      end
+      self.bag_name = name
     end
   end
 

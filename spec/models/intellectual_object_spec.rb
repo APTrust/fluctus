@@ -47,6 +47,18 @@ describe IntellectualObject do
       subject.identifier.should == exp
     end
 
+    it 'should properly set an alternative identifier' do
+      exp = 'test.edu/123456'
+      subject.alt_identifier = exp
+      subject.alt_identifier.should == [exp]
+    end
+
+    it 'should properly set a bag name' do
+      exp = 'bag_name'
+      subject.bag_name = exp
+      subject.bag_name.should == exp
+    end
+
     it "should have terms_for_editing" do
       expect(subject.terms_for_editing).to eq [:title, :description, :access]
     end
@@ -81,7 +93,7 @@ describe IntellectualObject do
         subject.generic_files.destroy_all
       end
 
-      subject { FactoryGirl.create(:intellectual_object) }
+      subject { FactoryGirl.create(:intellectual_object, bag_name: '') }
 
       before do
         @file = FactoryGirl.create(:generic_file, intellectual_object_id: subject.id)
@@ -95,6 +107,10 @@ describe IntellectualObject do
 
       it 'should not be destroyable' do
         expect(subject.destroy).to be_false
+      end
+
+      it 'should fill in an empty bag name with data from the identifier' do
+        expect(subject.bag_name).to eq subject.identifier.split("/")[1]
       end
 
       describe "soft_delete" do
@@ -147,8 +163,8 @@ describe IntellectualObject do
 
       describe "#identifier_is_unique" do
         it "should validate uniqueness of the identifier" do
-          one = FactoryGirl.create(:intellectual_object, identifier: "test.edu")
-          two = FactoryGirl.build(:intellectual_object, identifier: "test.edu")
+          one = FactoryGirl.create(:intellectual_object, identifier: "test.edu/234")
+          two = FactoryGirl.build(:intellectual_object, identifier: "test.edu/234")
           two.should_not be_valid
           two.errors[:identifier].should include("has already been taken")
         end

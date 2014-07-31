@@ -144,6 +144,37 @@ form .alert {
   color: #FFFFFF;
 }
 
+.btn:hover,
+.btn:focus {
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position .1s linear;
+  -moz-transition: background-position .1s linear;
+  -o-transition: background-position .1s linear;
+  transition: background-position .1s linear;
+}
+.btn:hover,
+.btn:focus {
+  background-color: #e6e6e6;
+}
+.btn:active,
+.btn.active,
+.btn.active:hover {
+  background-color: #f2f2f2;
+  border-color: #e6e6e6;
+}
+.btn.disabled:hover,
+.btn.disabled:focus,
+.btn.disabled:active,
+.btn.disabled.active,
+.btn[disabled] .btn:hover,
+.btn[disabled] .btn:focus,
+.btne[disabled] .btn:active,
+.btn[disabled] .btn.active {
+  background-color: #ffffff;
+  border-color: #ffffff;
+}
+
 
 
 

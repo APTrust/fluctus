@@ -55,6 +55,11 @@ class Event < ActiveFedora::Rdf::Resource
     Solrizer.insert_field(solr_doc, 'event_type', self.type, :symbol)
     Solrizer.insert_field(solr_doc, 'event_outcome', self.outcome, :symbol)
     Solrizer.insert_field(solr_doc, 'event_date_time', self.date_time, :sortable, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_outcome_detail', self.outcome_detail, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_detail', self.detail, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_outcome_information', self.outcome_information, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_object', self.object, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_agent', self.agent, :symbol)
     solr_doc.merge!(SOLR_DOCUMENT_ID => self.identifier.first)
     solr_doc
   end
