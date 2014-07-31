@@ -21,12 +21,14 @@
       <dd><%= @intellectual_object.bag_name %></dd>
       <dt> Last Modified </dt>
       <dd> <%= @intellectual_object.modified_date %> </dd>
-      <% @intellectual_object.alt_identifier.each do |alt_ident| %>
-          <dt>Alternate Identifiers</dt>
-          <dd><%= alt_ident %></dd>
-      <% end %>
       <dt>Description</dt>
       <dd><%= @intellectual_object.description %></dd>
+      <% if @intellectual_object.alt_identifier.count >= 1  %>
+          <dt>Alternate Identifiers</dt>
+      <% end %>
+      <% @intellectual_object.alt_identifier.each do |alt_ident| %>
+          <dd><%= alt_ident %></dd>
+      <% end %>
     </dl>
   </div>
 

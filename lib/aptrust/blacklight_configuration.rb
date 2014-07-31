@@ -50,6 +50,7 @@ module Aptrust
         config.add_index_field bag_name_field, label: 'Bag Name'
         config.add_index_field 'system_modified_dtsi', label: 'Last Modified'
         config.add_index_field description_field, label: 'Description'
+        config.add_index_field alt_identifier_field, label: 'Alternate Identifiers'
 
         config.add_search_field 'all_fields', :label => 'All Fields'
 

@@ -93,7 +93,7 @@ describe IntellectualObject do
         subject.generic_files.destroy_all
       end
 
-      subject { FactoryGirl.create(:intellectual_object) }
+      subject { FactoryGirl.create(:intellectual_object, bag_name: '') }
 
       before do
         @file = FactoryGirl.create(:generic_file, intellectual_object_id: subject.id)
@@ -107,6 +107,10 @@ describe IntellectualObject do
 
       it 'should not be destroyable' do
         expect(subject.destroy).to be_false
+      end
+
+      it 'should fill in an empty bag name with data from the identifier' do
+        expect(subject.bag_name).to eq subject.identifier.split("/")[1]
       end
 
       describe "soft_delete" do
