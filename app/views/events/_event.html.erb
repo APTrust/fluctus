@@ -18,11 +18,35 @@
     <dt> Event Type: </dt>
     <dd> <%= Array(event['event_type_ssim']).first %> </dd>
 
+    <dt> DateTime: </dt>
+    <dd> <%= Array(event['event_date_time_ssim']).first %> </dd>
+
+    <dt> Detail: </dt>
+    <dd> <%= Array(event['event_detail_ssim']).first %> </dd>
+
     <dt> Outcome: </dt>
     <dd> <%= display_event_outcome(event) %> </dd>
 
-    <dt> DateTime: </dt>
-    <dd> <%= Array(event['event_date_time_ssim']).first %> </dd>
+    <% unless Array(event['event_outcome_detail_ssim']).empty? %>
+        <dt>Outcome Details: </dt>
+        <dd> <%= Array(event['event_outcome_detail_ssim']).first %> </dd>
+    <% end %>
+
+    <% unless Array(event['event_outcome_information_ssim']).empty? %>
+        <dt> Outcome Information: </dt>
+        <dd> <%= Array(event['event_outcome_information_ssim']).first %> </dd>
+    <% end %>
+
+    <% unless Array(event['event_object_ssim']).empty? %>
+        <dt> Object: </dt>
+        <dd> <%= Array(event['event_object_ssim']).first %> </dd>
+    <% end %>
+
+    <% unless Array(event['event_agent_ssim']).empty? %>
+        <dt> Agent: </dt>
+        <dd> <%= Array(event['event_agent_ssim']).first %> </dd>
+    <% end %>
+
   </dl>
 
 </div>

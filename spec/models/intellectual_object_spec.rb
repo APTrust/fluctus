@@ -163,8 +163,8 @@ describe IntellectualObject do
 
       describe "#identifier_is_unique" do
         it "should validate uniqueness of the identifier" do
-          one = FactoryGirl.create(:intellectual_object, identifier: "test.edu")
-          two = FactoryGirl.build(:intellectual_object, identifier: "test.edu")
+          one = FactoryGirl.create(:intellectual_object, identifier: "test.edu/234")
+          two = FactoryGirl.build(:intellectual_object, identifier: "test.edu/234")
           two.should_not be_valid
           two.errors[:identifier].should include("has already been taken")
         end
