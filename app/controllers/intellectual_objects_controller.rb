@@ -83,7 +83,7 @@ class IntellectualObjectsController < ApplicationController
               new_file[file_attr_name.to_s] = file_attr_value.to_s
             end }
           file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
-          current_object = "GenericFile #{new_object.identifier}"
+          current_object = "GenericFile #{new_file.identifier}"
           new_file.intellectual_object = new_object
           new_file.save!
           file_events.each { |event|
