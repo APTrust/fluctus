@@ -102,7 +102,6 @@ class IntellectualObjectsController < ApplicationController
           end
           new_object.destroy
         end
-        puts ex.message
         respond_to { |format| format.json {
             render json: { error: "#{ex.message} : #{current_object}" },
             status: :unprocessable_entity
