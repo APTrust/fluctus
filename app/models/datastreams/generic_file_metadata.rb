@@ -1,3 +1,24 @@
+# This file defines the GenericFile datastream, but first we
+# have to add a long-stored-indexed type to Solrizer, or we
+# won't be able to store size info about files larger than 2GB.
+# TODO: Move this?
+module Solrizer
+  module DefaultDescriptors
+    def self.sortable_long
+      Solrizer::SortableLongDescriptor.new(:long, :stored, :indexed)
+    end
+  end
+
+  class SortableLongDescriptor < Solrizer::Descriptor
+    def name_and_converter(field_name, field_type)
+        [field_name + '_lsi']
+    end
+    protected
+    def suffix(field_type)
+      [field_name + '_lsi']
+    end
+  end
+end
 
 class WorldNetVocabulary < RDF::Vocabulary("http://xmlns.com/wordnet/1.6/")
   property :Algorithm
@@ -22,8 +43,7 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   end
   property :uri, predicate: RDF::HT.absoluteURI
   property :size, predicate: FileVocabulary.size do |index|
-    index.as :stored_sortable
-    index.type :integer
+    index.as :sortable_long
   end
   property :created, predicate: FileVocabulary.created
   property :modified, predicate: FileVocabulary.modified

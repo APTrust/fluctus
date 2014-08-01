@@ -82,7 +82,7 @@ describe GenericFilesController do
       let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @institution.pid) }
       let(:obj1) { @intellectual_object }
       before { sign_in user }
-        
+
       describe "and assigning to an object you don't have access to" do
         let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
         it "should be forbidden" do
@@ -128,6 +128,17 @@ describe GenericFilesController do
         end
       end
 
+      it "should create generic files larger than 2GB" do
+        identifier = URI.escape(obj1.identifier)
+        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/dog', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/dog.jpg', size: 300000000000, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/dog.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        expect(response.code).to eq '201'
+        assigns(:generic_file).tap do |file|
+          expect(file.uri).to eq 'path/within/dog'
+          expect(file.content.dsLocation).to eq 'http://s3-eu-west-1.amazonaws.com/mybucket/dog.jpg'
+          expect(file.identifier).to eq 'test.edu/12345678/data/mybucket/dog.jpg'
+        end
+      end
+
     end
   end
 
@@ -145,7 +156,7 @@ describe GenericFilesController do
 
     describe "when signed in" do
       before { sign_in user }
-        
+
       describe "and deleteing a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it "should be forbidden" do
@@ -158,7 +169,7 @@ describe GenericFilesController do
       describe "and you have access to the file" do
         it "should update the file" do
           patch :update, intellectual_object_id: file.intellectual_object, id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
-          expect(assigns[:generic_file].size).to eq 99 
+          expect(assigns[:generic_file].size).to eq 99
           expect(response.code).to eq '204'
         end
 
@@ -186,7 +197,7 @@ describe GenericFilesController do
 
     describe "when signed in" do
       before { sign_in user }
-        
+
       describe "and deleteing a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it "should be forbidden" do
