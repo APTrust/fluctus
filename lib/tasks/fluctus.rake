@@ -4,6 +4,27 @@ RSpec::Core::RakeTask.new(:rspec => 'test:prepare') do |t|
 end
 
 namespace :fluctus do
+
+  partner_list = [
+        ["APTrust", "apt", "aptrust.org"],
+        ["Columbia University", "cul", "columbia.edu"],
+        ["Johns Hopkins University", "jhu", "jhu.edu"],
+        ["North Carolina State University", "ncsu", "ncsu.edu"],
+        ["Pennsylvania State University", "psu", "psu.edu"],
+        ["Stanford University", "stnfd", "stanford.edu"],
+        ["Syracuse University", "syr", "syr.edu"],
+        ["University of Chicago", "uchi", "uchicago.edu"],
+        ["University of Cinnicnati", "ucin", "uc.edu"],
+        ["University of Connecticut", "uconn", "uconn.edu"],
+        ["University of Maryland", "mdu", "umd.edu"],
+        ["University of Miami", "um", "miami.edu"],
+        ["University of Michigan", "umich", "umich.edu"],
+        ["University of North Carolina at Chapel Hill", "unc", "unc.edu"],
+        ["University of Notre Dame", "und", "nd.edu"],
+        ["University of Virginia","uva", "virginia.edu"],
+  ]
+
+
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
@@ -27,7 +48,7 @@ namespace :fluctus do
 
     STDOUT.puts "Create a password."
     password = STDIN.gets.strip
-   
+
     User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
                  role_ids: [Role.where(name: 'admin').first.id])
   end
@@ -49,10 +70,10 @@ namespace :fluctus do
   end
 
   desc "Run ci"
-  task :travis do 
+  task :travis do
     puts "Updating Solr config"
     Rake::Task['jetty:config'].invoke
-    
+
     require 'jettywrapper'
     jetty_params = Jettywrapper.load_config
     puts "Starting Jetty"
@@ -71,17 +92,6 @@ namespace :fluctus do
     Rake::Task['fluctus:empty_db'].invoke
     Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
-
-    partner_list = [
-        ["Columbia University", "cul", "columbia.edu"], ["North Carolina State University", "ncsu", "ncsu.edu"],
-        ["Johns Hopkins University", "jhu", "jhu.edu"], ["University of Maryland", "mdu", "umd.edu"],
-        ["University of Michigan", "umich", "umich.edu"], ["University of North Carolina at Chapel Hill", "unc", "unc.edu"],
-        ["Syracuse University", "syr", "syr.edu"], ["University of Virginia","uva", "virginia.edu"],
-        ["University of Notre Dame", "und", "nd.edu"], ["Stanford University", "stnfd", "stanford.edu"],
-        ["University of Chicago", "uchi", "uchicago.edu"], ["University of Miami", "um", "miami.edu"],
-        ["University of Connecticut", "uconn", "uconn.edu"], ["University of Cinnicnati", "ucin", "uc.edu"],
-        ["Pennsylvania State University", "psu", "psu.edu"],
-    ]
 
     args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
 
@@ -160,5 +170,41 @@ namespace :fluctus do
         FactoryGirl.create(:processed_item, institution: institution.identifier)
       end
     end
+  end
+
+  desc "Deletes all solr documents and processed items, recreates institutions & preserves users"
+  task :reset_data => [:environment] do |t, args|
+    if Rails.env.production?
+      puts "Do not run in production!"
+      return
+    end
+
+    user_inst = {}
+    User.all.each do |user|
+      user_inst[user.id] = user.institution.identifier
+    end
+
+    puts "Deleting processed items"
+    ProcessedItem.delete_all
+
+    puts "Deleting all Solr documents"
+    Rake::Task['fluctus:clean_solr'].invoke
+
+    puts "Creating Institutions"
+    partner_list.count.times.each do |count|
+      puts "== Creating number #{count+1} of #{partner_list.count}: #{partner_list[count].first} "
+      inst = FactoryGirl.create(:institution, name: partner_list[count].first,
+                                brief_name: partner_list[count][1],
+                                identifier: partner_list[count].last)
+    end
+
+    user_inst.each do |user_id, inst_identifier|
+      user = User.find(user_id)
+      inst = Institution.where(desc_metadata__identifier_ssim: inst_identifier).first
+      puts "Associating user #{user.email} with institution #{inst.name}"
+      user.institution_pid = inst.pid
+      user.save
+    end
+
   end
 end
