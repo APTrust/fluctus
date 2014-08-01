@@ -42,7 +42,12 @@ class IntellectualObjectsController < ApplicationController
 
   def create_from_json
     if params[:include_nested] == 'true'
+      # new_object is the IntellectualObject we're creating.
+      # current_object is the item we're about to save at any
+      # given step of this operation. We use this in the rescue
+      # clause to let the caller know where the operation failed.
       new_object = nil
+      current_object = nil
       begin
         params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
         object = JSON.parse(json_param.to_json).first
@@ -59,8 +64,12 @@ class IntellectualObjectsController < ApplicationController
           else
             new_object[attr_name.to_s] = attr_value.to_s
           end }
+        current_object = "IntellectualObject #{new_object.identifier}"
         new_object.save!
-        object_events.each { |event| new_object.add_event(event) }
+        object_events.each { |event|
+          current_object = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
+          new_object.add_event(event)
+        }
         object_files.each do |file|
           new_file = GenericFile.new()
           file_events, file_checksums = []
@@ -74,9 +83,13 @@ class IntellectualObjectsController < ApplicationController
               new_file[file_attr_name.to_s] = file_attr_value.to_s
             end }
           file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
+          current_object = "GenericFile #{new_object.identifier}"
           new_file.intellectual_object = new_object
           new_file.save!
-          file_events.each { |event| new_file.add_event(event) }
+          file_events.each { |event|
+            current_object = "GenericFile Event #{event['type']} / #{event['identifier']}"
+            new_file.add_event(event)
+          }
         end
         @intellectual_object = new_object
         @institution = @intellectual_object.institution
@@ -89,8 +102,9 @@ class IntellectualObjectsController < ApplicationController
           end
           new_object.destroy
         end
+        puts ex.message
         respond_to { |format| format.json {
-            render json: { error: ex.message },
+            render json: { error: "#{ex.message} : #{current_object}" },
             status: :unprocessable_entity
           }
         }
