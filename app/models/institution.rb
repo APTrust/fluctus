@@ -32,11 +32,11 @@ class Institution < ActiveFedora::Base
       'stats' => true,
       'fl' => '',
       'stats.field' =>'tech_metadata__size_lsi',
-      'stats.facet' => 'tech_metadata__format_ssi'
+      'stats.facet' => 'tech_metadata__file_format_ssi'
     }
     stats = resp['stats']['stats_fields']['tech_metadata__size_lsi']
     if stats
-      cross_tab = stats['facets']['tech_metadata__format_ssi'].each_with_object({}) { |(k,v), obj|
+      cross_tab = stats['facets']['tech_metadata__file_format_ssi'].each_with_object({}) { |(k,v), obj|
         obj[k] = v['sum']
       }
       cross_tab['all'] = stats['sum']

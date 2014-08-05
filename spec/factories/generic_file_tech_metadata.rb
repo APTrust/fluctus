@@ -5,7 +5,7 @@ FactoryGirl.define do
   sequence(:uri) { |n| "#file:///#{intellectual_object.identifier}/data/#{n}filename.xml" }
 
   factory :generic_file_tech_metadata, :class => 'GenericFileMetadata' do
-    format { 'application/xml' }
+    file_format { 'application/xml' }
     identifier { "virginia.edu.#{self.intellectual_object.identifier}/data/#{n}filename.xml" }
     uri
     size { rand(20000..500000000) }

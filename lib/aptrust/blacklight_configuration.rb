@@ -12,13 +12,14 @@ module Aptrust
         access_field = solr_name('desc_metadata__access', :facetable)
         bag_name_field = solr_name('desc_metadata__bag_name', :stored_searchable)
         alt_identifier_field = solr_name('desc_metadata__alt_identifier', :stored_searchable)
-        format_field = solr_name('format', :facetable)
+        file_format_field = solr_name('file_format', :facetable)
         event_type_field = solr_name('event_type', :symbol)
         event_outcome_field = solr_name('event_outcome', :symbol)
+        event_identifier_field = solr_name('event_identifier', :symbol)
 
 
         config.default_solr_params = {
-          :qf => [title_field, identifier_field, description_field, bag_name_field, alt_identifier_field].join(' '),
+          :qf => [title_field, identifier_field, description_field, bag_name_field, alt_identifier_field, event_identifier_field].join(' '),
           :qt => 'search',
           :rows => 10
         }
@@ -33,7 +34,7 @@ module Aptrust
 
         config.add_facet_field institution_field, sort: 'index', label: "Institution"
         config.add_facet_field access_field, sort: 'index', label: "Access"
-        config.add_facet_field format_field, sort: 'index', label: "Format"
+        config.add_facet_field file_format_field, sort: 'index', label: "Format"
         config.add_facet_field event_type_field, sort: 'index', label: "Event Type"
         config.add_facet_field event_outcome_field, sort: 'index', label: "Event Outcome"
 
@@ -92,6 +93,14 @@ module Aptrust
           field.solr_local_parameters = {
               :qf => alt_identifier_field,
               :pf => '$alt_identifier_pf'
+          }
+        end
+
+        config.add_search_field(event_identifier_field) do |field|
+          field.label = "Event Identifier"
+          field.solr_local_parameters = {
+              :qf => event_identifier_field,
+              :pf => '$event_identifier_pf'
           }
         end
 

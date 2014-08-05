@@ -146,11 +146,11 @@ namespace :fluctus do
           ].sample
           name = Faker::Lorem.characters(char_count=rand(5..15))
           attrs = {
-              format: "#{format[:type]}",
+              file_format: "#{format[:type]}",
               uri: "file:///#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
               identifier: "#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
           }
-          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri], identifier: attrs[:identifier])
+          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, file_format: attrs[:file_format], uri: attrs[:uri], identifier: attrs[:identifier])
 
           f.save!
 

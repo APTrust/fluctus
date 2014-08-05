@@ -279,7 +279,7 @@ describe IntellectualObjectsController do
                 size: 4853,
                 created: '2014-04-25T14:06:39-04:00',
                 modified: '2014-04-25T14:06:39-04:00',
-                format: 'application/xml',
+                file_format: 'application/xml',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
                 checksum: [
                   { algorithm: 'md5',
@@ -348,7 +348,7 @@ describe IntellectualObjectsController do
                 size: 72,
                 created: '2014-04-25T14:06:39-04:00',
                 modified: '2014-04-25T14:06:39-04:00',
-                format: 'text/plain',
+                file_format: 'text/plain',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
                 checksum: [
                   { algorithm: 'md5',
@@ -437,7 +437,7 @@ describe IntellectualObjectsController do
         # Missing format is invalid. This will cause create_from_json
         # to fail after it's already built up some generic files and
         # events.
-        obj[:generic_files][1][:format] = ""
+        obj[:generic_files][1][:file_format] = ""
         expect {
           post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [obj], format: 'json'
           expect(response.code).to eq '422'

@@ -25,7 +25,7 @@ describe GenericFile do
   it { should validate_presence_of(:size) }
   it { should validate_presence_of(:created) }
   it { should validate_presence_of(:modified) }
-  it { should validate_presence_of(:format) }
+  it { should validate_presence_of(:file_format) }
   it { should validate_presence_of(:identifier)}
   it "should validate presence of a checksum" do
     expect(subject.valid?).to be_false

@@ -52,6 +52,7 @@ class Event < ActiveFedora::Rdf::Resource
   end
 
   def to_solr(solr_doc={}, opts={})
+    Solrizer.insert_field(solr_doc, 'event_identifier', self.identifier, :symbol)
     Solrizer.insert_field(solr_doc, 'event_type', self.type, :symbol)
     Solrizer.insert_field(solr_doc, 'event_outcome', self.outcome, :symbol)
     Solrizer.insert_field(solr_doc, 'event_date_time', self.date_time, :sortable, :symbol)

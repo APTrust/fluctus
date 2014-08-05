@@ -8,14 +8,14 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
+  has_attributes :uri, :size, :file_format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
   delegate :checksum_attributes=, :checksum, to: :techMetadata
 
   validates_presence_of :uri
   validates_presence_of :size
   validates_presence_of :created
   validates_presence_of :modified
-  validates_presence_of :format
+  validates_presence_of :file_format
   validates_presence_of :identifier
   validate :has_right_number_of_checksums
   validate :identifier_is_unique
@@ -58,7 +58,7 @@ class GenericFile < ActiveFedora::Base
       size: size.to_i,
       created: Time.parse(created).iso8601,
       modified: Time.parse(modified).iso8601,
-      format: format,
+      file_format: file_format,
       identifier: identifier,
     }
     if options.has_key?(:include)
