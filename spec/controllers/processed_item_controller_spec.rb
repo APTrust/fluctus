@@ -110,6 +110,44 @@ describe ProcessedItemController do
   end
 
 
+  describe "GET #restore" do
+    describe "for admin user" do
+      before do
+        sign_in admin_user
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'])
+      end
+
+      it "responds successfully with an HTTP 200 status code" do
+        get :restore, format: :json
+        expect(response).to be_success
+      end
+
+      it "assigns the correct @items" do
+        get :restore, format: :json
+        assigns(:items).should have(ProcessedItem.count).items
+      end
+
+    end
+
+    describe "for institutional admin" do
+      before do
+        sign_in institutional_admin
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'])
+      end
+
+      it "assigns the requested items as @items" do
+        get :restore, format: :json
+        assigns(:items).should include(user_item)
+        assigns(:items).should have(1).items
+      end
+    end
+  end
+
+
 
   describe "Post #create" do
     describe "for admin user" do

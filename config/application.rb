@@ -43,6 +43,7 @@ module Fluctus
     }
 
     FLUCTUS_STAGES = {
+        'requested' => 'Requested',
         'receive' => 'Receive',
         'fetch' => 'Fetch',
         'unpack' => 'Unpack',
