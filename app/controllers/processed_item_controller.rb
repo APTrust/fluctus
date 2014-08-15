@@ -1,7 +1,6 @@
 class ProcessedItemController < ApplicationController
   respond_to :html, :json
   inherit_resources
-  load "processed_item_helper.rb"
   before_filter :authenticate_user!
   before_filter :set_items, only: :index
   before_filter :set_item, only: :show
@@ -61,7 +60,7 @@ class ProcessedItemController < ApplicationController
   # from the reveiving bucket.
   def get_reviewed
     @items = ProcessedItem.where(reviewed: true)
-    if(current_user.admin? == false)
+    unless current_user.admin?
       @items = @items.where(institution: current_user.institution.identifier)
     end
     respond_to do |format|
@@ -91,10 +90,7 @@ class ProcessedItemController < ApplicationController
 
   def review_all
     institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
-    items = ProcessedItem.where(bucket: institution_bucket)
-    if(current_user.admin?)
-      items = ProcessedItem.all()
-    end
+    items = current_user.admin? ? ProcessedItem.all : ProcessedItem.where(bucket: institution_bucket)
     items.each do |item|
       if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
         item.reviewed = true

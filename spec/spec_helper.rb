@@ -8,6 +8,7 @@ require 'capybara/rspec'
 require 'coveralls'
 require 'simplecov'
 #require 'email_spec'
+#require 'pundit/rspec'
 
 # push test code to remote and produce locally.
 Coveralls.wear!

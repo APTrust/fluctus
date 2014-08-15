@@ -209,6 +209,8 @@ GEM
       countries (>= 0.8.2)
       phony (~> 2.1)
     polyglot (0.3.4)
+    pundit (0.2.3)
+      activesupport (>= 3.0.0)
     quiet_assets (1.0.2)
       railties (>= 3.1, < 5.0)
     rack (1.5.2)
@@ -378,6 +380,7 @@ DEPENDENCIES
   order_up (= 0.0.1)
   pg
   phony_rails
+  pundit
   quiet_assets
   rails (= 4.0.3)
   rails_12factor

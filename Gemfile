@@ -51,6 +51,9 @@ gem 'resque', '~> 1.25'
 
 gem "devise"
 gem 'figaro'
+# as an authorization replacement for CanCan
+gem "pundit"
+
 #gem 'omniauth-google-oauth2'
 gem 'simple_form', '~> 3.0.1'
 gem "hydra-role-management", "~> 0.1.0"

@@ -21,6 +21,7 @@ class Ability
       can :add_user, Institution, id: current_user.institution_pid
       can :add_user, Role, name: 'institutional_user'
       can :add_user, Role, name: 'institutional_admin'
+      # cannot delete user itself
       can [:read, :update, :destroy], User, institution_pid: current_user.institution_pid
       can [:create], User
       can :generate_api_key, User, id: current_user.id

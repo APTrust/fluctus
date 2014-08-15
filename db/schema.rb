@@ -47,8 +47,11 @@ ActiveRecord::Schema.define(version: 20140714203114) do
   add_index "processed_items", ["stage"], name: "index_processed_items_on_stage"
   add_index "processed_items", ["status"], name: "index_processed_items_on_status"
 
-# Could not dump table "processing_queues" because of following NoMethodError
-#   undefined method `[]' for nil:NilClass
+  create_table "processing_queues", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "table"
+  end
 
   create_table "roles", force: true do |t|
     t.string "name"

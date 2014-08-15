@@ -30,4 +30,13 @@ en:
     search:
       pagination_info:
         single_item_found: '<strong>1</strong> result found'
-        
+  pundit:
+    institution_policy:
+      update?: 'You cannot edit this institution!'
+      create?: 'You cannot create institutions!'
+    intellectual_object_policy:
+      update?: 'You cannot edit this intellectional object!'
+      create?: 'You cannot create intellectual objects!'
+    generic_file_policy:
+      update?: 'You cannot edit this generic file!'
+      create?: 'You cannot create generic file objects!'

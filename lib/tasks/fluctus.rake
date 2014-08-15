@@ -9,7 +9,7 @@ namespace :fluctus do
     desc "Creating an initial institution names 'APTrust'..."
 
     i = Institution.create!(name: "APTrust", identifier: "aptrust.org")
-    PID_MAP.store(i.pid, "aptrust.org")
+    #PID_MAP.store(i.pid, "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
@@ -73,7 +73,8 @@ namespace :fluctus do
     Rake::Task['fluctus:empty_db'].invoke
     Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
-
+    start = Time.now
+    puts "Starting time: #{start}"
     partner_list = [
         ["Columbia University", "cul", "columbia.edu"], ["North Carolina State University", "ncsu", "ncsu.edu"],
         ["Johns Hopkins University", "jhu", "jhu.edu"], ["University of Maryland", "mdu", "umd.edu"],
@@ -162,5 +163,8 @@ namespace :fluctus do
         FactoryGirl.create(:processed_item, institution: institution.identifier)
       end
     end
+    finish = Time.now
+    diff = finish - start
+    puts "Execution time is #{diff} seconds"
   end
 end
