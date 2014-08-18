@@ -17,6 +17,8 @@ describe UserPolicy do
     it { should permit(:update) }
     it { should permit(:edit) }
     it { should permit(:generate_api_key)}
+    it { should permit(:edit_password) }
+    it { should permit(:update_password) }
     it { should permit(:destroy) }
   end
 
@@ -31,6 +33,8 @@ describe UserPolicy do
         it { should permit(:update) }
         it { should permit(:edit) }
         it { should_not permit(:generate_api_key) }
+        it { should_not permit(:edit_password) }
+        it { should_not permit(:update_password) }
         it { should permit(:destroy) } 
       end
 
@@ -41,6 +45,8 @@ describe UserPolicy do
         it { should_not permit(:update) }
         it { should_not permit(:edit) }
         it { should_not permit(:generate_api_key) }
+        it { should_not permit(:edit_password) }
+        it { should_not permit(:update_password) }
         it { should_not permit(:destroy) }  
       end
     end
@@ -57,6 +63,8 @@ describe UserPolicy do
         it { should_not permit(:update) }    
         it { should_not permit(:edit) }
         it { should_not permit(:generate_api_key) }
+        it { should_not permit(:edit_password) }
+        it { should_not permit(:update_password) }
         it { should_not permit(:destroy) }
       end
 
@@ -66,6 +74,8 @@ describe UserPolicy do
         it { should_not permit(:update) }
         it { should_not permit(:edit) }
         it { should_not permit(:generate_api_key) }
+        it { should_not permit(:edit_password) }
+        it { should_not permit(:update_password) }
         it { should_not permit(:destroy) }  
       end
 
@@ -75,6 +85,8 @@ describe UserPolicy do
         it { should permit(:update) }
         it { should permit(:edit) }
         it { should permit(:generate_api_key) }
+        it { should permit(:edit_password) }
+        it { should permit(:update_password) }
         it { should_not permit(:destroy) } 
       end
     end

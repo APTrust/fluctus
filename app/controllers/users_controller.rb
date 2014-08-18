@@ -3,8 +3,31 @@ class UsersController < ApplicationController
   load_and_authorize_resource
   before_filter :authenticate_user!
 
+  # pundit ensures actions go through the authorization step
+  after_filter :verify_authorized
+
+  def show
+    authorize @user
+    respond_to do |format|
+      format.json { render json: object_as_json }
+      format.html { render "show" }
+    end
+  end
+
+  def update
+    authorize @user
+    respond_to do |format|
+      if @user.save
+        format.json { render json: @user, status: :created }
+      else
+        format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def destroy
     name = @user.to_s
+    authorize @user
     destroy!(notice: "User #{@user.to_s} was deleted.")
   end
 

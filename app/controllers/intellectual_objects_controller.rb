@@ -5,6 +5,9 @@ class IntellectualObjectsController < ApplicationController
   load_and_authorize_resource :through => :institution, only: :create
   load_and_authorize_resource except: [:index, :create]
 
+  # pundit ensures actions go through the authorization step
+  after_filter :verify_authorized
+  
   include Aptrust::GatedSearch
   apply_catalog_search_params
   include RecordsControllerBehavior

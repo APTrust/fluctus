@@ -7,6 +7,9 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
+  # pundit ensures actions go through the authorization step
+  after_filter :verify_authorized
+  
   def create
     respond_to do |format|
       if @processed_item.save

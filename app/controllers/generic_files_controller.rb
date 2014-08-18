@@ -6,8 +6,9 @@ class GenericFilesController < ApplicationController
   load_and_authorize_resource :intellectual_object, only: [:create, :update]
   load_and_authorize_resource through: :intellectual_object, only: [:create]
   load_and_authorize_resource except: [:create, :update]
-  # Enforces access right checks 
-  after_action :verify_authorized
+  
+  # pundit ensures actions go through the authorization step
+  after_filter :verify_authorized
 
   # Enforces access right checks for collections
   #after_action :verify_policy_scoped, :only => :index

@@ -50,15 +50,29 @@ describe InstitutionPolicy do
   end
 
   context "for an institutional user" do
-  	subject (:institution_policy) { InstitutionPolicy.new(inst_user, institution) }
+    describe "when the institution is" do
+      describe "in my institution" do
+    	 subject (:institution_policy) { InstitutionPolicy.new(inst_user, institution) }
 
-    it { should permit(:show)        }
-    it { should_not permit(:create)  }
-    it { should_not permit(:new)     }    
-    it { should_not permit(:update)  }
-    it { should_not permit(:edit)    }
-    it { should_not permit(:add_user)    }
-    it { should_not permit(:destroy) }
+        it { should permit(:show)        }
+        it { should_not permit(:create)  }
+        it { should_not permit(:new)     }    
+        it { should_not permit(:update)  }
+        it { should_not permit(:edit)    }
+        it { should_not permit(:add_user)    }
+        it { should_not permit(:destroy) }
+      end
+
+      describe "not in my institution" do
+        subject (:institution_policy) { InstitutionPolicy.new(inst_user, other_institution) }
+    
+        it { should_not permit(:show)    }
+        it { should_not permit(:update)      }
+        it { should_not permit(:edit)        }
+        it { should_not permit(:add_user)    }
+        it { should_not permit(:destroy) }
+      end
+    end
   end
 
 	context "for an authenticated user without a user group" do

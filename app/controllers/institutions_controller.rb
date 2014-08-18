@@ -5,11 +5,23 @@ class InstitutionsController < ApplicationController
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
 
+  # pundit ensures actions go through the authorization step
+  after_filter :verify_authorized
+
   def index
     respond_to do |format|
-      @institutions = collection
+      #@institutions = collection
       format.json { render json: collection.map { |inst| inst.serializable_hash } }
+      @institutions = policy_scope(Institution)
       format.html { render "index" }
+    end
+  end
+
+  def show
+    authorize @institution
+    respond_to do |format|
+      format.json { render json: object_as_json }
+      format.html { render "show" }
     end
   end
 
