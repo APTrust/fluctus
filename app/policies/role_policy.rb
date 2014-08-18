@@ -4,8 +4,7 @@ class RolePolicy < ApplicationPolicy
 		if user.admin? 
 			true
 		elsif user.institutional_admin?
-			puts "instit #{record.name}"
-		 (record.name == 'institutional_admin') || (record.name == 'institutional_user')
+			(record.name == 'institutional_admin') || (record.name == 'institutional_user')
 		else
 			false
 		end
