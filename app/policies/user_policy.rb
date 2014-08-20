@@ -13,7 +13,7 @@ class UserPolicy < ApplicationPolicy
 	end
 
 	def show?
-		 user == record ||  user.admin? ||
+		user == record ||  user.admin? ||
 		(user.institutional_admin? && (user.institution_pid == record.institution_pid))
 	end
 
@@ -45,4 +45,21 @@ class UserPolicy < ApplicationPolicy
 		user.admin? ||
 		(user.institutional_admin? && (user.institution_pid == record.institution_pid))
 	end
+
+  class Scope
+    attr_reader :user, :scope
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      if user.admin?
+        scope.all
+      else
+        scope.where(institution_pid: user.institution_pid)
+      end
+    end
+  end
 end

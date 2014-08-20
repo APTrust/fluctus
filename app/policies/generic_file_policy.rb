@@ -1,8 +1,8 @@
 class GenericFilePolicy < ApplicationPolicy
 	
-	# no create button for admin or institutional_admin
 	def create?
-		user.admin? || user.institutional_admin? 
+		user.admin? || 
+		(user.institutional_admin? && (user.institution_pid == record.intellectual_object.institution_id)) 
 	end
 
 	def new?
@@ -10,13 +10,13 @@ class GenericFilePolicy < ApplicationPolicy
 	end
 
 	def index?
-		user.admin? ||  user.institutional_admin? || user.institutional_user?
+		user.admin? ||  
+		(user.institutional_admin? && (user.institution_pid == record.intellectual_object.institution_id))
 	end
 
-	# institutional_user do not have read ability
+	# only admin user has detailed view ability
 	def show?
-		user.admin? || 
-		(user.institutional_admin? && (user.institution_pid == record.intellectual_object.institution_id))
+		user.admin?
 	end
 
 	# can edit but shown error message
@@ -32,10 +32,6 @@ class GenericFilePolicy < ApplicationPolicy
 	def destroy?
 		false
 	end
-
-	def scope
-    Pundit.policy_scope!(user, record.class)
-  end
 
   class Scope
     attr_reader :user, :scope

@@ -17,12 +17,12 @@ class ApplicationController < ActionController::Base
   skip_before_action :verify_authenticity_token, :if => :api_request?
 
   # If a User is denied access for an action, return them back to the last page they could view.
-  rescue_from CanCan::AccessDenied do |exception|
-    respond_to do |format|
-      format.html { redirect_to root_url, alert: exception.message }
-      format.json { render :json => { :status => "error", :message => exception.message }, :status => :forbidden }
-    end 
-  end
+  #rescue_from CanCan::AccessDenied do |exception|
+    #respond_to do |format|
+      #format.html { redirect_to root_url, alert: exception.message }
+      #format.json { render :json => { :status => "error", :message => exception.message }, :status => :forbidden }
+    #end 
+  #end
 
   # Globally rescue authorization errors in controller
   # return 403 Forbidden if permission is denied

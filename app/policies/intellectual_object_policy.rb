@@ -1,8 +1,8 @@
 class IntellectualObjectPolicy < ApplicationPolicy
 	
-	# no create button for admin or institutional_admin
 	def create?
-		user.admin? || user.institutional_admin? 
+		user.admin? || 
+		(user.institutional_admin? && (user.institution_pid == record.institution_id))
 	end
 
 	def new?
@@ -10,13 +10,13 @@ class IntellectualObjectPolicy < ApplicationPolicy
 	end
 
 	def index?
-		user.admin? ||  user.institutional_admin? || user.institutional_user?
-	end
-
-	# institutional_user has no read ability
-	def show?
 		user.admin? ||  
 		(user.institutional_admin? && (user.institution_pid == record.institution_id))
+	end
+
+	# only admin user has detailed view ability
+	def show?
+		user.admin? 
 	end
 
 	# should only allow APTrust admin to update
@@ -32,10 +32,6 @@ class IntellectualObjectPolicy < ApplicationPolicy
 	def destroy?
 		false
 	end
-
-	def scope
-    Pundit.policy_scope!(user, record.class)
-  end
 
   class Scope
     attr_reader :user, :scope

@@ -20,6 +20,7 @@ class GenericFilesController < ApplicationController
   end
 
   def show
+    authorize @generic_file
     respond_to do |format|
       format.json { render json: object_as_json }
       format.html {
@@ -30,6 +31,7 @@ class GenericFilesController < ApplicationController
   end
 
   def create
+    authorize resource
     respond_to do |format|
       if resource.save
         format.json { render json: object_as_json, status: :created }
@@ -40,10 +42,8 @@ class GenericFilesController < ApplicationController
  end
 
   def update
-    # migrate to pundit
-    authorize! :update, resource
-    #authorize resource
-    ##############################
+    authorize resource
+    
     if resource.update(params_for_update)
       head :no_content
     else
@@ -52,6 +52,8 @@ class GenericFilesController < ApplicationController
   end
 
   def destroy
+    authorize @generic_file
+
     @generic_file.soft_delete
     respond_to do |format|
       format.json { head :no_content }

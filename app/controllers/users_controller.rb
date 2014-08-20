@@ -1,42 +1,54 @@
 class UsersController < ApplicationController
   inherit_resources
-  load_and_authorize_resource
   before_filter :authenticate_user!
 
   # pundit ensures actions go through the authorization step
-  after_filter :verify_authorized
+  after_action :verify_authorized, :except => :index
+  after_action :verify_policy_scoped, :only => :index
+
+  def index
+    @users = policy_scope(User)
+  end
+
+  def new
+    @user = User.new
+    authorize @user
+    new!
+  end
+
+  def create
+    authorize @user
+    create!
+  end
 
   def show
     authorize @user
-    respond_to do |format|
-      format.json { render json: object_as_json }
-      format.html { render "show" }
-    end
+    show!
+  end
+
+  def edit
+    authorize @user
   end
 
   def update
     authorize @user
-    respond_to do |format|
-      if @user.save
-        format.json { render json: @user, status: :created }
-      else
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
-    end
+    update!
   end
 
   def destroy
     name = @user.to_s
-    authorize @user
+    authorize resource
     destroy!(notice: "User #{@user.to_s} was deleted.")
   end
 
   def edit_password
     @user = current_user
+    authorize @user
   end
 
   def update_password
     @user = User.find(current_user.id)
+    authorize @user
     if @user.update_with_password(user_params)
       sign_in @user, :bypass => true
       redirect_to root_path
@@ -48,6 +60,7 @@ class UsersController < ApplicationController
   end
 
   def generate_api_key
+    authorize @user
     @user.generate_api_key
 
     if @user.save

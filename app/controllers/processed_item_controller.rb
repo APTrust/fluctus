@@ -8,9 +8,15 @@ class ProcessedItemController < ApplicationController
   before_filter :find_and_update, only: :update
 
   # pundit ensures actions go through the authorization step
-  after_filter :verify_authorized
+  after_action :verify_authorized, :except => :index
+  after_action :verify_policy_scoped, :only => :index
+
+  def index
+    @processed_items = policy_scope(ProcessedItem)
+  end
   
   def create
+    authorize @processed_item
     respond_to do |format|
       if @processed_item.save
         format.json { render json: @processed_item, status: :created }
@@ -21,6 +27,7 @@ class ProcessedItemController < ApplicationController
   end
 
   def update
+    authorize @processed_item
     respond_to do |format|
       if @processed_item.save
         format.json { render json: @processed_item, status: :created }

@@ -6,7 +6,8 @@ class IntellectualObjectsController < ApplicationController
   load_and_authorize_resource except: [:index, :create]
 
   # pundit ensures actions go through the authorization step
-  after_filter :verify_authorized
+  after_action :verify_authorized, :except => :index
+  after_action :verify_policy_scoped, :only => :index
   
   include Aptrust::GatedSearch
   apply_catalog_search_params
@@ -14,7 +15,16 @@ class IntellectualObjectsController < ApplicationController
 
   self.solr_search_params_logic += [:for_selected_institution]
 
+  def index
+    @institution = Institution.find(params[:institution_id])
+    @intellectual_objects = @institution.intellectual_objects
+    respond_to do |format|
+      format.html { render "index" }
+    end
+  end
+
   def show
+    authorize @intellctual_objects
     respond_to do |format|
       format.json { render json: object_as_json }
       format.html { render "show" }
@@ -22,6 +32,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def update
+    authorize @intellctual_objects
     if params[:counter]
       # They are just updating the search counter
       search_session[:counter] = params[:counter]
@@ -33,6 +44,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def destroy
+    authorize @intellctual_objects
     resource.soft_delete
     respond_to do |format|
       format.json { head :no_content }
@@ -44,6 +56,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def create_from_json
+    authorize resource_class
     if params[:include_nested] == 'true'
       params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
       object = JSON.parse(json_param.to_json).first
@@ -91,9 +104,9 @@ class IntellectualObjectsController < ApplicationController
     intellectual_object_path(resource)
   end
 
-  def self.cancan_resource_class
-    CanCan::ControllerResource
-  end
+  #def self.cancan_resource_class
+    #CanCan::ControllerResource
+  #end
 
   private
 

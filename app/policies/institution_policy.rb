@@ -33,8 +33,8 @@ class InstitutionPolicy < ApplicationPolicy
 	def destroy?
 		false
 	end
-	
-  class Scope
+
+	class Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -50,4 +50,5 @@ class InstitutionPolicy < ApplicationPolicy
       end
     end
   end
+	
 end

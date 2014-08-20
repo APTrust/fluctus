@@ -1,28 +1,46 @@
 class InstitutionsController < ApplicationController
   inherit_resources
-  load_and_authorize_resource
   before_filter :authenticate_user!
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
 
   # pundit ensures actions go through the authorization step
-  after_filter :verify_authorized
+  # pundit ensures actions go through the authorization step
+  after_action :verify_authorized, :except => :index
+  after_action :verify_policy_scoped, :only => :index
 
   def index
     respond_to do |format|
-      #@institutions = collection
-      format.json { render json: collection.map { |inst| inst.serializable_hash } }
       @institutions = policy_scope(Institution)
+      format.json { render json: @institutions.map { |inst| inst.serializable_hash } }
       format.html { render "index" }
     end
   end
 
+  def new
+    @institution = Institution.new
+    authorize @institution
+    new!
+  end
+
+  def create
+    authorize @institution
+    create!
+  end
+
   def show
     authorize @institution
-    respond_to do |format|
-      format.json { render json: object_as_json }
-      format.html { render "show" }
-    end
+    show!
+  end
+
+  def edit
+    authorize @institution
+    edit!
+  end
+
+  def update
+    authorize @institution
+    update!
   end
 
   include Blacklight::SolrHelper

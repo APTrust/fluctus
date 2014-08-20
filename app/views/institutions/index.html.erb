@@ -12,7 +12,7 @@
   <tbody>
     <% @institutions.each do |institution| %>
       <tr id="<%= institution.id %>">
-        <td><%= link_to_if can?(:view, institution), institution.name, institution, class: "block-link" %></td>
+        <td><%= link_to_if policy(institution).show?, institution.name, institution, class: "block-link" %></td>
         <td><%= edit_link institution %></td>
       </tr>
     <% end %>
