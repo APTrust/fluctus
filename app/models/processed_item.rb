@@ -7,6 +7,7 @@ class ProcessedItem < ActiveRecord::Base
   validate :stage_is_allowed
   validate :action_is_allowed
   validate :reviewed_not_nil
+  before_save :set_object_identifier_if_ingested
 
   def to_param
     "#{etag}/#{name}"
@@ -32,6 +33,39 @@ class ProcessedItem < ActiveRecord::Base
 
   def reviewed_not_nil
     self.reviewed = false if self.reviewed.nil?
+  end
+
+  def ingested?
+    ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
+    record = Fluctus::Application::FLUCTUS_STAGES['record']
+    clean = Fluctus::Application::FLUCTUS_STAGES['clean']
+    success = Fluctus::Application::FLUCTUS_STATUSES['success']
+
+    if self.action.blank? == false && self.action != ingest
+      # we're past ingest
+      return true
+    elsif self.action == ingest && self.stage == record && self.status == success
+      # we just finished successful ingest
+      return true
+    elsif self.action == ingest && self.stage == clean
+      # we finished ingest and processor is cleaning up
+      return true
+    end
+    # if we get here, we're in some stage of the ingest process,
+    # but ingest is not yet complete
+    return false
+  end
+
+  private
+
+  def set_object_identifier_if_ingested
+    if self.object_identifier.blank? && self.ingested?
+      # Suffixes for single-part and multi-part bags
+      re_single = /\.tar$/
+      re_multi = /\.b\d+\.of\d+$/
+      bag_basename = self.name.sub(re_single, '').sub(re_multi, '')
+      self.object_identifier = "#{self.institution}/#{bag_basename}"
+    end
   end
 
 end

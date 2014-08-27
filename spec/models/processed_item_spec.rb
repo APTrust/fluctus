@@ -1,5 +1,29 @@
 require 'spec_helper'
 
+ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
+restore = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+requested = Fluctus::Application::FLUCTUS_STAGES['requested']
+receive = Fluctus::Application::FLUCTUS_STAGES['receive']
+record = Fluctus::Application::FLUCTUS_STAGES['record']
+clean = Fluctus::Application::FLUCTUS_STAGES['clean']
+success = Fluctus::Application::FLUCTUS_STATUSES['success']
+failed = Fluctus::Application::FLUCTUS_STATUSES['fail']
+pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
+
+# Creates an item we can save. We'll set action, stage and status
+# for various tests below
+def setup_item(subject)
+  subject.name = "sample_bag.tar"
+  subject.etag = "12345"
+  subject.institution = "hardknocks.edu"
+  subject.bag_date = Time.now()
+  subject.bucket = "aptrust.receiving.hardknocks.edu"
+  subject.date = Time.now()
+  subject.note = "Note"
+  subject.outcome = "Outcome"
+  subject.user = "user"
+end
+
 describe ProcessedItem do
   before(:all) do
     ProcessedItem.destroy_all
@@ -82,5 +106,64 @@ describe ProcessedItem do
     subject.reviewed = false
     subject.reviewed.should == false
   end
+
+  it 'should say when it is not ingested' do
+    subject.action = ''
+    subject.ingested?.should == false
+
+    subject.action = ingest
+    subject.stage = receive
+    subject.status = success
+    subject.ingested?.should == false
+
+    subject.action = ingest
+    subject.stage = record
+    subject.status = failed
+    subject.ingested?.should == false
+  end
+
+  it 'should say when it is ingested' do
+    subject.action = ingest
+    subject.stage = record
+    subject.status = success
+    subject.ingested?.should == true
+
+    subject.stage = clean
+    subject.ingested?.should == true
+
+    subject.action = restore
+    subject.stage = requested
+    subject.status = pending
+    subject.ingested?.should == true
+  end
+
+  it 'should NOT set object identifier in before_save if not ingested' do
+    setup_item(subject)
+    subject.action = ingest
+    subject.stage = receive
+    subject.status = success
+    subject.save!
+    subject.object_identifier.should == nil
+  end
+
+  it 'should set object identifier in before_save if not ingested (single part bag)' do
+    setup_item(subject)
+    subject.action = ingest
+    subject.stage = record
+    subject.status = success
+    subject.save!
+    subject.object_identifier.should == "hardknocks.edu/sample_bag"
+  end
+
+  it 'should set object identifier in before_save if not ingested (multi part bag)' do
+    setup_item(subject)
+    subject.name = "sesame.street.b046.of249.tar"
+    subject.action = ingest
+    subject.stage = record
+    subject.status = success
+    subject.save!
+    subject.object_identifier.should == "hardknocks.edu/sesame.street"
+  end
+
 
 end
