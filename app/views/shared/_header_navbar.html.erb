@@ -15,7 +15,14 @@
     <div id="search-navbar" class="navbar-static-top col-md-6" role="navigation">
       <div class="navbar-header">
         <% if user_signed_in? %>
-          <%= render_search_bar %>
+          <div id="tabs">
+            <ul class="search_tabs">
+              <li class="selected"><a href="#tabs-1">Intellectual Objects</a></li>
+              <li><a href="#tabs-2">Processed Items</a></li>
+            </ul>
+            <div id="tabs-1"><%= render_search_bar %></div>
+            <div id="tabs-2"><%= render partial: '/shared/pi_search_form' %></div>
+          </div>
         <% end %>
       </div>
     </div>

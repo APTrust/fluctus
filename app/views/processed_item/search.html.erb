@@ -1,5 +1,5 @@
 <div id="sidebar" class="col-md-3">
-  <%= render 'facets' %>
+  <%= render 'search_facets' %>
 </div>
 
 <div id="content" class="col-md-9">
@@ -9,10 +9,12 @@
   </section>
 
   <section class="page-header">
-    <h2>Processed Items</h2>
+    <h2>Search Results</h2>
+    <p>Searching for: <%= params[:qq] %></p>
   </section>
 
   <section id="itemTable" class="queue">
     <%= render 'item_table' %>
   </section>
 </div>
+
