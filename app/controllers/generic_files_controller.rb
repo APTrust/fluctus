@@ -3,9 +3,9 @@ class GenericFilesController < ApplicationController
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update]
   before_filter :load_intellectual_object, only: [:update, :create, :index]
-  load_and_authorize_resource :intellectual_object, only: [:create, :update]
-  load_and_authorize_resource through: :intellectual_object, only: [:create]
-  load_and_authorize_resource except: [:create, :update]
+  load_resource :intellectual_object, only: [:create, :update]
+  load_resource through: :intellectual_object, only: [:create]
+  load_resource except: [:create, :update]
   
   # pundit ensures actions go through the authorization step
   after_filter :verify_authorized
@@ -31,7 +31,7 @@ class GenericFilesController < ApplicationController
   end
 
   def create
-    authorize resource
+    authorize @generic_file
     respond_to do |format|
       if resource.save
         format.json { render json: object_as_json, status: :created }
@@ -42,7 +42,7 @@ class GenericFilesController < ApplicationController
  end
 
   def update
-    authorize resource
+    authorize @generic_file
     
     if resource.update(params_for_update)
       head :no_content

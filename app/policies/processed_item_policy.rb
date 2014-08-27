@@ -1,6 +1,5 @@
 class ProcessedItemPolicy < ApplicationPolicy
 	
-	# no create button for admin or institutional_admin
 	def create?
 		user.admin?
 	end
@@ -10,18 +9,15 @@ class ProcessedItemPolicy < ApplicationPolicy
 	end
 
 	def index?
-		user.admin? ||  user.institutional_admin? || user.institutional_user?
+		user.admin? ||  (user.institution.identifier == record.institution)
 	end
 
-	# institutional_user doen not read ability
 	def show?
 		user.admin? || (user.institution.identifier == record.institution)
 	end
 
-	# can edit but shown error message
 	def update?
-		user.admin? || 
-		(user.institutional_admin? && (user.institution.identifier == record.institution))
+		user.admin? 
 	end
 
 	def edit?
@@ -33,9 +29,8 @@ class ProcessedItemPolicy < ApplicationPolicy
 		(user.institutional_admin? && (user.institution.identifier == record.institution))
 	end
 
-	# institutional_admin cannot delete intellectual_object
 	def destroy?
-		false
+		user.admin?
 	end
 
 	class Scope

@@ -36,12 +36,15 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def user_not_authorized
-    policy_name = exception.policy.class.to_s.underscore
+  def user_not_authorized(exception)
+    #policy_name = exception.policy.class.to_s.underscore
 
-    flash[:error] = I18n.t "pundit.#{policy_name}.#{exception.query}",
-                    default: 'You are not authorized to perform this action.'
-    redirect_to(request.referrer || root_path)
+    #flash[:error] = I18n.t "pundit.#{policy_name}.#{exception.query}",
+                    #default: 'You are not authorized to perform this action.'
+    respond_to do |format|
+      format.html { redirect_to root_url, alert: "You are not authorized to access this page." }
+      format.json { render :json => { :status => "error", :message => "You are not authorized to access this page." }, :status => :forbidden }
+    end
   end
   
 end

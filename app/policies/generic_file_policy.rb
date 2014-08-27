@@ -10,16 +10,13 @@ class GenericFilePolicy < ApplicationPolicy
 	end
 
 	def index?
-		user.admin? ||  
-		(user.institutional_admin? && (user.institution_pid == record.intellectual_object.institution_id))
+		user.admin? ||  (user.institution_pid == record.intellectual_object.institution_id)
 	end
 
-	# only admin user has detailed view ability
 	def show?
-		user.admin?
+		user.admin? || (user.institution_pid == record.intellectual_object.institution_id)
 	end
 
-	# can edit but shown error message
 	def update?
 		user.admin? 
 	end

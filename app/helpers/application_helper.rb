@@ -2,12 +2,19 @@ module ApplicationHelper
   def show_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-eye-open"></i> View'
     options[:class] = 'btn doc-action-btn btn-normal' if options[:class].nil?
+    if (object.class == SolrDocument)
+      object = object.to_model
+    end 
     link_to(content.html_safe, object, options) if policy(object).show?
   end
 
   def edit_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-edit"></i> Edit'
     options[:class] = 'btn doc-action-btn btn-normal' if options[:class].nil?
+    
+    if (object.class == SolrDocument)
+      object = object.to_model
+    end 
     link_to(content.html_safe, [:edit, object], options) if policy(object).edit?
   end
 
@@ -16,12 +23,18 @@ module ApplicationHelper
     options[:class] = 'btn doc-action-btn btn-danger' if options[:class].nil?
     options[:method] = :delete if options[:method].nil?
     options[:data] = { confirm: 'Are you sure?' }if options[:confirm].nil?
+    if (object.class == SolrDocument)
+      object = object.to_model
+    end 
     link_to(content.html_safe, object, options) if policy(object).destroy?
   end
 
   def create_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-plus"></i> Create'
     options[:class] = 'btn doc-action-btn btn-success' if options[:class].nil?
+    if (object.class == SolrDocument)
+      object = object.to_model
+    end
     if policy(object).create?
       object_class = (object.kind_of?(Class) ? object : object.class)
       link_to(content.html_safe, [:new, object_class.name.underscore.to_sym], options)

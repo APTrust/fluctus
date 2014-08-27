@@ -6,7 +6,7 @@
         <ul class="dropdown-menu">
           <li><%= link_to t('blacklight.header_links.manage_users'), users_path %></li>
           <li><%= link_to t('blacklight.header_links.new_user'), new_user_path %></li>
-          <% if policy(Institution).index? %>
+          <% if policy(current_user.institution).index? %>
             <li class="divider"></li>
             <li><%= link_to t('blacklight.header_links.manage_insitutions'), institutions_path %></li>
           <% end %>

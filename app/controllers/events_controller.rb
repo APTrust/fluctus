@@ -3,9 +3,9 @@ class EventsController < ApplicationController
   before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
   before_filter :load_generic_file, if: :generic_file_identifier_exists?
   before_filter :load_and_authorize_parent_object, only: [:create]
-  load_and_authorize_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
-  load_and_authorize_resource :institution, only: [:index], if: :inst_id_exists?
-  load_and_authorize_resource :generic_file, only: [:index], if: :generic_file_id_exists?
+  load_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
+  load_resource :institution, only: [:index], if: :inst_id_exists?
+  load_resource :generic_file, only: [:index], if: :generic_file_id_exists?
 
   include Aptrust::GatedSearch
 
@@ -16,8 +16,17 @@ class EventsController < ApplicationController
   self.solr_search_params_logic += [:sort_chronologically]
 
   def index
-    respond_to do |format|
+    if params['institution_id']
+      obj = Institution.find(params['institution_id'])
+    elsif params['intellectual_object_id']
+      obj = IntellectualObject.find(params['intellectual_object_id'])
+    elsif params['generic_file_id']
+      obj = GenericFile.find(params['generic_file_id'])
+    else
       obj = @generic_file.nil? ? @intellectual_object : @generic_file
+    end
+    authorize obj
+    respond_to do |format|
       format.json { render json: obj.premisEvents.events.map { |event| event.serializable_hash } }
       # TODO: Code review. Can't get the HTML rendering to work without super,
       # but do I really want to call super within this block???
@@ -89,7 +98,7 @@ protected
       parent_id = params['generic_file_id'] || params['intellectual_object_id']
       @parent_object = ActiveFedora::Base.find(parent_id)
     end
-    authorize! :update, @parent_object
+    authorize @parent_object, :update?
   end
 
   def for_selected_institution(solr_parameters, user_parameters)

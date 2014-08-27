@@ -10,16 +10,13 @@ class IntellectualObjectPolicy < ApplicationPolicy
 	end
 
 	def index?
-		user.admin? ||  
-		(user.institutional_admin? && (user.institution_pid == record.institution_id))
+		user.admin? ||  (user.institution_pid == record.institution_id)
 	end
 
-	# only admin user has detailed view ability
 	def show?
-		user.admin? 
+		user.admin? ||  (user.institution_pid == record.institution_id)
 	end
 
-	# should only allow APTrust admin to update
 	def update?
 		user.admin? 
 	end

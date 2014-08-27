@@ -14,7 +14,7 @@ class InstitutionPolicy < ApplicationPolicy
 	end
 
 	def index?
-		user.admin? ||  user.institutional_admin? || user.institutional_user?
+		user.admin? ||  (user.institution_pid == record.pid)
 	end
 
 	def show?

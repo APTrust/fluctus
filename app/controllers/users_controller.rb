@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   inherit_resources
+  load_resource
   before_filter :authenticate_user!
-
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :generate_api_key]
   # pundit ensures actions go through the authorization step
   after_action :verify_authorized, :except => :index
   after_action :verify_policy_scoped, :only => :index
@@ -11,7 +12,6 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new
     authorize @user
     new!
   end
@@ -28,6 +28,7 @@ class UsersController < ApplicationController
 
   def edit
     authorize @user
+    edit!
   end
 
   def update
@@ -36,8 +37,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    name = @user.to_s
-    authorize resource
+    authorize @user
     destroy!(notice: "User #{@user.to_s} was deleted.")
   end
 
@@ -77,6 +77,11 @@ class UsersController < ApplicationController
 
   private
 
+    # If an id is passed through params, use it.  Otherwise default to show the current user.
+    def set_user
+      @user = params[:id].nil? ? current_user : User.find(params[:id])
+    end
+
     def build_resource_params
       [params.fetch(:user, {}).permit(:name, :email, :phone_number, :password, :password_confirmation, :institution_pid).tap do |p|
         p[:institution_pid] = build_institution_pid if params[:user][:institution_pid]
@@ -84,21 +89,21 @@ class UsersController < ApplicationController
       end]
     end
 
-  def build_institution_pid
-    if params[:user][:institution_pid].empty?
-      if @user.nil?
-        instituion = ''
+    def build_institution_pid
+      if params[:user][:institution_pid].empty?
+        if @user.nil?
+          instituion = ''
+        else
+          institution = Institution.find(@user.institution_pid)
+        end
       else
-        institution = Institution.find(@user.institution_pid)
+        institution = Institution.find(params[:user][:institution_pid])
       end
-    else
-      institution = Institution.find(params[:user][:institution_pid])
+      unless institution.nil?
+        authorize!(:add_user, institution)
+        institution.id
+      end
     end
-    unless institution.nil?
-      authorize!(:add_user, institution)
-      institution.id
-    end
-  end
 
     def build_role_ids
       [].tap do |role_ids|
