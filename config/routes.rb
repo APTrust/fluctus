@@ -10,6 +10,8 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create, :index]
   end
 
+  get 'objects/:id/restore', to: 'intellectual_objects#restore', as: :intellectual_object_restore
+
   resources :generic_files, path: 'files' do
     resources :events, only: [:index]
   end

@@ -40,6 +40,16 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
+  def restore
+    item = find_latest_PI
+    item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+    item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
+    item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    item.save!
+    redirect_to :back
+    flash[:notice] = 'Your item has been queued for restoration.'
+  end
+
   def create_from_json
     if params[:include_nested] == 'true'
       # new_object is the IntellectualObject we're creating.
@@ -164,5 +174,24 @@ class IntellectualObjectsController < ApplicationController
     else
       @intellectual_object ||= IntellectualObject.find(params[:id])
     end
+  end
+
+  def find_latest_PI
+    items = ProcessedItem.where(institution: @intellectual_object.institution.identifier, name: @intellectual_object.bag_name)
+    items.order('date').reverse_order
+    item = ''
+    if items.count == 1 && items.first.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest']
+      item = items.first
+    elsif items.count == 1 && items.first.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && items.first.stage == Fluctus::Application::FLUCTUS_STAGES['record']
+      item = items.first
+    else
+      items.each do |current|
+        if current.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest'] || (current.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && current.stage == Fluctus::Application::FLUCTUS_STAGES['record'])
+          item = current
+          break
+        end
+      end
+    end
+    item
   end
 end

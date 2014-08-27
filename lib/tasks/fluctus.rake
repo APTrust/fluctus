@@ -123,11 +123,14 @@ namespace :fluctus do
       numItems = args[:numIntObjects].to_i
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
-        name = SecureRandom.hex(8)
+        name = "#{SecureRandom.uuid}.tar"
         ident = "#{institution.identifier}/#{name}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident, bag_name: name)
         item.add_event(FactoryGirl.attributes_for(:premis_event_ingest, detail: "Metadata recieved from bag.", outcome_detail: "", outcome_information: "Parsed as part of bag submission."))
         item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: "Assigned by Fedora."))
+
+        # add processed item for intellectual object
+        FactoryGirl.create(:processed_item, institution: institution.identifier, name: item.bag_name, action: 'Ingest', stage: 'Record', status: 'Success')
 
         numFiles = args[:numGenFiles].to_i
         numFiles.times.each do |count|
