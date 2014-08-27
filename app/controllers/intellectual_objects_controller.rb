@@ -180,13 +180,17 @@ class IntellectualObjectsController < ApplicationController
     items = ProcessedItem.where(institution: @intellectual_object.institution.identifier, name: @intellectual_object.bag_name)
     items.order('date').reverse_order
     item = ''
-    if items.count == 1 && items.first.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest']
-      item = items.first
-    elsif items.count == 1 && items.first.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && items.first.stage == Fluctus::Application::FLUCTUS_STAGES['record']
-      item = items.first
+    if items.count == 1
+      if items.first.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest'] ||
+          items.first.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && items.first.stage == Fluctus::Application::FLUCTUS_STAGES['record'] && items.first.status == Fluctus::Application::FLUCTUS_STATUSES['success'] ||
+          items.first.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && items.first.stage == Fluctus::Application::FLUCTUS_STAGES['clean']
+        item = items.first
+      end
     else
       items.each do |current|
-        if current.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest'] || (current.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && current.stage == Fluctus::Application::FLUCTUS_STAGES['record'])
+        if current.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest'] ||
+            (current.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && current.stage == Fluctus::Application::FLUCTUS_STAGES['record'] && current.status == Fluctus::Application::FLUCTUS_STATUSES['success']) ||
+            (current.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && current.stage == Fluctus::Application::FLUCTUS_STAGES['clean'])
           item = current
           break
         end
