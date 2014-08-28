@@ -145,6 +145,25 @@ describe ProcessedItemController do
         assigns(:items).should have(1).items
       end
     end
+
+    describe "with object_identifier param" do
+      before do
+        3.times do
+          FactoryGirl.create(:processed_item, action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'])
+        end
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 institution: institution.identifier)
+        ProcessedItem.all.limit(2).update_all(object_identifier: "mickey/mouse")
+        sign_in institutional_admin
+      end
+
+      it "should return only items with the specified object_identifier" do
+        get :restore, object_identifier: "mickey/mouse", format: :json
+        assigns(:items).should have(2).items
+      end
+    end
   end
 
 

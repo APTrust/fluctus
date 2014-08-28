@@ -59,6 +59,10 @@ class ProcessedItemController < ApplicationController
     if(current_user.admin? == false)
       @items = @items.where(institution: current_user.institution.identifier)
     end
+    # Get items for a single object, which may consist of multiple bags.
+    if !request[:object_identifier].blank?
+      @items = @items.where(object_identifier: request[:object_identifier])
+    end
     respond_to do |format|
       format.json { render json: @items, status: :ok }
     end
