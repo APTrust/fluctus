@@ -14,7 +14,7 @@ namespace :fluctus do
         ["Stanford University", "stnfd", "stanford.edu"],
         ["Syracuse University", "syr", "syr.edu"],
         ["University of Chicago", "uchi", "uchicago.edu"],
-        ["University of Cinnicnati", "ucin", "uc.edu"],
+        ["University of Cincinnati", "ucin", "uc.edu"],
         ["University of Connecticut", "uconn", "uconn.edu"],
         ["University of Maryland", "mdu", "umd.edu"],
         ["University of Miami", "um", "miami.edu"],

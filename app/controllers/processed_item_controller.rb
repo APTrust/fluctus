@@ -77,6 +77,22 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  # get '/api/v1/itemresults/restore'
+  # Returns a list of items the users have requested
+  # to be queued for restoration.
+  def restore
+    restore = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+    requested = Fluctus::Application::FLUCTUS_STAGES['requested']
+    pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    @items = ProcessedItem.where(action: restore, stage: requested, status: pending)
+    if(current_user.admin? == false)
+      @items = @items.where(institution: current_user.institution.identifier)
+    end
+    respond_to do |format|
+      format.json { render json: @items, status: :ok }
+    end
+  end
+
   def show_reviewed
     session[:show_reviewed] = params[:show]
     respond_to do |format|
