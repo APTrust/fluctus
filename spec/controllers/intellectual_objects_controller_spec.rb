@@ -490,7 +490,7 @@ describe IntellectualObjectsController do
 
     end
 
-    describe 'when signed in' do
+    describe 'when signed in as an admin' do
       let(:user) { FactoryGirl.create(:user, :admin) }
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
 
@@ -508,7 +508,6 @@ describe IntellectualObjectsController do
         ProcessedItem.delete_all
       end
 
-      # TODO: This is working for admin. Should probably work for institutional admin as well.
       it 'should mark all but one processed items for restore' do
         get :restore, id: obj1
         expect(response).to redirect_to 'OzzyOsbourne'
@@ -518,6 +517,30 @@ describe IntellectualObjectsController do
         expect(count).to eq(4)
       end
 
+    end
+
+    describe 'when signed in as an institutional admin' do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+
+      before do
+        FactoryGirl.create(:ingested_item)
+        ProcessedItem.update_all(object_identifier: obj1.identifier)
+        sign_in user
+      end
+
+      after do
+        ProcessedItem.delete_all
+      end
+
+      it 'should mark the processed item for restore' do
+        get :restore, id: obj1
+        expect(response.code).to eq '302'
+        count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                    stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend']).count
+        expect(count).to eq(1)
+      end
     end
   end
 
