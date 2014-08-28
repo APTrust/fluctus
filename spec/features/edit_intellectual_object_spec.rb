@@ -9,7 +9,7 @@ describe "Editing an IntellectualObject" do
 
     visit '/'
     fill_in 'q', with: intellectual_object.title
-    click_button 'Search'
+    click_button('search')
     click_link 'Edit'
     fill_in 'Description', with: "I updated it"
     click_button "Save"
