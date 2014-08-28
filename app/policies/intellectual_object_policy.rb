@@ -1,11 +1,29 @@
 class IntellectualObjectPolicy < ApplicationPolicy
 
+	# authorize through institution
 	def index?
-		user.admin? ||  (user.institution_pid == record.institution_id)
+		user.admin? ||  (user.institution_pid == record.pid)
 	end
 	
+	# authorize through institution
+	def create?
+		user.admin? || 
+		(user.institutional_admin? && user.institution_pid == record.pid)
+	end
+
+	# authorize through institution
+	def new?
+		create?
+	end
+
 	def show?
-		user.admin? ||  (user.institution_pid == record.institution_id)
+		if user.admin? || record.access == 'consortia'
+			true
+		elsif record.access == 'institution'
+			user.institution_pid == record.institution_id
+		elsif record.access == 'restricted'
+			user.institutional_admin? && user.institution_pid == record.institution_id
+		end
 	end
 
 	def update?

@@ -4,7 +4,7 @@ class IntellectualObjectsController < ApplicationController
   before_filter :load_object, only: [:show, :update]
   before_filter :load_institution, only: [:index, :create, :create_from_json]
   
-  after_action :verify_authorized, :except => [:index, :create, :create_from_json, :edit]
+  after_action :verify_authorized, :except => [:index, :create, :create_from_json]
   
   include Aptrust::GatedSearch
   apply_catalog_search_params
@@ -12,12 +12,24 @@ class IntellectualObjectsController < ApplicationController
 
   self.solr_search_params_logic += [:for_selected_institution]
 
+  def index
+    authorize @institution
+    @intellectual_objects = @institution.intellectual_objects
+    super do |format|
+      format.html {  }
+    end
+  end
+
   def show
     authorize @intellectual_object
     respond_to do |format|
       format.json { render json: object_as_json }
       format.html { render "show" }
     end
+  end
+
+  def edit
+    authorize @intellectual_object
   end
 
   def update

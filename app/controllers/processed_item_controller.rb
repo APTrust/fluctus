@@ -82,6 +82,7 @@ class ProcessedItemController < ApplicationController
       review_list.each do |item|
         id = item.split("_")[1]
         proc_item = ProcessedItem.find(id)
+        authorize proc_item, :mark_as_reviewed?
         if (proc_item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || proc_item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'])
           proc_item.reviewed = true
           proc_item.save!
@@ -97,13 +98,25 @@ class ProcessedItemController < ApplicationController
 
   def review_all
     institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
-    items = current_user.admin? ? ProcessedItem.all : ProcessedItem.where(bucket: institution_bucket)
-    items.each do |item|
-      if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
-        item.reviewed = true
-        item.save!
+    if current_user.admin?
+      items = ProcessedItem.all
+      items.each do |item|
+        if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
+          item.reviewed = true
+          item.save!
+        end
       end
-    end
+    else
+      items = ProcessedItem.where(bucket: institution_bucket)
+      items.each do |item|
+        authorize item, :mark_as_reviewed?
+        if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
+          item.reviewed = true
+          item.save!
+        end
+      end
+    end    
+    
     session[:purge_datetime] = Time.now.utc
     redirect_to :back
   rescue ActionController::RedirectBackError

@@ -4,7 +4,7 @@ class InstitutionsController < ApplicationController
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
 
-  after_action :verify_authorized, :except => [:index, :create]
+  after_action :verify_authorized, :except => :index
   after_action :verify_policy_scoped, :only => :index
 
   def index
@@ -18,6 +18,12 @@ class InstitutionsController < ApplicationController
   def new
     @institution = Institution.new
     authorize @institution
+  end
+
+  def create
+    @institution = build_resource
+    authorize @institution
+    create!
   end
 
   def show

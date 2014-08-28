@@ -1,11 +1,24 @@
 class GenericFilePolicy < ApplicationPolicy
 	
+	# authorize through intellectual_object
 	def index?
-		user.admin? ||  (user.institution_pid == record.intellectual_object.institution_id)
+		user.admin? ||  (user.institution_pid == record.institution_id)
+	end
+
+	# authorize through intellectual_object
+	def create?
+		user.admin? || 
+		(user.institutional_admin? && user.institution_pid == record.institution_id)
 	end
 
 	def show?
-		user.admin? || (user.institution_pid == record.intellectual_object.institution_id)
+		if user.admin? || record.intellectual_object.access == 'consortia'
+			true
+		elsif record.intellectual_object.access == 'institution'
+			user.institution_pid == record.intellectual_object.institution_id
+		elsif record.access == 'restricted'
+			user.institutional_admin? && user.institution_pid == record.intellectual_object.institution_id
+		end
 	end
 
 	def update?

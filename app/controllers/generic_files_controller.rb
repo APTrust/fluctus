@@ -7,6 +7,7 @@ class GenericFilesController < ApplicationController
   after_filter :verify_authorized, :except => [:create, :index]
 
   def index
+    authorize @intellectual_object
     respond_to do |format|
       format.json { render json: @intellectual_object.generic_files.map do |f| f.serializable_hash end }
     end

@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   inherit_resources
   before_filter :authenticate_user!
   before_action :set_user, only: [:show, :edit, :update, :destroy, :generate_api_key]
-  after_action :verify_authorized, :except => [:index, :create]
+  after_action :verify_authorized, :except => :index
   after_action :verify_policy_scoped, :only => :index
 
   def index
@@ -12,6 +12,12 @@ class UsersController < ApplicationController
   def new
     @user = User.new
     authorize @user
+  end
+
+  def create
+    @user = build_resource
+    authorize @user
+    create!
   end
 
   def show
