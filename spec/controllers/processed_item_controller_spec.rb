@@ -136,7 +136,9 @@ describe ProcessedItemController do
         sign_in institutional_admin
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                  stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'])
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: true)
+
       end
 
       it "assigns the requested items as @items" do
@@ -152,9 +154,8 @@ describe ProcessedItemController do
           FactoryGirl.create(:processed_item, action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'])
         end
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
-                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
-                                 institution: institution.identifier)
+                                 institution: institution.identifier,
+                                 retry: true)
         ProcessedItem.all.limit(2).update_all(object_identifier: "mickey/mouse")
         sign_in institutional_admin
       end

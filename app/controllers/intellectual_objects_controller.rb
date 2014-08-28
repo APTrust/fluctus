@@ -198,6 +198,7 @@ class IntellectualObjectsController < ApplicationController
         item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
         item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
         item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+        item.retry = true
         item.save!
         already_flagged[item.name] = true
       end

@@ -514,7 +514,8 @@ describe IntellectualObjectsController do
         expect(response).to redirect_to 'OzzyOsbourne'
         count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                     stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
-                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend']).count
+                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                    retry: true).count
         expect(count).to eq(4)
       end
 
