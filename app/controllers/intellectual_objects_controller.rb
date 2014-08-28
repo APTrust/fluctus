@@ -40,6 +40,7 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
+  # get 'objects/:id/restore'
   def restore
     flag_items_for_restore
     redirect_to :back

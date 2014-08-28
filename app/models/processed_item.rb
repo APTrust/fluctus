@@ -58,6 +58,8 @@ class ProcessedItem < ActiveRecord::Base
 
   private
 
+  # ProcessedItem will not have an object identifier until
+  # it has been ingested.
   def set_object_identifier_if_ingested
     if self.object_identifier.blank? && self.ingested?
       # Suffixes for single-part and multi-part bags
