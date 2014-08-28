@@ -142,7 +142,7 @@ describe ProcessedItemController do
       it "assigns the requested items as @items" do
         get :restore, format: :json
         assigns(:items).should include(user_item)
-        assigns(:items).should have(1).items
+        assigns(:items).should have(ProcessedItem.count).items
       end
     end
 
