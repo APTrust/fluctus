@@ -30,7 +30,16 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def destroy
-    resource.soft_delete
+    attributes = { type: 'delete',
+      date_time: "#{Time.now}",
+      detail: 'Object deleted from S3 storage',
+      outcome: 'Success',
+      outcome_detail: current_user.email,
+      object: 'Ruby aws-s3 gem',
+      agent: 'https://github.com/marcel/aws-s3/tree/master',
+      outcome_information: "Action requested by user from #{current_user.institution_pid}"
+    }
+    resource.soft_delete(attributes)
     respond_to do |format|
       format.json { head :no_content }
       format.html {
