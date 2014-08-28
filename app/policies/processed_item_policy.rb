@@ -17,7 +17,8 @@ class ProcessedItemPolicy < ApplicationPolicy
 	end
 
 	def update?
-		user.admin? 
+		user.admin? || 
+		(user.institutional_admin? && (user.institution.identifier == record.institution))
 	end
 
 	def edit?

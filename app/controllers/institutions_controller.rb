@@ -1,13 +1,10 @@
 class InstitutionsController < ApplicationController
   inherit_resources
-  load_resource
   before_filter :authenticate_user!
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
 
-  # pundit ensures actions go through the authorization step
-  # pundit ensures actions go through the authorization step
-  after_action :verify_authorized, :except => :index
+  after_action :verify_authorized, :except => [:index, :create]
   after_action :verify_policy_scoped, :only => :index
 
   def index
@@ -21,12 +18,6 @@ class InstitutionsController < ApplicationController
   def new
     @institution = Institution.new
     authorize @institution
-    new!
-  end
-
-  def create
-    authorize @institution
-    create!
   end
 
   def show

@@ -1,10 +1,8 @@
 class UsersController < ApplicationController
   inherit_resources
-  load_resource
   before_filter :authenticate_user!
   before_action :set_user, only: [:show, :edit, :update, :destroy, :generate_api_key]
-  # pundit ensures actions go through the authorization step
-  after_action :verify_authorized, :except => :index
+  after_action :verify_authorized, :except => [:index, :create]
   after_action :verify_policy_scoped, :only => :index
 
   def index
@@ -12,13 +10,8 @@ class UsersController < ApplicationController
   end
 
   def new
+    @user = User.new
     authorize @user
-    new!
-  end
-
-  def create
-    authorize @user
-    create!
   end
 
   def show
@@ -100,7 +93,7 @@ class UsersController < ApplicationController
         institution = Institution.find(params[:user][:institution_pid])
       end
       unless institution.nil?
-        authorize!(:add_user, institution)
+        authorize institution, :add_user?
         institution.id
       end
     end
@@ -110,7 +103,7 @@ class UsersController < ApplicationController
         unless params[:user][:role_ids].empty?
           roles = Role.find(params[:user][:role_ids])
 
-            authorize!(:add_user, roles)
+            authorize roles, :add_user?
             role_ids << roles.id
 
         end

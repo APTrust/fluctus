@@ -3,16 +3,9 @@ class GenericFilesController < ApplicationController
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update]
   before_filter :load_intellectual_object, only: [:update, :create, :index]
-  load_resource :intellectual_object, only: [:create, :update]
-  load_resource through: :intellectual_object, only: [:create]
-  load_resource except: [:create, :update]
-  
-  # pundit ensures actions go through the authorization step
-  after_filter :verify_authorized
+    
+  after_filter :verify_authorized, :except => [:create, :index]
 
-  # Enforces access right checks for collections
-  #after_action :verify_policy_scoped, :only => :index
-  
   def index
     respond_to do |format|
       format.json { render json: @intellectual_object.generic_files.map do |f| f.serializable_hash end }
@@ -31,7 +24,6 @@ class GenericFilesController < ApplicationController
   end
 
   def create
-    authorize @generic_file
     respond_to do |format|
       if resource.save
         format.json { render json: object_as_json, status: :created }
@@ -101,6 +93,7 @@ class GenericFilesController < ApplicationController
     else
       @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
     end
+    authorize @intellectual_object
   end
 
   # Override Fedora's default JSON serialization for our API

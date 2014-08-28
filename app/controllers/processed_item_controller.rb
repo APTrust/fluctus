@@ -1,19 +1,12 @@
 class ProcessedItemController < ApplicationController
   respond_to :html, :json
-  inherit_resources
   before_filter :authenticate_user!
   before_filter :set_items, only: :index
   before_filter :set_item, only: :show
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  # pundit ensures actions go through the authorization step
   after_action :verify_authorized, :except => :index
-  after_action :verify_policy_scoped, :only => :index
-
-  def index
-    @processed_items = policy_scope(ProcessedItem)
-  end
   
   def create
     authorize @processed_item
@@ -24,6 +17,10 @@ class ProcessedItemController < ApplicationController
         format.json { render json: @processed_item.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def show
+    authorize @processed_item
   end
 
   def update
@@ -189,9 +186,7 @@ class ProcessedItemController < ApplicationController
   # We have to find the item either way.
   def set_item
     @institution = current_user.institution
-    if params[:id].blank? == false
-      @processedItem = ProcessedItem.find(params[:id])
-    else
+    if params[:id].blank?
       # Parse date explicitly, or ActiveRecord will not find records
       # when date format string varies.
       bag_date = Time.parse(params[:bag_date])
@@ -199,6 +194,8 @@ class ProcessedItemController < ApplicationController
                                             name: params[:name],
                                             bag_date: bag_date).first
       params[:id] = @processed_item.id if @processed_item
+    else
+      @processed_item = ProcessedItem.find(params[:id])      
     end
   end
 end

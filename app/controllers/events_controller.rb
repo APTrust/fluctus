@@ -3,9 +3,6 @@ class EventsController < ApplicationController
   before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
   before_filter :load_generic_file, if: :generic_file_identifier_exists?
   before_filter :load_and_authorize_parent_object, only: [:create]
-  load_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
-  load_resource :institution, only: [:index], if: :inst_id_exists?
-  load_resource :generic_file, only: [:index], if: :generic_file_id_exists?
 
   include Aptrust::GatedSearch
 
@@ -17,20 +14,21 @@ class EventsController < ApplicationController
 
   def index
     if params['institution_id']
-      obj = Institution.find(params['institution_id'])
+      @institution = Institution.find(params['institution_id'])
+      obj = @institution
     elsif params['intellectual_object_id']
-      obj = IntellectualObject.find(params['intellectual_object_id'])
+      @intellectual_object = IntellectualObject.find(params['intellectual_object_id'])
+      obj = @intellectual_object
     elsif params['generic_file_id']
-      obj = GenericFile.find(params['generic_file_id'])
-    else
-      obj = @generic_file.nil? ? @intellectual_object : @generic_file
+      @generic_file = GenericFile.find(params['generic_file_id'])
+      obj = @generic_file
     end
     authorize obj
     respond_to do |format|
       format.json { render json: obj.premisEvents.events.map { |event| event.serializable_hash } }
       # TODO: Code review. Can't get the HTML rendering to work without super,
       # but do I really want to call super within this block???
-      format.html { super }
+      format.html {super}
     end
   end
 

@@ -1,18 +1,9 @@
 class IntellectualObjectPolicy < ApplicationPolicy
-	
-	def create?
-		user.admin? || 
-		(user.institutional_admin? && (user.institution_pid == record.institution_id))
-	end
-
-	def new?
-		create?
-	end
 
 	def index?
 		user.admin? ||  (user.institution_pid == record.institution_id)
 	end
-
+	
 	def show?
 		user.admin? ||  (user.institution_pid == record.institution_id)
 	end
@@ -25,7 +16,6 @@ class IntellectualObjectPolicy < ApplicationPolicy
 		update?
 	end	
 
-	# institutional_admin cannot delete intellectual_object
 	def destroy?
 		false
 	end

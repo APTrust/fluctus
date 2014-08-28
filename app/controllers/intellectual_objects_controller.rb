@@ -4,7 +4,7 @@ class IntellectualObjectsController < ApplicationController
   before_filter :load_object, only: [:show, :update]
   before_filter :load_institution, only: [:index, :create, :create_from_json]
   
-  after_action :verify_authorized, :except => [:index, :create, :create_from_json]
+  after_action :verify_authorized, :except => [:index, :create, :create_from_json, :edit]
   
   include Aptrust::GatedSearch
   apply_catalog_search_params

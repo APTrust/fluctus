@@ -1,14 +1,5 @@
 class GenericFilePolicy < ApplicationPolicy
 	
-	def create?
-		user.admin? || 
-		(user.institutional_admin? && (user.institution_pid == record.intellectual_object.institution_id)) 
-	end
-
-	def new?
-		create?
-	end
-
 	def index?
 		user.admin? ||  (user.institution_pid == record.intellectual_object.institution_id)
 	end

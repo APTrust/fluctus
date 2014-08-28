@@ -1,8 +1,8 @@
 module DeviseHelper
   def devise_error_messages!
-    return "" if resource.errors.empty?
+    return "" if @user.errors.empty?
 
-    messages = resource.errors.full_messages.map { |msg| content_tag(:li, msg) }.join
+    messages = @user.errors.full_messages.map { |msg| content_tag(:li, msg) }.join
     if messages.include? 'Email not found'
       message = messages
     elsif messages.include? " be blank"
@@ -27,7 +27,7 @@ module DeviseHelper
   end
 
   def devise_error_messages?
-    resource.errors.empty? ? false : true
+    @user.errors.empty? ? false : true
   end
 
 end
