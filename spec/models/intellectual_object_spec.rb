@@ -123,7 +123,7 @@ describe IntellectualObject do
           OrderUp.should_receive(:push).with(intellectual_object_delete_job).once
           OrderUp.should_receive(:push).with(generic_file_delete_job).once
           expect {
-            subject.soft_delete
+            subject.soft_delete({type: 'delete'})
           }.to change { subject.premisEvents.events.count}.by(1)
           expect(subject.state).to eq 'D'
           subject.generic_files.all?{ |file| expect(file.state).to eq 'D' }
