@@ -72,7 +72,7 @@ class ProcessedItemController < ApplicationController
     end
   end
 
-  # post '/api/v1/itemresults/:object_identifier'
+  # post '/api/v1/itemresults/restoration_status/:object_identifier'
   #
   # This is an API call for the bag restoration service.
   #

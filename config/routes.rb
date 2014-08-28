@@ -54,7 +54,7 @@ Fluctus::Application.routes.draw do
   get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json'
   get '/api/v1/itemresults/restore', to: 'processed_item#restore', format: 'json'
 
-  post '/api/v1/itemresults/:object_identifier', to: 'intellectual_objects#set_restoration_status', as: :item_set_restoration_status
+  post '/api/v1/itemresults/restoration_status/:object_identifier', to: 'processed_item#set_restoration_status', as: :item_set_restoration_status
 
 
   post '/api/v1/objects/include_nested', to: 'intellectual_objects#create_from_json', format: 'json'

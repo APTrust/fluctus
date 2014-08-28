@@ -182,20 +182,20 @@ describe ProcessedItemController do
 
       it "responds successfully with an HTTP 200 status code" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         expect(response).to be_success
       end
 
       it "assigns the correct @items" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         assigns(:items).should have(ProcessedItem.count).items
       end
 
       it "updates the correct @items" do
         ProcessedItem.first.update(object_identifier: "homer/simpson")
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         update_count = ProcessedItem.where(object_identifier: 'ned/flanders',
                                            stage: 'Resolve', status: 'Success', retry: true).count
         expect(update_count).to eq(ProcessedItem.count - 1)
@@ -204,13 +204,13 @@ describe ProcessedItemController do
       it "returns 404 for no matching records" do
         ProcessedItem.update_all(object_identifier: "homer/simpson")
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         expect(response.status).to eq(404)
       end
 
       it "returns 400 for bad request" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Invalid_Stage', status: 'Invalid_Status', retry: true, use_route: 'set_restoration_status')
+             stage: 'Invalid_Stage', status: 'Invalid_Status', retry: true, use_route: 'item_set_restoration_status')
         expect(response.status).to eq(400)
       end
 
