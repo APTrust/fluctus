@@ -37,10 +37,12 @@ class IntellectualObject < ActiveFedora::Base
     end
   end
 
-  def soft_delete
+  def soft_delete(attributes)
     self.state = 'D'
-    premisEvents.events.build(type: 'delete')
-    generic_files.each(&:soft_delete)
+    self.add_event(attributes)
+    generic_files.each do |gf|
+      gf.soft_delete(attributes)
+    end
     save!
     OrderUp.push(DeleteIntellectualObjectJob.new(id))
   end
