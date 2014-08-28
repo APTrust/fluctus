@@ -65,15 +65,15 @@ form .alert {
 .search_tabs {
   text-align: center;
   list-style: none;
-  margin: 20px 0 20px;
+  margin: 10px 0 10px;
   padding: 0;
-  line-height: 35px;
-  height: 37px;
+  line-height: 22px;
+  height: 25px;
   overflow: hidden;
   font-size: 12px;
   font-family: arial;
   position: relative;
-  width: 78%;
+  width: 510px;
 }
 
 .search_tabs li {
@@ -100,7 +100,7 @@ form .alert {
   text-decoration: none;
 }
 
-.search_tabs li.selected {
+.search_tabs li.ui-tabs-active {
   background: #FFF;
   color: #333;
   z-index: 2;
@@ -141,12 +141,20 @@ form .alert {
   box-shadow: -2px 0px 0 #ECECEC;
 }
 
-.search_tabs li.selected:before {
+.search_tabs li.ui-tabs-active:before {
   box-shadow: 2px 0px 0 #FFF;
 }
 
-.search_tabs li.selected:after {
+.search_tabs li.ui-tabs-active:after {
   box-shadow: -2px 0px 0 #FFF;
+}
+
+input#q, input#qq {
+  width: 260px;
+}
+
+#pi_search {
+
 }
 
 #chart-frame {

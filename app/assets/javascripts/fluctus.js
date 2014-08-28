@@ -7,13 +7,15 @@ var dropdown = function() {
     $('.dropdown-toggle').dropdown();
 };
 
-var search_tabs = function() {
-    $("#tabs").tabs();
-};
+function add_form_classes() {
+    $("#tabs-2 form").addClass("search-query-form form-inline clearfix navbar-form");
+}
+
+function select_pi_tab() {
+    $("#tabs-2-link").click();
+}
 
 $(document).ready(activate_tabs);
 $(document).on('page:load', activate_tabs);
 $(document).ready(dropdown);
 $(document).on('page:load', dropdown);
-$(document).ready(search_tabs);
-$(document).on('page:load', search_tabs);
