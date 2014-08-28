@@ -50,11 +50,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def restore
-    item = find_latest_PI
-    item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
-    item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
-    item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
-    item.save!
+    flag_items_for_restore
     redirect_to :back
     flash[:notice] = 'Your item has been queued for restoration.'
   end
@@ -185,26 +181,29 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
-  def find_latest_PI
-    items = ProcessedItem.where(institution: @intellectual_object.institution.identifier, name: @intellectual_object.bag_name)
+  # A single intellectual object may have been created from
+  # multiple bags. Each of those bags would have created one
+  # ProcessedItem record. When a user wants to restore an object,
+  # we want to mark all of the ProcessedItems assiociated with
+  # the object as "restore requested, pending". Because bags
+  # can be uploaded multiple times, we want to flag only the
+  # latest bag for restore.
+  def flag_items_for_restore
+    items = ProcessedItem.where(object_identifier: @intellectual_object.identifier)
     items.order('date').reverse_order
-    item = ''
-    if items.count == 1
-      if items.first.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest'] ||
-          items.first.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && items.first.stage == Fluctus::Application::FLUCTUS_STAGES['record'] && items.first.status == Fluctus::Application::FLUCTUS_STATUSES['success'] ||
-          items.first.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && items.first.stage == Fluctus::Application::FLUCTUS_STAGES['clean']
-        item = items.first
-      end
-    else
-      items.each do |current|
-        if current.action != Fluctus::Application::FLUCTUS_ACTIONS['ingest'] ||
-            (current.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && current.stage == Fluctus::Application::FLUCTUS_STAGES['record'] && current.status == Fluctus::Application::FLUCTUS_STATUSES['success']) ||
-            (current.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] && current.stage == Fluctus::Application::FLUCTUS_STAGES['clean'])
-          item = current
-          break
-        end
+    already_flagged = {}
+    items.each do |item|
+      if !already_flagged[item.name]
+        item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+        item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
+        item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+        item.save!
+        already_flagged[item.name] = true
       end
     end
-    item
+    if already_flagged.count == 0
+      raise ActionController::RoutingError.new('Processed Item Not Found')
+    end
   end
+
 end
