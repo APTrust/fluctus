@@ -55,14 +55,14 @@ class ProcessedItemController < ApplicationController
     restore = Fluctus::Application::FLUCTUS_ACTIONS['restore']
     requested = Fluctus::Application::FLUCTUS_STAGES['requested']
     pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
-    @items = ProcessedItem.where(action: restore)
+    @items = ProcessedItem.where(action: restore, retry: true)
     if(current_user.admin? == false)
       @items = @items.where(institution: current_user.institution.identifier)
     end
     # Get items for a single object, which may consist of multiple bags.
     # Return anything for that object identifier with action=Restore and retry=true
     if !request[:object_identifier].blank?
-      @items = @items.where(object_identifier: request[:object_identifier], retry: true)
+      @items = @items.where(object_identifier: request[:object_identifier])
     else
       # If user is not looking for a single bag, return all requested/pending items.
       @items = ProcessedItem.where(stage: requested, status: pending)
