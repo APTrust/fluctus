@@ -116,7 +116,8 @@ describe ProcessedItemController do
         sign_in admin_user
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                  stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'])
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: true)
       end
 
       it "responds successfully with an HTTP 200 status code" do
@@ -134,6 +135,7 @@ describe ProcessedItemController do
     describe "for institutional admin" do
       before do
         sign_in institutional_admin
+        2.times { FactoryGirl.create(:processed_item) }
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                  stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
                                  status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
