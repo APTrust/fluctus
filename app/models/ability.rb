@@ -27,8 +27,8 @@ class Ability
       can [:edit_password, :update_password], User, id: current_user.id
       can [:read, :update], Institution, pid: current_user.institution_pid
       can :create, GenericFile, :intellectual_object => { :institution_id => current_user.institution_pid }
-      can :create, IntellectualObject, institution_id: current_user.institution_pid
-      can [:read, :update], ProcessedItem, institution: current_user.institution.identifier
+      can [:create, :restore], IntellectualObject, institution_id: current_user.institution_pid
+      can [:read, :update], ProcessedItem, institution: current_user.institution_pid
     end
   end
   
@@ -36,7 +36,7 @@ class Ability
     if current_user.is? :institutional_user
       can :manage, User, id: current_user.id
       can :read, Institution, pid: current_user.institution_pid
-      can :read, ProcessedItem, institution: current_user.institution.identifier
+      can :read, ProcessedItem, institution: current_user.institution_pid
     end
   end
 
