@@ -208,6 +208,24 @@ namespace :fluctus do
       user.institution_pid = inst.pid
       user.save
     end
-
   end
+
+
+  desc "Deletes test.edu data from Go integration tests"
+  task :delete_go_data => [:environment] do |t, args|
+    if Rails.env.production?
+      puts "Do not run in production!"
+      return
+    end
+    count = ProcessedItem.where(institution: 'test.edu').delete_all
+    puts "Deleted #{count} ProcessedItems for test.edu"
+    IntellectualObject.all.each do |io|
+      if io.identifier.start_with?('test.edu/')
+        puts "Deleting IntellectualObject #{io.identifier}"
+        io.generic_files.destroy_all
+        io.destroy
+      end
+    end
+  end
+
 end
