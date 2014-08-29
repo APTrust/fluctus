@@ -68,6 +68,41 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  # post '/api/v1/itemresults/:object_identifier'
+  #
+  # This is an API call for the bag restoration service.
+  #
+  # Sets the status of items that the user has requested be restored.
+  # A single object can have multiple bags and hence multiple processed
+  # item records. When restorations starts, succeeds, or fails, we
+  # need to update all processed items for that object at once.
+  # We must update only those items that the user requested for restoration,
+  # avoiding any older items that map to previous versions of the same
+  # intellectual object, and avoiding newer items that may represent bags
+  # that have not yet completed the ingest process.
+  #
+  # Expects param :object_identifier in URL and :stage, :status, :retry
+  # in post body.
+  #
+  # Should be available to admin user only.
+  def set_restoration_status
+    @items = ProcessedItem.where(object_identifier: params[:object_identifier],
+                                 action: Fluctus::Application::FLUCTUS_ACTIONS['restore'])
+    results = @items.map { |item| item.update_attributes(params_for_status_update) }
+    respond_to do |format|
+      if @items.count == 0
+        error = { error: "No items for object identifier #{params[:object_identifier]}" }
+        format.json { render json: error, status: :not_found }
+      end
+      if results.include?(false)
+        errors = @items.first.errors.full_messages
+        format.json { render json: errors, status: :bad_request }
+      else
+        format.json { render json: {result: 'OK'}, status: :ok }
+      end
+    end
+  end
+
   def show_reviewed
     session[:show_reviewed] = params[:show]
     respond_to do |format|
@@ -157,6 +192,10 @@ class ProcessedItemController < ApplicationController
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
                                            :stage, :status, :outcome, :retry, :reviewed)
+  end
+
+  def params_for_status_update
+    params.permit(:object_identifier, :stage, :status, :retry)
   end
 
 
