@@ -2,13 +2,12 @@ class IntellectualObjectPolicy < ApplicationPolicy
 
 	# authorize through institution
 	def index?
-		user.admin? ||  (user.institution_pid == record.pid)
+		user.admin? ||  (user.institution_pid == record.institution_id)
 	end
 	
-	# authorize through institution
+	# authorize should through institution
 	def create?
-		user.admin? || 
-		(user.institutional_admin? && user.institution_pid == record.pid)
+		user.admin? 
 	end
 
 	# authorize through institution
@@ -36,6 +35,11 @@ class IntellectualObjectPolicy < ApplicationPolicy
 
 	def destroy?
 		false
+	end
+
+	def soft_delete?
+		user.admin? || 
+		(user.institutional_admin? && user.institution_pid == record.institution_id)
 	end
 
   class Scope

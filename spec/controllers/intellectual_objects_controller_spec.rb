@@ -146,7 +146,7 @@ describe IntellectualObjectsController do
         before { sign_in user }
 
         it 'should show the object' do
-          get :edit, id: obj1
+          get :show, id: obj1
           expect(response).to be_successful
           expect(assigns(:intellectual_object)).to eq obj1
         end
@@ -167,8 +167,11 @@ describe IntellectualObjectsController do
 
 
     describe 'when signed in' do
-      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
+      # TODO by Tingting: Institutional_admin should not update?
+      #let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      #let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
+      let(:user) { FactoryGirl.create(:user, :admin) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       before { sign_in user }
 
       it 'should update the search counter' do

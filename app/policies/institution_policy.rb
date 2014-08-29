@@ -9,6 +9,11 @@ class InstitutionPolicy < ApplicationPolicy
 		user.admin?
 	end
 
+	def create_through_institution?
+		(user.admin? && record) || 
+		(user.institutional_admin? && user.institution_pid == record.pid)
+	end
+
 	def new?
 		create?
 	end

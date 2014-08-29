@@ -1,9 +1,8 @@
 class IntellectualObjectsController < ApplicationController
   
   before_filter :authenticate_user!
-  before_filter :load_object, only: [:show, :update]
+  before_filter :load_object, only: [:show, :edit, :update, :destroy]
   before_filter :load_institution, only: [:index, :create, :create_from_json]
-  
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
   
   include Aptrust::GatedSearch
@@ -20,6 +19,12 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
+  def create
+    authorize @institution, :create_through_institution?
+    @intellectual_object = @institution.intellectual_objects.new(params[:intellectual_object])
+    super
+  end
+
   def show
     authorize @intellectual_object
     respond_to do |format|
@@ -30,6 +35,7 @@ class IntellectualObjectsController < ApplicationController
 
   def edit
     authorize @intellectual_object
+    super
   end
 
   def update
@@ -45,7 +51,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def destroy
-    authorize @intellectual_object
+    authorize @intellectual_object, :soft_delete?
     resource.soft_delete
     respond_to do |format|
       format.json { head :no_content }
