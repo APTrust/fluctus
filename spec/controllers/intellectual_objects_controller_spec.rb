@@ -521,11 +521,12 @@ describe IntellectualObjectsController do
 
     describe 'when signed in as an institutional admin' do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: user.institution) }
 
       before do
         FactoryGirl.create(:ingested_item)
         ProcessedItem.update_all(object_identifier: obj1.identifier)
+        request.env["HTTP_REFERER"] = "OzzyOsbourne"
         sign_in user
       end
 
@@ -535,11 +536,12 @@ describe IntellectualObjectsController do
 
       it 'should mark the processed item for restore' do
         get :restore, id: obj1
-        expect(response.code).to eq '302'
+        expect(response).to redirect_to 'OzzyOsbourne'
         count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                     stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
                                     status: Fluctus::Application::FLUCTUS_STATUSES['pend']).count
         expect(count).to eq(1)
+
       end
     end
   end
