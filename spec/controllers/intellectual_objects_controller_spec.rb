@@ -15,7 +15,6 @@ describe IntellectualObjectsController do
       end
     end
 
-
     describe 'when some objects are in the repository and signed in' do
       let(:another_institution) { FactoryGirl.create(:institution) }
       let!(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: another_institution) }

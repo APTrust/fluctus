@@ -156,6 +156,10 @@ describe ProcessedItemController do
         sign_in admin_user
       end
 
+      after do
+        ProcessedItem.delete_all
+      end
+
       it "should reject no parameters" do
         expect {
           post :create, {}
@@ -203,6 +207,10 @@ describe ProcessedItemController do
         sign_in admin_user
       end
 
+      after do
+        ProcessedItem.delete_all
+      end
+
       it "should update an item's review field to true" do
         post :handle_selected, review: [item_id], format: 'js'
         expect(response.status).to eq(200)
@@ -222,6 +230,10 @@ describe ProcessedItemController do
         sign_in institutional_admin
       end
 
+      after do
+        ProcessedItem.delete_all
+      end
+
       it "should update an item's review field to true" do
         post :handle_selected, review: [user_id], format: 'js'
         expect(response.status).to eq(200)
@@ -237,6 +249,10 @@ describe ProcessedItemController do
       before do
         sign_in admin_user
         session[:purge_datetime] = Time.now.utc
+      end
+
+      after do
+        ProcessedItem.delete_all
       end
 
       it "should reset the purge datetime in the session variable" do
@@ -261,6 +277,10 @@ describe ProcessedItemController do
       get :show, id: item.id
     end
 
+    after do
+      ProcessedItem.delete_all
+    end
+
     it 'admin can get items ingested since' do
       get :ingested_since, since: '2009-01-01', format: :json
       expect(response).to be_successful
@@ -276,4 +296,54 @@ describe ProcessedItemController do
 
   end
 
+  describe "Search" do
+    let(:user) { FactoryGirl.create(:user, :admin) }
+    before do
+      ProcessedItem.delete_all
+    end
+
+    describe 'when not signed in' do
+      it 'should redirect to login' do
+        get :index, institution_id: 'apt:123'
+        expect(response).to redirect_to root_url + 'users/sign_in'
+      end
+    end
+
+    describe 'when some objects are in the repository and signed in' do
+      let!(:item1) { FactoryGirl.create(:processed_item, name: '1234567890.tar') }
+      let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar') }
+      let!(:item3) { FactoryGirl.create(:processed_item, etag: '1548cdbe82348bdd32mds') }
+      let!(:item4) { FactoryGirl.create(:processed_item, etag: '23045ldk2383xd320932k') }
+      before { sign_in user }
+      it 'should bring back all objects on an * search' do
+        get :search, search_field: 'All Fields', qq: '*'
+        expect(response).to be_successful
+        expect(assigns(:processed_items).map &:id).to match_array [item1.id, item2.id, item3.id, item4.id]
+      end
+
+      it 'should match a partial search on name' do
+        get :search, search_field: 'Name', qq: '123'
+        expect(response).to be_successful
+        expect(assigns(:processed_items).map &:id).to match_array [item1.id, item2.id]
+      end
+
+      it 'should match an exact search on name' do
+        get :search, search_field: 'Name', qq: '1238907543.tar'
+        expect(response).to be_successful
+        expect(assigns(:processed_items).map &:id).to match_array [item2.id]
+      end
+
+      it 'should match a partial search on etag' do
+        get :search, search_field: 'Etag', qq: '32'
+        expect(response).to be_successful
+        expect(assigns(:processed_items).map &:id).to match_array [item3.id, item4.id]
+      end
+
+      it 'should match an exact search on etag' do
+        get :search, search_field: 'Etag', qq: '1548cdbe82348bdd32mds'
+        expect(response).to be_successful
+        expect(assigns(:processed_items).map &:id).to match_array [item3.id]
+      end
+    end
+  end
 end

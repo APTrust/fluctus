@@ -30,13 +30,14 @@ class ProcessedItemController < ApplicationController
   def search
     search_param = "%#{params[:qq]}%"
     field = params[:search_field]
-    puts "Search Parameter: #{params[:qq]}, Search Field: #{params[:search_field]}"
     @institution = current_user.institution
     if current_user.admin?
       if field == 'Name'
         @processed_items = ProcessedItem.where('name LIKE ?', search_param)
       elsif field == 'Etag'
         @processed_items = ProcessedItem.where('etag LIKE ?', search_param)
+      elsif params[:qq] == '*'
+        @processed_items = ProcessedItem.all
       else
         @processed_items = ProcessedItem.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
       end
@@ -46,6 +47,8 @@ class ProcessedItemController < ApplicationController
         @processed_items = institution_items.where('name LIKE ?', search_param)
       elsif field == 'Etag'
         @processed_items = institution_items.where('etag LIKE ?', search_param)
+      elsif params[:qq] == '*'
+        @processed_items = institution_items
       else
         @processed_items = institution_items.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
       end
