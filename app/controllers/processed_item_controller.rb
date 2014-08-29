@@ -50,25 +50,33 @@ class ProcessedItemController < ApplicationController
 
   # get '/api/v1/itemresults/restore'
   # Returns a list of items the users have requested
-  # to be queued for restoration.
+  # to be queued for restoration. If param object_identifier is supplied,
+  # it returns all restoration requests for the object. Otherwise,
+  # it returns pending requests for all objects where retry is true.
+  # (This is because retry gets set to false when the restorer encounters
+  # some fatal error. There is no sense in reprocessing those requests.)
   def restore
     restore = Fluctus::Application::FLUCTUS_ACTIONS['restore']
     requested = Fluctus::Application::FLUCTUS_STAGES['requested']
     pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
-    @items = ProcessedItem.where(action: restore, stage: requested, status: pending)
+    @items = ProcessedItem.where(action: restore)
     if(current_user.admin? == false)
       @items = @items.where(institution: current_user.institution.identifier)
     end
     # Get items for a single object, which may consist of multiple bags.
+    # Return anything for that object identifier with action=Restore and retry=true
     if !request[:object_identifier].blank?
       @items = @items.where(object_identifier: request[:object_identifier])
+    else
+      # If user is not looking for a single bag, return all requested/pending items.
+      @items = ProcessedItem.where(stage: requested, status: pending, retry: true)
     end
     respond_to do |format|
       format.json { render json: @items, status: :ok }
     end
   end
 
-  # post '/api/v1/itemresults/:object_identifier'
+  # post '/api/v1/itemresults/restoration_status/:object_identifier'
   #
   # This is an API call for the bag restoration service.
   #
@@ -86,7 +94,8 @@ class ProcessedItemController < ApplicationController
   #
   # Should be available to admin user only.
   def set_restoration_status
-    @items = ProcessedItem.where(object_identifier: params[:object_identifier],
+    identifier = params[:object_identifier].gsub(/%2F/i, "/")
+    @items = ProcessedItem.where(object_identifier: identifier,
                                  action: Fluctus::Application::FLUCTUS_ACTIONS['restore'])
     results = @items.map { |item| item.update_attributes(params_for_status_update) }
     respond_to do |format|

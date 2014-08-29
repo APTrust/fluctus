@@ -116,7 +116,8 @@ describe ProcessedItemController do
         sign_in admin_user
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                  stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'])
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: true)
       end
 
       it "responds successfully with an HTTP 200 status code" do
@@ -134,15 +135,18 @@ describe ProcessedItemController do
     describe "for institutional admin" do
       before do
         sign_in institutional_admin
+        2.times { FactoryGirl.create(:processed_item) }
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                  stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'])
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: true)
+
       end
 
       it "assigns the requested items as @items" do
         get :restore, format: :json
         assigns(:items).should include(user_item)
-        assigns(:items).should have(1).items
+        assigns(:items).should have(ProcessedItem.count).items
       end
     end
 
@@ -152,9 +156,8 @@ describe ProcessedItemController do
           FactoryGirl.create(:processed_item, action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'])
         end
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
-                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
-                                 institution: institution.identifier)
+                                 institution: institution.identifier,
+                                 retry: true)
         ProcessedItem.all.limit(2).update_all(object_identifier: "mickey/mouse")
         sign_in institutional_admin
       end
@@ -181,20 +184,20 @@ describe ProcessedItemController do
 
       it "responds successfully with an HTTP 200 status code" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         expect(response).to be_success
       end
 
       it "assigns the correct @items" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         assigns(:items).should have(ProcessedItem.count).items
       end
 
       it "updates the correct @items" do
         ProcessedItem.first.update(object_identifier: "homer/simpson")
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         update_count = ProcessedItem.where(object_identifier: 'ned/flanders',
                                            stage: 'Resolve', status: 'Success', retry: true).count
         expect(update_count).to eq(ProcessedItem.count - 1)
@@ -203,13 +206,13 @@ describe ProcessedItemController do
       it "returns 404 for no matching records" do
         ProcessedItem.update_all(object_identifier: "homer/simpson")
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', retry: true, use_route: 'set_restoration_status')
+             stage: 'Resolve', status: 'Success', retry: true, use_route: 'item_set_restoration_status')
         expect(response.status).to eq(404)
       end
 
       it "returns 400 for bad request" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Invalid_Stage', status: 'Invalid_Status', retry: true, use_route: 'set_restoration_status')
+             stage: 'Invalid_Stage', status: 'Invalid_Status', retry: true, use_route: 'item_set_restoration_status')
         expect(response.status).to eq(400)
       end
 
