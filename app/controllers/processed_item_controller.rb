@@ -126,8 +126,9 @@ class ProcessedItemController < ApplicationController
   #
   # Should be available to admin user only.
   def set_restoration_status
-    identifier = params[:object_identifier].gsub(/%2F/i, "/")
-    @items = ProcessedItem.where(object_identifier: identifier,
+    # Fix Apache/Passenger passthrough of %2f-encoded slashes in identifier
+    params[:object_identifier] = params[:object_identifier].gsub(/%2F/i, "/")
+    @items = ProcessedItem.where(object_identifier: params[:object_identifier],
                                  action: Fluctus::Application::FLUCTUS_ACTIONS['restore'])
     results = @items.map { |item| item.update_attributes(params_for_status_update) }
     respond_to do |format|
