@@ -10,6 +10,8 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create, :index]
   end
 
+  get 'objects/:id/restore', to: 'intellectual_objects#restore', as: :intellectual_object_restore
+
   resources :generic_files, path: 'files' do
     resources :events, only: [:index]
   end
@@ -53,6 +55,9 @@ Fluctus::Application.routes.draw do
   put '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
   get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json'
   get '/api/v1/itemresults/restore', to: 'processed_item#restore', format: 'json'
+
+  post '/api/v1/itemresults/restoration_status/:object_identifier', to: 'processed_item#set_restoration_status', as: :item_set_restoration_status, object_identifier: /.*/
+
 
   post '/api/v1/objects/include_nested', to: 'intellectual_objects#create_from_json', format: 'json'
   post '/api/v1/objects/:intellectual_object_identifier/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_identifier: /[^\/]*/

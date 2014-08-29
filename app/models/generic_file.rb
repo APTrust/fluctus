@@ -38,9 +38,9 @@ class GenericFile < ActiveFedora::Base
     content.dsLocation = uri
   end
 
-  def soft_delete
+  def soft_delete(attributes)
     self.state = 'D'
-    premisEvents.events.build(type: 'delete')
+    self.add_event(attributes)
     save!
     OrderUp.push(DeleteGenericFileJob.new(id))
   end

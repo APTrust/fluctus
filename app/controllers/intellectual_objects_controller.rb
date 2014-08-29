@@ -30,7 +30,16 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def destroy
-    resource.soft_delete
+    attributes = { type: 'delete',
+      date_time: "#{Time.now}",
+      detail: 'Object deleted from S3 storage',
+      outcome: 'Success',
+      outcome_detail: current_user.email,
+      object: 'Ruby aws-s3 gem',
+      agent: 'https://github.com/marcel/aws-s3/tree/master',
+      outcome_information: "Action requested by user from #{current_user.institution_pid}"
+    }
+    resource.soft_delete(attributes)
     respond_to do |format|
       format.json { head :no_content }
       format.html {
@@ -38,6 +47,13 @@ class IntellectualObjectsController < ApplicationController
         redirect_to root_path
       }
     end
+  end
+
+  # get 'objects/:id/restore'
+  def restore
+    flag_items_for_restore
+    redirect_to :back
+    flash[:notice] = 'Your item has been queued for restoration.'
   end
 
   def create_from_json
@@ -165,4 +181,31 @@ class IntellectualObjectsController < ApplicationController
       @intellectual_object ||= IntellectualObject.find(params[:id])
     end
   end
+
+  # A single intellectual object may have been created from
+  # multiple bags. Each of those bags would have created one
+  # ProcessedItem record. When a user wants to restore an object,
+  # we want to mark all of the ProcessedItems assiociated with
+  # the object as "restore requested, pending". Because bags
+  # can be uploaded multiple times, we want to flag only the
+  # latest bag for restore.
+  def flag_items_for_restore
+    items = ProcessedItem.where(object_identifier: @intellectual_object.identifier)
+    items.order('date').reverse_order
+    already_flagged = {}
+    items.each do |item|
+      if !already_flagged[item.name]
+        item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+        item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
+        item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+        item.retry = true
+        item.save!
+        already_flagged[item.name] = true
+      end
+    end
+    if already_flagged.count == 0
+      raise ActionController::RoutingError.new('Processed Item Not Found')
+    end
+  end
+
 end

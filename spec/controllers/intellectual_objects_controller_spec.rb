@@ -476,4 +476,49 @@ describe IntellectualObjectsController do
       end
     end
   end
+
+  describe 'restore an object' do
+    describe 'when not signed in' do
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+      after { obj1.destroy }
+
+      it 'should redirect to login' do
+        get :restore, id: obj1
+        expect(response).to redirect_to root_url + 'users/sign_in'
+      end
+
+    end
+
+    describe 'when signed in' do
+      let(:user) { FactoryGirl.create(:user, :admin) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+
+      before do
+        5.times do
+          FactoryGirl.create(:ingested_item)
+        end
+        ProcessedItem.update_all(object_identifier: obj1.identifier)
+        ProcessedItem.first.update(object_identifier: "some.edu/some.bag")
+        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        sign_in user
+      end
+
+      after do
+        ProcessedItem.delete_all
+      end
+
+      # TODO: This is working for admin. Should probably work for institutional admin as well.
+      it 'should mark all but one processed items for restore' do
+        get :restore, id: obj1
+        expect(response).to redirect_to 'OzzyOsbourne'
+        count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                    stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                    retry: true).count
+        expect(count).to eq(4)
+      end
+
+    end
+  end
+
 end

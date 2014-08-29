@@ -17,8 +17,10 @@
     <dl class="dl-horizontal">
       <dt>Users</dt>
       <dd><%= @institution.users.count %></dd>
-      <dt>Objects</dt>
+      <dt>Intellectual Objects</dt>
       <dd><%= @institution.intellectual_objects.count %></dd>
+      <dt>Processed Items</dt>
+      <dd><%= ProcessedItem.where(institution: @institution.identifier).count %></dd>
     </dl>
 
     <%= render "shared/processed_items" %>

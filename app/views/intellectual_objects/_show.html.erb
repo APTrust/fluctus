@@ -36,7 +36,7 @@
     <%= link_to intellectual_object_events_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
         <i class="glyphicon glyphicon-eye-open"></i> View Events
     <% end %>
-    <%= link_to intellectual_object_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+    <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
         <i class="glyphicon glyphicon-download"></i> Restore Object
     <% end %>
     <%= render_document_sidebar_partial %>
