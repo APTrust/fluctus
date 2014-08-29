@@ -4,6 +4,6 @@ module IntellectualObjectsHelper
   end
 
   def format_class(format)
-    format.split('/')[-1].downcase.gsub(/\s/, '_') + "_label"
+    format.split('/')[-1].downcase.gsub(/\s/, '_') + "_label" unless format.split('/')[-1].nil?
   end
 end
