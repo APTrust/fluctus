@@ -149,11 +149,11 @@ namespace :fluctus do
           ].sample
           name = Faker::Lorem.characters(char_count=rand(5..15))
           attrs = {
-              format: "#{format[:type]}",
+              file_format: "#{format[:type]}",
               uri: "file:///#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
               identifier: "#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
           }
-          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri], identifier: attrs[:identifier])
+          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, file_format: attrs[:file_format], uri: attrs[:uri], identifier: attrs[:identifier])
 
           f.save!
 
@@ -208,6 +208,24 @@ namespace :fluctus do
       user.institution_pid = inst.pid
       user.save
     end
-
   end
+
+
+  desc "Deletes test.edu data from Go integration tests"
+  task :delete_go_data => [:environment] do |t, args|
+    if Rails.env.production?
+      puts "Do not run in production!"
+      return
+    end
+    count = ProcessedItem.where(institution: 'test.edu').delete_all
+    puts "Deleted #{count} ProcessedItems for test.edu"
+    IntellectualObject.all.each do |io|
+      if io.identifier.start_with?('test.edu/')
+        puts "Deleting IntellectualObject #{io.identifier}"
+        io.generic_files.destroy_all
+        io.destroy
+      end
+    end
+  end
+
 end

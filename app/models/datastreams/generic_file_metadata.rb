@@ -28,7 +28,7 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
   property :created
   property :modified
   property :size
-  property :format
+  property :file_format
   property :Checksum
   property :checksum
   property :checksumValue
@@ -37,8 +37,7 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
 end
 
 class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
-  #noinspection RubyArgCount
-  property :format, predicate: FileVocabulary.format do |index|
+  property :file_format, predicate: FileVocabulary.file_format do |index|
     index.as :stored_sortable
   end
   property :uri, predicate: RDF::HT.absoluteURI

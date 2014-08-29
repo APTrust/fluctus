@@ -66,7 +66,7 @@ class GenericFilesController < ApplicationController
 
   def filter_parameters
     params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
-                                                                   :modified, :format,
+                                                                   :modified, :file_format,
                                                                    checksum_attributes: [:digest, :algorithm, :datetime])
   end
 
@@ -81,7 +81,7 @@ class GenericFilesController < ApplicationController
   # Fixes bug https://www.pivotaltracker.com/story/show/73796812
   def params_for_update
     params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
-                                                                   :modified, :format)
+                                                                   :modified, :file_format)
   end
 
 

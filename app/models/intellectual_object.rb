@@ -33,7 +33,7 @@ class IntellectualObject < ActiveFedora::Base
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
       # TODO only generic_files in the active state
-      Solrizer.insert_field(doc, 'format', generic_files.map(&:format), :facetable)
+      Solrizer.insert_field(doc, 'file_format', generic_files.map(&:file_format), :facetable)
     end
   end
 

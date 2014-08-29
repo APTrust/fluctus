@@ -9,7 +9,7 @@ describe "Searching" do
     visit '/'
     click_link "Objects"
     expect(page).to have_content "Objects for #{user.institution.name}"
-    click_button "Search"
+    click_button('search')
   end
 end
 

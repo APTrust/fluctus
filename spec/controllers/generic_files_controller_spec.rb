@@ -86,7 +86,7 @@ describe GenericFilesController do
       describe "and assigning to an object you don't have access to" do
         let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
         it "should be forbidden" do
-          post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+          post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
@@ -98,7 +98,7 @@ describe GenericFilesController do
         expect(JSON.parse(response.body)).to eq( {
           "checksum" => ["can't be blank"],
           "created" => ["can't be blank"],
-          "format" => ["can't be blank"],
+          "file_format" => ["can't be blank"],
           "identifier" => ["can't be blank"],
           "modified" => ["can't be blank"],
           "size" => ["can't be blank"],
@@ -108,7 +108,7 @@ describe GenericFilesController do
       it "should update fields" do
         # and the parent's solr document should have been updated (but it's not stored, so we can't query it)
         #IntellectualObject.any_instance.should_receive(:update_index)
-        post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/puppy.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        post :create, intellectual_object_id: obj1, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/puppy.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
         expect(response.code).to eq '201'
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/bag'
@@ -119,7 +119,7 @@ describe GenericFilesController do
 
       it "should add generic file using API identifier" do
         identifier = URI.escape(obj1.identifier)
-        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/cat.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/cat.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/cat.jpg', size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/cat.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
         expect(response.code).to eq '201'
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/bag'
@@ -130,7 +130,7 @@ describe GenericFilesController do
 
       it "should create generic files larger than 2GB" do
         identifier = URI.escape(obj1.identifier)
-        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/dog', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/dog.jpg', size: 300000000000, created: '2001-12-31', modified: '2003-03-13', format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/dog.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/dog', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/dog.jpg', size: 300000000000, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/dog.jpg', checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
         expect(response.code).to eq '201'
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/dog'

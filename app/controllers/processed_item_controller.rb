@@ -27,6 +27,38 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def search
+    search_param = "%#{params[:qq]}%"
+    field = params[:search_field]
+    @institution = current_user.institution
+    if current_user.admin?
+      if field == 'Name'
+        @processed_items = ProcessedItem.where('name LIKE ?', search_param)
+      elsif field == 'Etag'
+        @processed_items = ProcessedItem.where('etag LIKE ?', search_param)
+      elsif params[:qq] == '*'
+        @processed_items = ProcessedItem.all
+      else
+        @processed_items = ProcessedItem.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
+      end
+    else
+      institution_items = ProcessedItem.where(institution: @institution.identifier)
+      if field == 'Name'
+        @processed_items = institution_items.where('name LIKE ?', search_param)
+      elsif field == 'Etag'
+        @processed_items = institution_items.where('etag LIKE ?', search_param)
+      elsif params[:qq] == '*'
+        @processed_items = institution_items
+      else
+        @processed_items = institution_items.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
+      end
+    end
+    filter_items
+    set_filter_values
+    params[:id] = @institution.id
+    @items = @filtered_items.page(params[:page]).per(10)
+  end
+
   # This is an API call for the bucket reader that queues up work for
   # the bag processor. It returns all of the items that have started
   # the ingest process since the specified timestamp.
@@ -197,6 +229,27 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def filter_items
+    @filtered_items = @processed_items
+    @selected = []
+    if params[:status].present?
+      @filtered_items = @filtered_items.where(status: params[:status])
+      @selected.push(params[:status])
+    end
+    if params[:stage].present?
+      @filtered_items = @filtered_items.where(stage: params[:stage])
+      @selected.push(params[:stage])
+    end
+    if params[:actions].present?
+      @filtered_items = @filtered_items.where(action: params[:actions])
+      @selected.push(params[:actions])
+    end
+    if params[:institution].present?
+      @filtered_items = @filtered_items.where(institution: params[:institution])
+      @selected.push(params[:institution])
+    end
+  end
+
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
@@ -209,9 +262,9 @@ class ProcessedItemController < ApplicationController
 
 
   def set_items
-    unless (session[:select_notice].nil? || session[:select_notice] == "")
+    unless (session[:select_notice].nil? || session[:select_notice] == '')
       flash[:notice] = session[:select_notice]
-      session[:select_notice] = ""
+      session[:select_notice] = ''
     end
     @institution = current_user.institution
     if(session[:show_reviewed] == 'true')
@@ -222,27 +275,11 @@ class ProcessedItemController < ApplicationController
     if current_user.admin?
       @processed_items = ProcessedItem.order('date').reverse_order
     end
-    @filtered_items = @processed_items
-    if params[:status].present?
-      @filtered_items = @processed_items.where(status: params[:status])
-      @selected = params[:status]
-    end
-    if params[:stage].present?
-      @filtered_items = @processed_items.where(stage: params[:stage])
-      @selected = params[:stage]
-    end
-    if params[:actions].present?
-      @filtered_items = @processed_items.where(action: params[:actions])
-      @selected = params[:actions]
-    end
-    if params[:institution].present?
-      @filtered_items = @processed_items.where(institution: params[:institution])
-      @selected = params[:institution]
-    end
+    filter_items
+    set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
     session[:purge_datetime] = Time.now.utc if params[:page] == 1 || params[:page].nil?
-    set_filter_values
   end
 
   # Users can hit the show route via /id or /etag/name/bag_date.

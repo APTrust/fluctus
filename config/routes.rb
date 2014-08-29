@@ -28,6 +28,8 @@ Fluctus::Application.routes.draw do
     resources :events, only: [:create]
   end
 
+  get '/itemresults/search', to: 'processed_item#search', as: :processed_item_search
+  post '/itemresults/search', to: 'processed_item#search'
   get 'itemresults/', to: 'processed_item#index', as: :processed_items
   get '/itemresults/get_reviewed', to: 'processed_item#get_reviewed', as: :processed_items_get_reviewed
   get 'itemresults/:id', to: 'processed_item#show', as: :processed_item

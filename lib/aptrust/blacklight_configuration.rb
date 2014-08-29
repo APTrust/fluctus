@@ -12,10 +12,9 @@ module Aptrust
         access_field = solr_name('desc_metadata__access', :facetable)
         bag_name_field = solr_name('desc_metadata__bag_name', :stored_searchable)
         alt_identifier_field = solr_name('desc_metadata__alt_identifier', :stored_searchable)
-        format_field = solr_name('format', :facetable)
+        file_format_field = solr_name('file_format', :facetable)
         event_type_field = solr_name('event_type', :symbol)
         event_outcome_field = solr_name('event_outcome', :symbol)
-
 
         config.default_solr_params = {
           :qf => [title_field, identifier_field, description_field, bag_name_field, alt_identifier_field].join(' '),
@@ -33,7 +32,7 @@ module Aptrust
 
         config.add_facet_field institution_field, sort: 'index', label: "Institution"
         config.add_facet_field access_field, sort: 'index', label: "Access"
-        config.add_facet_field format_field, sort: 'index', label: "Format"
+        config.add_facet_field file_format_field, sort: 'index', label: "Format"
         config.add_facet_field event_type_field, sort: 'index', label: "Event Type"
         config.add_facet_field event_outcome_field, sort: 'index', label: "Event Outcome"
 
@@ -58,8 +57,8 @@ module Aptrust
         config.add_search_field(identifier_field) do |field|
           field.label = "Identifier"
           field.solr_local_parameters = {
-            :qf => identifier_field,
-            :pf => '$original_pid_pf'
+              :qf => identifier_field,
+              :pf => '$original_pid_pf'
           }
         end
 
@@ -69,14 +68,10 @@ module Aptrust
 
         config.add_search_field(title_field) do |field|
           field.label = "Title"
-           # :solr_local_parameters will be sent using Solr LocalParams
-           # syntax, as eg {! qf=$title_qf }. This is neccesary to use
-           # Solr parameter de-referencing like $title_qf.
-           # See: http://wiki.apache.org/solr/LocalParams
-           field.solr_local_parameters = {
+          field.solr_local_parameters = {
              :qf => title_field,
              :pf => '$title_pf'
-           }
+          }
         end
 
         config.add_search_field(bag_name_field) do |field|
