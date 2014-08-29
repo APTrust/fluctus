@@ -382,10 +382,10 @@ describe ProcessedItemController do
     end
 
     describe 'when some objects are in the repository and signed in' do
-      let!(:item1) { FactoryGirl.create(:processed_item, name: '1234567890.tar') }
-      let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar') }
-      let!(:item3) { FactoryGirl.create(:processed_item, etag: '1548cdbe82348bdd32mds') }
-      let!(:item4) { FactoryGirl.create(:processed_item, etag: '23045ldk2383xd320932k') }
+      let!(:item1) { FactoryGirl.create(:processed_item, name: '1234567890.tar', etag: '3') }
+      let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar', etag: '4') }
+      let!(:item3) { FactoryGirl.create(:processed_item, name: '1', etag: '1548cdbe82348bdd32mds') }
+      let!(:item4) { FactoryGirl.create(:processed_item, name: '2', etag: '23045ldk2383xd320932k') }
       before { sign_in user }
       it 'should bring back all objects on an * search' do
         get :search, search_field: 'All Fields', qq: '*'
