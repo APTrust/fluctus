@@ -1,22 +1,27 @@
 class GenericFilePolicy < ApplicationPolicy
 	
-	# authorize through intellectual_object
 	def index?
-		user.admin? ||  (user.institution_pid == record.institution_id)
+		user.admin? ||  (user.institution_pid == record.intellectual_object.institution_id)
 	end
 
-	# authorize through intellectual_object
 	def create?
-		user.admin? || 
-		(user.institutional_admin? && user.institution_pid == record.institution_id)
+		user.admin? 
+	end
+
+	# for adding premis events
+	def add_event?
+		(user.admin? && record) || 
+		(user.institutional_admin? && user.institution_pid == record.intellectual_object.institution_id)
 	end
 
 	def show?
+		puts "what is access #{record.intellectual_object.access}"
 		if user.admin? || record.intellectual_object.access == 'consortia'
 			true
 		elsif record.intellectual_object.access == 'institution'
 			user.institution_pid == record.intellectual_object.institution_id
-		elsif record.access == 'restricted'
+		# if restricted access or no access field in testing environment
+		else
 			user.institutional_admin? && user.institution_pid == record.intellectual_object.institution_id
 		end
 	end
@@ -32,6 +37,11 @@ class GenericFilePolicy < ApplicationPolicy
 	# institutional_admin cannot delete intellectual_object
 	def destroy?
 		false
+	end
+
+	def soft_delete?
+		user.admin? || 
+		(user.institutional_admin? && user.institution_pid == record.intellectual_object.institution_id)
 	end
 
   class Scope

@@ -79,7 +79,7 @@ describe UserPolicy do
         it { should_not permit(:destroy) }  
       end
 
-      describe "herself" do
+      describe "him/herself" do
         subject (:user_policy) { UserPolicy.new(user, user) }
         it { should permit(:show) }
         it { should permit(:update) }

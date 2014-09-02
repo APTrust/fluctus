@@ -34,6 +34,8 @@ describe ProcessedItemPolicy do
 
       describe "not in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
+        it { should_not permit(:create) }
+        it { should_not permit(:new) }
         it { should_not permit(:show) }
         it { should_not permit(:update) }
         it { should_not permit(:edit) }
@@ -60,6 +62,8 @@ describe ProcessedItemPolicy do
 
     	describe "not in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
+        it { should_not permit(:create) }
+        it { should_not permit(:new) }
         it { should_not permit(:show) }
         it { should_not permit(:update) }
         it { should_not permit(:edit) }

@@ -96,7 +96,7 @@ protected
       parent_id = params['generic_file_id'] || params['intellectual_object_id']
       @parent_object = ActiveFedora::Base.find(parent_id)
     end
-    authorize @parent_object, :update?
+    authorize @parent_object, :add_event?
   end
 
   def for_selected_institution(solr_parameters, user_parameters)

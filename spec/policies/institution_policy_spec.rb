@@ -15,6 +15,7 @@ describe InstitutionPolicy do
     subject (:institution_policy) { InstitutionPolicy.new(admin, institution) }
   	
   	it { should permit(:create)      }
+    it { should permit(:create_through_institution) }
     it { should permit(:new)         }
     it { should permit(:show)        }
     it { should permit(:update)      }
@@ -30,6 +31,7 @@ describe InstitutionPolicy do
         subject (:institution_policy) { InstitutionPolicy.new(inst_admin, institution) }
       	it { should permit(:show)        }
         it { should_not permit(:create)  }
+        it { should permit(:create_through_institution) }
         it { should_not permit(:new)     }
         it { should permit(:update)      }
         it { should permit(:edit)        }
@@ -39,7 +41,9 @@ describe InstitutionPolicy do
 
       describe "not in my institution" do
         subject (:institution_policy) { InstitutionPolicy.new(inst_admin, other_institution) }
-    
+        it { should_not permit(:create)  }
+        it { should_not permit(:create_through_institution) }
+        it { should_not permit(:new)     }
         it { should_not permit(:show)    }
         it { should_not permit(:update)      }
         it { should_not permit(:edit)        }
@@ -56,6 +60,7 @@ describe InstitutionPolicy do
 
         it { should permit(:show)        }
         it { should_not permit(:create)  }
+        it { should_not permit(:create_through_institution) }
         it { should_not permit(:new)     }    
         it { should_not permit(:update)  }
         it { should_not permit(:edit)    }
@@ -66,6 +71,9 @@ describe InstitutionPolicy do
       describe "not in my institution" do
         subject (:institution_policy) { InstitutionPolicy.new(inst_user, other_institution) }
     
+        it { should_not permit(:create)  }
+        it { should_not permit(:create_through_institution) }
+        it { should_not permit(:new)     } 
         it { should_not permit(:show)    }
         it { should_not permit(:update)      }
         it { should_not permit(:edit)        }
@@ -80,6 +88,7 @@ describe InstitutionPolicy do
 
     it { should_not permit(:show)    }
     it { should_not permit(:create)  }
+    it { should_not permit(:create_through_institution) }
     it { should_not permit(:new)     }    
     it { should_not permit(:update)  }
     it { should_not permit(:edit)    }

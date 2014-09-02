@@ -1,18 +1,26 @@
 class IntellectualObjectPolicy < ApplicationPolicy
 
-	# authorize through institution
 	def index?
 		user.admin? ||  (user.institution_pid == record.institution_id)
 	end
 	
-	# authorize should through institution
 	def create?
 		user.admin? 
 	end
 
-	# authorize through institution
+	def create_through_intellectual_object?
+		(user.admin? && record) || 
+		(user.institutional_admin? && user.institution_pid == record.institution_id)
+	end
+
 	def new?
 		create?
+	end
+
+	# for adding premis events
+	def add_event?
+		(user.admin? && record) || 
+		(user.institutional_admin? && user.institution_pid == record.institution_id)
 	end
 
 	def show?
@@ -20,7 +28,8 @@ class IntellectualObjectPolicy < ApplicationPolicy
 			true
 		elsif record.access == 'institution'
 			user.institution_pid == record.institution_id
-		elsif record.access == 'restricted'
+		# if restricted access or no access field in testing environment
+		else
 			user.institutional_admin? && user.institution_pid == record.institution_id
 		end
 	end

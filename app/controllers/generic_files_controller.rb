@@ -1,7 +1,7 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
-  before_filter :load_generic_file, only: [:show, :update]
+  before_filter :load_generic_file, only: [:show, :update, :destroy]
   before_filter :load_intellectual_object, only: [:update, :create, :index]
     
   after_filter :verify_authorized, :except => [:create, :index]
@@ -25,11 +25,13 @@ class GenericFilesController < ApplicationController
   end
 
   def create
+    authorize @intellectual_object, :create_through_intellectual_object?
+    @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
     respond_to do |format|
-      if resource.save
+      if @generic_file.save
         format.json { render json: object_as_json, status: :created }
       else
-        format.json { render json: resource.errors, status: :unprocessable_entity }
+        format.json { render json: @generic_file.errors, status: :unprocessable_entity }
       end
     end
  end
@@ -45,7 +47,7 @@ class GenericFilesController < ApplicationController
   end
 
   def destroy
-    authorize @generic_file
+    authorize @generic_file, :soft_delete?
 
     @generic_file.soft_delete
     respond_to do |format|
@@ -94,7 +96,6 @@ class GenericFilesController < ApplicationController
     else
       @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
     end
-    authorize @intellectual_object
   end
 
   # Override Fedora's default JSON serialization for our API

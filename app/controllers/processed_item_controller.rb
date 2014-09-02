@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => :index
+  after_action :verify_authorized, :except => [:index, :get_reviewed, :review_all]
   
   def create
     authorize @processed_item
@@ -17,10 +17,6 @@ class ProcessedItemController < ApplicationController
         format.json { render json: @processed_item.errors, status: :unprocessable_entity }
       end
     end
-  end
-
-  def show
-    authorize @processed_item
   end
 
   def update
@@ -210,5 +206,6 @@ class ProcessedItemController < ApplicationController
     else
       @processed_item = ProcessedItem.find(params[:id])      
     end
+    authorize @processed_item, :show?
   end
 end

@@ -14,9 +14,7 @@ class IntellectualObjectsController < ApplicationController
   def index
     authorize @institution
     @intellectual_objects = @institution.intellectual_objects
-    super do |format|
-      format.html {  }
-    end
+    super
   end
 
   def create

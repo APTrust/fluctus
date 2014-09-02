@@ -9,7 +9,8 @@ class UserPolicy < ApplicationPolicy
 	end
 
 	def index?
-		user.admin? || user.institutional_admin? || user.institutional_user?
+		user.admin? ||
+		(user.institutional_admin? && (user.institution_pid == record.institution_pid))
 	end
 
 	def show?
