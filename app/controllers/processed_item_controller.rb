@@ -57,6 +57,7 @@ class ProcessedItemController < ApplicationController
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
+    page_count
   end
 
   # This is an API call for the bucket reader that queues up work for
@@ -251,6 +252,18 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def page_count
+    @total_number = @items.total_count
+    if params[:page].nil?
+      @second_number = 10
+      @first_number = 1
+    else
+      @second_number = params[:page].to_i * 10
+      @first_number = @second_number.to_i - 9
+    end
+    @second_number = @total_number if @second_number > @total_number
+  end
+
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
@@ -280,6 +293,7 @@ class ProcessedItemController < ApplicationController
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
+    page_count
     session[:purge_datetime] = Time.now.utc if params[:page] == 1 || params[:page].nil?
   end
 
