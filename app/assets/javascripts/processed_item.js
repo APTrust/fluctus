@@ -41,8 +41,8 @@ function callHandleSelected () {
 }
 
 function showReviewed () {
-    show_reviewed = $("#toggleReviewed").prop('checked');
-    $.post('/itemresults/show_reviewed', { show: show_reviewed },
+    show = $("#toggleReviewed").prop('checked');
+    $.post('/itemresults/show_reviewed', { show_reviewed: show },
         function(data){
 
         });

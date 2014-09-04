@@ -146,7 +146,7 @@ class ProcessedItemController < ApplicationController
   end
 
   def show_reviewed
-    session[:show_reviewed] = params[:show]
+    session[:show_reviewed] = params[:show_reviewed]
     respond_to do |format|
       format.js {}
     end
