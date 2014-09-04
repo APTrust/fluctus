@@ -1,26 +1,20 @@
 class IntellectualObjectPolicy < ApplicationPolicy
 
 	def index?
-		user.admin? ||  (user.institution_pid == record.institution_id)
+		user.admin? || record.access == 'consortia' || 
+			user.institution_pid == record.institution_id
 	end
 	
-	def create?
-		user.admin? 
-	end
-
+	# for generic_file object
 	def create_through_intellectual_object?
-		(user.admin? && record) || 
-		(user.institutional_admin? && user.institution_pid == record.institution_id)
-	end
-
-	def new?
-		create?
+		user.admin?  || 
+			(user.institutional_admin? && user.institution_pid == record.institution_id)
 	end
 
 	# for adding premis events
 	def add_event?
-		(user.admin? && record) || 
-		(user.institutional_admin? && user.institution_pid == record.institution_id)
+		user.admin? || 
+			(user.institutional_admin? && user.institution_pid == record.institution_id)
 	end
 
 	def show?

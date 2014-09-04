@@ -9,9 +9,7 @@ describe IntellectualObjectPolicy do
   	let(:user) { FactoryGirl.create(:user, :admin, institution_pid: institution.pid) }
   	let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
 
-  	it { should permit(:create) }
-    it { should permit(:create_through_intellectual_object) }
-    it { should permit(:new) }
+  	it { should permit(:create_through_intellectual_object) }
     it { should permit(:show) }
     it { should permit(:update) }
     it { should permit(:edit) }
@@ -26,9 +24,7 @@ describe IntellectualObjectPolicy do
     describe "when the object is" do
       describe "in my institution" do
         let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: institution) }
-        it { should_not permit(:create) }
         it { should permit(:create_through_intellectual_object) }
-        it { should_not permit(:new) }
         it { should permit(:show) }
         it { should_not permit(:update) }    
         it { should_not permit(:edit) }
@@ -39,9 +35,7 @@ describe IntellectualObjectPolicy do
 
       describe "not in my institution" do
         let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
-        it { should_not permit(:create) }
         it { should_not permit(:create_through_intellectual_object) }
-        it { should_not permit(:new) }
         it { should_not permit(:show) }
         it { should_not permit(:update) }    
         it { should_not permit(:edit) }
@@ -57,9 +51,7 @@ describe IntellectualObjectPolicy do
                                      institution_pid: institution.pid) }
     describe "when the object is" do
       describe "in my institution" do
-        it { should_not permit(:create) }
         it { should_not permit(:create_through_intellectual_object) }
-        it { should permit(:new) }
         it { should_not permit(:update) }    
         it { should_not permit(:edit) }
         it { should_not permit(:add_event) }
@@ -87,9 +79,7 @@ describe IntellectualObjectPolicy do
 	context "for an authenticated user without a user group" do
     let(:user) { FactoryGirl.create(:user) }
     let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
-    it { should_not permit(:create) }
     it { should_not permit(:create_through_intellectual_object) }
-    it { should_not permit(:new) }
     it { should_not permit(:show) }
     it { should_not permit(:update) }    
     it { should_not permit(:edit) }

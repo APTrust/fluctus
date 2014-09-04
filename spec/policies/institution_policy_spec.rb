@@ -22,6 +22,14 @@ describe InstitutionPolicy do
     it { should permit(:edit)        }
     it { should permit(:add_user)    }
     it { should_not permit(:destroy) }
+
+    describe "add user for intellectual object's institution" do
+
+      @intellectual_object = FactoryGirl.create(:intellectual_object)
+      let(:institution) { @intellectual_object.institution}
+      it { should permit(:add_user)}
+    end
+
   end
 
   context "for an institutional admin user" do

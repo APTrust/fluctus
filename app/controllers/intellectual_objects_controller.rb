@@ -27,7 +27,7 @@ class IntellectualObjectsController < ApplicationController
     authorize @intellectual_object
     respond_to do |format|
       format.json { render json: object_as_json }
-      format.html { render "show" }
+      format.html 
     end
   end
 

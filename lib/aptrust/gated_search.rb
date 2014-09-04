@@ -2,6 +2,7 @@ module Aptrust::GatedSearch
   extend ActiveSupport::Concern
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
+  include Pundit
 
   included do
     # These before_filters apply the hydra access controls
@@ -48,6 +49,22 @@ module Aptrust::GatedSearch
     else
       # constrain to active
       solr_parameters[:fq] << "_query_:\"{!raw f=object_state_ssi}A\""
+    end
+  end
+
+  # Override access-controls_enforcement.rb
+  # Action-specific enforcement
+  #
+  
+  # Controller "before" filter for enforcing access controls on show actions
+  # @param [Hash] opts (optional, not currently used)
+  def enforce_show_permissions(opts={})
+    permissions = current_ability.permissions_doc(params[:id])
+    if permissions.under_embargo? && !(authorize ActiveFedora::Base.find(params[:id]), :edit?)
+      raise Hydra::AccessDenied.new("This item is under embargo.  You do not have sufficient access privileges to read this document.", :edit, params[:id])
+    end
+    unless (authorize ActiveFedora::Base.find(params[:id]), :show?) 
+      raise Hydra::AccessDenied.new("You do not have sufficient access privileges to read this document, which has been marked private.", :read, params[:id])
     end
   end
 

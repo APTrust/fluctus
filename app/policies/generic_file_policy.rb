@@ -1,21 +1,17 @@
 class GenericFilePolicy < ApplicationPolicy
 	
 	def index?
-		user.admin? ||  (user.institution_pid == record.intellectual_object.institution_id)
-	end
-
-	def create?
-		user.admin? 
+		user.admin? || record.intellectual_object.access == 'consortia' || 
+		(user.institution_pid == record.intellectual_object.institution_id)
 	end
 
 	# for adding premis events
 	def add_event?
-		(user.admin? && record) || 
+		user.admin? || 
 		(user.institutional_admin? && user.institution_pid == record.intellectual_object.institution_id)
 	end
 
 	def show?
-		puts "what is access #{record.intellectual_object.access}"
 		if user.admin? || record.intellectual_object.access == 'consortia'
 			true
 		elsif record.intellectual_object.access == 'institution'

@@ -167,11 +167,9 @@ describe IntellectualObjectsController do
 
 
     describe 'when signed in' do
-      # TODO by Tingting: Institutional_admin should not update?
-      #let(:user) { FactoryGirl.create(:user, :institutional_admin) }
-      #let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
       let(:user) { FactoryGirl.create(:user, :admin) }
-      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+      let(:obj1) { FactoryGirl.create(:institutional_intellectual_object) }
+            
       before { sign_in user }
 
       it 'should update the search counter' do
