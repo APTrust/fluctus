@@ -9,22 +9,27 @@ describe UserPolicy do
   let(:other_user) { FactoryGirl.create(:user) }
 
   context "for an admin user" do
-    
-    subject (:user_policy) { UserPolicy.new(admin, other_user) }
-    it { should permit(:create) }
-    it { should permit(:new) }
-    it { should permit(:show) }
-    it { should permit(:update) }
-    it { should permit(:edit) }
-    it { should permit(:generate_api_key)}
-    it { should permit(:edit_password) }
-    it { should permit(:update_password) }
-    it { should permit(:destroy) }
+    describe "when the user is any other user" do
+      subject (:user_policy) { UserPolicy.new(admin, other_user) }
+      it { should permit(:create) }
+      it { should permit(:new) }
+      it { should permit(:show) }
+      it { should permit(:update) }
+      it { should permit(:edit) }
+      it { should permit(:generate_api_key)}
+      it { should permit(:edit_password) }
+      it { should permit(:update_password) }
+      it { should permit(:destroy) }
+    end
+    describe "when the user is him/herself" do
+      subject (:user_policy) { UserPolicy.new(admin, admin) }
+      it { should permit(:generate_api_key)}
+    end
   end
 
   context "for an institutional admin user" do
     
-    describe "when the user is" do
+    describe "when the user is any other user " do
       describe "in my institution" do
         subject (:user_policy) { UserPolicy.new(inst_admin, user) }
         it { should permit(:create) }
@@ -49,6 +54,10 @@ describe UserPolicy do
         it { should_not permit(:update_password) }
         it { should_not permit(:destroy) }  
       end
+    end
+    describe "when the user is him/herself" do
+      subject (:user_policy) { UserPolicy.new(inst_admin, inst_admin) }
+      it { should permit(:generate_api_key)}
     end
   end
 

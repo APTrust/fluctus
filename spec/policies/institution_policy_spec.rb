@@ -25,8 +25,8 @@ describe InstitutionPolicy do
 
     describe "add user for intellectual object's institution" do
 
-      @intellectual_object = FactoryGirl.create(:intellectual_object)
-      let(:institution) { @intellectual_object.institution}
+      let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
+      let(:institution) { intellectual_object.institution}
       it { should permit(:add_user)}
     end
 

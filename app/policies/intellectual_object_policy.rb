@@ -1,8 +1,14 @@
 class IntellectualObjectPolicy < ApplicationPolicy
 
 	def index?
-		user.admin? || record.access == 'consortia' || 
+		if user.admin? 
+			true
+		elsif record.access == 'consortia' 
+			user.institutional_admin? || user.institutional_user?
+		# if restricted or institutional access
+		else
 			user.institution_pid == record.institution_id
+		end
 	end
 	
 	# for generic_file object
@@ -18,11 +24,13 @@ class IntellectualObjectPolicy < ApplicationPolicy
 	end
 
 	def show?
-		if user.admin? || record.access == 'consortia'
+		if user.admin? 
 			true
+		elsif record.access == 'consortia'
+			user.institutional_admin? || user.institutional_user?
 		elsif record.access == 'institution'
 			user.institution_pid == record.institution_id
-		# if restricted access or no access field in testing environment
+		# if restricted access
 		else
 			user.institutional_admin? && user.institution_pid == record.institution_id
 		end

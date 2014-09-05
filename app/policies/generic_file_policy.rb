@@ -1,8 +1,14 @@
 class GenericFilePolicy < ApplicationPolicy
 	
 	def index?
-		user.admin? || record.intellectual_object.access == 'consortia' || 
-		(user.institution_pid == record.intellectual_object.institution_id)
+		if user.admin? 
+			true
+		elsif record.intellectual_object.access == 'consortia' 
+			user.institutional_admin? || user.institutional_user?
+		# if restricted or institutional access
+		else
+			user.institution_pid == record.intellectual_object.institution_id
+		end
 	end
 
 	# for adding premis events
@@ -12,11 +18,13 @@ class GenericFilePolicy < ApplicationPolicy
 	end
 
 	def show?
-		if user.admin? || record.intellectual_object.access == 'consortia'
+		if user.admin? 
 			true
+		elsif record.intellectual_object.access == 'consortia'
+			user.institutional_admin? || user.institutional_user?
 		elsif record.intellectual_object.access == 'institution'
 			user.institution_pid == record.intellectual_object.institution_id
-		# if restricted access or no access field in testing environment
+		# if restricted access
 		else
 			user.institutional_admin? && user.institution_pid == record.intellectual_object.institution_id
 		end
@@ -30,7 +38,6 @@ class GenericFilePolicy < ApplicationPolicy
 		update?
 	end	
 
-	# institutional_admin cannot delete intellectual_object
 	def destroy?
 		false
 	end

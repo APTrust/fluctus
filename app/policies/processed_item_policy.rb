@@ -31,7 +31,7 @@ class ProcessedItemPolicy < ApplicationPolicy
 	end
 
 	def destroy?
-		user.admin?
+		false
 	end
 
 	class Scope

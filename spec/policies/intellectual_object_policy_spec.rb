@@ -48,28 +48,50 @@ describe IntellectualObjectPolicy do
 
   context "for an institutional user" do
   	let(:user) { FactoryGirl.create(:user, :institutional_user, 
-                                     institution_pid: institution.pid) }
+                                    institution_pid: institution.pid) }                                
     describe "when the object is" do
       describe "in my institution" do
-        it { should_not permit(:create_through_intellectual_object) }
-        it { should_not permit(:update) }    
-        it { should_not permit(:edit) }
-        it { should_not permit(:add_event) }
-        it { should_not permit(:soft_delete) }
-        it { should_not permit(:destroy) }
         describe "and is consortial accessible" do
           let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object,
                                          institution: institution) }
+          it { should_not permit(:create_through_intellectual_object) }
+          it { should_not permit(:update) }    
+          it { should_not permit(:edit) }
+          it { should_not permit(:add_event) }
+          it { should_not permit(:soft_delete) }
+          it { should_not permit(:destroy) }
           it { should permit(:show) }
         end
-        describe "and is institutional accessible" do
-          let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object,
+          describe "and is institutional accessible" do
+            let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object,
                                          institution: institution) }
+            it { should permit(:show) }
+          end
+          describe "and is restricted accessible" do
+            let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object,
+                                           institution: institution) }
+            it { should_not permit(:show) }
+          end
+      end
+
+      describe "not in my institution" do
+        describe "and it belongs to a consortial accessible object" do
+          let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object) }
+          it { should_not permit(:create_through_intellectual_object) }
+          it { should_not permit(:update) }    
+          it { should_not permit(:edit) }
+          it { should_not permit(:add_event) }
+          it { should_not permit(:soft_delete) }
+          it { should_not permit(:destroy) }
+
           it { should permit(:show) }
         end
-        describe "and is restricted accessible" do
-          let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object,
-                                         institution: institution) }
+        describe "and it belongs to an institutional accessible object" do
+          let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object) }
+          it { should_not permit(:show) }
+        end
+        describe "and is it belongs to a restricted accessible object" do
+          let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object) }          
           it { should_not permit(:show) }
         end
       end
