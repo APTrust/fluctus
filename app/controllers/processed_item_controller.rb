@@ -233,27 +233,27 @@ class ProcessedItemController < ApplicationController
 
   def filter_items
     @filtered_items = @processed_items
-    @selected = []
+    @selected = {}
     if params[:status].present?
       @filtered_items = @filtered_items.where(status: params[:status])
-      @selected.push(params[:status])
+      @selected[:status] = params[:status]
     end
     if params[:stage].present?
       @filtered_items = @filtered_items.where(stage: params[:stage])
-      @selected.push(params[:stage])
+      @selected[:stage] = params[:stage]
     end
     if params[:actions].present?
       @filtered_items = @filtered_items.where(action: params[:actions])
-      @selected.push(params[:actions])
+      @selected[:actions] = params[:actions]
     end
     if params[:institution].present?
       @filtered_items = @filtered_items.where(institution: params[:institution])
-      @selected.push(params[:institution])
+      @selected[:institution] = params[:institution]
     end
   end
 
   def page_count
-    @total_number = @items.total_count
+    @total_number = @filtered_items.count
     if params[:page].nil?
       @second_number = 10
       @first_number = 1

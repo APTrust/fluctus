@@ -15,11 +15,8 @@
                   <span class="facet-label"><a href="<%= current_path('status', status) %>" ><%= status %></a></span>
                 </li>
             <% end %>
-            <% @statuses.each do |status| %>
-                <% if @selected.include?(status) %>
-                    <% puts "Selected: #{@selected}" %>
-                    <script>selected("status", "<%= status %>", "<%=url_for(params.except :status)%>")</script>
-                <% end %>
+            <% unless @selected[:status].nil? %>
+                <script>selected("status", "<%= @selected[:status] %>", "<%=url_for(params.except :status)%>")</script>
             <% end %>
           </ul>
         </div>
@@ -38,10 +35,8 @@
                   <span class="facet-label"><a href="<%= current_path('stage', stage) %>" ><%= stage %></a></span>
                 </li>
             <% end %>
-            <% @stages.each do |stage| %>
-                <% if @selected.include?(stage) %>
-                    <script>selected("stage", "<%= stage %>", "<%=url_for(params.except :stage)%>")</script>
-                <% end %>
+            <% unless @selected[:stage].nil? %>
+                <script>selected("stage", "<%= @selected[:stage] %>", "<%=url_for(params.except :stage)%>")</script>
             <% end %>
           </ul>
         </div>
@@ -60,10 +55,8 @@
                   <span class="facet-label"><a href="<%= current_path('actions', action) %>" ><%= action %></a></span>
                 </li>
             <% end %>
-            <% @actions.each do |action| %>
-                <% if @selected.include?(action) %>
-                    <script>selected("action", "<%= action %>", "<%=url_for(params.except :actions)%>")</script>
-                <% end %>
+            <% unless @selected[:actions].nil? %>
+                <script>selected("action", "<%= @selected[:actions] %>", "<%=url_for(params.except :actions)%>")</script>
             <% end %>
           </ul>
         </div>
@@ -83,10 +76,8 @@
                       <span class="facet-label"><a href="<%= current_path('institution', inst) %>" ><%= inst %></a></span>
                     </li>
                 <% end %>
-                <% @institutions.each do |inst| %>
-                    <% if @selected.include?(inst) %>
-                        <script>selected("institution", "<%= inst %>", "<%=url_for(params.except :institution)%>")</script>
-                    <% end %>
+                <% unless @selected[:institution].nil? %>
+                    <script>selected("institution", "<%= @selected[:institution] %>", "<%=url_for(params.except :institution)%>")</script>
                 <% end %>
               </ul>
             </div>
