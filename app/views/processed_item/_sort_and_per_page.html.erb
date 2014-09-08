@@ -5,4 +5,19 @@
     </span>
   </div>
   <%= render 'review_items' %>
+  <div class="search-widgets pull-right">
+    <div id="sort-dropdown" class="btn-group open">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <a href="#">Sort by </a>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="<%= current_path('sort', 'date') %>">Processed Date</a></li>
+        <li><a href="<%= current_path('sort', 'name') %>">Name</a></li>
+        <% if current_user.admin? %>
+          <li><a href="<%= current_path('sort', 'institution') %>">Institution</a></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
 </div>

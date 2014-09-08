@@ -54,6 +54,7 @@ class ProcessedItemController < ApplicationController
       end
     end
     filter_items
+    sort_items
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
@@ -252,6 +253,10 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def sort_items
+    @filtered_items = @filtered_items.order(params[:sort]).reverse_order
+  end
+
   def page_count
     @total_number = @filtered_items.count
     if params[:page].nil?
@@ -290,6 +295,7 @@ class ProcessedItemController < ApplicationController
       @processed_items = ProcessedItem.order('date').reverse_order
     end
     filter_items
+    sort_items
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
