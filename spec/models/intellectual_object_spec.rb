@@ -68,10 +68,10 @@ describe IntellectualObject do
       before do
         subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject)
         subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject)
-      end      
+      end
       let(:solr_doc) { subject.to_solr }
       it "should have fields" do
-        solr_doc['institution_name_ssi'].should == subject.institution.name 
+        solr_doc['institution_name_ssi'].should == subject.institution.name
         solr_doc['is_part_of_ssim'].should == subject.institution.internal_uri
         # Searchable
         solr_doc['desc_metadata__title_tesim'].should == [subject.title]
@@ -114,6 +114,16 @@ describe IntellectualObject do
       end
 
       describe "soft_delete" do
+        before {
+          @processed_item = FactoryGirl.create(:processed_item,
+                                               object_identifier: subject.identifier,
+                                               action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                               stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                                               status: Fluctus::Application::FLUCTUS_STATUSES['success'])
+        }
+        after {
+          @processed_item.delete
+        }
         let(:intellectual_object_delete_job) { double('intellectual object') }
         let(:generic_file_delete_job) { double('file') }
 
@@ -129,6 +139,20 @@ describe IntellectualObject do
           subject.generic_files.all?{ |file| expect(file.state).to eq 'D' }
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
         end
+
+        it "should set the state to deleted and index the object state" do
+          subject.soft_delete({type: 'delete', outcome_detail: "user@example.com"})
+          subject.generic_files.all?{ |file|
+            pi = ProcessedItem.where(generic_file_identifier: file.identifier).first
+            expect(pi).not_to be_nil
+            expect(pi.object_identifier).to eq subject.identifier
+            expect(pi.action).to eq Fluctus::Application::FLUCTUS_ACTIONS['delete']
+            expect(pi.stage).to eq Fluctus::Application::FLUCTUS_STAGES['requested']
+            expect(pi.status).to eq Fluctus::Application::FLUCTUS_STATUSES['pend']
+            expect(pi.user).to eq "user@example.com"
+          }
+        end
+
       end
     end
 

@@ -194,6 +194,10 @@ describe GenericFilesController do
     }
     let(:file) { @file }
 
+    after(:all) {
+      @parent_processed_item.delete
+    }
+
     describe "when not signed in" do
       it "should redirect to login" do
         delete :destroy, id: file
@@ -227,6 +231,17 @@ describe GenericFilesController do
           expect(assigns[:generic_file].state).to eq 'D'
           expect(flash[:notice]).to eq "Delete job has been queued for file: #{file.uri}"
         end
+
+        it "should create a ProcessedItem with the delete request" do
+          delete :destroy, id: file, format: 'json'
+          pi = ProcessedItem.where(generic_file_identifier: @file.identifier).first
+          expect(pi).not_to be_nil
+          expect(pi.object_identifier).to eq @intellectual_object.identifier
+          expect(pi.action).to eq Fluctus::Application::FLUCTUS_ACTIONS['delete']
+          expect(pi.stage).to eq Fluctus::Application::FLUCTUS_STAGES['requested']
+          expect(pi.status).to eq Fluctus::Application::FLUCTUS_STATUSES['pend']
+        end
+
       end
     end
   end

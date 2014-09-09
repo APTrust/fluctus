@@ -130,6 +130,8 @@ class GenericFile < ActiveFedora::Base
   end
 
   # Adds a delete request to ProcessedItems table.
+  # This will eventually be pulled into NSQ and fulfilled
+  # by one of the Go processes.
   def add_processed_item_delete_request(user_email)
     obj_identifier = self.intellectual_object.identifier
     ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']

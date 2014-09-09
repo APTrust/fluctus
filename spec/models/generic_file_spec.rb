@@ -96,12 +96,18 @@ describe GenericFile do
       end
 
       describe "soft_delete" do
+        before do
+          subject.save!
+          @parent_processed_item = FactoryGirl.create(:processed_item,
+                                                     object_identifier: subject.intellectual_object.identifier,
+                                                     action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                                     stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                                                     status: Fluctus::Application::FLUCTUS_STATUSES['success'])
+        end
         after do
           subject.destroy
           intellectual_object.destroy
-        end
-        before do
-          subject.save!
+          @parent_processed_item.delete
         end
 
         let(:async_job) { double('one') }
@@ -115,6 +121,18 @@ describe GenericFile do
           expect(subject.state).to eq 'D'
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
         end
+
+        it "should create a ProcessedItem showing delete was requested" do
+          subject.soft_delete({type: 'delete', outcome_detail: "user@example.com"})
+          pi = ProcessedItem.where(generic_file_identifier: subject.identifier).first
+          expect(pi).not_to be_nil
+          expect(pi.object_identifier).to eq subject.intellectual_object.identifier
+          expect(pi.action).to eq Fluctus::Application::FLUCTUS_ACTIONS['delete']
+          expect(pi.stage).to eq Fluctus::Application::FLUCTUS_STAGES['requested']
+          expect(pi.status).to eq Fluctus::Application::FLUCTUS_STATUSES['pend']
+          expect(pi.user).to eq "user@example.com"
+        end
+
       end
     end
   end
