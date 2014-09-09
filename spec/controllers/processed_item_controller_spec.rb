@@ -170,6 +170,23 @@ describe ProcessedItemController do
   end
 
 
+  describe "POST #delete_test_items" do
+    before do
+      sign_in admin_user
+      5.times do
+        FactoryGirl.create(:processed_item, institution: "test.edu")
+      end
+    end
+    after do
+      ProcessedItem.where(institution: "test.edu").delete_all
+    end
+
+    it "should return only items with the specified object_identifier" do
+      post :delete_test_items, format: :json
+      expect(ProcessedItem.where(institution: "test.edu").count).to eq 0
+    end
+  end
+
 
   describe "POST #set_restoration_status" do
     describe "for admin user" do

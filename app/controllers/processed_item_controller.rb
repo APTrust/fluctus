@@ -112,6 +112,22 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  # post '/api/v1/itemresults/delete_test_items'
+  #
+  # Integration tests from the Go code add some ProcessedItem records
+  # that we'll want to delete. All have the institution test.edu.
+  # The Go integration tests will call this method to clean up after
+  # themselves. This method is forbidden in production.
+  def delete_test_items
+    respond_to do |format|
+      if Rails.env.production?
+        format.json { render json: {"error" => "This call is forbidden in production!"}, status: :forbidden }
+      end
+      ProcessedItem.where(institution: 'test.edu').delete_all
+      format.json { render nothing: true, status: :ok }
+    end
+  end
+
   # post '/api/v1/itemresults/restoration_status/:object_identifier'
   #
   # This is an API call for the bag restoration service.
