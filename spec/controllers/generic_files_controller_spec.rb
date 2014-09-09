@@ -184,7 +184,14 @@ describe GenericFilesController do
   end
 
   describe "DELETE #destroy" do
-    before(:all) { @file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id) }
+    before(:all) {
+      @file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id)
+      @parent_processed_item = FactoryGirl.create(:processed_item,
+                                                  object_identifier: @intellectual_object.identifier,
+                                                  action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                                  stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                                                  status: Fluctus::Application::FLUCTUS_STATUSES['success'])
+    }
     let(:file) { @file }
 
     describe "when not signed in" do
