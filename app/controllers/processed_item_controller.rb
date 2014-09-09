@@ -31,6 +31,7 @@ class ProcessedItemController < ApplicationController
     search_param = "%#{params[:qq]}%"
     field = params[:search_field]
     @institution = current_user.institution
+    params[:sort] = 'date' if params[:sort].nil?
     if current_user.admin?
       if field == 'Name'
         @processed_items = ProcessedItem.where('name LIKE ?', search_param)
@@ -53,8 +54,9 @@ class ProcessedItemController < ApplicationController
         @processed_items = institution_items.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
       end
     end
+    @processed_items = @processed_items.order(params[:sort])
+    @processed_items = @processed_items.reverse_order if params[:sort] == 'date'
     filter_items
-    sort_items
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
@@ -253,10 +255,6 @@ class ProcessedItemController < ApplicationController
     end
   end
 
-  def sort_items
-    @filtered_items = @filtered_items.order(params[:sort]).reverse_order
-  end
-
   def page_count
     @total_number = @filtered_items.count
     if params[:page].nil?
@@ -286,16 +284,15 @@ class ProcessedItemController < ApplicationController
       session[:select_notice] = ''
     end
     @institution = current_user.institution
+    params[:sort] = 'date' if params[:sort].nil?
     if(session[:show_reviewed] == 'true')
-      @processed_items = ProcessedItem.where(institution: @institution.identifier).order('date').reverse_order
+      @processed_items = ProcessedItem.where(institution: @institution.identifier).order(params[:sort])
     else
-      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order('date').reverse_order
+      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order(params[:sort])
     end
-    if current_user.admin?
-      @processed_items = ProcessedItem.order('date').reverse_order
-    end
+    @processed_items = ProcessedItem.order(params[:sort]) if current_user.admin?
+    @processed_items = @processed_items.reverse_order if params[:sort] == 'date'
     filter_items
-    sort_items
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)

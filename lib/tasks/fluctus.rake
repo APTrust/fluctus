@@ -170,7 +170,7 @@ namespace :fluctus do
       procItems = 15
       procItems.times.each do |count|
         puts "== Creating processed item #{count+1} of #{procItems} for #{institution.name}."
-        FactoryGirl.create(:processed_item, institution: institution.identifier)
+        FactoryGirl.create(:processed_item, institution: institution.identifier, date: Time.at(rand * Time.now.to_i))
       end
     end
   end
