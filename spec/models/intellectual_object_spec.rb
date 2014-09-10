@@ -128,10 +128,6 @@ describe IntellectualObject do
         let(:generic_file_delete_job) { double('file') }
 
         it "should set the state to deleted and index the object state" do
-          DeleteIntellectualObjectJob.should_receive(:new).with(subject.pid).and_return(intellectual_object_delete_job)
-          DeleteGenericFileJob.should_receive(:new).and_return(generic_file_delete_job)
-          OrderUp.should_receive(:push).with(intellectual_object_delete_job).once
-          OrderUp.should_receive(:push).with(generic_file_delete_job).once
           expect {
             subject.soft_delete({type: 'delete', outcome_detail: "joe@example.com"})
           }.to change { subject.premisEvents.events.count}.by(1)

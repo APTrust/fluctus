@@ -46,7 +46,6 @@ class GenericFile < ActiveFedora::Base
     self.state = 'D'
     self.add_event(attributes)
     save!
-    OrderUp.push(DeleteGenericFileJob.new(id))
   end
 
   # This is for serializing JSON in the API.

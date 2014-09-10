@@ -44,7 +44,6 @@ class IntellectualObject < ActiveFedora::Base
       gf.soft_delete(attributes)
     end
     save!
-    OrderUp.push(DeleteIntellectualObjectJob.new(id))
   end
 
   private
