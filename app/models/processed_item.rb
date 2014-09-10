@@ -34,7 +34,7 @@ class ProcessedItem < ActiveRecord::Base
   # Creates a ProcessedItem record showing that someone has requested
   # restoration of an IntellectualObject. This will eventually go into
   # a queue for the restoration worker process.
-  def self.create_restore_request(intellectual_object_identifier)
+  def self.create_restore_request(intellectual_object_identifier, requested_by)
     item = ProcessedItem.last_ingested_version(intellectual_object_identifier)
     if item.nil?
       raise ActiveRecord::RecordNotFound
@@ -43,10 +43,37 @@ class ProcessedItem < ActiveRecord::Base
     restore_item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
     restore_item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
     restore_item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    restore_item.note = "Restore requested"
+    restore_item.outcome = "Not started"
+    restore_item.user = requested_by
     restore_item.retry = true
+    restore_item.reviewed = false
     restore_item.save!
     restore_item
   end
+
+  # Creates a ProcessedItem record showing that someone has requested
+  # deletion of a GenericFile. This will eventually go into a queue for
+  # the delete worker process.
+  def self.create_delete_request(intellectual_object_identifier, generic_file_identifier, requested_by)
+    item = ProcessedItem.last_ingested_version(intellectual_object_identifier)
+    if item.nil?
+      raise ActiveRecord::RecordNotFound
+    end
+    delete_item = item.dup
+    delete_item.action = Fluctus::Application::FLUCTUS_ACTIONS['delete']
+    delete_item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
+    delete_item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    delete_item.note = "Delete requested"
+    delete_item.outcome = "Not started"
+    delete_item.user = requested_by
+    delete_item.retry = true
+    delete_item.reviewed = false
+    delete_item.generic_file_identifier = generic_file_identifier
+    delete_item.save!
+    delete_item
+  end
+
 
   def status_is_allowed
     if !Fluctus::Application::FLUCTUS_STATUSES.values.include?(self.status)

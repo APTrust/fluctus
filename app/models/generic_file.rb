@@ -43,7 +43,9 @@ class GenericFile < ActiveFedora::Base
     self.add_event(attributes)
     save!
     user_email = attributes[:outcome_detail]
-    add_processed_item_delete_request(user_email)
+    ProcessedItem.create_delete_request(self.intellectual_object.identifier,
+                                        self.identifier,
+                                        user_email)
     OrderUp.push(DeleteGenericFileJob.new(id))
   end
 
@@ -127,38 +129,6 @@ class GenericFile < ActiveFedora::Base
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end
-  end
-
-  # Adds a delete request to ProcessedItems table.
-  # This will eventually be pulled into NSQ and fulfilled
-  # by one of the Go processes.
-  def add_processed_item_delete_request(user_email)
-    obj_identifier = self.intellectual_object.identifier
-    ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
-    delete = Fluctus::Application::FLUCTUS_ACTIONS['delete']
-    requested = Fluctus::Application::FLUCTUS_STAGES['requested']
-    pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
-    # get record for last ingested version of this bag
-    parent_processed_item = ProcessedItem.where(object_identifier: obj_identifier,
-                                               action: ingest).order(date: :desc).first
-    # create ProcessedItem with the delete request
-    pi = ProcessedItem.new(object_identifier: obj_identifier,
-                           name: parent_processed_item.name,
-                           bag_date: parent_processed_item.bag_date,
-                           etag: parent_processed_item.etag,
-                           bucket: parent_processed_item.bucket,
-                           user: user_email,
-                           institution: parent_processed_item.institution,
-                           date: parent_processed_item.date,
-                           note: "Delete requested",
-                           action: delete,
-                           stage: requested,
-                           status: pending,
-                           outcome: "Not started",
-                           retry: true,
-                           reviewed: false,
-                           generic_file_identifier: self.identifier)
-    pi.save
   end
 
 end

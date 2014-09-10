@@ -185,11 +185,31 @@ describe ProcessedItem do
     end
 
     it 'should create a restoration request when asked' do
-      pi = ProcessedItem.create_restore_request("abc/123")
+      pi = ProcessedItem.create_restore_request("abc/123", "mikey@example.com")
       pi.action.should == Fluctus::Application::FLUCTUS_ACTIONS['restore']
       pi.stage.should == Fluctus::Application::FLUCTUS_STAGES['requested']
       pi.status.should == Fluctus::Application::FLUCTUS_STATUSES['pend']
+      pi.note.should == "Restore requested"
+      pi.outcome.should == "Not started"
+      pi.user.should == "mikey@example.com"
+      pi.retry.should == true
+      pi.reviewed.should == false
       pi.id.should_not be_nil
     end
+
+    it 'should create a delete request when asked' do
+      pi = ProcessedItem.create_delete_request("abc/123", "abc/123/doc.pdf", "mikey@example.com")
+      pi.action.should == Fluctus::Application::FLUCTUS_ACTIONS['delete']
+      pi.stage.should == Fluctus::Application::FLUCTUS_STAGES['requested']
+      pi.status.should == Fluctus::Application::FLUCTUS_STATUSES['pend']
+      pi.note.should == "Delete requested"
+      pi.outcome.should == "Not started"
+      pi.user.should == "mikey@example.com"
+      pi.retry.should == true
+      pi.reviewed.should == false
+      pi.generic_file_identifier.should == "abc/123/doc.pdf"
+      pi.id.should_not be_nil
+    end
+
   end
 end

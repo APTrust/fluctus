@@ -51,7 +51,7 @@ class IntellectualObjectsController < ApplicationController
 
   # get 'objects/:id/restore'
   def restore
-    ProcessedItem.create_restore_request(@intellectual_object.identifier)
+    ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
     redirect_to :back
     flash[:notice] = 'Your item has been queued for restoration.'
   end

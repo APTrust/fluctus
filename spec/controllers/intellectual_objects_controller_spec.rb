@@ -507,14 +507,14 @@ describe IntellectualObjectsController do
         ProcessedItem.delete_all
       end
 
-      it 'should mark all but one processed items for restore' do
+      it 'should mark only the latest processed item for restore' do
         get :restore, id: obj1
         expect(response).to redirect_to 'OzzyOsbourne'
         count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                     stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
                                     status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
                                     retry: true).count
-        expect(count).to eq(4)
+        expect(count).to eq(1)
       end
 
     end
