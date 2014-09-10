@@ -139,6 +139,7 @@ describe ProcessedItemController do
         ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                  stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
                                  status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 institution: institutional_admin.institution.identifier,
                                  retry: true)
 
       end

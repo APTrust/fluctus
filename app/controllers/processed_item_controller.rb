@@ -105,7 +105,7 @@ class ProcessedItemController < ApplicationController
       @items = @items.where(object_identifier: request[:object_identifier])
     else
       # If user is not looking for a single bag, return all requested/pending items.
-      @items = ProcessedItem.where(stage: requested, status: pending, retry: true)
+      @items = @items.where(stage: requested, status: pending, retry: true)
     end
     respond_to do |format|
       format.json { render json: @items, status: :ok }
