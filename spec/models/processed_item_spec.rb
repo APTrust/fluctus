@@ -165,5 +165,19 @@ describe ProcessedItem do
     subject.object_identifier.should == "hardknocks.edu/sesame.street"
   end
 
+  it 'should return the last ingested version when asked' do
+    ingest_date = Time.parse("2014-06-01")
+    3.times do
+      ingest_date = ingest_date + 1.days
+      FactoryGirl.create(:processed_item, object_identifier: "abc/123",
+                         action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                         stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                         status: Fluctus::Application::FLUCTUS_STATUSES['success'],
+                         date: ingest_date)
+    end
+    pi = ProcessedItem.last_ingested_version("abc/123")
+    pi.object_identifier.should == "abc/123"
+    pi.date.should == ingest_date
+  end
 
 end

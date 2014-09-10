@@ -13,6 +13,24 @@ class ProcessedItem < ActiveRecord::Base
     "#{etag}/#{name}"
   end
 
+  # Returns the ProcessedItem record for the last successfully ingested
+  # version of an intellectual object. The last ingested version has
+  # these characteristicts:
+  #
+  # * Action is Ingest
+  # * Stage is Clean or (Stage is Record and Status is Success)
+  # * Has the latest date of any record with the above characteristics
+  def self.last_ingested_version(intellectual_object_identifier)
+    items = ProcessedItem.where("object_identifier = ? and action = ? " +
+                                "and (stage = ? or (stage = ? and status = ?))",
+                                intellectual_object_identifier,
+                                Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                Fluctus::Application::FLUCTUS_STAGES['clean'],
+                                Fluctus::Application::FLUCTUS_STAGES['record'],
+                                Fluctus::Application::FLUCTUS_STATUSES['success'])
+    items.order('date DESC').limit(1).first
+  end
+
   def status_is_allowed
     if !Fluctus::Application::FLUCTUS_STATUSES.values.include?(self.status)
       errors.add(:status, 'Status is not one of the allowed options')

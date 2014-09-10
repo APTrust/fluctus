@@ -190,7 +190,10 @@ class IntellectualObjectsController < ApplicationController
   # can be uploaded multiple times, we want to flag only the
   # latest bag for restore.
   def flag_items_for_restore
-    items = ProcessedItem.where(object_identifier: @intellectual_object.identifier)
+    items = ProcessedItem.where(object_identifier: @intellectual_object.identifier,
+                                action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                                status: Fluctus::Application::FLUCTUS_STATUSES['success'])
     items.order('date').reverse_order
     already_flagged = {}
     items.each do |item|
