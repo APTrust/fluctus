@@ -110,7 +110,7 @@ describe ProcessedItemController do
   end
 
 
-  describe "GET #restore" do
+  describe "GET #items_for_restore" do
     describe "for admin user" do
       before do
         sign_in admin_user
@@ -121,13 +121,19 @@ describe ProcessedItemController do
       end
 
       it "responds successfully with an HTTP 200 status code" do
-        get :restore, format: :json
+        get :items_for_restore, format: :json
         expect(response).to be_success
       end
 
       it "assigns the correct @items" do
-        get :restore, format: :json
+        get :items_for_restore, format: :json
         assigns(:items).should have(ProcessedItem.count).items
+      end
+
+      it "does not include items where retry == false" do
+        ProcessedItem.update_all(retry: false)
+        get :items_for_restore, format: :json
+        assigns(:items).should have(0).items
       end
 
     end
@@ -145,7 +151,7 @@ describe ProcessedItemController do
       end
 
       it "assigns the requested items as @items" do
-        get :restore, format: :json
+        get :items_for_restore, format: :json
         assigns(:items).should include(user_item)
         assigns(:items).should have(ProcessedItem.count).items
       end
@@ -164,11 +170,84 @@ describe ProcessedItemController do
       end
 
       it "should return only items with the specified object_identifier" do
-        get :restore, object_identifier: "mickey/mouse", format: :json
+        get :items_for_restore, object_identifier: "mickey/mouse", format: :json
         assigns(:items).should have(2).items
       end
     end
   end
+
+
+  describe "GET #items_for_delete" do
+    describe "for admin user" do
+      before do
+        sign_in admin_user
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['delete'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: true)
+      end
+
+      it "responds successfully with an HTTP 200 status code" do
+        get :items_for_delete, format: :json
+        expect(response).to be_success
+      end
+
+      it "assigns the correct @items" do
+        get :items_for_delete, format: :json
+        assigns(:items).should have(ProcessedItem.count).items
+      end
+
+      it "does not include items where retry == false" do
+        ProcessedItem.update_all(retry: false)
+        get :items_for_delete, format: :json
+        assigns(:items).should have(0).items
+      end
+
+    end
+
+    describe "for institutional admin" do
+      before do
+        sign_in institutional_admin
+        2.times { FactoryGirl.create(:processed_item) }
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['delete'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 institution: institutional_admin.institution.identifier,
+                                 retry: true)
+      end
+
+      it "assigns the requested items as @items" do
+        get :items_for_delete, format: :json
+        assigns(:items).should include(user_item)
+        assigns(:items).should have(ProcessedItem.count).items
+      end
+    end
+
+    describe "with object_identifier param" do
+      before do
+        3.times do
+          FactoryGirl.create(:processed_item,
+                             action: Fluctus::Application::FLUCTUS_ACTIONS['delete'],
+                             stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                             status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                             institution: institutional_admin.institution.identifier,
+                             object_identifier: "mickey/mouse",
+                             generic_file_identifier: "mickey/mouse/club",
+                             retry: true)
+        end
+        pi = ProcessedItem.last
+        pi.generic_file_identifier = "something/else"
+        pi.save
+        sign_in institutional_admin
+      end
+
+      it "should return only items with the specified object_identifier" do
+        get :items_for_delete, generic_file_identifier: "mickey/mouse/club", format: :json
+        assigns(:items).should have(2).items
+      end
+    end
+  end
+
 
 
   describe "POST #delete_test_items" do

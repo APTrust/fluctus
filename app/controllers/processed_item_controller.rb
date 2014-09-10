@@ -84,14 +84,15 @@ class ProcessedItemController < ApplicationController
     end
   end
 
-  # get '/api/v1/itemresults/restore'
+  # get '/api/v1/itemresults/items_for_restore'
   # Returns a list of items the users have requested
-  # to be queued for restoration. If param object_identifier is supplied,
+  # to be queued for restoration. These will always be
+  # IntellectualObjects. If param object_identifier is supplied,
   # it returns all restoration requests for the object. Otherwise,
   # it returns pending requests for all objects where retry is true.
   # (This is because retry gets set to false when the restorer encounters
   # some fatal error. There is no sense in reprocessing those requests.)
-  def restore
+  def items_for_restore
     restore = Fluctus::Application::FLUCTUS_ACTIONS['restore']
     requested = Fluctus::Application::FLUCTUS_STAGES['requested']
     pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
@@ -111,6 +112,36 @@ class ProcessedItemController < ApplicationController
       format.json { render json: @items, status: :ok }
     end
   end
+
+
+  # get '/api/v1/itemresults/items_for_delete'
+  # Returns a list of items the users have requested
+  # to be queued for deletion. These items will always represent
+  # GenericFiles. If param generic_file_identifier is supplied,
+  # it returns all deletion requests for the generic file. Otherwise,
+  # it returns pending requests for all items where retry is true.
+  # (This is because retry gets set to false when the restorer encounters
+  # some fatal error. There is no sense in reprocessing those requests.)
+  def items_for_delete
+    delete = Fluctus::Application::FLUCTUS_ACTIONS['delete']
+    requested = Fluctus::Application::FLUCTUS_STAGES['requested']
+    pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    @items = ProcessedItem.where(action: delete)
+    if(current_user.admin? == false)
+      @items = @items.where(institution: current_user.institution.identifier)
+    end
+    # Return a record for a single file?
+    if !request[:generic_file_identifier].blank?
+      @items = @items.where(generic_file_identifier: request[:generic_file_identifier])
+    else
+      # If user is not looking for a single bag, return all requested/pending items.
+      @items = @items.where(stage: requested, status: pending, retry: true)
+    end
+    respond_to do |format|
+      format.json { render json: @items, status: :ok }
+    end
+  end
+
 
   # post '/api/v1/itemresults/delete_test_items'
   #

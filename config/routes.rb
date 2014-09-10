@@ -54,7 +54,8 @@ Fluctus::Application.routes.draw do
   get '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
   put '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
   get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json'
-  get '/api/v1/itemresults/restore', to: 'processed_item#restore', format: 'json'
+  get '/api/v1/itemresults/items_for_restore', to: 'processed_item#items_for_restore', format: 'json'
+  get '/api/v1/itemresults/items_for_delete', to: 'processed_item#items_for_delete', format: 'json'
 
   post '/api/v1/itemresults/restoration_status/:object_identifier', to: 'processed_item#set_restoration_status', as: :item_set_restoration_status, object_identifier: /.*/
   post '/api/v1/itemresults/delete_test_items', to: 'processed_item#delete_test_items', format: 'json'
