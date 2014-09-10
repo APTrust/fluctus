@@ -39,13 +39,13 @@ class GenericFile < ActiveFedora::Base
   end
 
   def soft_delete(attributes)
-    self.state = 'D'
-    self.add_event(attributes)
-    save!
     user_email = attributes[:outcome_detail]
     ProcessedItem.create_delete_request(self.intellectual_object.identifier,
                                         self.identifier,
                                         user_email)
+    self.state = 'D'
+    self.add_event(attributes)
+    save!
     OrderUp.push(DeleteGenericFileJob.new(id))
   end
 
