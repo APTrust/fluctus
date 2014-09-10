@@ -31,6 +31,23 @@ class ProcessedItem < ActiveRecord::Base
     items.order('date DESC').limit(1).first
   end
 
+  # Creates a ProcessedItem record showing that someone has requested
+  # restoration of an IntellectualObject. This will eventually go into
+  # a queue for the restoration worker process.
+  def self.create_restore_request(intellectual_object_identifier)
+    item = ProcessedItem.last_ingested_version(intellectual_object_identifier)
+    if item.nil?
+      raise ActiveRecord::RecordNotFound
+    end
+    restore_item = item.dup
+    restore_item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+    restore_item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
+    restore_item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    restore_item.retry = true
+    restore_item.save!
+    restore_item
+  end
+
   def status_is_allowed
     if !Fluctus::Application::FLUCTUS_STATUSES.values.include?(self.status)
       errors.add(:status, 'Status is not one of the allowed options')
