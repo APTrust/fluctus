@@ -2,10 +2,10 @@ module ApplicationHelper
   def show_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-eye-open"></i> View'
     options[:class] = 'btn doc-action-btn btn-normal' if options[:class].nil?
-    if (object.class == SolrDocument)
-      object = object.to_model
-    end 
-    link_to(content.html_safe, object, options) if policy(object).show?
+    
+    if (object.class == SolrDocument && policy(object.to_model.class.find(object.id)).show?) || policy(object).show?
+      link_to(content.html_safe, object, options)
+    end
   end
 
   def edit_link(object, content = nil, options={})

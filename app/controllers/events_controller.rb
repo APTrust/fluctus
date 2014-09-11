@@ -3,6 +3,7 @@ class EventsController < ApplicationController
   before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
   before_filter :load_generic_file, if: :generic_file_identifier_exists?
   before_filter :load_and_authorize_parent_object, only: [:create]
+  after_action :verify_authorized, :only => [:index]
 
   include Aptrust::GatedSearch
 

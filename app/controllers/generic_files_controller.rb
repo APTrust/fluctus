@@ -4,7 +4,7 @@ class GenericFilesController < ApplicationController
   before_filter :load_generic_file, only: [:show, :update, :destroy]
   before_filter :load_intellectual_object, only: [:update, :create, :index]
     
-  after_filter :verify_authorized, :except => [:create, :index]
+  after_action :verify_authorized, :except => [:create, :index]
 
   def index
     authorize @intellectual_object
