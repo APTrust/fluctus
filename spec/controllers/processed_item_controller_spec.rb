@@ -65,7 +65,7 @@ describe ProcessedItemController do
 
       it "assigns the requested item as @processedItem" do
         get :show, id: item.id
-        assigns(:processedItem).id.should eq(item.id)
+        assigns(:processed_item).id.should eq(item.id)
       end
 
       it "assigns the requested institution as @institution" do

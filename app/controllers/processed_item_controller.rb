@@ -20,7 +20,7 @@ class ProcessedItemController < ApplicationController
   def update
     respond_to do |format|
       if @processed_item.save
-        format.json { render json: @processed_item, status: :created }
+        format.json { render json: @processed_item, status: :ok }
       else
         format.json { render json: @processed_item.errors, status: :unprocessable_entity }
       end
@@ -352,7 +352,7 @@ class ProcessedItemController < ApplicationController
   def set_item
     @institution = current_user.institution
     if params[:id].blank? == false
-      @processedItem = ProcessedItem.find(params[:id])
+      @processed_item = ProcessedItem.find(params[:id])
     else
       if Rails.env.test? || Rails.env.development?
         set_item_sqlite
