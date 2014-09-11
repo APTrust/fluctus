@@ -48,6 +48,7 @@ class ProcessedItem < ActiveRecord::Base
     restore_item.user = requested_by
     restore_item.retry = true
     restore_item.reviewed = false
+    restore_item.date = Time.now
     restore_item.save!
     restore_item
   end
@@ -69,6 +70,7 @@ class ProcessedItem < ActiveRecord::Base
     delete_item.user = requested_by
     delete_item.retry = true
     delete_item.reviewed = false
+    delete_item.date = Time.now
     delete_item.generic_file_identifier = generic_file_identifier
     delete_item.save!
     delete_item
