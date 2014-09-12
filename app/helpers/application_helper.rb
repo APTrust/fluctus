@@ -2,40 +2,27 @@ module ApplicationHelper
   def show_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-eye-open"></i> View'
     options[:class] = 'btn doc-action-btn btn-normal' if options[:class].nil?
-    
-    if (object.class == SolrDocument && policy(object.to_model.class.find(object.id)).show?) || policy(object).show?
-      link_to(content.html_safe, object, options)
-    end
+    link_to(content.html_safe, object, options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).show?
   end
 
   def edit_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-edit"></i> Edit'
     options[:class] = 'btn doc-action-btn btn-normal' if options[:class].nil?
-    
-    if (object.class == SolrDocument)
-      object = object.to_model
-    end 
-    link_to(content.html_safe, [:edit, object], options) if policy(object).edit?
+    link_to(content.html_safe, [:edit, object], options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).edit?
   end
 
   def destroy_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-trash"></i> Delete'
     options[:class] = 'btn doc-action-btn btn-danger' if options[:class].nil?
     options[:method] = :delete if options[:method].nil?
-    options[:data] = { confirm: 'Are you sure?' }if options[:confirm].nil?
-    if (object.class == SolrDocument)
-      object = object.to_model
-    end 
-    link_to(content.html_safe, object, options) if policy(object).destroy?
+    options[:data] = { confirm: 'Are you sure?' } if options[:confirm].nil?
+    link_to(content.html_safe, object, options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).destroy?
   end
 
   def create_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-plus"></i> Create'
     options[:class] = 'btn doc-action-btn btn-success' if options[:class].nil?
-    if (object.class == SolrDocument)
-      object = object.to_model
-    end
-    if policy(object).create?
+    if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).create?
       object_class = (object.kind_of?(Class) ? object : object.class)
       link_to(content.html_safe, [:new, object_class.name.underscore.to_sym], options)
     end

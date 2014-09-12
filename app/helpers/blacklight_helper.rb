@@ -10,4 +10,11 @@ module BlacklightHelper
       render 'intellectual_objects/actions', {document: document}
     end
   end
+
+  # override Blacklight so link_to will load GET /objects/id
+  def link_to_document(doc, opts={:label=>nil, :counter => nil})
+  	opts[:label] ||= document_show_link_field(doc)
+    label = render_document_index_label doc, opts
+    link_to label, doc
+  end
 end
