@@ -321,7 +321,7 @@ class ProcessedItemController < ApplicationController
   end
 
   def params_for_status_update
-    params.permit(:object_identifier, :stage, :status, :retry)
+    params.permit(:object_identifier, :stage, :status, :note, :retry)
   end
 
 
