@@ -34,7 +34,7 @@ describe IntellectualObjectPolicy do
       end
 
       describe "not in my institution" do
-        let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
+        let(:intellectual_object) { FactoryGirl.create(:intellectual_object, access: 'restricted') }
         it { should_not permit(:create_through_intellectual_object) }
         it { should_not permit(:show) }
         it { should_not permit(:update) }    
