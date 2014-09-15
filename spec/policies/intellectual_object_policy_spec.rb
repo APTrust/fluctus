@@ -38,7 +38,7 @@ describe IntellectualObjectPolicy do
 
       describe "not in my institution" do
         describe "with consortial access" do
-          let(:intellectual_object) { FactoryGirl.create(:intellectual_object, access: 'consortial') }
+          let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object) }
           it do
             should_not permit(:create_through_intellectual_object)
             should permit(:show)
@@ -51,7 +51,7 @@ describe IntellectualObjectPolicy do
         end
 
         describe "without consortial access" do
-          let(:intellectual_object) { FactoryGirl.create(:intellectual_object, access: 'restricted') }
+          let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object) }
           it do
             should_not permit(:create_through_intellectual_object)
             should_not permit(:show)

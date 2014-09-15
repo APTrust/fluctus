@@ -38,7 +38,7 @@ describe GenericFilePolicy do
 
     context "access file not in my institution" do
       context "with consortial access" do
-        let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object, access: 'consortial') }
+        let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object) }
         let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
         it do
           should_not permit(:add_event)
@@ -51,7 +51,7 @@ describe GenericFilePolicy do
       end
 
       context "without consortial access" do
-        let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object, access: 'restricted') }
+        let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object) }
         let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
         it do
           should_not permit(:add_event)
