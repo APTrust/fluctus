@@ -8,13 +8,15 @@ describe ProcessedItemPolicy do
   	let(:user) { FactoryGirl.create(:user, :admin, institution_pid: institution.pid) }
     let(:processed_item) { FactoryGirl.create(:processed_item)}
 
-    it { should permit(:create) }
-    it { should permit(:new) }
-    it { should permit(:show) }
-    it { should permit(:update) }
-    it { should permit(:edit) }
-    it { should permit(:mark_as_reviewed)}
-    it { should_not permit(:destroy) }
+    it do
+      should permit(:create)
+      should permit(:new) 
+      should permit(:show)
+      should permit(:update)
+      should permit(:edit)
+      should permit(:mark_as_reviewed)
+      should_not permit(:destroy)
+    end
   end
 
   context "for an institutional admin user" do
@@ -23,24 +25,28 @@ describe ProcessedItemPolicy do
     describe "when the item is" do
       describe "in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item, institution: institution.identifier) }
-        it { should_not permit(:create) }
-        it { should_not permit(:new) }
-        it { should permit(:show) }
-        it { should permit(:update) }
-        it { should permit(:edit) }
-        it { should permit(:mark_as_reviewed)}
-        it { should_not permit(:destroy) } 
+        it do
+          should_not permit(:create)
+          should_not permit(:new)
+          should permit(:show)
+          should permit(:update)
+          should permit(:edit)
+          should permit(:mark_as_reviewed)
+          should_not permit(:destroy)
+        end
       end
 
       describe "not in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
-        it { should_not permit(:create) }
-        it { should_not permit(:new) }
-        it { should_not permit(:show) }
-        it { should_not permit(:update) }
-        it { should_not permit(:edit) }
-        it { should_not permit(:mark_as_reviewed) }
-        it { should_not permit(:destroy) } 	
+        it do
+          should_not permit(:create)
+          should_not permit(:new)
+          should_not permit(:show)
+          should_not permit(:update)
+          should_not permit(:edit)
+          should_not permit(:mark_as_reviewed)
+          should_not permit(:destroy)	
+        end
       end
     end
   end
@@ -51,24 +57,28 @@ describe ProcessedItemPolicy do
     describe "when the item is" do
       describe "in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item, institution: institution.identifier) }
-    		it { should_not permit(:create) }
-    		it { should_not permit(:new) }
-    		it { should permit(:show) }
-    		it { should_not permit(:update) }    
-    		it { should_not permit(:edit) }
-    		it { should_not permit(:mark_as_reviewed) }
-    		it { should_not permit(:destroy) }
+    		it do
+          should_not permit(:create)
+      		should_not permit(:new)
+      		should permit(:show) 
+      		should_not permit(:update)    
+      		should_not permit(:edit)
+      		should_not permit(:mark_as_reviewed)
+      		should_not permit(:destroy)
+        end
     	end
 
     	describe "not in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
-        it { should_not permit(:create) }
-        it { should_not permit(:new) }
-        it { should_not permit(:show) }
-        it { should_not permit(:update) }
-        it { should_not permit(:edit) }
-        it { should_not permit(:mark_as_reviewed) }
-        it { should_not permit(:destroy) } 	
+        it do
+          should_not permit(:create)
+          should_not permit(:new) 
+          should_not permit(:show)
+          should_not permit(:update)
+          should_not permit(:edit)
+          should_not permit(:mark_as_reviewed)
+          should_not permit(:destroy) 
+        end	
       end
     end
   end
@@ -76,12 +86,14 @@ describe ProcessedItemPolicy do
   context "for an authenticated user without a user group" do
     let(:user) { FactoryGirl.create(:user) }
     let(:processed_item) { FactoryGirl.create(:processed_item)}
-    it { should_not permit(:create) }
-    it { should_not permit(:new) }
-    it { should_not permit(:show) }
-    it { should_not permit(:update) }    
-    it { should_not permit(:edit) }
-    it { should_not permit(:mark_as_reviewed) }
-    it { should_not permit(:destroy) }
+    it do
+      should_not permit(:create)
+      should_not permit(:new)
+      should_not permit(:show)
+      should_not permit(:update)    
+      should_not permit(:edit)
+      should_not permit(:mark_as_reviewed)
+      should_not permit(:destroy)
+    end
   end 
 end

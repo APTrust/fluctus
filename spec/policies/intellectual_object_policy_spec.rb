@@ -8,14 +8,15 @@ describe IntellectualObjectPolicy do
   context "for an admin user" do
   	let(:user) { FactoryGirl.create(:user, :admin, institution_pid: institution.pid) }
   	let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
-
-  	it { should permit(:create_through_intellectual_object) }
-    it { should permit(:show) }
-    it { should permit(:update) }
-    it { should permit(:edit) }
-    it { should permit(:add_event) }
-    it { should permit(:soft_delete) }
-    it { should_not permit(:destroy) }
+  	it do
+      should permit(:create_through_intellectual_object)
+      should permit(:show)
+      should permit(:update) 
+      should permit(:edit)
+      should permit(:add_event)
+      should permit(:soft_delete)
+      should_not permit(:destroy)
+    end
   end
 
   context "for an institutional admin user" do
@@ -24,24 +25,28 @@ describe IntellectualObjectPolicy do
     describe "when the object is" do
       describe "in my institution" do
         let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: institution) }
-        it { should permit(:create_through_intellectual_object) }
-        it { should permit(:show) }
-        it { should_not permit(:update) }    
-        it { should_not permit(:edit) }
-        it { should permit(:add_event) }
-        it { should permit(:soft_delete) }
-        it { should_not permit(:destroy) }
+        it do
+          should permit(:create_through_intellectual_object)
+          should permit(:show) 
+          should_not permit(:update)   
+          should_not permit(:edit)
+          should permit(:add_event)
+          should permit(:soft_delete)
+          should_not permit(:destroy)
+        end
       end
 
       describe "not in my institution" do
         let(:intellectual_object) { FactoryGirl.create(:intellectual_object, access: 'restricted') }
-        it { should_not permit(:create_through_intellectual_object) }
-        it { should_not permit(:show) }
-        it { should_not permit(:update) }    
-        it { should_not permit(:edit) }
-        it { should_not permit(:add_event) }
-        it { should_not permit(:soft_delete) }
-        it { should_not permit(:destroy) }
+        it do
+          should_not permit(:create_through_intellectual_object) 
+          should_not permit(:show)
+          should_not permit(:update)   
+          should_not permit(:edit)
+          should_not permit(:add_event) 
+          should_not permit(:soft_delete)
+          should_not permit(:destroy)
+        end
       end
     end
   end
@@ -54,37 +59,40 @@ describe IntellectualObjectPolicy do
         describe "and is consortial accessible" do
           let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object,
                                          institution: institution) }
-          it { should_not permit(:create_through_intellectual_object) }
-          it { should_not permit(:update) }    
-          it { should_not permit(:edit) }
-          it { should_not permit(:add_event) }
-          it { should_not permit(:soft_delete) }
-          it { should_not permit(:destroy) }
+          it do
+            should_not permit(:create_through_intellectual_object)
+            should_not permit(:update)    
+            should_not permit(:edit)
+            should_not permit(:add_event)
+            should_not permit(:soft_delete)
+            should_not permit(:destroy)
+            should permit(:show)
+          end
+        end
+        describe "and is institutional accessible" do
+          let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object,
+                                       institution: institution) }
           it { should permit(:show) }
         end
-          describe "and is institutional accessible" do
-            let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object,
+        describe "and is restricted accessible" do
+          let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object,
                                          institution: institution) }
-            it { should permit(:show) }
-          end
-          describe "and is restricted accessible" do
-            let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object,
-                                           institution: institution) }
-            it { should_not permit(:show) }
-          end
+          it { should_not permit(:show) }
+        end
       end
 
       describe "not in my institution" do
         describe "and it belongs to a consortial accessible object" do
           let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object) }
-          it { should_not permit(:create_through_intellectual_object) }
-          it { should_not permit(:update) }    
-          it { should_not permit(:edit) }
-          it { should_not permit(:add_event) }
-          it { should_not permit(:soft_delete) }
-          it { should_not permit(:destroy) }
-
-          it { should permit(:show) }
+          it do
+            should_not permit(:create_through_intellectual_object)
+            should_not permit(:update)    
+            should_not permit(:edit)
+            should_not permit(:add_event)
+            should_not permit(:soft_delete)
+            should_not permit(:destroy)
+            should permit(:show)
+          end
         end
         describe "and it belongs to an institutional accessible object" do
           let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object) }
@@ -101,12 +109,14 @@ describe IntellectualObjectPolicy do
 	context "for an authenticated user without a user group" do
     let(:user) { FactoryGirl.create(:user) }
     let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
-    it { should_not permit(:create_through_intellectual_object) }
-    it { should_not permit(:show) }
-    it { should_not permit(:update) }    
-    it { should_not permit(:edit) }
-    it { should_not permit(:add_event) }
-    it { should_not permit(:soft_delete) }
-    it { should_not permit(:destroy) }
+    it do
+      should_not permit(:create_through_intellectual_object)
+      should_not permit(:show) 
+      should_not permit(:update)     
+      should_not permit(:edit)
+      should_not permit(:add_event)
+      should_not permit(:soft_delete) 
+      should_not permit(:destroy)
+    end
   end	
 end
