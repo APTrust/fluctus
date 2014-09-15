@@ -26,17 +26,17 @@ class Institution < ActiveFedora::Base
 
   def bytes_by_format
     resp = ActiveFedora::SolrService.instance.conn.get 'select', :params => {
-      'q' => 'tech_metadata__size_isi:[* TO *]',
+      'q' => 'tech_metadata__size_lsi:[* TO *]',
       'fq' =>[ActiveFedora::SolrService.construct_query_for_rel(:has_model => GenericFile.to_class_uri),
               "_query_:\"{!raw f=institution_uri_ssim}#{internal_uri}\""],
       'stats' => true,
       'fl' => '',
-      'stats.field' =>'tech_metadata__size_isi',
-      'stats.facet' => 'tech_metadata__format_ssi'
+      'stats.field' =>'tech_metadata__size_lsi',
+      'stats.facet' => 'tech_metadata__file_format_ssi'
     }
-    stats = resp['stats']['stats_fields']['tech_metadata__size_isi']
+    stats = resp['stats']['stats_fields']['tech_metadata__size_lsi']
     if stats
-      cross_tab = stats['facets']['tech_metadata__format_ssi'].each_with_object({}) { |(k,v), obj|
+      cross_tab = stats['facets']['tech_metadata__file_format_ssi'].each_with_object({}) { |(k,v), obj|
         obj[k] = v['sum']
       }
       cross_tab['all'] = stats['sum']
@@ -55,16 +55,16 @@ class Institution < ActiveFedora::Base
   # becomes problematic on update because the name exists already and the validation fails.  Therefore
   # we must remove self from the array before testing for uniqueness.
   def name_is_unique
+    return if self.name.nil?
     errors.add(:name, "has already been taken") if Institution.where(desc_metadata__name_ssim: self.name).reject{|r| r == self}.any?
   end
 
   def identifier_is_unique
+    return if self.identifier.nil?
     count = 0;
-    Institution.all.each do |inst|
-      if (inst.identifier == self.identifier) && (inst.id != self.id)
-        count += 1
-      end
-    end
+    insts = Institution.where(desc_metadata__identifier_ssim: self.identifier)
+    count +=1 if insts.count == 1 && insts.first.id != self.id
+    count = insts.count if insts.count > 1
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end

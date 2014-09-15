@@ -25,7 +25,7 @@ describe GenericFile do
   it { should validate_presence_of(:size) }
   it { should validate_presence_of(:created) }
   it { should validate_presence_of(:modified) }
-  it { should validate_presence_of(:format) }
+  it { should validate_presence_of(:file_format) }
   it { should validate_presence_of(:identifier)}
   it "should validate presence of a checksum" do
     expect(subject.valid?).to be_false
@@ -34,6 +34,15 @@ describe GenericFile do
     # other fields cause the object to not be valid. This forces recalculating errors
     expect(subject.valid?).to be_false
     expect(subject.errors[:checksum]).to be_empty
+  end
+
+  describe "#identifier_is_unique" do
+    it "should validate uniqueness of the identifier" do
+      one = FactoryGirl.create(:generic_file, identifier: "test.edu")
+      two = FactoryGirl.build(:generic_file, identifier: "test.edu")
+      two.should_not be_valid
+      two.errors[:identifier].should include("has already been taken")
+    end
   end
 
   describe "with an intellectual object" do
@@ -87,25 +96,41 @@ describe GenericFile do
       end
 
       describe "soft_delete" do
+        before do
+          subject.save!
+          @parent_processed_item = FactoryGirl.create(:processed_item,
+                                                     object_identifier: subject.intellectual_object.identifier,
+                                                     action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                                     stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                                                     status: Fluctus::Application::FLUCTUS_STATUSES['success'])
+        end
         after do
           subject.destroy
           intellectual_object.destroy
-        end
-        before do
-          subject.save!
+          @parent_processed_item.delete
         end
 
         let(:async_job) { double('one') }
 
         it "should set the state to deleted and index the object state" do
-          DeleteGenericFileJob.should_receive(:new).with(subject.pid).and_return(async_job)
-          OrderUp.should_receive(:push).with(async_job).once
           expect {
-            subject.soft_delete
+            subject.soft_delete({type: 'delete', outcome_detail: "joe@example.com"})
           }.to change { subject.premisEvents.events.count}.by(1)
           expect(subject.state).to eq 'D'
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
         end
+
+        it "should create a ProcessedItem showing delete was requested" do
+          subject.soft_delete({type: 'delete', outcome_detail: "user@example.com"})
+          pi = ProcessedItem.where(generic_file_identifier: subject.identifier).first
+          expect(pi).not_to be_nil
+          expect(pi.object_identifier).to eq subject.intellectual_object.identifier
+          expect(pi.action).to eq Fluctus::Application::FLUCTUS_ACTIONS['delete']
+          expect(pi.stage).to eq Fluctus::Application::FLUCTUS_STAGES['requested']
+          expect(pi.status).to eq Fluctus::Application::FLUCTUS_STATUSES['pend']
+          expect(pi.user).to eq "user@example.com"
+        end
+
       end
     end
   end

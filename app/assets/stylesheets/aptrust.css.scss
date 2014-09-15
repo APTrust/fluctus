@@ -62,6 +62,100 @@ form .alert {
 
 .auditinfo h3 { font-weight: bold; }
 
+.search_tabs {
+  text-align: center;
+  list-style: none;
+  margin: 10px 0 10px;
+  padding: 0;
+  line-height: 22px;
+  height: 25px;
+  overflow: hidden;
+  font-size: 12px;
+  font-family: arial;
+  position: relative;
+  width: 510px;
+}
+
+.search_tabs li {
+  border: 1px solid #AAA;
+  background: #D1D1D1;
+  background: -o-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+  background: -ms-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+  background: -moz-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+  background: -webkit-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+  background: linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+  display: inline-block;
+  position:relative;
+  z-index: 0;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 #FFF;
+  text-shadow: 0 1px #FFF;
+  margin: 0 -5px;
+  padding: 0 30px;
+}
+
+.search_tabs a {
+  color: #555;
+  text-decoration: none;
+}
+
+.search_tabs li.ui-tabs-active {
+  background: #FFF;
+  color: #333;
+  z-index: 2;
+  border-top-color: #FFF;
+}
+
+.search_tabs:before {
+  position: absolute;
+  content: " ";
+  width: 100%;
+  top: 0;
+  left: 0;
+  border-top: 1px solid #AAA;
+  z-index: 1;
+}
+
+.search_tabs li:before,
+.search_tabs li:after {
+  border: 1px solid #AAA;
+  position: absolute;
+  top: -1px;
+  width: 6px;
+  height: 6px;
+  content: " ";
+}
+
+.search_tabs li:before  {
+  left: -7px;
+  border-top-right-radius: 6px;
+  border-width: 1px 1px 0px 0px;
+  box-shadow: 2px 0px 0 #ECECEC;
+}
+
+.search_tabs li:after {
+  right: -7px;
+  border-top-left-radius: 6px;
+  border-width: 1px 0px 0px 1px;
+  box-shadow: -2px 0px 0 #ECECEC;
+}
+
+.search_tabs li.ui-tabs-active:before {
+  box-shadow: 2px 0px 0 #FFF;
+}
+
+.search_tabs li.ui-tabs-active:after {
+  box-shadow: -2px 0px 0 #FFF;
+}
+
+input#q {
+  width: 260px;
+}
+
+input#qq {
+  width: 312px;
+}
 
 #chart-frame {
   box-sizing: border-box;
@@ -119,7 +213,7 @@ form .alert {
 #sidebar .btn-danger,
 #main-container .btn-danger,
 #content .btn-danger{
-  background-image: linear-gradient(to bottom, #AE423F, #DD6461);
+  background-image: linear-gradient(to bottom, #d9534f, #d43f3a);
   color: #FFFFFF;
 }
 
@@ -133,15 +227,46 @@ form .alert {
 #sidebar .btn-success,
 #main-container .btn-success,
 #content .btn-success{
-  background-image: linear-gradient(to bottom, #4A934A, #8DCD8D);
+  background-image: linear-gradient(to bottom, #5cb85c, #4cac4c);
   color: #FFFFFF;
 }
 
-#sidebar .btn-cancel,
-#main-container .btn-cancel,
-#content .btn-cancel{
-  background-image: linear-gradient(to bottom, #D89C46, #F3BD71);
+#sidebar .btn-warning,
+#main-container .btn-warning,
+#content .btn-warning{
+  background-image: linear-gradient(to bottom, #fbb450, #f89406);
   color: #FFFFFF;
+}
+
+.btn:hover,
+.btn:focus {
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position .1s linear;
+  -moz-transition: background-position .1s linear;
+  -o-transition: background-position .1s linear;
+  transition: background-position .1s linear;
+}
+.btn:hover,
+.btn:focus {
+  background-color: #e6e6e6;
+}
+.btn:active,
+.btn.active,
+.btn.active:hover {
+  background-color: #f2f2f2;
+  border-color: #e6e6e6;
+}
+.btn.disabled:hover,
+.btn.disabled:focus,
+.btn.disabled:active,
+.btn.disabled.active,
+.btn[disabled] .btn:hover,
+.btn[disabled] .btn:focus,
+.btne[disabled] .btn:active,
+.btn[disabled] .btn.active {
+  background-color: #ffffff;
+  border-color: #ffffff;
 }
 
 

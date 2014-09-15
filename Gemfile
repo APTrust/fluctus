@@ -17,6 +17,7 @@ gem 'coffee-rails', '~> 4.0.0'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
@@ -43,8 +44,9 @@ gem 'kaminari'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e'  # TODO: Upgrade to 7.0 release
-gem 'active-fedora', '7.0.0.rc1'
+#gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e'  # TODO: Upgrade to 7.0 release
+gem 'hydra-head', '7.0.0'
+gem 'active-fedora', '7.0.0'
 gem 'hydra-editor', '~> 0.2.2'
 gem 'order_up', '0.0.1'
 gem 'resque', '~> 1.25'

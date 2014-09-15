@@ -4,7 +4,7 @@ class IntellectualObjectsController < ApplicationController
   before_filter :load_object, only: [:show, :edit, :update, :destroy]
   before_filter :load_institution, only: [:index, :create, :create_from_json]
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
-  
+
   include Aptrust::GatedSearch
   apply_catalog_search_params
   include RecordsControllerBehavior
@@ -50,7 +50,16 @@ class IntellectualObjectsController < ApplicationController
 
   def destroy
     authorize @intellectual_object, :soft_delete?
-    resource.soft_delete
+    attributes = { type: 'delete',
+      date_time: "#{Time.now}",
+      detail: 'Object deleted from S3 storage',
+      outcome: 'Success',
+      outcome_detail: current_user.email,
+      object: 'Ruby aws-s3 gem',
+      agent: 'https://github.com/marcel/aws-s3/tree/master',
+      outcome_information: "Action requested by user from #{current_user.institution_pid}"
+    }
+    resource.soft_delete(attributes)
     respond_to do |format|
       format.json { head :no_content }
       format.html {
@@ -60,14 +69,28 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
+  # get 'objects/:id/restore'
+  def restore
+    ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
+    redirect_to :back
+    flash[:notice] = 'Your item has been queued for restoration.'
+  end
+
   def create_from_json
     if params[:include_nested] == 'true'
-      params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
-      object = JSON.parse(json_param.to_json).first
-      new_object = IntellectualObject.new()
-      object_events, object_files = []
-      object.each { |attr_name, attr_value|
-        case attr_name
+      # new_object is the IntellectualObject we're creating.
+      # current_object is the item we're about to save at any
+      # given step of this operation. We use this in the rescue
+      # clause to let the caller know where the operation failed.
+      new_object = nil
+      current_object = nil
+      begin
+        params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
+        object = JSON.parse(json_param.to_json).first
+        new_object = IntellectualObject.new()
+        object_events, object_files = []
+        object.each { |attr_name, attr_value|
+          case attr_name
           when 'institution_id'
             attr_value.to_s.include?(':') ? new_object.institution = Institution.find(attr_value.to_s) : new_object.institution = Institution.where(desc_metadata__identifier_ssim: attr_value.to_s).first
           when 'premisEvents'
@@ -76,28 +99,51 @@ class IntellectualObjectsController < ApplicationController
             object_files = attr_value
           else
             new_object[attr_name.to_s] = attr_value.to_s
-        end }
-      new_object.save!
-      object_events.each { |event| new_object.add_event(event) }
-      object_files.each do |file|
-        new_file = GenericFile.new()
-        file_events, file_checksums = []
-        file.each { |file_attr_name, file_attr_value|
-          case file_attr_name
+          end }
+        current_object = "IntellectualObject #{new_object.identifier}"
+        new_object.save!
+        object_events.each { |event|
+          current_object = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
+          new_object.add_event(event)
+        }
+        object_files.each do |file|
+          new_file = GenericFile.new()
+          file_events, file_checksums = []
+          file.each { |file_attr_name, file_attr_value|
+            case file_attr_name
             when 'premisEvents'
               file_events = file_attr_value
             when 'checksum'
               file_checksums = file_attr_value
             else
               new_file[file_attr_name.to_s] = file_attr_value.to_s
-          end }
-        file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
-        new_file.intellectual_object = new_object
-        new_file.save!
-        file_events.each { |event| new_file.add_event(event) }
+            end }
+          file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
+          current_object = "GenericFile #{new_file.identifier}"
+          new_file.intellectual_object = new_object
+          new_file.save!
+          file_events.each { |event|
+            current_object = "GenericFile Event #{event['type']} / #{event['identifier']}"
+            new_file.add_event(event)
+          }
+        end
+        @intellectual_object = new_object
+        @institution = @intellectual_object.institution
+        authorize! :create, @intellectual_object
+        respond_to { |format| format.json { render json: object_as_json, status: :created } }
+      rescue Exception => ex
+        if !new_object.nil?
+          new_object.generic_files.each do |gf|
+            gf.destroy
+          end
+          new_object.destroy
+        end
+        respond_to { |format| format.json {
+            render json: { error: "#{ex.message} : #{current_object}" },
+            status: :unprocessable_entity
+          }
+        }
       end
-      @intellectual_object = new_object
-      respond_to { |format| format.json { render json: object_as_json } }
     end
   end
 
@@ -135,16 +181,22 @@ class IntellectualObjectsController < ApplicationController
 
   def intellectual_object_params
     params.require(:intellectual_object).permit(:pid, :institution_id, :title,
-                                                :description, :access,
-                                                :alt_identifier)
+                                                :description, :access, :identifier,
+                                                :bag_name, :alt_identifier)
   end
 
   def load_object
     if params[:identifier] && params[:id].blank?
-      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: params[:identifier]).first
+      identifier = params[:identifier].gsub(/%2F/i, "/")
+      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
-      params[:id] = @intellectual_object.id
+      if @intellectual_object.nil?
+        msg = "IntellectualObject '#{params[:identifier]}' not found"
+        raise ActionController::RoutingError.new(msg)
+      else
+        params[:id] = @intellectual_object.id if @intellectual_object
+      end
     else
       @intellectual_object ||= IntellectualObject.find(params[:id])
     end
@@ -153,5 +205,4 @@ class IntellectualObjectsController < ApplicationController
   def load_institution
     @institution ||= Institution.find(params[:institution_id])
   end
-
 end

@@ -4,12 +4,32 @@ RSpec::Core::RakeTask.new(:rspec => 'test:prepare') do |t|
 end
 
 namespace :fluctus do
+
+  partner_list = [
+        ["APTrust", "apt", "aptrust.org"],
+        ["Columbia University", "cul", "columbia.edu"],
+        ["Johns Hopkins University", "jhu", "jhu.edu"],
+        ["North Carolina State University", "ncsu", "ncsu.edu"],
+        ["Pennsylvania State University", "psu", "psu.edu"],
+        ["Stanford University", "stnfd", "stanford.edu"],
+        ["Syracuse University", "syr", "syr.edu"],
+        ["University of Chicago", "uchi", "uchicago.edu"],
+        ["University of Cincinnati", "ucin", "uc.edu"],
+        ["University of Connecticut", "uconn", "uconn.edu"],
+        ["University of Maryland", "mdu", "umd.edu"],
+        ["University of Miami", "um", "miami.edu"],
+        ["University of Michigan", "umich", "umich.edu"],
+        ["University of North Carolina at Chapel Hill", "unc", "unc.edu"],
+        ["University of Notre Dame", "und", "nd.edu"],
+        ["University of Virginia","uva", "virginia.edu"],
+  ]
+
+
   desc "Setup Fluctus"
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
 
     i = Institution.create!(name: "APTrust", identifier: "aptrust.org")
-    #PID_MAP.store(i.pid, "aptrust.org")
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     ['admin', 'institutional_admin', 'institutional_user'].each do |role|
@@ -28,7 +48,7 @@ namespace :fluctus do
 
     STDOUT.puts "Create a password."
     password = STDIN.gets.strip
-   
+
     User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
                  role_ids: [Role.where(name: 'admin').first.id])
   end
@@ -50,10 +70,10 @@ namespace :fluctus do
   end
 
   desc "Run ci"
-  task :travis do 
+  task :travis do
     puts "Updating Solr config"
     Rake::Task['jetty:config'].invoke
-    
+
     require 'jettywrapper'
     jetty_params = Jettywrapper.load_config
     puts "Starting Jetty"
@@ -65,7 +85,6 @@ namespace :fluctus do
 
   desc "Empty DB and add dummy information"
   task :populate_db, [:numInstitutions, :numIntObjects, :numGenFiles] => [:environment] do |t, args|
-    load "config/pid_map.rb"
     if Rails.env.production?
       puts "Do not run in production!"
       return
@@ -73,6 +92,7 @@ namespace :fluctus do
     Rake::Task['fluctus:empty_db'].invoke
     Rake::Task['fluctus:clean_solr'].invoke
     Rake::Task['fluctus:setup'].invoke
+
     start = Time.now
     puts "Starting time: #{start}"
     partner_list = [
@@ -89,17 +109,16 @@ namespace :fluctus do
     args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
 
     numInsts = args[:numInstitutions].to_i
-    if (numInsts > partner_list.count)
+    if (numInsts > partner_list.count-1)
       numInsts = partner_list.count
-      puts "We currently have only #{partner_list.count} institutions."
+      puts "We currently have only #{partner_list.count-1} institutions."
     end
 
     puts "Creating #{numInsts} Institutions"
     numInsts.times.each do |count|
-      puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count].first} "
-      inst = FactoryGirl.create(:institution, name: partner_list[count].first, brief_name: partner_list[count][1],
-                         identifier: partner_list[count].last)
-      PID_MAP.store(inst.pid, partner_list[count][2])
+      puts "== Creating number #{count+1} of #{numInsts}: #{partner_list[count+1].first} "
+      inst = FactoryGirl.create(:institution, name: partner_list[count+1].first, brief_name: partner_list[count+1][1],
+                         identifier: partner_list[count+1].last)
     end
 
     puts "Creating Users for each Institution"
@@ -117,10 +136,14 @@ namespace :fluctus do
       numItems = args[:numIntObjects].to_i
       numItems.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{numItems} for #{institution.name}"
-        ident = "#{institution.identifier}/#{SecureRandom.hex(8)}"
-        item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident)
+        name = "#{SecureRandom.uuid}.tar"
+        ident = "#{institution.identifier}/#{name}"
+        item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident, bag_name: name)
         item.add_event(FactoryGirl.attributes_for(:premis_event_ingest, detail: "Metadata recieved from bag.", outcome_detail: "", outcome_information: "Parsed as part of bag submission."))
         item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: "Assigned by Fedora."))
+
+        # add processed item for intellectual object
+        FactoryGirl.create(:processed_item, institution: institution.identifier, name: item.bag_name, action: 'Ingest', stage: 'Record', status: 'Success')
 
         numFiles = args[:numGenFiles].to_i
         numFiles.times.each do |count|
@@ -139,11 +162,11 @@ namespace :fluctus do
           ].sample
           name = Faker::Lorem.characters(char_count=rand(5..15))
           attrs = {
-              format: "#{format[:type]}",
+              file_format: "#{format[:type]}",
               uri: "file:///#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
               identifier: "#{item.identifier}/data/#{name}#{count}.#{format[:ext]}",
           }
-          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, format: attrs[:format], uri: attrs[:uri], identifier: attrs[:identifier])
+          f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, file_format: attrs[:file_format], uri: attrs[:uri], identifier: attrs[:identifier])
 
           f.save!
 
@@ -160,11 +183,65 @@ namespace :fluctus do
       procItems = 15
       procItems.times.each do |count|
         puts "== Creating processed item #{count+1} of #{procItems} for #{institution.name}."
-        FactoryGirl.create(:processed_item, institution: institution.identifier)
+        FactoryGirl.create(:processed_item, institution: institution.identifier, date: Time.at(rand * Time.now.to_i))
+      end
+    end
+  end
+
+  desc "Deletes all solr documents and processed items, recreates institutions & preserves users"
+  task :reset_data => [:environment] do |t, args|
+    if Rails.env.production?
+      puts "Do not run in production!"
+      return
+    end
+
+    user_inst = {}
+    User.all.each do |user|
+      user_inst[user.id] = user.institution.identifier
+    end
+
+    puts "Deleting processed items"
+    ProcessedItem.delete_all
+
+    puts "Deleting all Solr documents"
+    Rake::Task['fluctus:clean_solr'].invoke
+
+    puts "Creating Institutions"
+    partner_list.count.times.each do |count|
+      puts "== Creating number #{count+1} of #{partner_list.count}: #{partner_list[count].first} "
+      inst = FactoryGirl.create(:institution, name: partner_list[count].first,
+                                brief_name: partner_list[count][1],
+                                identifier: partner_list[count].last)
+    end
+
+    user_inst.each do |user_id, inst_identifier|
+      user = User.find(user_id)
+      inst = Institution.where(desc_metadata__identifier_ssim: inst_identifier).first
+      puts "Associating user #{user.email} with institution #{inst.name}"
+      user.institution_pid = inst.pid
+      user.save
+    end
+  end
+
+
+  desc "Deletes test.edu data from Go integration tests"
+  task :delete_go_data => [:environment] do |t, args|
+    if Rails.env.production?
+      puts "Do not run in production!"
+      return
+    end
+    count = ProcessedItem.where(institution: 'test.edu').delete_all
+    puts "Deleted #{count} ProcessedItems for test.edu"
+    IntellectualObject.all.each do |io|
+      if io.identifier.start_with?('test.edu/')
+        puts "Deleting IntellectualObject #{io.identifier}"
+        io.generic_files.destroy_all
+        io.destroy
       end
     end
     finish = Time.now
     diff = finish - start
     puts "Execution time is #{diff} seconds"
   end
+
 end

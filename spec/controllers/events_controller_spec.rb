@@ -70,7 +70,6 @@ describe EventsController do
         file.premisEvents.events.count.should == 0
         post :create, generic_file_identifier: URI.escape(file.identifier), event: event_attrs, format: :json, use_route: 'events_by_file_identifier_path'
         file.reload
-
         file.premisEvents.events.count.should == 1
         assigns(:parent_object).should == file
         # API response should be 201/created instead of redirect that the HTML client gets

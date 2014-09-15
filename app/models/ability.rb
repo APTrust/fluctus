@@ -28,7 +28,7 @@ class Ability
       #can [:edit_password, :update_password], User, id: current_user.id
       #can [:read, :update], Institution, pid: current_user.institution_pid
       #can :create, GenericFile, :intellectual_object => { :institution_id => current_user.institution_pid }
-      #can :create, IntellectualObject, institution_id: current_user.institution_pid
+      #can [:create, :restore], IntellectualObject, institution_id: current_user.institution_pid
       #can [:read, :update], ProcessedItem, institution: current_user.institution.identifier
     #end
   #end
@@ -40,5 +40,17 @@ class Ability
       #can :read, ProcessedItem, institution: current_user.institution.identifier
     #end
   #end
+
+  def force_to_utf8(value)
+    case value
+      when Hash
+        value.each { |k, v| value[k] = force_to_utf8(v) }
+      when Array
+        value.each { |v| force_to_utf8(v) }
+      when String
+        value.force_encoding("utf-8")  if value.respond_to?(:force_encoding)
+    end
+    value
+  end
 
 end

@@ -8,16 +8,17 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
+  has_attributes :uri, :size, :file_format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
   delegate :checksum_attributes=, :checksum, to: :techMetadata
 
   validates_presence_of :uri
   validates_presence_of :size
   validates_presence_of :created
   validates_presence_of :modified
-  validates_presence_of :format
+  validates_presence_of :file_format
   validates_presence_of :identifier
   validate :has_right_number_of_checksums
+  validate :identifier_is_unique
 
   before_save :copy_permissions_from_intellectual_object
   after_save :update_parent_index
@@ -37,11 +38,14 @@ class GenericFile < ActiveFedora::Base
     content.dsLocation = uri
   end
 
-  def soft_delete
+  def soft_delete(attributes)
+    user_email = attributes[:outcome_detail]
+    ProcessedItem.create_delete_request(self.intellectual_object.identifier,
+                                        self.identifier,
+                                        user_email)
     self.state = 'D'
-    premisEvents.events.build(type: 'delete')
+    self.add_event(attributes)
     save!
-    OrderUp.push(DeleteGenericFileJob.new(id))
   end
 
   # This is for serializing JSON in the API.
@@ -54,10 +58,10 @@ class GenericFile < ActiveFedora::Base
     data = {
       id: id,
       uri: uri,
-      size: size,
+      size: size.to_i,
       created: Time.parse(created).iso8601,
       modified: Time.parse(modified).iso8601,
-      format: format,
+      file_format: file_format,
       identifier: identifier,
     }
     if options.has_key?(:include)
@@ -115,5 +119,15 @@ class GenericFile < ActiveFedora::Base
     end
   end
 
+  def identifier_is_unique
+    return if self.identifier.nil?
+    count = 0;
+    files = GenericFile.where(tech_metadata__identifier_ssim: self.identifier)
+    count +=1 if files.count == 1 && files.first.id != self.id
+    count = files.count if files.count > 1
+    if(count > 0)
+      errors.add(:identifier, "has already been taken")
+    end
+  end
 
 end

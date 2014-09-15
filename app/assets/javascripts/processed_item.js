@@ -1,4 +1,4 @@
-function selected (category, filter) {
+function selected (category, filter, newpath) {
     $("#filter-"+category+" ul li").remove();
     var parent = $("#"+category+"-parent")[0];
     $(parent).addClass("facet_limit-active");
@@ -10,7 +10,17 @@ function selected (category, filter) {
         class: "selected",
         text: filter
     }).appendTo("#filter-"+category+" ul li span");
+    jQuery('<a/>', {
+        class: "remove",
+        href: newpath
+    }).appendTo("#filter-"+category+" ul li span span");
+    jQuery('<span/>', {
+        class: "glyphicon glyphicon-remove"
+    }).appendTo("#filter-"+category+" ul li span span a");
     $("#filter-title-"+category).click();
+    $("#filter-"+category).addClass("in");
+    $("#filter-title-"+category).removeClass("collapsed");
+
 }
 
 function callHandleSelected () {
@@ -31,8 +41,8 @@ function callHandleSelected () {
 }
 
 function showReviewed () {
-    show_reviewed = $("#toggleReviewed").prop('checked');
-    $.post('/itemresults/show_reviewed', { show: show_reviewed },
+    show = $("#toggleReviewed").prop('checked');
+    $.post('/itemresults/show_reviewed', { show_reviewed: show },
         function(data){
 
         });

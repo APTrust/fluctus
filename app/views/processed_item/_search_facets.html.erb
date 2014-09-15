@@ -1,0 +1,109 @@
+<div id="facets" class="facets sidenav">
+  <h3> Filter: </h3>
+  <div id="facet-panel-collapse" class="collapse panel-group">
+
+    <div id="status-parent" class="panel panel-default">
+      <div id="filter-title-status" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-status">
+        <h5 class="panel-title">Status</h5>
+      </div>
+      <div id="filter-status" class="panel-collapse facet-content collapse" style="height: 0px;">
+        <div class="panel-body">
+          <ul class="facet-values list-unstyle">
+            <% @statuses.each do |status| %>
+                <li>
+                  <span class="facet-label"><a href="<%= current_path('status', status) %>" ><%= status %></a></span>
+                </li>
+            <% end %>
+            <% unless @selected[:status].nil? %>
+                <script>selected("status", "<%= @selected[:status] %>", "<%=url_for(params.except :status)%>")</script>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="stage-parent" class="panel panel-default">
+      <div id="filter-title-stage" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-stage">
+        <h5 class="panel-title">Stage</h5>
+      </div>
+      <div id="filter-stage" class="panel-collapse facet-content collapse" style="height: 0px;">
+        <div class="panel-body">
+          <ul class="facet-values list-unstyle">
+            <% @stages.each do |stage| %>
+                <li>
+                  <span class="facet-label"><a href="<%= current_path('stage', stage) %>" ><%= stage %></a></span>
+                </li>
+            <% end %>
+            <% unless @selected[:stage].nil? %>
+                <script>selected("stage", "<%= @selected[:stage] %>", "<%=url_for(params.except :stage)%>")</script>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="action-parent" class="panel panel-default">
+      <div id="filter-title-action" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-action">
+        <h5 class="panel-title">Action</h5>
+      </div>
+      <div id="filter-action" class="panel-collapse facet-content collapse" style="height: 0px;">
+        <div class="panel-body">
+          <ul class="facet-values list-unstyle">
+            <% @actions.each do |action| %>
+                <li>
+                  <span class="facet-label"><a href="<%= current_path('actions', action) %>" ><%= action %></a></span>
+                </li>
+            <% end %>
+            <% unless @selected[:actions].nil? %>
+                <script>selected("action", "<%= @selected[:actions] %>", "<%=url_for(params.except :actions)%>")</script>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <% if current_user.admin? %>
+        <div id="institution-parent" class="panel panel-default">
+          <div id="filter-title-institution" class="collapse-toggle panel-heading collapsed" data-toggle="collapse" data-target="#filter-institution">
+            <h5 class="panel-title">Institution</h5>
+          </div>
+          <div id="filter-institution" class="panel-collapse facet-content collapse" style="height: 0px;">
+            <div class="panel-body">
+              <ul class="facet-values list-unstyle">
+                <% @institutions.each do |inst| %>
+                    <li>
+                      <span class="facet-label"><a href="<%= current_path('institution', inst) %>" ><%= inst %></a></span>
+                    </li>
+                <% end %>
+                <% unless @selected[:institution].nil? %>
+                    <script>selected("institution", "<%= @selected[:institution] %>", "<%=url_for(params.except :institution)%>")</script>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+    <% end %>
+
+    <div class="panel panel-default">
+      <script>
+          $(".filter_div").toggle()
+      </script>
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <span class="glyphicon glyphicon-remove-circle">
+          <%= link_to raw("Remove Filters"), processed_items_path %>
+          </span>
+        </h5>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">Show Reviewed Items?</h5>
+        <input type="checkbox" id="toggleReviewed" onclick="showReviewed()" >
+        <script> $("#toggleReviewed").prop('checked', <%= session[:show_reviewed] %>) </script>
+      </div>
+    </div>
+
+  </div>
+</div>

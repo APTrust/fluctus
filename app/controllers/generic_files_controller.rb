@@ -48,8 +48,16 @@ class GenericFilesController < ApplicationController
 
   def destroy
     authorize @generic_file, :soft_delete?
-
-    @generic_file.soft_delete
+    attributes = { type: 'delete',
+                   date_time: "#{Time.now}",
+                   detail: 'Object deleted from S3 storage',
+                   outcome: 'Success',
+                   outcome_detail: current_user.email,
+                   object: 'Ruby aws-s3 gem',
+                   agent: 'https://github.com/marcel/aws-s3/tree/master',
+                   outcome_information: "Action requested by user from #{current_user.institution_pid}"
+    }
+    @generic_file.soft_delete(attributes)
     respond_to do |format|
       format.json { head :no_content }
       format.html {
@@ -63,7 +71,7 @@ class GenericFilesController < ApplicationController
 
   def filter_parameters
     params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
-                                                                   :modified, :format,
+                                                                   :modified, :file_format,
                                                                    checksum_attributes: [:digest, :algorithm, :datetime])
   end
 
@@ -78,7 +86,7 @@ class GenericFilesController < ApplicationController
   # Fixes bug https://www.pivotaltracker.com/story/show/73796812
   def params_for_update
     params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
-                                                                   :modified, :format)
+                                                                   :modified, :file_format)
   end
 
 

@@ -15,26 +15,14 @@ describe IntellectualObjectsController do
       end
     end
 
-
     describe 'when some objects are in the repository and signed in' do
       let(:another_institution) { FactoryGirl.create(:institution) }
-
-      let!(:obj1) { FactoryGirl.create(:consortial_intellectual_object,
-                                       institution: another_institution) }
-      let!(:obj2) { FactoryGirl.create(:institutional_intellectual_object,
-                                       institution: user.institution,
-                                       title: 'Aberdeen Wanderers Rugby Football Club',
-                                       description: 'a Scottish rugby union club. It was founded in Aberdeen in 1928.') }
-      let!(:obj3) { FactoryGirl.create(:institutional_intellectual_object,
-                                       institution: another_institution) }
-      let!(:obj4) { FactoryGirl.create(:restricted_intellectual_object,
-                                       institution: user.institution,
-                                       title: "The 2nd Workers' Cultural Palace Station",
-                                       description: 'a station of Line 2 of the Guangzhou Metro.',
-                                       identifier: 'jhu.d9abff425d09d5b0') }
-      let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object,
-                                       institution: another_institution) }
-
+      let!(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: another_institution) }
+      let!(:obj2) { FactoryGirl.create(:institutional_intellectual_object, institution: user.institution, title: 'Aberdeen Wanderers Rugby Football Club', description: 'a Scottish rugby union club. It was founded in Aberdeen in 1928.') }
+      let!(:obj3) { FactoryGirl.create(:institutional_intellectual_object,  institution: another_institution) }
+      let!(:obj4) { FactoryGirl.create(:restricted_intellectual_object, institution: user.institution, title: "The 2nd Workers' Cultural Palace Station", description: 'a station of Line 2 of the Guangzhou Metro.') }
+      let!(:obj5) { FactoryGirl.create(:restricted_intellectual_object, institution: another_institution) }
+      let!(:obj6) { FactoryGirl.create(:institutional_intellectual_object, institution: user.institution, bag_name: '12345-abcde', alt_identifier: ['test.edu/some-bag']) }
       before { sign_in user }
       describe 'as an institutional user' do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
@@ -42,9 +30,9 @@ describe IntellectualObjectsController do
           it 'should show the results that I have access to that belong to the institution' do
             get :index, institution_id: user.institution
             expect(response).to be_successful
-            expect(assigns(:document_list).size).to eq 2
+            expect(assigns(:document_list).size).to eq 3
             assigns(:document_list).each {|doc| expect(doc).to be_kind_of SolrDocument}
-            expect(assigns(:document_list).map &:id).to match_array [obj2.id, obj4.id]
+            expect(assigns(:document_list).map &:id).to match_array [obj2.id, obj4.id, obj6.id]
           end
 
           it 'should match a partial search on title' do
@@ -58,9 +46,19 @@ describe IntellectualObjectsController do
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
           it 'should match an exact search on identifier' do
-            get :index, institution_id: user.institution, q: 'jhu.d9abff425d09d5b0'
+            get :index, institution_id: user.institution, q: obj4.identifier
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
+          end
+          it 'should match an exact search on bag name' do
+            get :index, institution_id: user.institution, q: '12345-abcde'
+            expect(response).to be_successful
+            expect(assigns(:document_list).map &:id).to match_array [obj6.id]
+          end
+          it 'should match an exact search on alternate identifiers' do
+            get :index, institution_id: user.institution, q: 'test.edu/some-bag'
+            expect(response).to be_successful
+            expect(assigns(:document_list).map &:id).to match_array [obj6.id]
           end
         end
         describe 'and viewing another institution' do
@@ -108,12 +106,11 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object)).to eq obj1
       end
 
-      # TODO: Figure out fix so spec understands routing!
-      # it "should show the object by identifier for API users" do
-      #   get :show, identifier: obj1.identifier, use_route: 'object_by_identifier'
-      #   expect(response).to be_successful
-      #   expect(assigns(:intellectual_object)).to eq obj1
-      # end
+      it "should show the object by identifier for API users" do
+        get :show, identifier: CGI.escape(obj1.identifier), use_route: 'object_by_identifier'
+        expect(response).to be_successful
+        expect(assigns(:intellectual_object)).to eq obj1
+      end
 
     end
   end
@@ -184,11 +181,10 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
-      # TODO: Figure out fix so spec understands routing
-      # it "should update fields when called with identifier (API)" do
-      #   patch :update, identifier: obj1.identifier, intellectual_object: {title: 'Foo'}, use_route: 'object_update_by_identifier'
-      #   expect(assigns(:intellectual_object).title).to eq 'Foo'
-      # end
+      it "should update fields when called with identifier (API)" do
+        patch :update, identifier: CGI.escape(obj1.identifier), intellectual_object: {title: 'Foo'}, use_route: 'object_update_by_identifier'
+        expect(assigns(:intellectual_object).title).to eq 'Foo'
+      end
 
       it 'should update via json' do
         patch :update, id: obj1, intellectual_object: {title: 'Foo'}, format: 'json'
@@ -225,14 +221,16 @@ describe IntellectualObjectsController do
       end
 
       it 'should update fields' do
-        post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', identifier: '123', access: 'restricted'}, format: 'json'
+        post :create, institution_id: user.institution_pid, intellectual_object: { identifier: 'test.edu/124', title: 'Foo', access: 'restricted', bag_name: '124'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
+        expect(assigns(:intellectual_object).identifier).to eq 'test.edu/124'
+        expect(assigns(:intellectual_object).bag_name).to eq '124'
       end
 
       it 'should use the institution parameter in the URL, not from the json' do
         expect {
-          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: '123', access: 'restricted'}, format: 'json'
+          post :create, institution_id: user.institution_pid, intellectual_object: {title: 'Foo', institution_id: 'test:123', identifier: 'test.edu/123', access: 'restricted'}, format: 'json'
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Foo'
           expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid
@@ -245,15 +243,15 @@ describe IntellectualObjectsController do
       let(:any_institution) { FactoryGirl.create(:institution) }
       before { sign_in admin_user }
 
-      it 'should create all nested items when include relations flag is true' do
-        expect {
-          post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [{
+      def sample_object
+        {
             institution_id: any_institution.id,
             title: 'Test Title',
             access: 'consortia',
             description: '',
             identifier: 'ncsu.edu/ncsu.1840.16-388',
             alt_identifier: [],
+            bag_name: '',
             premisEvents: [
               { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
                 type: 'ingest',
@@ -281,7 +279,7 @@ describe IntellectualObjectsController do
                 size: 4853,
                 created: '2014-04-25T14:06:39-04:00',
                 modified: '2014-04-25T14:06:39-04:00',
-                format: 'application/xml',
+                file_format: 'application/xml',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
                 checksum: [
                   { algorithm: 'md5',
@@ -350,7 +348,7 @@ describe IntellectualObjectsController do
                 size: 72,
                 created: '2014-04-25T14:06:39-04:00',
                 modified: '2014-04-25T14:06:39-04:00',
-                format: 'text/plain',
+                file_format: 'text/plain',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
                 checksum: [
                   { algorithm: 'md5',
@@ -416,12 +414,37 @@ describe IntellectualObjectsController do
                 ]
               },
             ]
-          }], format: 'json'
-          expect(response.code).to eq '200'
-          expect(assigns(:intellectual_object).title).to eq 'Test Title'
-        }.to change(IntellectualObject, :count).by(1)
-
+          }
       end
+
+      it 'should create all nested items when include relations flag is true' do
+        expect {
+          post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [sample_object], format: 'json'
+          expect(response.code).to eq '201'
+          expect(assigns(:intellectual_object).title).to eq 'Test Title'
+          expect(assigns(:intellectual_object).bag_name).to eq 'ncsu.1840.16-388'
+        }.to change(IntellectualObject, :count).by(1)
+      end
+
+      it 'should roll back when nested items are invalid' do
+        obj = sample_object()
+        obj[:identifier] = "ncsu.edu/ncsu.ahchoo"
+        obj[:premisEvents].each { |pe| pe[:identifier] += "_1" }
+        obj[:generic_files].each { |gf|
+          gf[:identifier] += "_1"
+          gf[:premisEvents].each { |pe| pe[:identifier] += "_1" }
+        }
+        # Missing format is invalid. This will cause create_from_json
+        # to fail after it's already built up some generic files and
+        # events.
+        obj[:generic_files][1][:file_format] = ""
+        expect {
+          post :create_from_json, institution_id: any_institution.id, include_nested: 'true', intellectual_object: [obj], format: 'json'
+          expect(response.code).to eq '422'
+        }.to change(IntellectualObject, :count).by(0)
+      end
+
+
     end
   end
 
@@ -454,4 +477,74 @@ describe IntellectualObjectsController do
       end
     end
   end
+
+  describe 'restore an object' do
+    describe 'when not signed in' do
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+      after { obj1.destroy }
+
+      it 'should redirect to login' do
+        get :restore, id: obj1
+        expect(response).to redirect_to root_url + 'users/sign_in'
+      end
+
+    end
+
+    describe 'when signed in as an admin' do
+      let(:user) { FactoryGirl.create(:user, :admin) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+
+      before do
+        5.times do
+          FactoryGirl.create(:ingested_item)
+        end
+        ProcessedItem.update_all(object_identifier: obj1.identifier)
+        ProcessedItem.first.update(object_identifier: "some.edu/some.bag")
+        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        sign_in user
+      end
+
+      after do
+        ProcessedItem.delete_all
+      end
+
+      it 'should mark only the latest processed item for restore' do
+        get :restore, id: obj1
+        expect(response).to redirect_to 'OzzyOsbourne'
+        count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                    stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                    retry: true).count
+        expect(count).to eq(1)
+      end
+
+    end
+
+    describe 'when signed in as an institutional admin' do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: user.institution) }
+
+      before do
+        FactoryGirl.create(:ingested_item)
+        ProcessedItem.update_all(object_identifier: obj1.identifier)
+        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        sign_in user
+      end
+
+      after do
+        ProcessedItem.delete_all
+      end
+
+      it 'should mark the processed item for restore' do
+        get :restore, id: obj1
+        expect(response).to redirect_to 'OzzyOsbourne'
+        count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                    stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend']).count
+        expect(count).to eq(1)
+
+      end
+    end
+  end
+
 end
