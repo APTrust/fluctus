@@ -37,15 +37,30 @@ describe IntellectualObjectPolicy do
       end
 
       describe "not in my institution" do
-        let(:intellectual_object) { FactoryGirl.create(:intellectual_object, access: 'restricted') }
-        it do
-          should_not permit(:create_through_intellectual_object) 
-          should_not permit(:show)
-          should_not permit(:update)   
-          should_not permit(:edit)
-          should_not permit(:add_event) 
-          should_not permit(:soft_delete)
-          should_not permit(:destroy)
+        describe "with consortial access" do
+          let(:intellectual_object) { FactoryGirl.create(:intellectual_object, access: 'consortial') }
+          it do
+            should_not permit(:create_through_intellectual_object)
+            should permit(:show)
+            should_not permit(:update)
+            should_not permit(:edit)
+            should_not permit(:add_event)
+            should_not permit(:soft_delete)
+            should_not permit(:destroy)
+          end
+        end
+
+        describe "without consortial access" do
+          let(:intellectual_object) { FactoryGirl.create(:intellectual_object, access: 'restricted') }
+          it do
+            should_not permit(:create_through_intellectual_object)
+            should_not permit(:show)
+            should_not permit(:update)
+            should_not permit(:edit)
+            should_not permit(:add_event)
+            should_not permit(:soft_delete)
+            should_not permit(:destroy)
+          end
         end
       end
     end
