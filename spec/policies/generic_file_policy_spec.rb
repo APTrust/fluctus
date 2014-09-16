@@ -15,7 +15,7 @@ describe GenericFilePolicy do
       should permit(:update) 
       should permit(:edit) 
       should permit(:soft_delete) 
-      should_not permit(:destroy) 
+      should permit(:destroy)
     end
   end
 
@@ -32,7 +32,7 @@ describe GenericFilePolicy do
         should permit(:add_event) 
         should_not permit(:update) 
         should_not permit(:edit) 
-        should_not permit(:destroy) 
+        should permit(:destroy)
       end
     end
 

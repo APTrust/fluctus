@@ -15,7 +15,7 @@ describe IntellectualObjectPolicy do
       should permit(:edit)
       should permit(:add_event)
       should permit(:soft_delete)
-      should_not permit(:destroy)
+      should permit(:destroy)
     end
   end
 
@@ -32,7 +32,7 @@ describe IntellectualObjectPolicy do
           should_not permit(:edit)
           should permit(:add_event)
           should permit(:soft_delete)
-          should_not permit(:destroy)
+          should permit(:destroy)
         end
       end
 
