@@ -4,7 +4,9 @@
        <strong><%= @first_number %></strong> - <strong><%= @second_number %></strong> of <strong><%= @total_number %></strong>
     </span>
   </div>
-  <%= render 'review_items' %>
+  <% if current_user.admin? || current_user.institutional_admin? %>
+      <%= render 'review_items' %>
+  <% end %>
   <div class="search-widgets pull-right">
     <div id="sort-dropdown" class="btn-group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
