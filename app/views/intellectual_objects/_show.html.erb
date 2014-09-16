@@ -36,8 +36,10 @@
     <%= link_to intellectual_object_events_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
         <i class="glyphicon glyphicon-eye-open"></i> View Events
     <% end %>
-    <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
-        <i class="glyphicon glyphicon-download"></i> Restore Object
+    <% if current_user.admin? || (current_user.institutional_admin? && current_user.institution_pid == @intellectual_object.institution_id) %>
+      <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+          <i class="glyphicon glyphicon-download"></i> Restore Object
+      <% end %>
     <% end %>
     <%= render_document_sidebar_partial %>
   </div>
@@ -45,20 +47,27 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
-        <%= @intellectual_object.generic_files.count %> Files Preserved
+        <%= @intellectual_object.gf_count %>
+        <% if @intellectual_object.gf_count == 1 %>
+          File Preserved
+        <% else %>
+          Files Preserved
+        <% end %>
     </h3>
     </div>
     <div class="panel-body">
       <% @intellectual_object.generic_files.each do |gf| %>
-          <h4><%= link_to gf.display, gf  %></h4>
-          <dl class="dl-horizontal dl-invert">
-            <dt>Last Fixity</dt>
-            <dd><span class="label label-success">Success</span></dd>
-            <dt>MimeType<dt>
-            <dd><%= gf.file_format %></dd>
-            <dt>Filesize<dt>
-            <dd><%= number_to_human_size(gf.size) %></dd>
-          </dl>
+          <% unless gf.state == 'D' %>
+            <h4><%= link_to gf.display, gf  %></h4>
+            <dl class="dl-horizontal dl-invert">
+              <dt>Last Fixity</dt>
+              <dd><span class="label label-success">Success</span></dd>
+              <dt>MimeType<dt>
+              <dd><%= gf.file_format %></dd>
+              <dt>Filesize<dt>
+              <dd><%= number_to_human_size(gf.size) %></dd>
+            </dl>
+          <% end %>
       <% end %>
     </div>
   </div>

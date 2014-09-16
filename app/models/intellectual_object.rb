@@ -46,6 +46,12 @@ class IntellectualObject < ActiveFedora::Base
     save!
   end
 
+  def gf_count
+    count = 0
+    self.generic_files.each { |gf| count = count+1 unless gf.state == 'D' }
+    count
+  end
+
   private
   def identifier_is_unique
     return if self.identifier.nil?

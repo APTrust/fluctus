@@ -33,13 +33,11 @@
       <% end %>
     </dl>
   </section>
-  <div id="gf-sidebar" class="col-md-3">
-    <%= destroy_link @generic_file %>
-  </div>
   <section class="object_events">
     <%= link_to generic_file_events_path(@generic_file), class: 'btn doc-action-btn btn-normal' do %>
         <i class="glyphicon glyphicon-eye-open"></i> View Events
     <% end %>
+    <%= destroy_link @generic_file %>
 
   </section>
   <br>

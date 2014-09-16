@@ -1,11 +1,10 @@
-<% unless params[:qq].nil? && @selected == {} %>
-    <%= puts "Parameters: #{params[:qq]}, Selected: #{@selected}" %>
+<% unless (params[:qq].nil? || params[:qq] == '') && @selected == {} %>
   <div id="appliedParams" class="clearfix constraints-container">
     <div class="pull-right">
        <a class="catalog_startOverLink btn btn-sm btn-text" href="/itemresults" id="startOverLink">Start Over</a>
     </div>
     <span class="constraints-label">You searched for: </span>
-    <% if params[:qq] %>
+    <% unless params[:qq].nil? || params[:qq] == '' %>
       <span class="btn-group appliedFilter constraint query">
         <span class="constraint-value btn btn-sm btn-default btn-disabled">
           <span class="filterValue"><%= params[:qq] %></span>

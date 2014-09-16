@@ -31,6 +31,12 @@
             <th>Object Identifier</th>
             <th><%= @processed_item.object_identifier %></th>
           </tr>
+          <% unless @processed_item.generic_file_identifier.nil? %>
+            <tr>
+              <th>Generic File Identifier</th>
+              <th><%= @processed_item.generic_file_identifier %></th>
+            </tr>
+          <% end %>
           <tr>
             <th>Bag Date</th>
             <td><%= @processed_item.bag_date %></td>
