@@ -94,11 +94,11 @@ namespace :fluctus do
     start = Time.now
     puts "Starting time: #{start}"
 
-    args.with_defaults(:numInstitutions => partner_list.count, :numIntObjects => rand(5..10), :numGenFiles => rand(3..30))
+    args.with_defaults(:numInstitutions => partner_list.count-1, :numIntObjects => 1, :numGenFiles => 1)
 
     num_insts = args[:numInstitutions].to_i
     if num_insts > partner_list.count-1
-      num_insts = partner_list.count
+      num_insts = partner_list.count-1
       puts "We currently have only #{partner_list.count-1} institutions."
     end
 
