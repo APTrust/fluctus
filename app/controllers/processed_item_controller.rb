@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:index, :get_reviewed, :review_all]
+  after_action :verify_authorized, :except => [:index, :search, :get_reviewed, :review_all, :delete_test_items, :items_for_delete, :items_for_restore]
   
   def create
     authorize @processed_item
@@ -184,6 +184,7 @@ class ProcessedItemController < ApplicationController
     params[:object_identifier] = params[:object_identifier].gsub(/%2F/i, "/")
     @items = ProcessedItem.where(object_identifier: params[:object_identifier],
                                  action: Fluctus::Application::FLUCTUS_ACTIONS['restore'])
+    authorize @items
     results = @items.map { |item| item.update_attributes(params_for_status_update) }
     respond_to do |format|
       if @items.count == 0

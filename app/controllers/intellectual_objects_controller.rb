@@ -1,7 +1,7 @@
 class IntellectualObjectsController < ApplicationController
   
   before_filter :authenticate_user!
-  before_filter :load_object, only: [:show, :edit, :update, :destroy]
+  before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
   before_filter :load_institution, only: [:index, :create, :create_from_json]
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
 
@@ -71,12 +71,14 @@ class IntellectualObjectsController < ApplicationController
 
   # get 'objects/:id/restore'
   def restore
+    authorize @intellectual_object
     ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
     redirect_to :back
     flash[:notice] = 'Your item has been queued for restoration.'
   end
 
   def create_from_json
+    authorize @institution, :create_through_institution?
     if params[:include_nested] == 'true'
       # new_object is the IntellectualObject we're creating.
       # current_object is the item we're about to save at any
@@ -129,7 +131,6 @@ class IntellectualObjectsController < ApplicationController
         end
         @intellectual_object = new_object
         @institution = @intellectual_object.institution
-        authorize! :create, @intellectual_object
         respond_to { |format| format.json { render json: object_as_json, status: :created } }
       rescue Exception => ex
         if !new_object.nil?

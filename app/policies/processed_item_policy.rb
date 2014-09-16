@@ -10,7 +10,11 @@ class ProcessedItemPolicy < ApplicationPolicy
 
 	def index?
 		user.admin? ||  (user.institution.identifier == record.institution)
-	end
+  end
+
+  def search?
+    user.admin? || (user.institution.identifier == record.institution)
+  end
 
 	def show?
 		user.admin? || (user.institution.identifier == record.institution)
@@ -26,13 +30,28 @@ class ProcessedItemPolicy < ApplicationPolicy
 	end	
 
 	def mark_as_reviewed?
-		user.admin? || 
-		(user.institutional_admin? && (user.institution.identifier == record.institution))
-	end
+		user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+  end
+
+  def review_all?
+    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+  end
 
 	def destroy?
 		false
-	end
+  end
+
+  def set_restoration_status?
+    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+  end
+
+  def items_for_delete?
+    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+  end
+
+  def items_for_restore?
+    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+  end
 
 	class Scope
     attr_reader :user, :scope
