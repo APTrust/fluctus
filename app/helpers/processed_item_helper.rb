@@ -2,8 +2,8 @@ module ProcessedItemHelper
 
   def current_path(param, value)
     old_path = request.fullpath
-    if old_path.include? 'sort'
-      new_path = url_for(params.except :sort)
+    if old_path.include? 'pi_sort'
+      new_path = url_for(params.except :pi_sort)
     else
       new_path = old_path
     end

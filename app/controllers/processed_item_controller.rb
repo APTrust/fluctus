@@ -34,7 +34,7 @@ class ProcessedItemController < ApplicationController
     search_param = "%#{params[:qq]}%"
     field = params[:pi_search_field]
     @institution = current_user.institution
-    params[:sort] = 'date' if params[:sort].nil?
+    params[:pi_sort] = 'date' if params[:pi_sort].nil?
     if current_user.admin?
       if field == 'Name'
         @processed_items = ProcessedItem.where('name LIKE ?', search_param)
@@ -57,8 +57,8 @@ class ProcessedItemController < ApplicationController
         @processed_items = institution_items.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
       end
     end
-    @processed_items = @processed_items.order(params[:sort])
-    @processed_items = @processed_items.reverse_order if params[:sort] == 'date'
+    @processed_items = @processed_items.order(params[:pi_sort])
+    @processed_items = @processed_items.reverse_order if params[:pi_sort] == 'date'
     filter_items
     set_filter_values
     params[:id] = @institution.id
@@ -345,14 +345,14 @@ class ProcessedItemController < ApplicationController
       session[:select_notice] = ''
     end
     @institution = current_user.institution
-    params[:sort] = 'date' if params[:sort].nil?
+    params[:pi_sort] = 'date' if params[:pi_sort].nil?
     if(session[:show_reviewed] == 'true')
-      @processed_items = ProcessedItem.where(institution: @institution.identifier).order(params[:sort])
+      @processed_items = ProcessedItem.where(institution: @institution.identifier).order(params[:pi_sort])
     else
-      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order(params[:sort])
+      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order(params[:pi_sort])
     end
-    @processed_items = ProcessedItem.order(params[:sort]) if current_user.admin?
-    @processed_items = @processed_items.reverse_order if params[:sort] == 'date'
+    @processed_items = ProcessedItem.order(params[:pi_sort]) if current_user.admin?
+    @processed_items = @processed_items.reverse_order if params[:pi_sort] == 'date'
     filter_items
     set_filter_values
     params[:id] = @institution.id
