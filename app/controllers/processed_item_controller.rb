@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:index, :search, :get_reviewed, :review_all, :delete_test_items, :items_for_delete, :items_for_restore]
+  after_action :verify_authorized, :except => [:index, :search, :get_reviewed, :review_all, :delete_test_items, :ingested_since, :show_reviewed, :items_for_delete, :items_for_restore]
   
   def create
     authorize @processed_item
