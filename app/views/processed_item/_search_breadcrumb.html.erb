@@ -7,7 +7,12 @@
     <% unless params[:qq].nil? || params[:qq] == '' %>
       <span class="btn-group appliedFilter constraint query">
         <span class="constraint-value btn btn-sm btn-default btn-disabled">
-          <span class="filterValue"><%= params[:qq] %></span>
+          <% if params[:pi_search_field].nil? || params[:pi_search_field] == '' || params[:pi_search_field] == 'All Fields' %>
+            <span class="filterValue"><%= params[:qq] %></span>
+          <% else %>
+            <span class="filterName"><%= params[:pi_search_field] %></span>
+            <span class="filterValue"><%= params[:qq] %></span>
+          <% end %>
         </span>
         <a class="btn btn-default btn-sm remove" href="<%=url_for(params.except :qq)%>">
           <span class="glyphicon glyphicon-remove"></span>

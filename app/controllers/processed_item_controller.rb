@@ -32,7 +32,7 @@ class ProcessedItemController < ApplicationController
 
   def search
     search_param = "%#{params[:qq]}%"
-    field = params[:search_field]
+    field = params[:pi_search_field]
     @institution = current_user.institution
     params[:sort] = 'date' if params[:sort].nil?
     if current_user.admin?
