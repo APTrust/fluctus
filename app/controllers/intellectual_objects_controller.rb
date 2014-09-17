@@ -2,7 +2,7 @@ class IntellectualObjectsController < ApplicationController
   
   before_filter :authenticate_user!
   before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
-  before_filter :load_institution, only: [:index, :create, :create_from_json]
+  before_filter :load_institution, only: [:index, :create]
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
 
   include Aptrust::GatedSearch
@@ -78,7 +78,6 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def create_from_json
-    authorize @institution, :create_through_institution?
     if params[:include_nested] == 'true'
       # new_object is the IntellectualObject we're creating.
       # current_object is the item we're about to save at any
@@ -103,6 +102,8 @@ class IntellectualObjectsController < ApplicationController
             new_object[attr_name.to_s] = attr_value.to_s
           end }
         current_object = "IntellectualObject #{new_object.identifier}"
+        load_institution_for_create_from_json(new_object)
+        authorize @institution, :create_through_institution?
         new_object.save!
         object_events.each { |event|
           current_object = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
@@ -205,5 +206,9 @@ class IntellectualObjectsController < ApplicationController
 
   def load_institution
     @institution ||= Institution.find(params[:institution_id])
+  end
+
+  def load_institution_for_create_from_json(object)
+    @institution = params[:institution_id].nil? ? object.institution : Institution.find(params[:institution_id])
   end
 end
