@@ -4,7 +4,7 @@ RSpec::Core::RakeTask.new(:rspec => 'test:prepare') { |t| t.rspec_opts = ['--col
 namespace :fluctus do
 
   partner_list = [
-        ['APTrust' 'apt' 'aptrust.org'],
+        ['APTrust', 'apt', 'aptrust.org'],
         ['Columbia University', 'cul', 'columbia.edu'],
         ['Johns Hopkins University', 'jhu', 'jhu.edu'],
         ['North Carolina State University', 'ncsu', 'ncsu.edu'],
