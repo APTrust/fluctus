@@ -24,7 +24,7 @@ module ApplicationHelper
     options[:class] = 'btn doc-action-btn btn-danger' if options[:class].nil?
     options[:method] = :get if options[:method].nil?
     options[:data] = { confirm: 'Are you sure?' }if options[:confirm].nil?
-    link_to(content.html_safe, [:admin_password_reset, object], options) if can?(:admin_password_reset, object)
+    link_to(content.html_safe, [:admin_password_reset, object], options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).admin_password_reset?
   end
 
   def create_link(object, content = nil, options={})

@@ -38,7 +38,11 @@ class UserPolicy < ApplicationPolicy
 
 	def edit_password?
 		update_password?
-	end
+  end
+
+  def admin_password_reset?
+    user.admin?
+  end
 
 	# institutional_admin cannot delelte institutional user
 	def destroy?
