@@ -6,7 +6,7 @@ Fluctus::Application.routes.draw do
 
   resources :intellectual_objects, only: [:show, :edit, :update, :destroy], path: 'objects' do
     resources :generic_files, only: :create, path: 'files'
-    patch "files/:id", to: 'generic_files#update', constraints: {id: /.*/}, trailing_slash: true, format: 'json'
+    patch 'files/:id', to: 'generic_files#update', constraints: {id: /.*/}, trailing_slash: true, format: 'json'
     resources :events, only: [:create, :index]
   end
 
@@ -23,6 +23,8 @@ Fluctus::Application.routes.draw do
     get 'edit_password', on: :member
     patch 'generate_api_key', on: :member
   end
+
+  get 'users/:id/admin_password_reset', to: 'users#admin_password_reset', as: :admin_password_reset_user
 
   resources :generic_files, only: [:show, :destroy], path: 'files' do
     resources :events, only: [:create]
