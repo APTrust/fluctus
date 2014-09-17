@@ -7,7 +7,7 @@ class ProcessedItemController < ApplicationController
   before_filter :find_and_update, only: :update
 
   after_action :verify_authorized, :except => [:index, :search, :get_reviewed, :review_all, :delete_test_items, :ingested_since, :show_reviewed, :items_for_delete, :items_for_restore]
-  
+
   def create
     authorize @processed_item
     respond_to do |format|
@@ -267,8 +267,8 @@ class ProcessedItemController < ApplicationController
           item.save!
         end
       end
-    end    
-    
+    end
+
     session[:purge_datetime] = Time.now.utc
     redirect_to :back
   rescue ActionController::RedirectBackError
@@ -382,7 +382,16 @@ class ProcessedItemController < ApplicationController
                                               name: params[:name],
                                               bag_date: params[:bag_date]).first
       end
-      params[:id] = @processed_item.id if @processed_item
+      if @processed_item
+        params[:id] = @processed_item.id
+      else
+        # API callers **DEPEND** on getting a 404 if the record does
+        # not exist. This is how they know that an item has not started
+        # the ingestion process. So if @processed_item is nil, return
+        # 404 now. Otherwise, the call to authorize below will result
+        # in a 500 error from pundit.
+        raise ActiveRecord::RecordNotFound
+      end
     end
     authorize @processed_item, :show?
   end

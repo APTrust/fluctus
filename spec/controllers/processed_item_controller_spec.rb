@@ -72,6 +72,14 @@ describe ProcessedItemController do
         get :show, id: item.id
         assigns(:institution).should eq( admin_user.institution)
       end
+
+      it "returns 404, not 500, for item not found" do
+        expect {
+          get :show,
+          etag: "does not exist",
+          name: "duznot igzist",
+          bag_date: "1901-01-01" }.to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
   end
 
