@@ -39,6 +39,16 @@ class UsersController < ApplicationController
     redirect_to user_path(@user)
   end
 
+  def admin_password_reset
+    @user = User.find(params[:id])
+    password = SecureRandom.hex(4)
+    @user.password = password
+    @user.password_confirmation = password
+    @user.save!
+    redirect_to @user
+    flash[:notice] = "#{@user.name}'s password has been reset to #{password}."
+  end
+
   private
 
     def build_resource_params

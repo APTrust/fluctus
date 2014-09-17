@@ -19,6 +19,14 @@ module ApplicationHelper
     link_to(content.html_safe, object, options) if can?(:destroy, object)
   end
 
+  def admin_password_link(object, content = nil, options={})
+    content ||= '<i class="glyphicon glyphicon-warning-sign"></i> Reset User Password'
+    options[:class] = 'btn doc-action-btn btn-danger' if options[:class].nil?
+    options[:method] = :get if options[:method].nil?
+    options[:data] = { confirm: 'Are you sure?' }if options[:confirm].nil?
+    link_to(content.html_safe, [:admin_password_reset, object], options) if can?(:admin_password_reset, object)
+  end
+
   def create_link(object, content = nil, options={})
     content ||= '<i class="glyphicon glyphicon-plus"></i> Create'
     options[:class] = 'btn doc-action-btn btn-success' if options[:class].nil?

@@ -30,6 +30,10 @@ footer {
 
 #header-navbar .navbar-brand {@include fix-title;}
 
+.container {
+  width: 1250px !important;
+}
+
 /* MISC */
 .gravatar {
   float: left;

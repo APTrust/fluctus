@@ -54,6 +54,13 @@ describe UsersController do
       expect(assigns[:user]).to eq institutional_admin 
     end
 
+    it 'can perform a password reset' do
+      password = institutional_admin.password
+      get :admin_password_reset, id: institutional_admin
+      expect(assigns[:user]).to eq institutional_admin
+      expect(assigns[:user].password).not_to eq password
+    end
+
     describe "can update Institutional Administrators" do
       let(:institutional_admin) { FactoryGirl.create(:user, :institutional_admin)}
 
