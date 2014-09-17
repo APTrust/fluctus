@@ -19,6 +19,13 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def show
+    respond_to do |format|
+      format.json { render json: @processed_item }
+      format.html
+    end
+  end
+
   def update
     authorize @processed_item
     respond_to do |format|
