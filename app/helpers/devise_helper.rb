@@ -3,7 +3,7 @@ module DeviseHelper
     return "" if @user.errors.empty?
 
     messages = @user.errors.full_messages.map { |msg| content_tag(:li, msg) }.join
-    if messages.include? 'Email not found'
+    if (messages.include? 'Email not found') || (messages.include? 'Reset')
       message = messages
     elsif messages.include? " be blank"
       if current_user.nil?
