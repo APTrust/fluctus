@@ -138,6 +138,9 @@ Devise.setup do |config|
   # ==> Configuration for :timeoutable
   # The time you want to timeout the user session without activity. After this
   # time the user will be asked for credentials again. Default is 30 minutes.
+  #
+  # *** See also Fluctus::Application::API_USER_SESSION_TIMEOUT for API users. ***
+  #
   config.timeout_in = 30.minutes
 
   # If true, expires auth token on session timeout.

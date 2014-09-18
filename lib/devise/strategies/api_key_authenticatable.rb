@@ -16,14 +16,17 @@ module Devise
         api_key = request.headers["X-Fluctus-API-Key"]
         user = User.find_by_email(api_user)
         unless user
-          fail! 
+          fail!
           return
         end
         authenticated = api_key.nil? == false && user.valid_api_key?(api_key)
+        if authenticated
+          # Give API user a long timeout
+          user.set_session_timeout(Fluctus::Application::API_USER_SESSION_TIMEOUT)
+        end
         authenticated ? success!(user) : fail!
       end
 
     end
   end
 end
-

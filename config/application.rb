@@ -64,5 +64,18 @@ module Fluctus
     APTRUST_NAME = 'APTrust'
     APTRUST_ID = 'aptrust.org'
 
+    # The session timeout for most users is set in
+    # config/initializers/devise.rb. We want to override
+    # that for API clients that log in with an API key.
+    # This is the only way to work around the issue of API user sessions
+    # timing out. Even though API users always pass their API key in
+    # the HTTP header, we cannot automatically renew their session once
+    # it expires, because warden's authenticate, sign_in and set_user
+    # methods automatically log the user out and destroy the session
+    # if they find an expired session. That is, calling "sign_in user"
+    # internally calls "sign_out user", and redirects to login, and there
+    # is no way to stop it.
+    API_USER_SESSION_TIMEOUT = 30.days
+
   end
 end
