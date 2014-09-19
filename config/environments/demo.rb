@@ -37,10 +37,12 @@ Fluctus::Application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default :charset => "utf-8"
   config.action_mailer.smtp_settings = {
-    :address => "127.0.0.1",
-    :port    => 25,
-    :domain  => 'test.aptrust.org',
-    enable_starttls_auto: false
+    :address => "email-smtp.us-east-1.amazonaws.com",
+    :authentication => :login,
+    :enable_starttls_auto => true,
+    :port    => 465,
+    :username => ENV['AWS_SES_USER'],
+    :password => ENV['AWS_SES_PASSWORD']
   }
 
 
