@@ -41,7 +41,7 @@ Fluctus::Application.configure do
     :authentication => :login,
     :enable_starttls_auto => true,
     :port    => 465,
-    :username => ENV['AWS_SES_USER'],
+    :user_name => ENV['AWS_SES_USER'],
     :password => ENV['AWS_SES_PASSWORD']
   }
 
