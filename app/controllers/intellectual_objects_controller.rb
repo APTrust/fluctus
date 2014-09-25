@@ -6,9 +6,9 @@ class IntellectualObjectsController < ApplicationController
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
 
   include Aptrust::GatedSearch
-  apply_catalog_search_params
   include RecordsControllerBehavior
 
+  apply_catalog_search_params
   self.solr_search_params_logic += [:for_selected_institution]
 
   def index
@@ -156,13 +156,10 @@ class IntellectualObjectsController < ApplicationController
     intellectual_object_path(resource)
   end
 
-  #def self.cancan_resource_class
-    #CanCan::ControllerResource
-  #end
-
   private
 
   def for_selected_institution(solr_parameters, user_parameters)
+    return unless params[:institution_id]
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{params[:institution_id]}")
   end
@@ -211,4 +208,5 @@ class IntellectualObjectsController < ApplicationController
   def load_institution_for_create_from_json(object)
     @institution = params[:institution_id].nil? ? object.institution : Institution.find(params[:institution_id])
   end
+
 end

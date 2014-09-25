@@ -28,6 +28,8 @@ class GenericFile < ActiveFedora::Base
   def to_solr(solr_doc = {})
     super
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
+    Solrizer.insert_field(solr_doc, 'file_format', self.file_format, :symbol)
+    Solrizer.insert_field(solr_doc, 'institution_name', intellectual_object.institution.identifier, :symbol)
   end
 
   def display

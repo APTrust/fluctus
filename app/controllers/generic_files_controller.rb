@@ -6,10 +6,18 @@ class GenericFilesController < ApplicationController
     
   after_action :verify_authorized, :except => [:create, :index]
 
+  include Aptrust::GatedSearch
+  self.solr_search_params_logic += [:for_selected_object]
+  self.solr_search_params_logic += [:only_generic_files]
+  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+  self.solr_search_params_logic += [:only_active_objects]
+
   def index
     authorize @intellectual_object
+    @generic_files = @intellectual_object.generic_files
     respond_to do |format|
       format.json { render json: @intellectual_object.generic_files.map do |f| f.serializable_hash end }
+      format.html { super }
     end
   end
 
@@ -128,6 +136,11 @@ class GenericFilesController < ApplicationController
     elsif params[:id]
       @generic_file ||= GenericFile.find(params[:id])
     end
+  end
+
+  def for_selected_object(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{params[:intellectual_object_id]}")
   end
 
 end

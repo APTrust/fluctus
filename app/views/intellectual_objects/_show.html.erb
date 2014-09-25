@@ -36,12 +36,32 @@
     <%= link_to intellectual_object_events_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
         <i class="glyphicon glyphicon-eye-open"></i> View Events
     <% end %>
+    <%= link_to intellectual_object_files_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+        <i class="glyphicon glyphicon-list-alt"></i> View Preserved Files
+    <% end %>
     <% if current_user.admin? || (current_user.institutional_admin? && current_user.institution_pid == @intellectual_object.institution_id) %>
       <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
           <i class="glyphicon glyphicon-download"></i> Restore Object
       <% end %>
     <% end %>
     <%= render_document_sidebar_partial %>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        Aggregate Data About Preserved Files
+      </h3>
+    </div>
+
+    <div class="panel-body">
+      <dl class="dl-horizontal dl-invert">
+        <dt>Files Preserved </dt>
+        <dd><%= @intellectual_object.gf_count %></dd>
+        <dt>Other Information<dt>
+        <dd>This is where we will add more summary data.</dd>
+      </dl>
+    </div>
   </div>
 
   <div class="panel panel-default">
@@ -55,6 +75,7 @@
         <% end %>
     </h3>
     </div>
+
     <div class="panel-body">
       <% @intellectual_object.generic_files.each do |gf| %>
           <% unless gf.state == 'D' %>

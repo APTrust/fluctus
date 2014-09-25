@@ -36,6 +36,11 @@ module Aptrust::GatedSearch
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(has_model: IntellectualObject.to_class_uri)
   end
 
+  def only_generic_files(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(has_model: GenericFile.to_class_uri)
+  end
+
   # Limits search results just to ActiveObjects
   # @param solr_parameters the current solr parameters
   # @param user_parameters the current user-submitted parameters

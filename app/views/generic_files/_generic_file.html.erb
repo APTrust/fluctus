@@ -1,0 +1,37 @@
+<% # container for a single doc -%>
+<div class="document <%= render_document_class generic_file %>">
+
+  <% # header bar for doc items in index view -%>
+  <section class="documentHeader clearfix">
+
+    <%- # main title container for doc partial view -%>
+    <h5 class="index_title col-sm-9 col-lg-9">
+      <% counter = document_counter_with_offset(generic_file_counter) %>
+      <%= t('blacklight.search.documents.counter', :counter => counter) if counter %>
+      <%= link_to_document generic_file, :label=>document_show_link_field(generic_file), :counter => counter %>
+    </h5>
+
+    <% # bookmark functions for items/docs -%>
+    <%= render_index_doc_actions generic_file, :wrapping_class => "index-document-functions col-sm-3 col-lg-3" %>
+  </section>
+
+  <dl class="document-metadata dl-horizontal dl-invert">
+    <dt> Identifier: </dt>
+    <dd> <%= Array(generic_file['tech_metadata__identifier_ssim']).first %> </dd>
+
+    <dt> Institution: </dt>
+    <dd> <%= Array(generic_file['institution_name_ssim']).first %> </dd>
+
+    <dt> MimeType: </dt>
+    <dd> <%= Array(generic_file['file_format_ssim']).first %> </dd>
+
+    <dt> Filesize: </dt>
+    <dd> <%= Array(generic_file['tech_metadata__size_lsi']).first %> </dd>
+
+    <% if generic_file['object_state_ssi'] == 'D' %>
+        <dt>State</dt>
+        <dd>Deleted</dd>
+    <% end %>
+  </dl>
+</div>
+
