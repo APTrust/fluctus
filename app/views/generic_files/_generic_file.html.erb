@@ -8,7 +8,7 @@
     <h5 class="index_title col-sm-9 col-lg-9">
       <% counter = document_counter_with_offset(generic_file_counter) %>
       <%= t('blacklight.search.documents.counter', :counter => counter) if counter %>
-      <%= link_to_document generic_file, :label=>document_show_link_field(generic_file), :counter => counter %>
+      <%= link_to_document generic_file, :label=>Array(generic_file['tech_metadata__identifier_ssim']).first, :counter => counter %>
     </h5>
 
     <% # bookmark functions for items/docs -%>
@@ -20,13 +20,13 @@
     <dd> <%= Array(generic_file['tech_metadata__identifier_ssim']).first %> </dd>
 
     <dt> Institution: </dt>
-    <dd> <%= Array(generic_file['institution_name_ssim']).first %> </dd>
+    <dd> <%= Array(generic_file['gf_institution_name_ssim']).first %> </dd>
 
     <dt> MimeType: </dt>
-    <dd> <%= Array(generic_file['file_format_ssim']).first %> </dd>
+    <dd> <%= Array(generic_file['tech_metadata__file_format_ssi']).first %> </dd>
 
     <dt> Filesize: </dt>
-    <dd> <%= Array(generic_file['tech_metadata__size_lsi']).first %> </dd>
+    <dd> <%= number_to_human_size(Array(generic_file['tech_metadata__size_lsi']).first) %> </dd>
 
     <% if generic_file['object_state_ssi'] == 'D' %>
         <dt>State</dt>

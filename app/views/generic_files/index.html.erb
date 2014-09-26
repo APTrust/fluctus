@@ -4,7 +4,8 @@
 
 <div id="content" class="col-md-9">
 
-  <h2 class="top-content-title">Files for <%= @intellectual_object.identifier %></h2>
+  <h2 class="top-content-title">Files for <%= @intellectual_object.title %></h2>
+  <h4>Object Identifier: <%= @intellectual_object.identifier %></h4>
   <% @page_title = t('blacklight.search.title', :application_name => application_name) %>
 
   <%= render 'did_you_mean' %>

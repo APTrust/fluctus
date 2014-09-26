@@ -32,8 +32,7 @@ class IntellectualObject < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new)
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
-      # TODO only generic_files in the active state
-      Solrizer.insert_field(doc, 'file_format', generic_files.map(&:file_format), :facetable)
+      file_aggregation(doc)
     end
   end
 
@@ -46,10 +45,38 @@ class IntellectualObject < ActiveFedora::Base
     save!
   end
 
+  def file_aggregation(doc)
+    count = 0
+    total_size = 0
+    format_map = {}
+    self.generic_files.each do |gf|
+      unless gf.state == 'D'
+        count = count+1
+        total_size = total_size+gf.size
+        if format_map.include?(gf.file_format)
+          format_count = format_map[gf.file_format]
+          format_count = format_count + 1
+          format_map[gf.file_format] = format_count
+        else
+          format_map[gf.file_format] = 1
+        end
+      end
+    end
+    Solrizer.insert_field(doc, 'file_format', format_map, :facetable)
+    Solrizer.insert_field(doc, 'total_file_size', total_size, :symbol)
+    Solrizer.insert_field(doc, 'active_count', count, :symbol)
+  end
+
   def gf_count
     count = 0
     self.generic_files.each { |gf| count = count+1 unless gf.state == 'D' }
     count
+  end
+
+  def gf_size
+    size = 0
+    self.generic_files.each { |gf| size = size+gf.size unless gf.state == 'D' }
+    size
   end
 
   private
