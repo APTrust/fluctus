@@ -11,8 +11,8 @@
   <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
 
   <!-- solr lib dirs -->
-  <lib dir="/opt/solr/solr-4.7.2/contrib/analysis-extras/lib/" />
-  <lib dir="/opt/solr/solr-4.7.2/contrib/analysis-extras/lucene-libs/" />
+  <lib dir="/mnt/aptrust/solr/solr-4.7.2/contrib/analysis-extras/lib/" />
+  <lib dir="/mnt/aptrust/solr/solr-4.7.2/contrib/analysis-extras/lucene-libs/" />
   
   <dataDir>${solr.data.dir:}</dataDir>
 
