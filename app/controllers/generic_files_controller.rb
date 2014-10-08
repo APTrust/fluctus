@@ -28,6 +28,7 @@ class GenericFilesController < ApplicationController
   def create
     authorize @intellectual_object, :create_through_intellectual_object?
     @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
+    @generic_file.state = 'A'
     respond_to do |format|
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
@@ -39,7 +40,7 @@ class GenericFilesController < ApplicationController
 
   def update
     authorize @generic_file
-
+    @generic_file.state = 'A'
     if resource.update(params_for_update)
       head :no_content
     else

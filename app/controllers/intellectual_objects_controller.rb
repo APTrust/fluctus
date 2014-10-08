@@ -124,6 +124,7 @@ class IntellectualObjectsController < ApplicationController
           file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
           current_object = "GenericFile #{new_file.identifier}"
           new_file.intellectual_object = new_object
+          new_file.state = 'A'
           new_file.save!
           file_events.each { |event|
             current_object = "GenericFile Event #{event['type']} / #{event['identifier']}"
