@@ -45,8 +45,5 @@ Fluctus::Application.configure do
     :password => ENV['AWS_SES_PASSWORD']
   }
 
-
-  # log only errors, otherwise, we end up with huge log files
-  # that eat up all our disk space.
-  config.log_level = :error
+  config.log_level = :info
 end
