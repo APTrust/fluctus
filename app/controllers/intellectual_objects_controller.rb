@@ -1,5 +1,5 @@
 class IntellectualObjectsController < ApplicationController
-  
+
   before_filter :authenticate_user!
   before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
   before_filter :load_institution, only: [:index, :create]
@@ -27,7 +27,7 @@ class IntellectualObjectsController < ApplicationController
     authorize @intellectual_object
     respond_to do |format|
       format.json { render json: object_as_json }
-      format.html 
+      format.html
     end
   end
 
@@ -173,9 +173,13 @@ class IntellectualObjectsController < ApplicationController
   end
 
   # Override Fedora's default JSON serialization for our API
+  # Note that we return only active files, not deleted files
   def object_as_json
     if params[:include_relations]
-      @intellectual_object.serializable_hash(include: [ :premisEvents, generic_files: { include: [:checksum, :premisEvents]}])
+      # Return only active files, but call them generic_files
+      data = @intellectual_object.serializable_hash(include: [ :premisEvents, active_files: { include: [:checksum, :premisEvents]}])
+      data['generic_files'] = data.delete('active_files')
+      data
     else
       @intellectual_object.serializable_hash()
     end

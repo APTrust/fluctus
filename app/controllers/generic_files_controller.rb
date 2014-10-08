@@ -3,13 +3,14 @@ class GenericFilesController < ApplicationController
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
   before_filter :load_intellectual_object, only: [:update, :create, :index]
-    
+
   after_action :verify_authorized, :except => [:create, :index]
 
   def index
     authorize @intellectual_object
     respond_to do |format|
-      format.json { render json: @intellectual_object.generic_files.map do |f| f.serializable_hash end }
+      # Return active files only, not deleted files!
+      format.json { render json: @intellectual_object.active_files.map do |f| f.serializable_hash end }
     end
   end
 
@@ -38,7 +39,7 @@ class GenericFilesController < ApplicationController
 
   def update
     authorize @generic_file
-    
+
     if resource.update(params_for_update)
       head :no_content
     else

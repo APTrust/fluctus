@@ -63,6 +63,7 @@ class GenericFile < ActiveFedora::Base
       modified: Time.parse(modified).iso8601,
       file_format: file_format,
       identifier: identifier,
+      state: state,
     }
     if options.has_key?(:include)
       data.merge!(checksum: serialize_checksums) if options[:include].include?(:checksum)
