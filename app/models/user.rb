@@ -1,14 +1,14 @@
 require 'bcrypt'
 
 class User < ActiveRecord::Base
-  # Connects this user object to Hydra behaviors. 
+  # Connects this user object to Hydra behaviors.
   include Hydra::User
 
-  # Connects this user object to Blacklights Bookmarks. 
+  # Connects this user object to Blacklights Bookmarks.
   include Blacklight::User
   include Aptrust::SolrHelper
-  
-  # Connects this user object to Role-management behaviors. 
+
+  # Connects this user object to Role-management behaviors.
   include Hydra::RoleManagement::UserRoles
 
   # Include default devise modules. Others available are:
@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   # :recoverable, :rememberable, :trackable, :validatable,
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :recoverable, :rememberable, :trackable, 
+  devise :database_authenticatable, :recoverable, :rememberable, :trackable,
   :timeoutable, :validatable
 
   validates :email, :phone_number, :role_ids, presence: true
@@ -48,8 +48,8 @@ class User < ActiveRecord::Base
     end
   end
 
-  # Blacklight uses #to_s on youruser class to get a user-displayable 
-  # login/identifier for the account. 
+  # Blacklight uses #to_s on youruser class to get a user-displayable
+  # login/identifier for the account.
   #
   # Method modified from the Blacklight default.
   def to_s
@@ -132,6 +132,25 @@ class User < ActiveRecord::Base
     bcrypt  = ::BCrypt::Password.new(encrypted_api_secret_key)
     key = ::BCrypt::Engine.hash_secret("#{input_key}#{User.pepper}", bcrypt.salt)
     Devise.secure_compare(key, encrypted_api_secret_key)
+  end
+
+  # Sets a custom session time (in seconds) for the current user.
+  def set_session_timeout(seconds)
+    @session_timeout = seconds
+  end
+
+  # Returns the session duration, in seconds, for the current user.
+  # For API use sessions, we set a long timeout
+  # For all other users, we use the config setting Devise.timeout_in,
+  # which is set in config/initializers/devise.rb.
+  # For info on the timeout_in method, see:
+  # https://github.com/plataformatec/devise/wiki/How-To:-Add-timeout_in-value-dynamically
+  def timeout_in
+    if !@session_timeout.nil? && @session_timeout > 0
+      @session_timeout
+    else
+      Devise.timeout_in
+    end
   end
 
   class NilInstitution

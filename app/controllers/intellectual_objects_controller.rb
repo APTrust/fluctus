@@ -1,5 +1,5 @@
 class IntellectualObjectsController < ApplicationController
-  
+
   before_filter :authenticate_user!
   before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
   before_filter :load_institution, only: [:index, :create]
@@ -25,9 +25,15 @@ class IntellectualObjectsController < ApplicationController
 
   def show
     authorize @intellectual_object
-    respond_to do |format|
-      format.json { render json: object_as_json }
-      format.html 
+    if @intellectual_object.nil? || @intellectual_object.state == 'D'
+      respond_to do |format|
+        format.json { render :nothing => true, :status => 404 }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: object_as_json }
+        format.html
+      end
     end
   end
 
@@ -78,57 +84,42 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def create_from_json
+    # new_object is the IntellectualObject we're creating.
+    # current_object is the item we're about to save at any
+    # given step of this operation. We use this in the rescue
+    # clause to let the caller know where the operation failed.
+    state = {
+      current_object: nil,
+      object_events: [],
+      object_files: [],
+      }
     if params[:include_nested] == 'true'
-      # new_object is the IntellectualObject we're creating.
-      # current_object is the item we're about to save at any
-      # given step of this operation. We use this in the rescue
-      # clause to let the caller know where the operation failed.
-      new_object = nil
-      current_object = nil
       begin
-        params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
+        json_param = get_create_params
         object = JSON.parse(json_param.to_json).first
-        new_object = IntellectualObject.new()
-        object_events, object_files = []
+        # We might be re-ingesting a previously-deleted intellectual object,
+        # or more likely, creating a new intel obj. Load or create the object.
+        identifier = object['identifier'].gsub(/%2F/i, "/")
+        new_object = IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first ||
+          IntellectualObject.new()
+        new_object.state = 'A' # in case we just loaded a deleted object
+        # Set the object's attributes from the JSON data.,
+        # then authorize and save it.
         object.each { |attr_name, attr_value|
-          case attr_name
-          when 'institution_id'
-            attr_value.to_s.include?(':') ? new_object.institution = Institution.find(attr_value.to_s) : new_object.institution = Institution.where(desc_metadata__identifier_ssim: attr_value.to_s).first
-          when 'premisEvents'
-            object_events = attr_value
-          when 'generic_files'
-            object_files = attr_value
-          else
-            new_object[attr_name.to_s] = attr_value.to_s
-          end }
-        current_object = "IntellectualObject #{new_object.identifier}"
+          set_obj_attr(new_object, state, attr_name, attr_value)
+        }
+        state[:current_object] = "IntellectualObject #{new_object.identifier}"
         load_institution_for_create_from_json(new_object)
         authorize @institution, :create_through_institution?
         new_object.save!
-        object_events.each { |event|
-          current_object = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
+        # Save the ingest and other object-level events.
+        state[:object_events].each { |event|
+          state[:current_object] = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
           new_object.add_event(event)
         }
-        object_files.each do |file|
-          new_file = GenericFile.new()
-          file_events, file_checksums = []
-          file.each { |file_attr_name, file_attr_value|
-            case file_attr_name
-            when 'premisEvents'
-              file_events = file_attr_value
-            when 'checksum'
-              file_checksums = file_attr_value
-            else
-              new_file[file_attr_name.to_s] = file_attr_value.to_s
-            end }
-          file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
-          current_object = "GenericFile #{new_file.identifier}"
-          new_file.intellectual_object = new_object
-          new_file.save!
-          file_events.each { |event|
-            current_object = "GenericFile Event #{event['type']} / #{event['identifier']}"
-            new_file.add_event(event)
-          }
+        # Save all the files and their events.
+        state[:object_files].each do |file|
+          create_generic_file(file, new_object, state)
         end
         @intellectual_object = new_object
         @institution = @intellectual_object.institution
@@ -141,7 +132,7 @@ class IntellectualObjectsController < ApplicationController
           new_object.destroy
         end
         respond_to { |format| format.json {
-            render json: { error: "#{ex.message} : #{current_object}" },
+            render json: { error: "#{ex.message} : #{state[:current_object]}" },
             status: :unprocessable_entity
           }
         }
@@ -158,6 +149,50 @@ class IntellectualObjectsController < ApplicationController
 
   private
 
+  def get_create_params
+    params[:intellectual_object].is_a?(Array) ? json_param = params[:intellectual_object] : json_param = params[:intellectual_object][:_json]
+  end
+
+  def create_generic_file(file, intel_obj, state)
+    # Create a new generic file object, or load the existing one.
+    # We may have an existing generic file if this intellectual
+    # object was previously deleted and is now being re-ingested.
+    gfid = file['identifier'].gsub(/%2F/i, '/')
+    new_file = GenericFile.where(tech_metadata__identifier_ssim: gfid).first || GenericFile.new()
+    file_events, file_checksums = []
+    file.each { |file_attr_name, file_attr_value|
+      case file_attr_name
+      when 'premisEvents'
+        file_events = file_attr_value
+      when 'checksum'
+        file_checksums = file_attr_value
+      else
+        new_file[file_attr_name.to_s] = file_attr_value.to_s
+      end }
+    file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
+    state[:current_object] = "GenericFile #{new_file.identifier}"
+    new_file.intellectual_object = intel_obj
+    new_file.state = 'A' # in case we loaded a deleted file
+    new_file.save!
+    file_events.each { |event|
+      state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
+      new_file.add_event(event)
+    }
+  end
+
+  def set_obj_attr(new_object, state, attr_name, attr_value)
+    case attr_name
+    when 'institution_id'
+      attr_value.to_s.include?(':') ? new_object.institution = Institution.find(attr_value.to_s) : new_object.institution = Institution.where(desc_metadata__identifier_ssim: attr_value.to_s).first
+    when 'premisEvents'
+      state[:object_events] = attr_value
+    when 'generic_files'
+      state[:object_files] = attr_value
+    else
+      new_object[attr_name.to_s] = attr_value.to_s
+    end
+  end
+
   def for_selected_institution(solr_parameters, user_parameters)
     return unless params[:institution_id]
     solr_parameters[:fq] ||= []
@@ -170,9 +205,14 @@ class IntellectualObjectsController < ApplicationController
   end
 
   # Override Fedora's default JSON serialization for our API
+  # Note that we return only active files, not deleted files
   def object_as_json
     if params[:include_relations]
-      @intellectual_object.serializable_hash(include: [ :premisEvents, generic_files: { include: [:checksum, :premisEvents]}])
+      # Return only active files, but call them generic_files
+      data = @intellectual_object.serializable_hash(include: [:premisEvents, active_files: { include: [:checksum, :premisEvents]}])
+      data['generic_files'] = data.delete('active_files')
+      data['state'] = @intellectual_object.state
+      data
     else
       @intellectual_object.serializable_hash()
     end

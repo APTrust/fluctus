@@ -22,6 +22,7 @@ class IntellectualObject < ActiveFedora::Base
 
   before_save :set_permissions
   before_save :set_bag_name
+  before_save :active_files
   before_destroy :check_for_associations
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor
@@ -77,6 +78,12 @@ class IntellectualObject < ActiveFedora::Base
     size = 0
     self.generic_files.each { |gf| size = size+gf.size unless gf.state == 'D' }
     size
+  end
+
+  def active_files
+    files = []
+    self.generic_files.each { |gf| files.push(gf) unless gf.state == 'D'}
+    files
   end
 
   private

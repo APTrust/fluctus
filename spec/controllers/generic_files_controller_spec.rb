@@ -32,6 +32,16 @@ describe GenericFilesController do
       expect(assigns(:intellectual_object)).to eq @intellectual_object
     end
 
+    it 'returns only active files' do
+      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, identifier: 'one', state: 'A')
+      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, identifier: 'two', state: 'D')
+      get :index, intellectual_object_identifier: URI.encode(@intellectual_object.identifier), format: :json
+      expect(response).to be_successful
+      response_data = JSON.parse(response.body)
+      expect(response_data.select{|f| f['state'] == 'A'}.count).to eq 2
+      expect(response_data.select{|f| f['state'] != 'A'}.count).to eq 0
+    end
+
   end
 
 

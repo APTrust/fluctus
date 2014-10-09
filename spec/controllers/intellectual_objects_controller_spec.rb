@@ -112,6 +112,19 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object)).to eq obj1
       end
 
+      it "should include only active generic files for API users" do
+        FactoryGirl.create(:generic_file, intellectual_object: obj1, identifier: 'one', state: 'A')
+        FactoryGirl.create(:generic_file, intellectual_object: obj1, identifier: 'two', state: 'D')
+        get(:show, identifier: CGI.escape(obj1.identifier), use_route: 'object_by_identifier',
+            include_relations: true, format: :json)
+        expect(response).to be_successful
+        expect(assigns(:intellectual_object)).to eq obj1
+        response_data = JSON.parse(response.body)
+        expect(response_data['generic_files'].select{|f| f['state'] == 'A'}.count).to eq 2
+        expect(response_data['generic_files'].select{|f| f['state'] != 'A'}.count).to eq 0
+      end
+
+
     end
   end
 
@@ -166,7 +179,7 @@ describe IntellectualObjectsController do
     describe 'when signed in' do
       let(:user) { FactoryGirl.create(:user, :admin) }
       let(:obj1) { FactoryGirl.create(:institutional_intellectual_object) }
-            
+
       before { sign_in user }
 
       it 'should update the search counter' do

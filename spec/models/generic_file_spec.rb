@@ -132,6 +132,38 @@ describe GenericFile do
         end
 
       end
+
+      describe "serializable_hash" do
+        before do
+        end
+        after do
+        end
+
+        it "should set the state to deleted and index the object state" do
+          h1 = subject.serializable_hash
+          h1.has_key?(:id)
+          h1.has_key?(:uri)
+          h1.has_key?(:size)
+          h1.has_key?(:created)
+          h1.has_key?(:modified)
+          h1.has_key?(:file_format)
+          h1.has_key?(:identifier)
+          h1.has_key?(:state)
+
+          h2 = subject.serializable_hash(include: [:checksum, :premisEvents])
+          h2.has_key?(:id)
+          h2.has_key?(:uri)
+          h2.has_key?(:size)
+          h2.has_key?(:created)
+          h2.has_key?(:modified)
+          h2.has_key?(:file_format)
+          h2.has_key?(:identifier)
+          h2.has_key?(:state)
+          h2.has_key?(:checksum)
+          h2.has_key?(:premisEvents)
+        end
+      end
+
     end
   end
 end
