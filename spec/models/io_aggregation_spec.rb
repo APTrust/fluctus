@@ -83,7 +83,8 @@ describe IoAggregation do
   end
 
   it 'should properly add a new file to the aggregations' do
-    subject.initialize_object('test.edu/123')
+    io = FactoryGirl.create(:intellectual_object)
+    subject.initialize_object(io.id)
     file = FactoryGirl.create(:generic_file, size: 100, file_format: 'application/pdf')
     subject.update_aggregations('add', file)
     subject.file_count.should == 1
@@ -92,6 +93,8 @@ describe IoAggregation do
   end
 
   it 'should properly change a file in the aggregations' do
+    io = FactoryGirl.create(:intellectual_object)
+    subject.identifier = io.id
     subject.file_count = 3
     subject.file_size = 194
     subject.file_format = 'application/pdf, audio/wav, video/mp4'
@@ -105,6 +108,8 @@ describe IoAggregation do
   end
 
   it 'should properly remove a file from the aggregations' do
+    io = FactoryGirl.create(:intellectual_object)
+    subject.identifier = io.id
     subject.file_count = 3
     subject.file_size = 194
     subject.file_format = 'application/pdf, audio/wav, video/mp4'

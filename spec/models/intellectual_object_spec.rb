@@ -85,7 +85,7 @@ describe IntellectualObject do
         solr_doc['desc_metadata__identifier_tesim'].should == [subject.identifier]
         solr_doc['desc_metadata__description_tesim'].should == [subject.description]
         solr_doc['desc_metadata__access_sim'].should == ["institution"]
-        solr_doc['file_format_sim'].should == ["[\"application/xml\", 2]"]
+        solr_doc['file_format_sim'].should == ["application/xml"]
         solr_doc['active_count_ssim'].should == ["2"]
         solr_doc['total_file_size_ssim'].should == ["100.0"]
       end

@@ -118,13 +118,15 @@ class IoAggregation < ActiveRecord::Base
   end
 
   def formats_for_solr
-    pieces = self.file_format.split(', ')
-    format_map = []
-    pieces.each do |piece|
-      unless format_map.include?(piece) || piece == ''
-        format_map.push(piece)
+    unless self.file_format.nil?
+      pieces = self.file_format.split(', ')
+      format_map = []
+      pieces.each do |piece|
+        unless format_map.include?(piece) || piece == ''
+          format_map.push(piece)
+        end
       end
+      format_map
     end
-    format_map
   end
 end
