@@ -21,7 +21,6 @@ class GenericFile < ActiveFedora::Base
   validate :identifier_is_unique
 
   before_save :copy_permissions_from_intellectual_object
-  before_save :save_parent
   after_save :update_parent_index
 
   delegate :institution, to: :intellectual_object
@@ -49,11 +48,6 @@ class GenericFile < ActiveFedora::Base
     self.state = 'D'
     self.add_event(attributes)
     save!
-  end
-
-  def save_parent
-    io = self.intellectual_object
-    io.save!
   end
 
   # This is for serializing JSON in the API.

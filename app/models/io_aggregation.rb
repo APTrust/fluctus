@@ -23,6 +23,8 @@ class IoAggregation < ActiveRecord::Base
       remove_from_size(file.size)
     end
     self.save!
+    io = get_intellectual_object
+    io.update_index
   end
 
   def add_format(format)
@@ -117,12 +119,10 @@ class IoAggregation < ActiveRecord::Base
 
   def formats_for_solr
     pieces = self.file_format.split(', ')
-    format_map = ''
+    format_map = []
     pieces.each do |piece|
-      unless format_map == ''
-        format_map = "#{format_map} #{piece}"
-      else
-        format_map = piece
+      unless format_map.include?(piece) || piece == ''
+        format_map.push(piece)
       end
     end
     format_map
