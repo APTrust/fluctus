@@ -26,15 +26,19 @@ class IoAggregation < ActiveRecord::Base
   end
 
   def add_format(format)
-    self.file_format = "#{self.file_format}, #{format}"
+    if self.file_format == '' || self.file_format.nil?
+      self.file_format = format
+    else
+      self.file_format = "#{self.file_format}, #{format}"
+    end
   end
 
   def change_format(file)
     gf = file[0]
     parameters = file[1]
-    unless parameters[:file_format].nil? || parameters[:file_format].eq(gf.file_format)
-      add_format(gf.file_format)
-      remove_format(parameters[:file_format])
+    unless parameters[:file_format].nil? || parameters[:file_format] == gf.file_format
+      add_format(parameters[:file_format])
+      remove_format(gf.file_format)
     end
   end
 
@@ -46,7 +50,11 @@ class IoAggregation < ActiveRecord::Base
       if count == 0 && piece == format
         count = 1
       else
-        new_format = "#{new_format}, #{piece}"
+        if new_format == ''
+          new_format = piece
+        else
+          new_format = "#{new_format}, #{piece}"
+        end
       end
     end
     self.file_format = new_format
@@ -74,8 +82,8 @@ class IoAggregation < ActiveRecord::Base
     gf = file[0]
     parameters = file[1]
     unless parameters[:size].nil? || parameters[:size].to_i == gf.size.to_i
-      add_to_size(gf.size)
-      remove_from_size(parameters[:size])
+      add_to_size(parameters[:size])
+      remove_from_size(gf.size)
     end
   end
 

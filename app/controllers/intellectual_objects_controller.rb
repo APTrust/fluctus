@@ -20,6 +20,9 @@ class IntellectualObjectsController < ApplicationController
   def create
     authorize @institution, :create_through_institution?
     @intellectual_object = @institution.intellectual_objects.new(params[:intellectual_object])
+    aggregate = IoAggregation.new
+    aggregate.initialize_object(@intellectual_object.id)
+    aggregate.save!
     super
   end
 
