@@ -114,4 +114,17 @@ class IoAggregation < ActiveRecord::Base
     end
     format_map
   end
+
+  def formats_for_solr
+    pieces = self.file_format.split(', ')
+    format_map = ''
+    pieces.each do |piece|
+      unless format_map == ''
+        format_map = "#{format_map} #{piece}"
+      else
+        format_map = piece
+      end
+    end
+    format_map
+  end
 end
