@@ -33,7 +33,12 @@ class IntellectualObject < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new)
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
-      file_aggregation(doc)
+      aggregate = IoAggregation.where(identifier: self.id).first
+      unless aggregate.nil?
+        Solrizer.set_field(doc, 'file_format', aggregate.format_to_map, :facetable)
+        Solrizer.set_field(doc, 'total_file_size', aggregate.file_size, :symbol)
+        Solrizer.set_field(doc, 'active_count', aggregate.file_count, :symbol)
+      end
     end
   end
 
@@ -44,28 +49,6 @@ class IntellectualObject < ActiveFedora::Base
       gf.soft_delete(attributes)
     end
     save!
-  end
-
-  def file_aggregation(doc)
-    count = 0
-    total_size = 0
-    format_map = {}
-    self.generic_files.each do |gf|
-      unless gf.state == 'D'
-        count = count+1
-        total_size = total_size+gf.size
-        if format_map.include?(gf.file_format)
-          format_count = format_map[gf.file_format]
-          format_count = format_count + 1
-          format_map[gf.file_format] = format_count
-        else
-          format_map[gf.file_format] = 1
-        end
-      end
-    end
-    Solrizer.insert_field(doc, 'file_format', format_map, :facetable)
-    Solrizer.insert_field(doc, 'total_file_size', total_size, :symbol)
-    Solrizer.insert_field(doc, 'active_count', count, :symbol)
   end
 
   def gf_count

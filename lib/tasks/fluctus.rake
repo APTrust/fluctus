@@ -55,7 +55,7 @@ namespace :fluctus do
   desc 'Empty the database'
   task empty_db: :environment do
     unless Rails.env.production?
-      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem].each(&:destroy_all)
+      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem, IoAggregation].each(&:destroy_all)
     end
   end
 
@@ -133,6 +133,9 @@ namespace :fluctus do
 
         # add processed item for intellectual object
         FactoryGirl.create(:processed_item, institution: institution.identifier, name: name, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
+        aggregate = IoAggregation.new
+        aggregate.initialize_object(item.id)
+        aggregate.save!
 
         num_files = args[:numGenFiles].to_i
         num_files.times.each do |file_count|
@@ -164,6 +167,7 @@ namespace :fluctus do
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
           f.save!
+          aggregate.update_aggregations('add', f)
         end
       end
     end
