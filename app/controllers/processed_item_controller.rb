@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:index, :search, :get_reviewed, :review_all, :delete_test_items, :ingested_since, :show_reviewed, :items_for_delete, :items_for_restore]
+  after_action :verify_authorized, :except => [:index, :search, :api_search, :get_reviewed, :review_all, :delete_test_items, :ingested_since, :show_reviewed, :items_for_delete, :items_for_restore]
 
   def create
     authorize @processed_item
@@ -71,6 +71,32 @@ class ProcessedItemController < ApplicationController
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
     page_count
+  end
+
+  # /api/v1/itemresults/api_search
+  # Allows the API client to pass in some very specific criteria
+  def api_search
+    @items = ProcessedItem.all
+    if current_user.admin? == false
+      @items = ProcessedItem.where(institution: current_user.institution.identifier)
+    end
+    if Rails.env.test? || Rails.env.development?
+      rewrite_params_for_sqlite
+    end
+    search_fields = [:name, :etag, :bag_date, :stage, :status, :institution, :retry, :reviewed]
+    search_fields.each do |field|
+      if params[field].present?
+        @items = @items.where(field => params[field])
+      end
+    end
+    # Fix for Rails overwriting params[:action] with name of controller
+    # action: Use param :item_action instead of :action
+    if params[:item_action].present?
+      @items = @items.where(action: params[:item_action])
+    end
+    respond_to do |format|
+        format.json { render json: @items, status: :ok }
+    end
   end
 
   # This is an API call for the bucket reader that queues up work for
@@ -376,7 +402,8 @@ class ProcessedItemController < ApplicationController
       @processed_item = ProcessedItem.find(params[:id])
     else
       if Rails.env.test? || Rails.env.development?
-        set_item_sqlite
+        rewrite_params_for_sqlite
+        #set_item_sqlite
       else
         @processed_item = ProcessedItem.where(etag: params[:etag],
                                               name: params[:name],
@@ -396,16 +423,23 @@ class ProcessedItemController < ApplicationController
     authorize @processed_item, :show?
   end
 
-  # SQLite is f***ed up with date times, since it saves them as strings,
-  # and the nanoseconds are wrong. We have to pull records out and do our
-  # own time comparison.
-  def set_item_sqlite
-    bag_date = Time.parse(params[:bag_date])
-    items = ProcessedItem.where(etag: params[:etag],
-                                  name: params[:name])
-    pattern = "%Y-%m-%d %H:%M:%S %Z"
-    @processed_item = items.select { |item|
-      bag_date.utc.strftime(pattern) == item.bag_date.utc.strftime(pattern)
-    }.first
+  def rewrite_params_for_sqlite
+    # Special datetime handling for SQLite environments.
+    # SQLite saves datetime as a string with .000000 at the end.
+    # If the datetime in the where clause has any fractional
+    # seconds, SQLite won't find it. Note we're using UTC here!
+    if params[:bag_date].present?
+        bag_date = Time.parse(params[:bag_date])
+        bag_date_str = bag_date.utc.strftime("%Y-%m-%d %H:%M:%S.000000")
+        params[:bag_date] = bag_date_str
+    end
+    # SQLite wants t or f for booleans
+    if params[:retry].present? && params[:retry].is_a?(String)
+        params[:retry] = params[:retry][0]
+    end
+    if params[:reviewed].present? && params[:retry].is_a?(String)
+      params[:reviewed] = params[:reviewed][0]
+    end
   end
+
 end

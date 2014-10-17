@@ -528,4 +528,58 @@ describe ProcessedItemController do
       end
     end
   end
+
+  describe "GET #api_search" do
+    let!(:item1) { FactoryGirl.create(:processed_item,
+                                      name: 'item1.tar',
+                                      etag: 'etag1',
+                                      institution: 'inst1',
+                                      retry: true,
+                                      reviewed: false,
+                                      bag_date: '2014-10-17 14:56:56Z',
+                                      action: 'Ingest',
+                                      stage: 'Record',
+                                      status: 'Success') }
+
+    describe "for admin user" do
+      before do
+        sign_in admin_user
+      end
+
+      it "returns all records when no criteria specified" do
+        get :api_search, format: :json
+        assigns(:items).should include(user_item)
+        assigns(:items).should include(item)
+        assigns(:items).should include(item1)
+      end
+
+      # Note: Use strings for true/false, as we'd get in a web
+      # request, or SQLite search fails. Also be sure to include
+      # the Z at the end of the bag_date string.
+      it "filters down to the right records" do
+        get(:api_search, format: :json, name: 'item1.tar',
+            etag: 'etag1', institution: 'inst1',
+            retry: 'true', reviewed: 'false',
+            bag_date: '2014-10-17 14:56:56Z',
+            action: 'Ingest', stage: 'Record', status: 'Success')
+        assigns(:items).should_not include(user_item)
+        assigns(:items).should_not include(item)
+        assigns(:items).should include(item1)
+      end
+
+    end
+
+    describe "for institutional admin" do
+      before do
+        sign_in institutional_admin
+      end
+
+      it "assigns the requested items as @items" do
+        get :api_search, format: :json
+        assigns(:items).should include(user_item)
+        assigns(:items).should_not include(item)
+      end
+    end
+  end
+
 end
