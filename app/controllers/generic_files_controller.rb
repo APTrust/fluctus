@@ -50,22 +50,27 @@ class GenericFilesController < ApplicationController
 
   def destroy
     authorize @generic_file, :soft_delete?
-    attributes = { type: 'delete',
-                   date_time: "#{Time.now}",
-                   detail: 'Object deleted from S3 storage',
-                   outcome: 'Success',
-                   outcome_detail: current_user.email,
-                   object: 'Ruby aws-s3 gem',
-                   agent: 'https://github.com/marcel/aws-s3/tree/master',
-                   outcome_information: "Action requested by user from #{current_user.institution_pid}"
-    }
-    @generic_file.soft_delete(attributes)
-    respond_to do |format|
-      format.json { head :no_content }
-      format.html {
-        flash[:notice] = "Delete job has been queued for file: #{@generic_file.uri}"
-        redirect_to @generic_file.intellectual_object
+    if ProcessedItem.delete_okay?(@generic_file.intellectual_object.identifier)
+      attributes = { type: 'delete',
+                     date_time: "#{Time.now}",
+                     detail: 'Object deleted from S3 storage',
+                     outcome: 'Success',
+                     outcome_detail: current_user.email,
+                     object: 'Ruby aws-s3 gem',
+                     agent: 'https://github.com/marcel/aws-s3/tree/master',
+                     outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
+      @generic_file.soft_delete(attributes)
+      respond_to do |format|
+        format.json { head :no_content }
+        format.html {
+          flash[:notice] = "Delete job has been queued for file: #{@generic_file.uri}"
+          redirect_to @generic_file.intellectual_object
+        }
+      end
+    else
+      redirect_to :back
+      flash[:alert] = 'Your file cannot be deleted at this time due to a pending ingest or restore action.'
     end
   end
 

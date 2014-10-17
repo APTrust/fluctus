@@ -28,6 +28,7 @@ class IntellectualObjectsController < ApplicationController
     if @intellectual_object.nil? || @intellectual_object.state == 'D'
       respond_to do |format|
         format.json { render :nothing => true, :status => 404 }
+        format.html
       end
     else
       respond_to do |format|
@@ -56,31 +57,41 @@ class IntellectualObjectsController < ApplicationController
 
   def destroy
     authorize @intellectual_object, :soft_delete?
-    attributes = { type: 'delete',
-      date_time: "#{Time.now}",
-      detail: 'Object deleted from S3 storage',
-      outcome: 'Success',
-      outcome_detail: current_user.email,
-      object: 'Ruby aws-s3 gem',
-      agent: 'https://github.com/marcel/aws-s3/tree/master',
-      outcome_information: "Action requested by user from #{current_user.institution_pid}"
-    }
-    resource.soft_delete(attributes)
-    respond_to do |format|
-      format.json { head :no_content }
-      format.html {
-        flash[:notice] = "Delete job has been queued for object: #{resource.title}"
-        redirect_to root_path
+    if ProcessedItem.delete_okay?(@intellectual_object.identifier)
+      attributes = { type: 'delete',
+                     date_time: "#{Time.now}",
+                     detail: 'Object deleted from S3 storage',
+                     outcome: 'Success',
+                     outcome_detail: current_user.email,
+                     object: 'Ruby aws-s3 gem',
+                     agent: 'https://github.com/marcel/aws-s3/tree/master',
+                     outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
+      resource.soft_delete(attributes)
+      respond_to do |format|
+        format.json { head :no_content }
+        format.html {
+          flash[:notice] = "Delete job has been queued for object: #{resource.title}"
+          redirect_to root_path
+        }
+      end
+    else
+      redirect_to :back
+      flash[:alert] = 'Your object cannot be deleted at this time due to a pending ingest or restore action.'
     end
   end
 
   # get 'objects/:id/restore'
   def restore
     authorize @intellectual_object
-    ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
-    redirect_to :back
-    flash[:notice] = 'Your item has been queued for restoration.'
+    if ProcessedItem.restore_okay?(@intellectual_object.identifier)
+      ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
+      redirect_to :back
+      flash[:notice] = 'Your item has been queued for restoration.'
+    else
+      redirect_to :back
+      flash[:alert] = 'Your object cannot be restored at this time due to a pending ingest or delete action.'
+    end
   end
 
   def create_from_json
