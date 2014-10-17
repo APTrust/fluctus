@@ -28,11 +28,7 @@ class IoAggregation < ActiveRecord::Base
   end
 
   def add_format(format)
-    if self.file_format == '' || self.file_format.nil?
-      self.file_format = format
-    else
-      self.file_format = "#{self.file_format}, #{format}"
-    end
+    (self.file_format == '' || self.file_format.nil?) ? self.file_format = format : self.file_format = "#{self.file_format},#{format}"
   end
 
   def change_format(file)
@@ -45,21 +41,9 @@ class IoAggregation < ActiveRecord::Base
   end
 
   def remove_format(format)
-    pieces = self.file_format.split(', ')
-    count = 0
-    new_format = ''
-    pieces.each do |piece|
-      if count == 0 && piece == format
-        count = 1
-      else
-        if new_format == ''
-          new_format = piece
-        else
-          new_format = "#{new_format}, #{piece}"
-        end
-      end
-    end
-    self.file_format = new_format
+    format_array = self.file_format.split(',')
+    format_array = format_array - [format]
+    self.file_format = format_array.join(',')
   end
 
   def add_to_count
@@ -101,17 +85,15 @@ class IoAggregation < ActiveRecord::Base
   end
 
   def format_to_map
-    pieces = self.file_format.split(', ')
     format_map = {}
-    pieces.each do |piece|
-      unless piece == ""
-        if format_map.include? piece
-          count = format_map[piece]
-          count = count + 1
-          format_map[piece] = count
-        else
-          format_map[piece] = 1
-        end
+    format_array = self.file_format.split(',')
+    format_array.each do |format|
+      if format_map.include?(format)
+        count = format_map[format]
+        count = count + 1
+        format_map[format] = count
+      else
+        format_map[format] = 1
       end
     end
     format_map
@@ -119,7 +101,7 @@ class IoAggregation < ActiveRecord::Base
 
   def formats_for_solr
     unless self.file_format.nil?
-      pieces = self.file_format.split(', ')
+      pieces = self.file_format.split(',')
       format_map = []
       pieces.each do |piece|
         unless format_map.include?(piece) || piece == ''
