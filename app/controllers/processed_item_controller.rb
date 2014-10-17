@@ -86,7 +86,11 @@ class ProcessedItemController < ApplicationController
     search_fields = [:name, :etag, :bag_date, :stage, :status, :institution, :retry, :reviewed]
     search_fields.each do |field|
       if params[field].present?
-        @items = @items.where(field => params[field])
+        if field == :bag_date && (Rails.env.test? || Rails.env.development?)
+          @items = @items.where("datetime(bag_date) = datetime(?)", params[:bag_date])
+        else
+          @items = @items.where(field => params[field])
+        end
       end
     end
     # Fix for Rails overwriting params[:action] with name of controller
@@ -398,41 +402,37 @@ class ProcessedItemController < ApplicationController
   # We have to find the item either way.
   def set_item
     @institution = current_user.institution
+    if Rails.env.test? || Rails.env.development?
+      rewrite_params_for_sqlite
+    end
     if params[:id].blank? == false
       @processed_item = ProcessedItem.find(params[:id])
     else
       if Rails.env.test? || Rails.env.development?
-        rewrite_params_for_sqlite
-        #set_item_sqlite
-      else
+        # Cursing ActiveRecord + SQLite. SQLite has all the milliseconds wrong!
         @processed_item = ProcessedItem.where(etag: params[:etag],
-                                              name: params[:name],
-                                              bag_date: params[:bag_date]).first
-      end
-      if @processed_item
-        params[:id] = @processed_item.id
+                                              name: params[:name])
+        @processed_item = @processed_item.where("datetime(bag_date) = datetime(?)", params[:bag_date]).first
       else
-        # API callers **DEPEND** on getting a 404 if the record does
-        # not exist. This is how they know that an item has not started
-        # the ingestion process. So if @processed_item is nil, return
-        # 404 now. Otherwise, the call to authorize below will result
-        # in a 500 error from pundit.
-        raise ActiveRecord::RecordNotFound
+      @processed_item = ProcessedItem.where(etag: params[:etag],
+                                            name: params[:name],
+                                            bag_date: params[:bag_date]).first
       end
+    end
+    if @processed_item
+      params[:id] = @processed_item.id
+    else
+      # API callers **DEPEND** on getting a 404 if the record does
+      # not exist. This is how they know that an item has not started
+      # the ingestion process. So if @processed_item is nil, return
+      # 404 now. Otherwise, the call to authorize below will result
+      # in a 500 error from pundit.
+      raise ActiveRecord::RecordNotFound
     end
     authorize @processed_item, :show?
   end
 
   def rewrite_params_for_sqlite
-    # Special datetime handling for SQLite environments.
-    # SQLite saves datetime as a string with .000000 at the end.
-    # If the datetime in the where clause has any fractional
-    # seconds, SQLite won't find it. Note we're using UTC here!
-    if params[:bag_date].present?
-        bag_date = Time.parse(params[:bag_date])
-        bag_date_str = bag_date.utc.strftime("%Y-%m-%d %H:%M:%S.000000")
-        params[:bag_date] = bag_date_str
-    end
     # SQLite wants t or f for booleans
     if params[:retry].present? && params[:retry].is_a?(String)
         params[:retry] = params[:retry][0]
