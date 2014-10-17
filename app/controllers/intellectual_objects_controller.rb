@@ -84,7 +84,10 @@ class IntellectualObjectsController < ApplicationController
   # get 'objects/:id/restore'
   def restore
     authorize @intellectual_object
-    if ProcessedItem.restore_okay?(@intellectual_object.identifier)
+    if @intellectual_object.state == 'D'
+      redirect_to @intellectual_object
+      flash[:alert] = 'This item has been deleted and cannot be queued for restoration.'
+    elsif ProcessedItem.restore_okay?(@intellectual_object.identifier)
       ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
       redirect_to :back
       flash[:notice] = 'Your item has been queued for restoration.'
