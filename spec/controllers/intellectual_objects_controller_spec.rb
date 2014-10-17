@@ -475,14 +475,17 @@ describe IntellectualObjectsController do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution_id: user.institution_pid) }
       before { sign_in user }
+      after { ProcessedItem.delete_all }
 
       it 'should update via json' do
+        pi = FactoryGirl.create(:ingested_item, object_identifier: obj1.identifier)
         delete :destroy, id: obj1, format: 'json'
         expect(response.code).to eq '204'
         expect(assigns(:intellectual_object).state).to eq 'D'
       end
 
       it 'should update via html' do
+        pi = FactoryGirl.create(:ingested_item, object_identifier: obj1.identifier)
         delete :destroy, id: obj1
         expect(response).to redirect_to root_path
         expect(flash[:notice]).to eq "Delete job has been queued for object: #{obj1.title}"
