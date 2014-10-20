@@ -13,28 +13,28 @@ class ProcessedItem < ActiveRecord::Base
     "#{etag}/#{name}"
   end
 
-  def self.delete_okay?(intellectual_object_identifier)
+  def self.pending?(intellectual_object_identifier)
     items = ProcessedItem.where("object_identifier = ?", intellectual_object_identifier )
-    item = items.order('date DESC').limit(1).first
-    if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] ||
-        item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']
-      true
-    else
-      (item.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] ||
-          item.action == Fluctus::Application::FLUCTUS_ACTIONS['restore']) ? false : true
+    items = items.order('date DESC')
+    pending = 'false'
+    items.each do |item|
+      if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] ||
+          item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']
+        pending = 'false'
+      else
+         if item.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest']
+           pending = 'ingest'
+           break
+         elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['restore']
+           pending = 'restore'
+           break
+         elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete']
+           pending = 'delete'
+           break
+         end
+      end
     end
-  end
-
-  def self.restore_okay?(intellectual_object_identifier)
-    items = ProcessedItem.where("object_identifier = ?", intellectual_object_identifier )
-    item = items.order('date DESC').limit(1).first
-    if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] ||
-        item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']
-      true
-    else
-      (item.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest'] ||
-          item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete']) ? false : true
-    end
+    pending
   end
 
   # Returns the ProcessedItem record for the last successfully ingested
