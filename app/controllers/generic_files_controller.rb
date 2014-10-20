@@ -77,7 +77,8 @@ class GenericFilesController < ApplicationController
 
   def destroy
     authorize @generic_file, :soft_delete?
-    if ProcessedItem.delete_okay?(@generic_file.intellectual_object.identifier)
+    pending = ProcessedItem.pending?(@generic_file.intellectual_object.identifier)
+    if pending == 'false'
       attributes = { type: 'delete',
                      date_time: "#{Time.now}",
                      detail: 'Object deleted from S3 storage',
@@ -97,7 +98,7 @@ class GenericFilesController < ApplicationController
       end
     else
       redirect_to :back
-      flash[:alert] = 'Your file cannot be deleted at this time due to a pending ingest or restore action.'
+      flash[:alert] = "Your object cannot be deleted at this time due to a pending #{pending} request."
     end
   end
 
