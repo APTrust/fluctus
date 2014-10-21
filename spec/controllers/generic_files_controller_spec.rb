@@ -198,10 +198,28 @@ describe GenericFilesController do
           expect(return_data[1]['state']).to eq 'A'
           expect(return_data[0]['premisEvents'].count).to eq 2
           expect(return_data[1]['premisEvents'].count).to eq 2
+          expect(return_data[0]['checksum'].count).to eq 2
+          expect(return_data[1]['checksum'].count).to eq 2
 
           # Now alter data and post again. Should be an update.
+          id1 = return_data[0]['id']
+          id2 = return_data[1]['id']
           gf_data[0]['file_format'] = 'text/apple'
           gf_data[1]['file_format'] = 'text/orange'
+
+          post(:save_batch, intellectual_object_id: batch_obj.id, generic_files: gf_data,
+               format: 'json', use_route: 'generic_file_create_batch')
+          expect(response.code).to eq "201"
+          return_data = JSON.parse(response.body)
+          expect(return_data.count).to eq 2
+          expect(return_data[0]['id']).to eq id1
+          expect(return_data[1]['id']).to eq id2
+          expect(return_data[0]['file_format']).to eq 'text/apple'
+          expect(return_data[1]['file_format']).to eq 'text/orange'
+          expect(return_data[0]['premisEvents'].count).to eq 2
+          expect(return_data[1]['premisEvents'].count).to eq 2
+          expect(return_data[0]['checksum'].count).to eq 2
+          expect(return_data[1]['checksum'].count).to eq 2
         end
       end
 

@@ -67,7 +67,14 @@ class GenericFilesController < ApplicationController
         # Load the existing generic file, or create a new one.
         generic_file = (GenericFile.where(tech_metadata__identifier_ssim: gf[:identifier]).first ||
                         @intellectual_object.generic_files.new(gf_without_events))
-        generic_file.save!
+        if generic_file.id.present?
+          # This is an update
+          gf_clean_data = remove_existing_checksums(generic_file, gf_without_events)
+          generic_file.update(gf_clean_data)
+        else
+          # New GenericFile
+          generic_file.save!
+        end
         generic_files.push(generic_file)
         gf[:premisEvents].each do |event|
           current_object = "Event #{event[':type']} id #{event[:identifier]} for #{gf[:identifier]}"
@@ -177,6 +184,19 @@ class GenericFilesController < ApplicationController
   # suitable for JSON serialization back to the API client.
   def array_as_json(list_of_generic_files)
     list_of_generic_files.map { |gf| gf.serializable_hash(include: [:checksum, :premisEvents]) }
+  end
+
+  # Remove existing checksums from submitted generic file data.
+  # We don't want two copies of the same md5 and two of the same sha256.
+  # Returns a copy of gf_params with existing checksums removed.
+  def remove_existing_checksums(generic_file, gf_params)
+    copy_of_params = gf_params.deep_dup
+    generic_file.checksum.each do |existing_checksum|
+      copy_of_params[:checksum_attributes].delete_if do |submitted_checksum|
+        submitted_checksum[:digest].strip == existing_checksum.digest.first.to_s.strip
+      end
+    end
+    copy_of_params
   end
 
   # Load generic file by identifier, if we got that, or by id if we got an id.
