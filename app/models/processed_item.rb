@@ -19,7 +19,8 @@ class ProcessedItem < ActiveRecord::Base
     pending = 'false'
     items.each do |item|
       if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] ||
-          item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']
+          item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'] ||
+          item.status == Fluctus::Application::FLUCTUS_STATUSES['cancel']
         pending = 'false'
       else
          if item.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest']
