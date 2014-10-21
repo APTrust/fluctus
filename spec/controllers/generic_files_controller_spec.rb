@@ -151,50 +151,53 @@ describe GenericFilesController do
   end
 
   describe "POST #create_batch" do
-      describe "when not signed in" do
-        let(:obj1) { @intellectual_object }
-        it "should show unauthorized" do
-          post(:create_batch, intellectual_object_id: obj1.id, generic_files: [],
-               format: 'json', use_route: 'generic_file_create_batch')
-          expect(response.code).to eq "401" # unauthorized
-        end
-      end
-
-      describe "when signed in" do
-        let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @institution.pid) }
-        let(:obj2) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @another_institution.id) }
-        let(:batch_obj) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @institution.id) }
-        let(:current_dir) { File.dirname(__FILE__) }
-        let(:json_file) { File.join(current_dir, "..", "fixtures", "generic_file_batch.json") }
-        let(:raw_json) { File.read(json_file) }
-        let(:gf_data) { JSON.parse(raw_json) }
-
-        before { sign_in user }
-
-        describe "and assigning to an object you don't have access to" do
-          it "should be forbidden" do
-            post(:create_batch, intellectual_object_id: obj2.id, generic_files: [],
-                 format: 'json', use_route: 'generic_file_create_batch')
-            expect(response.code).to eq "403" # forbidden
-            expect(JSON.parse(response.body)).to eq({"status"=>"error", "message"=>"You are not authorized to access this page."})
-          end
-        end
-
-        # Loading test data from a fixture, because there there doesn't seem
-        # to be any direct method of creating a PremisEvent without saving it
-        # as well (see GenericFile.add_event). We need to save some files with
-        # new, unsaved PremisEvents.
-        describe "and assigning to an object you do have access to" do
-          it 'it should save multiple files and their events' do
-            post(:create_batch, intellectual_object_id: batch_obj.id, generic_files: gf_data,
-                 format: 'json', use_route: 'generic_file_create_batch')
-            expect(response.code).to eq "201"
-            expect(JSON.parse(response.body).count).to eq 2
-          end
-        end
-
+    describe "when not signed in" do
+      let(:obj1) { @intellectual_object }
+      it "should show unauthorized" do
+        post(:save_batch, intellectual_object_id: obj1.id, generic_files: [],
+             format: 'json', use_route: 'generic_file_create_batch')
+        expect(response.code).to eq "401" # unauthorized
       end
     end
+
+    describe "when signed in" do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @institution.pid) }
+      let(:obj2) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @another_institution.id) }
+      let(:batch_obj) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @institution.id) }
+      let(:current_dir) { File.dirname(__FILE__) }
+      let(:json_file) { File.join(current_dir, "..", "fixtures", "generic_file_batch.json") }
+      let(:raw_json) { File.read(json_file) }
+      let(:gf_data) { JSON.parse(raw_json) }
+
+      before { sign_in user }
+
+      describe "and assigning to an object you don't have access to" do
+        it "should be forbidden" do
+          post(:save_batch, intellectual_object_id: obj2.id, generic_files: [],
+               format: 'json', use_route: 'generic_file_create_batch')
+          expect(response.code).to eq "403" # forbidden
+          expect(JSON.parse(response.body)).to eq({"status"=>"error", "message"=>"You are not authorized to access this page."})
+        end
+      end
+
+      # Loading test data from a fixture, because there there doesn't seem
+      # to be any direct method of creating a PremisEvent without saving it
+      # as well (see GenericFile.add_event). We need to save some files with
+      # new, unsaved PremisEvents.
+      describe "and assigning to an object you do have access to" do
+        it 'it should create or update multiple files and their events' do
+          # First post is a create
+          post(:save_batch, intellectual_object_id: batch_obj.id, generic_files: gf_data,
+               format: 'json', use_route: 'generic_file_create_batch')
+          expect(response.code).to eq "201"
+          expect(JSON.parse(response.body).count).to eq 2
+
+          # Now alter data and post again. Should be an update.
+        end
+      end
+
+    end
+  end
 
   describe "PATCH #update" do
     before(:all) { @file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id) }

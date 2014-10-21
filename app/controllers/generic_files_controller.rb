@@ -2,7 +2,7 @@ class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
-  before_filter :load_intellectual_object, only: [:update, :create, :create_batch, :index]
+  before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
 
   after_action :verify_authorized, :except => [:create, :index]
 
@@ -38,7 +38,25 @@ class GenericFilesController < ApplicationController
     end
   end
 
-  def create_batch
+  # /api/v1/objects/:intellectual_object_identifier/files/save_batch
+  #
+  # save_batch creates or updates a batch of GenericFile objects, along
+  # with their related PremisEvents. Although there's no built-in limit
+  # on the number of files you can save in a batch, you should limit
+  # batches to 200 or so files to avoid a response timeout.
+  #
+  # This methods determines whether to update an existing GenericFile
+  # or create a new one. It then adds any related events to the new/updated
+  # GenericFile.
+  #
+  # Before save_batch, saving a GenericFile required 7 HTTP calls:
+  #
+  # - 1 x check if file exists
+  # - 1 x save or update file
+  # - 5 x save generic file event
+  #
+  # Saving 200 generic files required 1400 HTTP calls. Now it requires 1.
+  def save_batch
     generic_files = []
     current_object = nil
     authorize @intellectual_object, :create_through_intellectual_object?
@@ -46,7 +64,10 @@ class GenericFilesController < ApplicationController
       params[:generic_files].each do |gf|
         current_object = "GenericFile #{gf[:identifier]}"
         gf_without_events = gf.except(:premisEvents)
-        generic_file = @intellectual_object.generic_files.new(gf_without_events)
+        # Load the existing generic file, or create a new one.
+        generic_file = (GenericFile.where(tech_metadata__identifier_ssim: gf[:identifier]).first ||
+                        @intellectual_object.generic_files.new(gf_without_events))
+        generic_file.save!
         generic_files.push(generic_file)
         gf[:premisEvents].each do |event|
           current_object = "Event #{event[':type']} id #{event[:identifier]} for #{gf[:identifier]}"
