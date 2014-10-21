@@ -243,6 +243,7 @@ class IntellectualObjectsController < ApplicationController
     if params[:identifier] && params[:id].blank?
       identifier = params[:identifier].gsub(/%2F/i, "/")
       @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first
+
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
       if @intellectual_object.nil?
@@ -252,7 +253,8 @@ class IntellectualObjectsController < ApplicationController
         params[:id] = @intellectual_object.id if @intellectual_object
       end
     else
-      @intellectual_object ||= IntellectualObject.find(params[:id])
+      #@intellectual_object ||= IntellectualObject.find(params[:id])
+      @intellectual_object = IntellectualObject.get_from_solr(params[:id])
     end
   end
 

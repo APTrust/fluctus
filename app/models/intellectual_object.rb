@@ -38,6 +38,34 @@ class IntellectualObject < ActiveFedora::Base
     end
   end
 
+  def self.from_solr
+    #cycle through all possible predicates
+    model.relationships_loaded = true
+    Predicates.predicate_mappings[Predicates.default_predicate_namespace].keys.each do |predicate|
+      predicate_symbol = ActiveFedora::SolrService.solr_name(predicate, :symbol)
+      value = (solr_doc[predicate_symbol].nil? ? solr_doc[predicate_symbol.to_s]: solr_doc[predicate_symbol])
+      unless value.nil?
+        if value.is_a? Array
+          value.each do |obj|
+            model.add_relationship(predicate, obj)
+          end
+        else
+          model.add_relationship(predicate, value)
+        end
+      end
+    end
+    @load_from_solr = true
+  end
+
+  def self.get_from_solr(pid)
+    query = "id\:#{ActiveFedora::SolrService.escape_uri_for_query(pid)}"
+    solr_result = ActiveFedora::SolrService.query(query)
+    result = ActiveFedora::SolrService.reify_solr_results(solr_result,{:load_from_solr=>true})
+    initial_result = result.first
+    real_result = initial_result.reify
+    real_result
+  end
+
   def soft_delete(attributes)
     self.state = 'D'
     self.add_event(attributes)
