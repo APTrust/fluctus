@@ -190,9 +190,18 @@ describe GenericFilesController do
           post(:save_batch, intellectual_object_id: batch_obj.id, generic_files: gf_data,
                format: 'json', use_route: 'generic_file_create_batch')
           expect(response.code).to eq "201"
-          expect(JSON.parse(response.body).count).to eq 2
+          return_data = JSON.parse(response.body)
+          expect(return_data.count).to eq 2
+          expect(return_data[0]['id']).not_to be_empty
+          expect(return_data[1]['id']).not_to be_empty
+          expect(return_data[0]['state']).to eq 'A'
+          expect(return_data[1]['state']).to eq 'A'
+          expect(return_data[0]['premisEvents'].count).to eq 2
+          expect(return_data[1]['premisEvents'].count).to eq 2
 
           # Now alter data and post again. Should be an update.
+          gf_data[0]['file_format'] = 'text/apple'
+          gf_data[1]['file_format'] = 'text/orange'
         end
       end
 

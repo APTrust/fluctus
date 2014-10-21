@@ -74,7 +74,8 @@ class GenericFilesController < ApplicationController
           generic_file.add_event(event)
         end
       end
-      respond_to { |format| format.json { render json: generic_files, status: :created } }
+
+      respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
     rescue Exception => ex
       generic_files.each do |gf|
         gf.destroy
@@ -169,6 +170,13 @@ class GenericFilesController < ApplicationController
     else
       @generic_file.serializable_hash()
     end
+  end
+
+  # Given a list of GenericObjects, returns a list of serializable
+  # hashes that include checksum and PremisEvent data. That hash is
+  # suitable for JSON serialization back to the API client.
+  def array_as_json(list_of_generic_files)
+    list_of_generic_files.map { |gf| gf.serializable_hash(include: [:checksum, :premisEvents]) }
   end
 
   # Load generic file by identifier, if we got that, or by id if we got an id.
