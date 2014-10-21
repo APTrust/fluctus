@@ -50,13 +50,15 @@ describe GenericFile do
       subject.intellectual_object = intellectual_object
     end
 
-    let(:institution) { mock_model Institution, internal_uri: 'info:fedora/testing:123' }
-    let(:intellectual_object) { mock_model IntellectualObject, institution: institution }
+    let(:institution) { mock_model Institution, internal_uri: 'info:fedora/testing:123', name: 'Mock Name' }
+    let(:intellectual_object) { mock_model IntellectualObject, institution: institution, identifier: 'info:fedora/testing:123/1234567' }
 
     describe "#to_solr" do
       let(:solr_doc) { subject.to_solr }
       it "should index the institution, so we can do aggregations without a join query" do
         solr_doc['institution_uri_ssim'].should == ['info:fedora/testing:123']
+        solr_doc['gf_institution_name_ssim'].should == ['Mock Name']
+        solr_doc['gf_parent_ssim'].should == ['info:fedora/testing:123/1234567']
       end
     end
 

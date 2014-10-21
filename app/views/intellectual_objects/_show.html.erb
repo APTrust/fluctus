@@ -36,6 +36,9 @@
     <%= link_to intellectual_object_events_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
         <i class="glyphicon glyphicon-eye-open"></i> View Events
     <% end %>
+    <%= link_to intellectual_object_files_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+        <i class="glyphicon glyphicon-list-alt"></i> View Preserved Files
+    <% end %>
     <% unless @intellectual_object.state == 'D' %>
       <% if current_user.admin? || (current_user.institutional_admin? && current_user.institution_pid == @intellectual_object.institution_id) %>
         <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
@@ -49,29 +52,23 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
-        <% file_count = @intellectual_object.gf_count %>
-        <%= file_count %>
-        <% if file_count == 1 %>
-          File Preserved
-        <% else %>
-          Files Preserved
-        <% end %>
-    </h3>
+        Aggregate Data About Preserved Files
+      </h3>
     </div>
+
     <div class="panel-body">
-      <% @intellectual_object.generic_files.each do |gf| %>
-          <% unless gf.state == 'D' %>
-            <h4><%= link_to gf.display, gf  %></h4>
-            <dl class="dl-horizontal dl-invert">
-              <dt>Last Fixity</dt>
-              <dd><span class="label label-success">Success</span></dd>
-              <dt>MimeType<dt>
-              <dd><%= gf.file_format %></dd>
-              <dt>Filesize<dt>
-              <dd><%= number_to_human_size(gf.size) %></dd>
-            </dl>
+      <dl class="dl-horizontal dl-invert">
+        <% aggregate = IoAggregation.where(identifier: @intellectual_object.id).first %>
+        <dt>Files Preserved </dt>
+        <dd><%= aggregate.file_count %></dd>
+        <dt>Total File Size<dt>
+        <dd><%= number_to_human_size(aggregate.file_size) %></dd>
+        <% aggregate.format_to_map.each do |key, value| %>
+            <dt><%= key %></dt>
+            <dd><%= value %></dd>
           <% end %>
-      <% end %>
+        </dd>
+      </dl>
     </div>
   </div>
 

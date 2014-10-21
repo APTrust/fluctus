@@ -6,11 +6,19 @@ class GenericFilesController < ApplicationController
 
   after_action :verify_authorized, :except => [:create, :index]
 
+  include Aptrust::GatedSearch
+  self.solr_search_params_logic += [:for_selected_object]
+  self.solr_search_params_logic += [:only_generic_files]
+  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+  self.solr_search_params_logic += [:only_active_objects]
+
   def index
     authorize @intellectual_object
+    @generic_files = @intellectual_object.generic_files
     respond_to do |format|
       # Return active files only, not deleted files!
       format.json { render json: @intellectual_object.active_files.map do |f| f.serializable_hash end }
+      format.html { super }
     end
   end
 
@@ -29,6 +37,8 @@ class GenericFilesController < ApplicationController
     authorize @intellectual_object, :create_through_intellectual_object?
     @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
     @generic_file.state = 'A'
+    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
+    aggregate.update_aggregations('add', @generic_file)
     respond_to do |format|
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
@@ -69,6 +79,9 @@ class GenericFilesController < ApplicationController
     authorize @generic_file
     @generic_file.state = 'A'
     if resource.update(params_for_update)
+      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
+      update_map = [@generic_file, params_for_update]
+      aggregate.update_aggregations('update', update_map)
       head :no_content
     else
       render json: resource.errors, status: :unprocessable_entity
@@ -88,6 +101,8 @@ class GenericFilesController < ApplicationController
                      agent: 'https://github.com/marcel/aws-s3/tree/master',
                      outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
+      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
+      aggregate.update_aggregations('delete', @generic_file)
       @generic_file.soft_delete(attributes)
       respond_to do |format|
         format.json { head :no_content }
@@ -163,6 +178,11 @@ class GenericFilesController < ApplicationController
     elsif params[:id]
       @generic_file ||= GenericFile.find(params[:id])
     end
+  end
+
+  def for_selected_object(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{params[:intellectual_object_id]}")
   end
 
 end

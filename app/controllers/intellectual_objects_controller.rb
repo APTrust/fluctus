@@ -6,9 +6,9 @@ class IntellectualObjectsController < ApplicationController
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
 
   include Aptrust::GatedSearch
-  apply_catalog_search_params
   include RecordsControllerBehavior
 
+  apply_catalog_search_params
   self.solr_search_params_logic += [:for_selected_institution]
 
   def index
@@ -20,6 +20,9 @@ class IntellectualObjectsController < ApplicationController
   def create
     authorize @institution, :create_through_institution?
     @intellectual_object = @institution.intellectual_objects.new(params[:intellectual_object])
+    aggregate = IoAggregation.new
+    aggregate.initialize_object(@intellectual_object.id)
+    aggregate.save!
     super
   end
 
@@ -128,6 +131,9 @@ class IntellectualObjectsController < ApplicationController
         load_institution_for_create_from_json(new_object)
         authorize @institution, :create_through_institution?
         new_object.save!
+        aggregate = IoAggregation.new
+        aggregate.initialize_object(new_object.id)
+        aggregate.save!
         # Save the ingest and other object-level events.
         state[:object_events].each { |event|
           state[:current_object] = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
@@ -190,6 +196,8 @@ class IntellectualObjectsController < ApplicationController
     new_file.intellectual_object = intel_obj
     new_file.state = 'A' # in case we loaded a deleted file
     new_file.save!
+    aggregate = IoAggregation.where(identifier: intel_obj.id).first
+    aggregate.update_aggregations('add', new_file)
     file_events.each { |event|
       state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
       new_file.add_event(event)
@@ -210,6 +218,7 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def for_selected_institution(solr_parameters, user_parameters)
+    return unless params[:institution_id]
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{params[:institution_id]}")
   end
@@ -265,4 +274,5 @@ class IntellectualObjectsController < ApplicationController
   def load_institution_for_create_from_json(object)
     @institution = params[:institution_id].nil? ? object.institution : Institution.find(params[:institution_id])
   end
+
 end

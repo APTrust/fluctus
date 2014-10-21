@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140909172211) do
+ActiveRecord::Schema.define(version: 20141017134011) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -20,6 +20,15 @@ ActiveRecord::Schema.define(version: 20140909172211) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "user_type"
+  end
+
+  create_table "io_aggregations", force: true do |t|
+    t.float    "file_size"
+    t.integer  "file_count"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "identifier"
+    t.string   "file_format"
   end
 
   create_table "processed_items", force: true do |t|
