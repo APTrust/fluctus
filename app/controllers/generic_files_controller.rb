@@ -2,7 +2,7 @@ class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
-  before_filter :load_intellectual_object, only: [:update, :create, :index]
+  before_filter :load_intellectual_object, only: [:update, :create, :create_batch, :index]
 
   after_action :verify_authorized, :except => [:create, :index]
 
@@ -36,7 +36,34 @@ class GenericFilesController < ApplicationController
         format.json { render json: @generic_file.errors, status: :unprocessable_entity }
       end
     end
- end
+  end
+
+  def create_batch
+    generic_files = []
+    current_object = nil
+    authorize @intellectual_object, :create_through_intellectual_object?
+    begin
+      params[:generic_files].each do |gf|
+        current_object = "GenericFile #{gf[:identifier]}"
+        gf_without_events = gf.except(:premisEvents)
+        generic_file = @intellectual_object.generic_files.new(gf_without_events)
+        generic_files.push(generic_file)
+        gf[:premisEvents].each do |event|
+          current_object = "Event #{event[':type']} id #{event[:identifier]} for #{gf[:identifier]}"
+          generic_file.add_event(event)
+        end
+      end
+      respond_to { |format| format.json { render json: generic_files, status: :created } }
+    rescue Exception => ex
+      generic_files.each do |gf|
+        gf.destroy
+      end
+      respond_to { |format| format.json {
+          render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
+      }
+    end
+  end
+
 
   def update
     authorize @generic_file

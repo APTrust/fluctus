@@ -66,6 +66,7 @@ Fluctus::Application.routes.draw do
 
 
   post '/api/v1/objects/include_nested', to: 'intellectual_objects#create_from_json', format: 'json'
+  post '/api/v1/objects/:intellectual_object_identifier/files/create_batch', to: 'generic_files#create_batch', format: 'json', intellectual_object_identifier: /[^\/]*/, as: :generic_files_create_batch
   post '/api/v1/objects/:intellectual_object_identifier/files(.:format)', to: 'generic_files#create', format: 'json', intellectual_object_identifier: /[^\/]*/
   get  '/api/v1/objects/:intellectual_object_identifier/files(.:format)', to: 'generic_files#index', format: 'json', intellectual_object_identifier: /[^\/]*/
 
