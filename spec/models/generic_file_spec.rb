@@ -54,11 +54,33 @@ describe GenericFile do
     let(:intellectual_object) { mock_model IntellectualObject, institution: institution, identifier: 'info:fedora/testing:123/1234567' }
 
     describe "#to_solr" do
+      subject { FactoryGirl.create(:generic_file) }
       let(:solr_doc) { subject.to_solr }
       it "should index the institution, so we can do aggregations without a join query" do
         solr_doc['institution_uri_ssim'].should == ['info:fedora/testing:123']
         solr_doc['gf_institution_name_ssim'].should == ['Mock Name']
         solr_doc['gf_parent_ssim'].should == ['info:fedora/testing:123/1234567']
+        solr_doc['tech_metadata__identifier_ssim'].should == [subject.identifier]
+        solr_doc['tech_metadata__identifier_tesim'].should == [subject.identifier]
+        solr_doc['tech_metadata__file_format_ssi'].should == subject.file_format
+        solr_doc['tech_metadata__size_lsi'].should == subject.size.to_s
+        solr_doc['tech_metadata__uri_ssim'].should == [subject.uri]
+        solr_doc['tech_metadata__created_ssim'].should == [subject.created]
+        solr_doc['tech_metadata__modified_ssim'].should == [subject.modified]
+        puts solr_doc
+      end
+    end
+
+    describe "#file_from_solr" do
+      subject { FactoryGirl.create(:generic_file) }
+      it "should grab the file from solr and create a generic file object for the data" do
+        file = GenericFile.file_from_solr(subject.id)
+        file.identifier.should == subject.identifier
+        file.uri.should == subject.uri
+        file.file_format.should == subject.file_format
+        file.created.should == subject.created
+        file.modified.should == subject.modified
+        file.size.should == subject.size
       end
     end
 

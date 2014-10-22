@@ -92,6 +92,28 @@ describe IntellectualObject do
     end
   end
 
+  describe "#get_from_solr" do
+    subject { FactoryGirl.create(:intellectual_object) }
+    it "should grab the object from solr and create an intellectual object for the data" do
+      object = IntellectualObject.get_from_solr(subject.id)
+      object.identifier.should == subject.identifier
+      object.bag_name.should == subject.bag_name
+      object.description.should == subject.description
+      object.title.should == subject.title
+      object.access.should == subject.access
+    end
+  end
+
+  describe "#files_from_solr" do
+    subject { FactoryGirl.create(:intellectual_object) }
+    it "should grab the objects files from solr and create generic file objects for them" do
+      gf = FactoryGirl.build(:generic_file, intellectual_object: subject, size: 53)
+      subject.generic_files << gf
+      files = IntellectualObject.files_from_solr(subject.id)
+      files[0].identifier.should == gf.identifier
+    end
+  end
+
   describe "A saved instance" do
     after { subject.destroy }
 

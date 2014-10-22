@@ -47,6 +47,16 @@ describe Institution do
     end
   end
 
+  describe "#get_from_solr" do
+    subject { FactoryGirl.create(:institution) }
+    it "should grab the institution from solr and create an institution object for the data" do
+      inst = Institution.get_from_solr(subject.id)
+      inst.identifier.should == subject.identifier
+      inst.name.should == subject.name
+      inst.brief_name.should == subject.brief_name
+    end
+  end
+
   describe "a saved instance" do
     before do
       subject.save
