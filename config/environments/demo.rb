@@ -45,5 +45,5 @@ Fluctus::Application.configure do
     :password => ENV['AWS_SES_PASSWORD']
   }
 
-  config.log_level = :info
+  config.log_level = :warn
 end
