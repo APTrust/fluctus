@@ -56,6 +56,24 @@ class GenericFilesController < ApplicationController
   # - 5 x save generic file event
   #
   # Saving 200 generic files required 1400 HTTP calls. Now it requires 1.
+  #
+  # NOTE: The API client submits checksums in a param called :checksum.
+  # The remove_existing_checksums method below renames that param to
+  # :checksum_attributes. See the doc below on remove_existing_checksums.
+  #
+  # We have to rewrite the params here so that checksum becomes
+  # checksum_attributes. When serializing generic files back to the
+  # API client, this app always uses generic_file.checksum. Other
+  # contollers, such as the intellectual_object controller, also
+  # use generic_file.checksum for both input and output. However, Rails
+  # nested resources expects generic_file.checksum_attributes. That
+  # means the API has to serialize generic files differently, depending
+  # on which endpoint it's talking to, and Rails will reject the same
+  # JSON it just sent to the API client.
+  #
+  # Instead of making the API client guess which JSON format Rails wants,
+  # let's make consistent and use generic_file.checksum. We'll change it
+  # to checksum_attributes here to satisfy nested resources.
   def save_batch
     generic_files = []
     current_object = nil
@@ -63,7 +81,15 @@ class GenericFilesController < ApplicationController
     begin
       params[:generic_files].each do |gf|
         current_object = "GenericFile #{gf[:identifier]}"
-        gf_without_events = gf.except(:premisEvents)
+        if gf[:checksum].blank?
+          raise "GenericFile #{gf[:identifier]} is missing checksums."
+        end
+        if gf[:premisEvents].blank?
+          raise "GenericFile #{gf[:identifier]} is missing Premis Events."
+        end
+        gf_without_events = gf.except(:premisEvents, :checksum)
+        # Change param name to make inherited resources happy.
+        gf_without_events[:checksum_attributes] = gf[:checksum]
         # Load the existing generic file, or create a new one.
         generic_file = (GenericFile.where(tech_metadata__identifier_ssim: gf[:identifier]).first ||
                         @intellectual_object.generic_files.new(gf_without_events))
@@ -84,6 +110,8 @@ class GenericFilesController < ApplicationController
 
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
     rescue Exception => ex
+      logger.error ex.message
+      logger.error ex.backtrace.join("\n")
       generic_files.each do |gf|
         gf.destroy
       end
@@ -189,11 +217,12 @@ class GenericFilesController < ApplicationController
   # Remove existing checksums from submitted generic file data.
   # We don't want two copies of the same md5 and two of the same sha256.
   # Returns a copy of gf_params with existing checksums removed.
+  # This prevents duplicate checksums from accumulating in the metadata.
   def remove_existing_checksums(generic_file, gf_params)
     copy_of_params = gf_params.deep_dup
     generic_file.checksum.each do |existing_checksum|
       copy_of_params[:checksum_attributes].delete_if do |submitted_checksum|
-        submitted_checksum[:digest].strip == existing_checksum.digest.first.to_s.strip
+        generic_file.has_checksum?(submitted_checksum[:digest])
       end
     end
     copy_of_params
