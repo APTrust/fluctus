@@ -263,12 +263,14 @@ class IntellectualObjectsController < ApplicationController
       end
     else
       #@intellectual_object ||= IntellectualObject.find(params[:id])
-      @intellectual_object = IntellectualObject.get_from_solr(params[:id])
+      @intellectual_object ||= IntellectualObject.get_from_solr(params[:id])
+      #@files = IntellectualObject.files_from_solr(params[:id], {rows: 1000, start: 0})
     end
   end
 
   def load_institution
-    @institution ||= Institution.find(params[:institution_id])
+    #@institution ||= Institution.find(params[:institution_id])
+    @institution ||= Institution.get_from_solr(params[:institution_id])
   end
 
   def load_institution_for_create_from_json(object)

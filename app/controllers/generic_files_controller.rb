@@ -150,7 +150,8 @@ class GenericFilesController < ApplicationController
       @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: objId).first
       params[:intellectual_object_id] = @intellectual_object.id
     elsif params[:intellectual_object_id]
-      @intellectual_object ||= IntellectualObject.find(params[:intellectual_object_id])
+      #@intellectual_object ||= IntellectualObject.find(params[:intellectual_object_id])
+      @intellectual_object ||= IntellectualObject.get_from_solr(params[:intellectual_object_id])
     else
       @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
     end
@@ -176,7 +177,8 @@ class GenericFilesController < ApplicationController
       # and will blow up if it's not. So humor it.
       params[:id] = @generic_file.id
     elsif params[:id]
-      @generic_file ||= GenericFile.find(params[:id])
+      #@generic_file ||= GenericFile.find(params[:id])
+      @generic_file ||=GenericFile.file_from_solr(params[:id])
     end
   end
 

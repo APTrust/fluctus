@@ -24,6 +24,15 @@ class Institution < ActiveFedora::Base
     { pid: pid, name: name, brief_name: brief_name, identifier: identifier }
   end
 
+  def self.get_from_solr(pid)
+    query = "id\:#{RSolr.escape(pid)}"
+    solr_result = ActiveFedora::SolrService.query(query)
+    result = ActiveFedora::SolrService.reify_solr_results(solr_result,{:load_from_solr=>true})
+    initial_result = result.first
+    real_result = initial_result.reify
+    real_result
+  end
+
   def bytes_by_format
     resp = ActiveFedora::SolrService.instance.conn.get 'select', :params => {
       'q' => 'tech_metadata__size_lsi:[* TO *]',

@@ -40,13 +40,21 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :file_format, predicate: FileVocabulary.file_format do |index|
     index.as :stored_sortable
   end
-  property :uri, predicate: RDF::HT.absoluteURI
+  property :uri, predicate: RDF::HT.absoluteURI do |index|
+    index.as :symbol
+  end
   property :size, predicate: FileVocabulary.size do |index|
     index.as :sortable_long
   end
-  property :created, predicate: FileVocabulary.created
-  property :modified, predicate: FileVocabulary.modified
-  property :checksum, predicate: FileVocabulary.checksum, class_name: 'Checksum'
+  property :created, predicate: FileVocabulary.created do |index|
+    index.as :symbol
+  end
+  property :modified, predicate: FileVocabulary.modified do |index|
+    index.as :symbol
+  end
+  property :checksum, predicate: FileVocabulary.checksum, class_name: 'Checksum' do |index|
+    index.as :symbol
+  end
   property :identifier, predicate: RDF::DC.identifier do |index|
     index.as :stored_searchable, :symbol
   end
@@ -55,8 +63,14 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   class Checksum < ActiveFedora::Rdf::Resource
     configure :type => FileVocabulary.Checksum
 
-    property :algorithm, predicate: WorldNetVocabulary.Algorithm
-    property :datetime, predicate: RDF::DC.created
-    property :digest, predicate: FileVocabulary.checksumValue
+    property :algorithm, predicate: WorldNetVocabulary.Algorithm do |index|
+      index.as :symbol
+    end
+    property :datetime, predicate: RDF::DC.created do |index|
+      index.as :symbol
+    end
+    property :digest, predicate: FileVocabulary.checksumValue do |index|
+      index.as :symbol
+    end
   end
 end
