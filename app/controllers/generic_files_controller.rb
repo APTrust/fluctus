@@ -93,6 +93,7 @@ class GenericFilesController < ApplicationController
         # Load the existing generic file, or create a new one.
         generic_file = (GenericFile.where(tech_metadata__identifier_ssim: gf[:identifier]).first ||
                         @intellectual_object.generic_files.new(gf_without_events))
+        generic_file.state = 'A'
         if generic_file.id.present?
           # This is an update
           gf_clean_data = remove_existing_checksums(generic_file, gf_without_events)
@@ -134,8 +135,17 @@ class GenericFilesController < ApplicationController
 
   def destroy
     authorize @generic_file, :soft_delete?
-    pending = ProcessedItem.pending?(@generic_file.intellectual_object.identifier)
-    if pending == 'false'
+    # Don't allow a delete request if an ingest or restore is in process
+    # for this object. OK to delete if another delete request is in process.
+    pending = ProcessedItem.exists?(["object_identifier = ? " +
+                                     "and (action = ? or action = ?) " +
+                                     "and (status = ? or status = ?)",
+                                     @generic_file.intellectual_object.identifier,
+                                     Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                     Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                     Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                     Fluctus::Application::FLUCTUS_STATUSES['start']])
+    if pending == false
       attributes = { type: 'delete',
                      date_time: "#{Time.now}",
                      detail: 'Object deleted from S3 storage',
