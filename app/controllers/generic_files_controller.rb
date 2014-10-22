@@ -160,7 +160,7 @@ class GenericFilesController < ApplicationController
         }
       end
     else
-      redirect_to :back
+      redirect_to @generic_file
       flash[:alert] = "Your file cannot be deleted at this time due to a pending #{result} request."
     end
   end

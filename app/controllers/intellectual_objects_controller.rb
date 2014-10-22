@@ -80,7 +80,7 @@ class IntellectualObjectsController < ApplicationController
         }
       end
     else
-      redirect_to :back
+      redirect_to @intellectual_object
       flash[:alert] = "Your object cannot be deleted at this time due to a pending #{pending} request."
     end
   end
@@ -94,10 +94,10 @@ class IntellectualObjectsController < ApplicationController
       flash[:alert] = 'This item has been deleted and cannot be queued for restoration.'
     elsif pending == 'false'
       ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
-      redirect_to :back
+      redirect_to @intellectual_object
       flash[:notice] = 'Your item has been queued for restoration.'
     else
-      redirect_to :back
+      redirect_to @intellectual_object
       flash[:alert] = "Your object cannot be queued for restoration at this time due to a pending #{pending} request."
     end
   end
