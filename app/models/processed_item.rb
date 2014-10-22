@@ -49,17 +49,18 @@ class ProcessedItem < ActiveRecord::Base
         result = 'true'
       else
         if item.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest']
-          pending = 'ingest'
+          result = 'ingest'
           break
         elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['restore']
-          pending = 'restore'
+          result = 'restore'
           break
         elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete'] && item.generic_file_identifer == generic_file_identifier
-          pending = 'delete'
+          result = 'delete'
           break
         end
       end
     end
+    result
   end
 
   # Returns the ProcessedItem record for the last successfully ingested

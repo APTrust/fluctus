@@ -310,6 +310,7 @@ describe GenericFilesController do
         end
 
         it 'delete the file with html response' do
+          file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id)
           delete :destroy, id: file
           expect(response).to redirect_to intellectual_object_path(file.intellectual_object)
           expect(assigns[:generic_file].state).to eq 'D'
@@ -317,8 +318,9 @@ describe GenericFilesController do
         end
 
         it "should create a ProcessedItem with the delete request" do
+          file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id)
           delete :destroy, id: file, format: 'json'
-          pi = ProcessedItem.where(generic_file_identifier: @file.identifier).first
+          pi = ProcessedItem.where(generic_file_identifier: file.identifier).first
           expect(pi).not_to be_nil
           expect(pi.object_identifier).to eq @intellectual_object.identifier
           expect(pi.action).to eq Fluctus::Application::FLUCTUS_ACTIONS['delete']
