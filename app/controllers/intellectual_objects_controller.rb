@@ -58,7 +58,10 @@ class IntellectualObjectsController < ApplicationController
   def destroy
     authorize @intellectual_object, :soft_delete?
     pending = ProcessedItem.pending?(@intellectual_object.identifier)
-    if pending == 'false'
+    if @intellectual_object.state == 'D'
+      redirect_to @intellectual_object
+      flash[:alert] = 'This item has already been deleted.'
+    elsif pending == 'false'
       attributes = { type: 'delete',
                      date_time: "#{Time.now}",
                      detail: 'Object deleted from S3 storage',

@@ -38,6 +38,30 @@ class ProcessedItem < ActiveRecord::Base
     pending
   end
 
+  def self.can_delete_file?(intellectual_object_identifier, generic_file_identifier)
+    items = ProcessedItem.where("object_identifier = ?", intellectual_object_identifier)
+    items = items.order('date DESC')
+    result = 'true'
+    items.each do |item|
+      if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] ||
+          item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'] ||
+          item.status == Fluctus::Application::FLUCTUS_STATUSES['cancel']
+        result = 'true'
+      else
+        if item.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest']
+          pending = 'ingest'
+          break
+        elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['restore']
+          pending = 'restore'
+          break
+        elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete'] && item.generic_file_identifer == generic_file_identifier
+          pending = 'delete'
+          break
+        end
+      end
+    end
+  end
+
   # Returns the ProcessedItem record for the last successfully ingested
   # version of an intellectual object. The last ingested version has
   # these characteristicts:

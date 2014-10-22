@@ -137,15 +137,11 @@ class GenericFilesController < ApplicationController
     authorize @generic_file, :soft_delete?
     # Don't allow a delete request if an ingest or restore is in process
     # for this object. OK to delete if another delete request is in process.
-    pending = ProcessedItem.exists?(["object_identifier = ? " +
-                                     "and (action = ? or action = ?) " +
-                                     "and (status = ? or status = ?)",
-                                     @generic_file.intellectual_object.identifier,
-                                     Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                                     Fluctus::Application::FLUCTUS_ACTIONS['restore'],
-                                     Fluctus::Application::FLUCTUS_STATUSES['pend'],
-                                     Fluctus::Application::FLUCTUS_STATUSES['start']])
-    if pending == false
+    result = ProcessedItem.can_delete_file?(@generic_file.intellectual_object.identifier, @generic_file.identifier)
+    if @generic_file.state == 'D'
+      redirect_to @generic_file
+      flash[:alert] = 'This file has already been deleted.'
+    elsif result == 'true'
       attributes = { type: 'delete',
                      date_time: "#{Time.now}",
                      detail: 'Object deleted from S3 storage',
@@ -165,7 +161,7 @@ class GenericFilesController < ApplicationController
       end
     else
       redirect_to :back
-      flash[:alert] = "Your object cannot be deleted at this time due to a pending #{pending} request."
+      flash[:alert] = "Your file cannot be deleted at this time due to a pending #{result} request."
     end
   end
 
