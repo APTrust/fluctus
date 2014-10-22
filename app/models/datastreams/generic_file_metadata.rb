@@ -52,9 +52,7 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :modified, predicate: FileVocabulary.modified do |index|
     index.as :symbol
   end
-  property :checksum, predicate: FileVocabulary.checksum, class_name: 'Checksum' do |index|
-    index.as :symbol
-  end
+  property :checksum, predicate: FileVocabulary.checksum, class_name: 'Checksum'
   property :identifier, predicate: RDF::DC.identifier do |index|
     index.as :stored_searchable, :symbol
   end
