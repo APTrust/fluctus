@@ -43,6 +43,7 @@ class GenericFilesController < ApplicationController
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
       else
+        log_model_error(@generic_file)
         format.json { render json: @generic_file.errors, status: :unprocessable_entity }
       end
     end
@@ -121,8 +122,7 @@ class GenericFilesController < ApplicationController
 
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
     rescue Exception => ex
-      logger.error ex.message
-      logger.error ex.backtrace.join("\n")
+      log_exception(ex)
       generic_files.each do |gf|
         gf.destroy
       end
@@ -142,6 +142,7 @@ class GenericFilesController < ApplicationController
       aggregate.update_aggregations('update', update_map)
       head :no_content
     else
+      log_model_error(resource)
       render json: resource.errors, status: :unprocessable_entity
     end
   end

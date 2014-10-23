@@ -1,19 +1,19 @@
 class ApplicationController < ActionController::Base
 
-  # Adds a few additional behaviors into the application controller 
+  # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   include ApiAuth
   # Authorization mechanism
-  include Pundit 
-    # Please be sure to impelement current_user and user_session. Blacklight depends on 
-  # these methods in order to perform user specific actions. 
+  include Pundit
+    # Please be sure to impelement current_user and user_session. Blacklight depends on
+  # these methods in order to perform user specific actions.
 
   layout 'blacklight'
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-  
+
   skip_before_action :verify_authenticity_token, :if => :api_request?
 
   # If a User is denied access for an action, return them back to the last page they could view.
@@ -21,13 +21,13 @@ class ApplicationController < ActionController::Base
     #respond_to do |format|
       #format.html { redirect_to root_url, alert: exception.message }
       #format.json { render :json => { :status => "error", :message => exception.message }, :status => :forbidden }
-    #end 
+    #end
   #end
 
   # Globally rescue authorization errors in controller
   # return 403 Forbidden if permission is denied
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-  
+
   def after_sign_in_path_for(resource)
     session[:purge_datetime] = Time.now.utc
     session[:show_reviewed] = false
@@ -46,5 +46,27 @@ class ApplicationController < ActionController::Base
       format.json { render :json => { :status => "error", :message => "You are not authorized to access this page." }, :status => :forbidden }
     end
   end
-  
+
+  # Logs an exception with stacktrace
+  def log_exception(ex)
+    logger.error ex.message
+    logger.error ex.backtrace.join("\n")
+  end
+
+  # Logs detailed info about what validation failed.
+  # Useful for debugging API calls. Don't call this with
+  # models that include sensitive info, such as the User
+  # model, which includes a password, because this dumps
+  # all of the request params into the log.
+  def log_model_error(model)
+    message = "URL: #{request.original_url}\n" +
+      "Params: #{params.inspect}\n"
+    if model.nil?
+      message += "Model object is nil."
+    else
+      message += "Validation Errors: #{model.errors.full_messages}"
+    end
+    logger.error message
+  end
+
 end
