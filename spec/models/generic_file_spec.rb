@@ -165,26 +165,46 @@ describe GenericFile do
 
         it "should set the state to deleted and index the object state" do
           h1 = subject.serializable_hash
-          h1.has_key?(:id)
-          h1.has_key?(:uri)
-          h1.has_key?(:size)
-          h1.has_key?(:created)
-          h1.has_key?(:modified)
-          h1.has_key?(:file_format)
-          h1.has_key?(:identifier)
-          h1.has_key?(:state)
+          expect(h1.has_key?(:id)).to be true
+          expect(h1.has_key?(:uri)).to be true
+          expect(h1.has_key?(:size)).to be true
+          expect(h1.has_key?(:created)).to be true
+          expect(h1.has_key?(:modified)).to be true
+          expect(h1.has_key?(:file_format)).to be true
+          expect(h1.has_key?(:identifier)).to be true
+          expect(h1.has_key?(:state)).to be true
 
           h2 = subject.serializable_hash(include: [:checksum, :premisEvents])
-          h2.has_key?(:id)
-          h2.has_key?(:uri)
-          h2.has_key?(:size)
-          h2.has_key?(:created)
-          h2.has_key?(:modified)
-          h2.has_key?(:file_format)
-          h2.has_key?(:identifier)
-          h2.has_key?(:state)
-          h2.has_key?(:checksum)
-          h2.has_key?(:premisEvents)
+          expect(h2.has_key?(:id)).to be true
+          expect(h2.has_key?(:uri)).to be true
+          expect(h2.has_key?(:size)).to be true
+          expect(h2.has_key?(:created)).to be true
+          expect(h2.has_key?(:modified)).to be true
+          expect(h2.has_key?(:file_format)).to be true
+          expect(h2.has_key?(:identifier)).to be true
+          expect(h2.has_key?(:state)).to be true
+          expect(h2.has_key?(:checksum)).to be true
+          expect(h2.has_key?(:premisEvents)).to be true
+        end
+      end
+
+      describe "find_checksum_by_digest" do
+        let(:digest) { subject.checksum.last.digest.first.to_s }
+        it "should find the checksum" do
+          expect(subject.find_checksum_by_digest(digest)).not_to be_empty
+        end
+        it "should return nil for non-existent checksum" do
+          expect(subject.find_checksum_by_digest(" :-{ ")).to be_nil
+        end
+      end
+
+      describe "has_checksum?" do
+        let(:digest) { subject.checksum.last.digest.first.to_s }
+        it "should return true if checksum is present" do
+          expect(subject.has_checksum?(digest)).to be true
+        end
+        it "should return false if checksum is not present" do
+          expect(subject.has_checksum?(" :( ")).to be false
         end
       end
 

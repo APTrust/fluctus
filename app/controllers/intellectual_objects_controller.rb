@@ -61,7 +61,10 @@ class IntellectualObjectsController < ApplicationController
   def destroy
     authorize @intellectual_object, :soft_delete?
     pending = ProcessedItem.pending?(@intellectual_object.identifier)
-    if pending == 'false'
+    if @intellectual_object.state == 'D'
+      redirect_to @intellectual_object
+      flash[:alert] = 'This item has already been deleted.'
+    elsif pending == 'false'
       attributes = { type: 'delete',
                      date_time: "#{Time.now}",
                      detail: 'Object deleted from S3 storage',
@@ -80,7 +83,7 @@ class IntellectualObjectsController < ApplicationController
         }
       end
     else
-      redirect_to :back
+      redirect_to @intellectual_object
       flash[:alert] = "Your object cannot be deleted at this time due to a pending #{pending} request."
     end
   end
@@ -94,10 +97,10 @@ class IntellectualObjectsController < ApplicationController
       flash[:alert] = 'This item has been deleted and cannot be queued for restoration.'
     elsif pending == 'false'
       ProcessedItem.create_restore_request(@intellectual_object.identifier, current_user.email)
-      redirect_to :back
+      redirect_to @intellectual_object
       flash[:notice] = 'Your item has been queued for restoration.'
     else
-      redirect_to :back
+      redirect_to @intellectual_object
       flash[:alert] = "Your object cannot be queued for restoration at this time due to a pending #{pending} request."
     end
   end

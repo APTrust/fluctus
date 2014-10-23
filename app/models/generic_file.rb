@@ -99,6 +99,18 @@ class GenericFile < ActiveFedora::Base
     end
   end
 
+  # Returns the checksum with the specified digest, or nil.
+  # No need to specify algorithm, since we're using md5 and sha256,
+  # and their digests have different lengths.
+  def find_checksum_by_digest(digest)
+    checksum.select { |cs| digest.strip == cs.digest.first.to_s.strip }.first
+  end
+
+  # Returns true if the GenericFile has a checksum with the specified digest.
+  def has_checksum?(digest)
+    find_checksum_by_digest(digest).nil? == false
+  end
+
   private
 
   def update_parent_index
