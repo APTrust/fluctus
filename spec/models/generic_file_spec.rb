@@ -67,7 +67,7 @@ describe GenericFile do
         solr_doc['tech_metadata__uri_ssim'].should == [subject.uri]
         solr_doc['tech_metadata__created_ssim'].should == [subject.created]
         solr_doc['tech_metadata__modified_ssim'].should == [subject.modified]
-        puts solr_doc
+        #puts solr_doc
       end
     end
 

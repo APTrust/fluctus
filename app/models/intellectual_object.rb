@@ -58,13 +58,23 @@ class IntellectualObject < ActiveFedora::Base
     query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{pid}")
     query << ActiveFedora::SolrService.construct_query_for_rel(object_state_ssi: 'A')
     solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
-    result = ActiveFedora::SolrService.reify_solr_results(solr_result, {:load_from_solr=>true})
     files = []
-    result.each do |file|
-      file.reify
-      files.push(file)
+    solr_result.each do |file|
+      file = [file]
+      result = ActiveFedora::SolrService.reify_solr_results(file, {:load_from_solr=>true})
+      initial_result = result.first
+      real_result = initial_result.reify
+      files.push(real_result)
     end
     files
+
+    #result = ActiveFedora::SolrService.reify_solr_results(solr_result, {:load_from_solr=>true})
+    #files = []
+    #result.each do |file|
+    #  file.reify
+    #  files.push(file)
+    #end
+    #solr_result
   end
 
   def soft_delete(attributes)
