@@ -67,14 +67,6 @@ class IntellectualObject < ActiveFedora::Base
       files.push(real_result)
     end
     files
-
-    #result = ActiveFedora::SolrService.reify_solr_results(solr_result, {:load_from_solr=>true})
-    #files = []
-    #result.each do |file|
-    #  file.reify
-    #  files.push(file)
-    #end
-    #solr_result
   end
 
   def soft_delete(attributes)
