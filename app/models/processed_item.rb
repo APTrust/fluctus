@@ -14,7 +14,7 @@ class ProcessedItem < ActiveRecord::Base
   end
 
   def self.pending?(intellectual_object_identifier)
-    items = ProcessedItem.where("object_identifier = ?", intellectual_object_identifier )
+    items = ProcessedItem.where(object_identifier: intellectual_object_identifier )
     items = items.order('date DESC')
     pending = 'false'
     items.each do |item|
@@ -39,7 +39,7 @@ class ProcessedItem < ActiveRecord::Base
   end
 
   def self.can_delete_file?(intellectual_object_identifier, generic_file_identifier)
-    items = ProcessedItem.where("object_identifier = ?", intellectual_object_identifier)
+    items = ProcessedItem.where(object_identifier: intellectual_object_identifier)
     items = items.order('date DESC')
     result = 'true'
     items.each do |item|
@@ -71,14 +71,13 @@ class ProcessedItem < ActiveRecord::Base
   # * Stage is Clean or (Stage is Record and Status is Success)
   # * Has the latest date of any record with the above characteristics
   def self.last_ingested_version(intellectual_object_identifier)
-    items = ProcessedItem.where("object_identifier = ? and action = ? " +
-                                "and (stage = ? or (stage = ? and status = ?))",
-                                intellectual_object_identifier,
-                                Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                                Fluctus::Application::FLUCTUS_STAGES['clean'],
-                                Fluctus::Application::FLUCTUS_STAGES['record'],
-                                Fluctus::Application::FLUCTUS_STATUSES['success'])
-    items.order('date DESC').limit(1).first
+    items = ProcessedItem.where(object_identifier: intellectual_object_identifier, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                stage: Fluctus::Application::FLUCTUS_STAGES['clean']).order('date DESC').limit(1).first
+    if items.nil?
+      items = ProcessedItem.where(object_identifier: intellectual_object_identifier, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                  stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success']).order('date DESC').limit(1).first
+    end
+    items
   end
 
   # Creates a ProcessedItem record showing that someone has requested
