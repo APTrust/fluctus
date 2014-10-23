@@ -144,6 +144,7 @@ class IntellectualObjectsController < ApplicationController
         @institution = @intellectual_object.institution
         respond_to { |format| format.json { render json: object_as_json, status: :created } }
       rescue Exception => ex
+        log_exception(ex)
         if !new_object.nil?
           new_object.generic_files.each do |gf|
             gf.destroy
