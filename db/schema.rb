@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141017134011) do
+ActiveRecord::Schema.define(version: 20141024142939) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",     null: false
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 20141017134011) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "identifier"
-    t.string   "file_format"
+    t.text     "file_format", limit: 255
   end
 
   create_table "processed_items", force: true do |t|
@@ -57,6 +57,9 @@ ActiveRecord::Schema.define(version: 20141017134011) do
   add_index "processed_items", ["institution"], name: "index_processed_items_on_institution"
   add_index "processed_items", ["stage"], name: "index_processed_items_on_stage"
   add_index "processed_items", ["status"], name: "index_processed_items_on_status"
+
+# Could not dump table "processing_queues" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
 
   create_table "roles", force: true do |t|
     t.string "name"
