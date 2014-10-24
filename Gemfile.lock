@@ -48,6 +48,12 @@ GEM
       mime-types
       xml-simple
     bcrypt-ruby (3.1.2)
+    better_errors (2.0.0)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+      rack (>= 0.9.0)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     blacklight (5.5.1)
       bootstrap-sass (~> 3.0)
       deprecation
@@ -72,6 +78,7 @@ GEM
       xpath (~> 2.0)
     childprocess (0.5.0)
       ffi (~> 1.0, >= 1.0.11)
+    coderay (1.1.0)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
@@ -89,6 +96,7 @@ GEM
       thor
     currencies (0.4.2)
     daemons (1.1.9)
+    debug_inspector (0.0.2)
     deprecation (0.1.0)
       activesupport
     devise (3.2.2)
@@ -418,6 +426,8 @@ PLATFORMS
 DEPENDENCIES
   active-fedora (= 7.0.0)
   aws-s3
+  better_errors
+  binding_of_caller
   capybara
   coffee-rails (~> 4.0.0)
   coveralls

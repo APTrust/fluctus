@@ -68,7 +68,8 @@ gem 'aws-s3'
 
 group :development do
   gem 'meta_request'
-  # gem 'better_errors'
+  gem 'better_errors'
+  gem 'binding_of_caller'
 end
 group :development, :test, :demo do
   gem 'factory_girl_rails'
