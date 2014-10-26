@@ -89,6 +89,7 @@ end
 group :production do
   gem 'pg' #Necessary for heroku
   gem "rails_12factor" # Necessary for heroku
+  gem 'factory_girl_rails'
   gem 'faker', github: 'stympy/faker'
   gem 'quiet_assets'
   gem "rspec-rails"
