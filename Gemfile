@@ -71,11 +71,15 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
 end
+
 group :development, :test, :demo do
-  gem 'factory_girl_rails'
-  gem 'faker', github: 'stympy/faker'
   gem "jettywrapper"
   gem 'sqlite3'
+end
+
+group :development, :test, :demo, :production do
+  gem 'factory_girl_rails'
+  gem 'faker', github: 'stympy/faker'
   gem 'quiet_assets'
   gem "rspec-rails"
 end
@@ -89,8 +93,4 @@ end
 group :production do
   gem 'pg' #Necessary for heroku
   gem "rails_12factor" # Necessary for heroku
-  gem 'factory_girl_rails'
-  gem 'faker', github: 'stympy/faker'
-  gem 'quiet_assets'
-  gem "rspec-rails"
 end
