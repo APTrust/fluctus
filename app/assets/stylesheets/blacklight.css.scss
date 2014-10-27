@@ -2,6 +2,7 @@ $logo_image: '';
 $apt_red: #800000;
 $apt_black: #180000;
 
+@import 'bootstrap-sprockets';
 @import 'bootstrap';
 @import 'blacklight/blacklight';
 
@@ -52,4 +53,3 @@ $apt_black: #180000;
 .panel-heading h4 { font-weight: bold; }
 .index_title a { font-weight: bold; }
 .page-header h1 { font-weight: bold; }
-
