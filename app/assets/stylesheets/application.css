@@ -12,3 +12,5 @@
  *= require_tree .
  *= require hydra-editor/hydra-editor
  */
+@import 'bootstrap-sprockets';
+@import 'bootstrap';
