@@ -90,43 +90,43 @@ describe IoAggregation do
     subject.identifier.should == 'test.edu/123'
   end
 
-  it '#update_aggregations should properly add a new file to the aggregations' do
-    io = FactoryGirl.create(:intellectual_object)
-    subject.initialize_object(io.id)
-    file = FactoryGirl.create(:generic_file, size: 100, file_format: 'application/pdf')
-    subject.update_aggregations('add', file)
-    subject.file_count.should == 1
-    subject.file_size.should == 100
-    subject.file_format.should == 'application/pdf'
-  end
+  #it '#update_aggregations should properly add a new file to the aggregations' do
+  #  io = FactoryGirl.create(:intellectual_object)
+  #  subject.initialize_object(io.id)
+  #  file = FactoryGirl.create(:generic_file, size: 100, file_format: 'application/pdf')
+  #  subject.update_aggregations('add', file)
+  #  subject.file_count.should == 1
+  #  subject.file_size.should == 100
+  #  subject.file_format.should == 'application/pdf'
+  #end
 
-  it '#update_aggregations should properly change a file in the aggregations' do
-    io = FactoryGirl.create(:intellectual_object)
-    subject.identifier = io.id
-    subject.file_count = 3
-    subject.file_size = 194
-    subject.file_format = 'application/pdf,audio/wav,video/mp4'
-    gf = FactoryGirl.create(:generic_file, size: 100, file_format: 'application/pdf')
-    params = {file_format: 'application/txt', size: 68}
-    file = [gf, params]
-    subject.update_aggregations('update', file)
-    subject.file_count.should == 3
-    subject.file_size.should == 162
-    subject.file_format.should == 'audio/wav,video/mp4,application/txt'
-  end
+  #it '#update_aggregations should properly change a file in the aggregations' do
+  #  io = FactoryGirl.create(:intellectual_object)
+  #  subject.identifier = io.id
+  #  subject.file_count = 3
+  #  subject.file_size = 194
+  #  subject.file_format = 'application/pdf,audio/wav,video/mp4'
+  #  gf = FactoryGirl.create(:generic_file, size: 100, file_format: 'application/pdf')
+  #  params = {file_format: 'application/txt', size: 68}
+  #  file = [gf, params]
+  #  subject.update_aggregations('update', file)
+  #  subject.file_count.should == 3
+  #  subject.file_size.should == 162
+  #  subject.file_format.should == 'audio/wav,video/mp4,application/txt'
+  #end
 
-  it '#update_aggregations should properly remove a file from the aggregations' do
-    io = FactoryGirl.create(:intellectual_object)
-    subject.identifier = io.id
-    subject.file_count = 3
-    subject.file_size = 194
-    subject.file_format = 'application/pdf,audio/wav,video/mp4'
-    gf = FactoryGirl.create(:generic_file, size: 100, file_format: 'application/pdf')
-    subject.update_aggregations('delete', gf)
-    subject.file_count.should == 2
-    subject.file_size.should == 94
-    subject.file_format.should == 'audio/wav,video/mp4'
-  end
+  #it '#update_aggregations should properly remove a file from the aggregations' do
+  #  io = FactoryGirl.create(:intellectual_object)
+  #  subject.identifier = io.id
+  #  subject.file_count = 3
+  #  subject.file_size = 194
+  #  subject.file_format = 'application/pdf,audio/wav,video/mp4'
+  #  gf = FactoryGirl.create(:generic_file, size: 100, file_format: 'application/pdf')
+  #  subject.update_aggregations('delete', gf)
+  #  subject.file_count.should == 2
+  #  subject.file_size.should == 94
+  #  subject.file_format.should == 'audio/wav,video/mp4'
+  #end
 
 end
 

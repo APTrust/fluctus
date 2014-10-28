@@ -133,9 +133,9 @@ namespace :fluctus do
 
         # add processed item for intellectual object
         FactoryGirl.create(:processed_item, institution: institution.identifier, name: name, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
-        aggregate = IoAggregation.new
-        aggregate.initialize_object(item.id)
-        aggregate.save!
+        #aggregate = IoAggregation.new
+        #aggregate.initialize_object(item.id)
+        #aggregate.save!
 
         num_files = args[:numGenFiles].to_i
         num_files.times.each do |file_count|
@@ -167,7 +167,7 @@ namespace :fluctus do
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
           f.save!
-          aggregate.update_aggregations('add', f)
+          #aggregate.update_aggregations('add', f)
         end
       end
     end

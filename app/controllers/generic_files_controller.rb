@@ -37,8 +37,8 @@ class GenericFilesController < ApplicationController
     authorize @intellectual_object, :create_through_intellectual_object?
     @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
     @generic_file.state = 'A'
-    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    aggregate.update_aggregations('add', @generic_file)
+    #aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
+    #aggregate.update_aggregations('add', @generic_file)
     respond_to do |format|
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
@@ -137,9 +137,9 @@ class GenericFilesController < ApplicationController
     authorize @generic_file
     @generic_file.state = 'A'
     if resource.update(params_for_update)
-      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      update_map = [@generic_file, params_for_update]
-      aggregate.update_aggregations('update', update_map)
+      #aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
+      #update_map = [@generic_file, params_for_update]
+      #aggregate.update_aggregations('update', update_map)
       head :no_content
     else
       log_model_error(resource)
@@ -165,8 +165,8 @@ class GenericFilesController < ApplicationController
                      agent: 'https://github.com/marcel/aws-s3/tree/master',
                      outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
-      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      aggregate.update_aggregations('delete', @generic_file)
+      #aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
+      #aggregate.update_aggregations('delete', @generic_file)
       @generic_file.soft_delete(attributes)
       respond_to do |format|
         format.json { head :no_content }

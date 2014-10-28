@@ -55,22 +55,10 @@
       <h3 class="panel-title">
         Aggregate Data About Preserved Files
       </h3>
+      <p><i>This section is currently under construction.</i></p>
     </div>
 
-    <div class="panel-body">
-      <dl class="dl-horizontal dl-invert">
-        <% aggregate = IoAggregation.where(identifier: @intellectual_object.id).first %>
-        <dt>Files Preserved </dt>
-        <dd><%= aggregate.file_count %></dd>
-        <dt>Total File Size<dt>
-        <dd><%= number_to_human_size(aggregate.file_size) %></dd>
-        <% aggregate.format_to_map.each do |key, value| %>
-            <dt><%= key %></dt>
-            <dd><%= value %></dd>
-          <% end %>
-        </dd>
-      </dl>
-    </div>
+
   </div>
 
 </div>

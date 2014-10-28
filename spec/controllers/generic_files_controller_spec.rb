@@ -8,7 +8,7 @@ describe GenericFilesController do
     @institution = FactoryGirl.create(:institution)
     @another_institution = FactoryGirl.create(:institution)
     @intellectual_object = FactoryGirl.create(:consortial_intellectual_object, institution_id: @institution.id)
-    @aggregate = FactoryGirl.create(:io_aggregation, identifier: @intellectual_object.id)
+    #@aggregate = FactoryGirl.create(:io_aggregation, identifier: @intellectual_object.id)
     GenericFile.delete_all
   end
 
