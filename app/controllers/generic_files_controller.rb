@@ -4,7 +4,7 @@ class GenericFilesController < ApplicationController
   before_filter :load_generic_file, only: [:show, :update, :destroy]
   before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
 
-  after_action :verify_authorized, :except => [:create, :index]
+  after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
 
   include Aptrust::GatedSearch
   self.solr_search_params_logic += [:for_selected_object]
@@ -46,6 +46,25 @@ class GenericFilesController < ApplicationController
         log_model_error(@generic_file)
         format.json { render json: @generic_file.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  # Returns a list of GenericFiles that have not had a fixity
+  # check since the specified date.
+  #
+  # TODO: THIS IS A STUB. NEEDS REAL IMPLEMENTATION.
+  # AND WE NEED TO ADD THE DATETIME PARAM TO THE QUERY!
+  def not_checked_since
+    if current_user.admin? == false
+      logger.warn("User #{current_user.email} tried to access generic_files_controller#not_checked_since")
+      raise ActionController::Forbidden
+    end
+    # params[:since]
+    @generic_files = GenericFile.where(object_state_ssi: 'A').limit(20)
+    respond_to do |format|
+      # Return active files only, not deleted files!
+      format.json { render json: @generic_files.map { |gf| gf.serializable_hash(include: [:checksum]) } }
+      format.html { super }
     end
   end
 
