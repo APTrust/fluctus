@@ -15,9 +15,19 @@ function select_pi_tab() {
     $("#tabs-2-link").click();
 }
 
-function fix_search_breadcrumb() {
-    //$("a.btn-sm").removeClass("dropdown-toggle");
-    //$("span.appliedFilter").removeClass("open");
+var fix_search_breadcrumb = function() {
+    $("a.btn-sm").removeClass("dropdown-toggle");
+    $("span.btn-sm").removeClass("btn-disabled");
+}
+
+var addClickFunctions = function() {
+    var buttons = $("a.btn-sm.btn-default");
+    for (var i = 0; i < buttons.length; i++) {
+       buttons[i].onclick = function() {
+           var href = $(this).attr("href");
+           window.location.assign(href);
+       }
+    }
 }
 
 $(document).ready(activate_tabs);
@@ -26,3 +36,5 @@ $(document).ready(dropdown);
 $(document).on('page:load', dropdown);
 $(document).ready(fix_search_breadcrumb);
 $(document).on('page:load', fix_search_breadcrumb);
+$(document).ready(addClickFunctions);
+$(document).on('page:load', addClickFunctions);

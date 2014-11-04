@@ -5,6 +5,8 @@ class EventsController < ApplicationController
   before_filter :load_and_authorize_parent_object, only: [:create]
   after_action :verify_authorized, :only => [:index]
 
+  helper_method :search_action_url
+
   include Aptrust::GatedSearch
 
   self.solr_search_params_logic += [:only_events]
@@ -52,6 +54,10 @@ class EventsController < ApplicationController
         redirect_to @parent_object
       }
     end
+  end
+
+  def search_action_url *args
+    catalog_index_url *args
   end
 
 protected
