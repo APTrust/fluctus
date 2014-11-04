@@ -20,6 +20,7 @@ namespace :fluctus do
         ['University of North Carolina at Chapel Hill', 'unc', 'unc.edu'],
         ['University of Notre Dame', 'und', 'nd.edu'],
         ['University of Virginia','uva', 'virginia.edu'],
+        ['Test University','test', 'test.edu'],
   ]
 
 
