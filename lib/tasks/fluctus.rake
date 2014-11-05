@@ -9,7 +9,6 @@ namespace :fluctus do
         ['Johns Hopkins University', 'jhu', 'jhu.edu'],
         ['North Carolina State University', 'ncsu', 'ncsu.edu'],
         ['Pennsylvania State University', 'psu', 'psu.edu'],
-        ['Stanford University', 'stnfd', 'stanford.edu'],
         ['Syracuse University', 'syr', 'syr.edu'],
         ['University of Chicago', 'uchi', 'uchicago.edu'],
         ['University of Cincinnati', 'ucin', 'uc.edu'],
