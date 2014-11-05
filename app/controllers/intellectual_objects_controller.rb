@@ -146,6 +146,8 @@ class IntellectualObjectsController < ApplicationController
         state[:object_files].each do |file|
           create_generic_file(file, new_object, state)
         end
+        # Save again, or we won't get our events back from Fedora!
+        new_object.save!
         @intellectual_object = new_object
         @institution = @intellectual_object.institution
         respond_to { |format| format.json { render json: object_as_json, status: :created } }
@@ -199,13 +201,14 @@ class IntellectualObjectsController < ApplicationController
     state[:current_object] = "GenericFile #{new_file.identifier}"
     new_file.intellectual_object = intel_obj
     new_file.state = 'A' # in case we loaded a deleted file
-    new_file.save!
     aggregate = IoAggregation.where(identifier: intel_obj.id).first
     aggregate.update_aggregations('add', new_file)
     file_events.each { |event|
       state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
       new_file.add_event(event)
     }
+    # Save only after all changes, or we won't get our events back from Fedora!
+    new_file.save!
   end
 
   def set_obj_attr(new_object, state, attr_name, attr_value)
