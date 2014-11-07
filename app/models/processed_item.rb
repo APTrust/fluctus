@@ -54,7 +54,7 @@ class ProcessedItem < ActiveRecord::Base
         elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['restore']
           result = 'restore'
           break
-        elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete'] && item.generic_file_identifer == generic_file_identifier
+        elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete'] && item.generic_file_identifier == generic_file_identifier
           result = 'delete'
           break
         end
