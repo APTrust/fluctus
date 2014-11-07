@@ -73,7 +73,7 @@ class ProcessedItemController < ApplicationController
     page_count
   end
 
-  # /api/v1/itemresults/api_search
+  # /api/v1/itemresults/search
   # Allows the API client to pass in some very specific criteria
   def api_search
     @items = ProcessedItem.all
@@ -83,7 +83,8 @@ class ProcessedItemController < ApplicationController
     if Rails.env.test? || Rails.env.development?
       rewrite_params_for_sqlite
     end
-    search_fields = [:name, :etag, :bag_date, :stage, :status, :institution, :retry, :reviewed]
+    search_fields = [:name, :etag, :bag_date, :stage, :status, :institution,
+                     :retry, :reviewed, :object_identifier, :generic_file_identifier]
     search_fields.each do |field|
       if params[field].present?
         if field == :bag_date && (Rails.env.test? || Rails.env.development?)
