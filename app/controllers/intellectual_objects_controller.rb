@@ -201,13 +201,15 @@ class IntellectualObjectsController < ApplicationController
     state[:current_object] = "GenericFile #{new_file.identifier}"
     new_file.intellectual_object = intel_obj
     new_file.state = 'A' # in case we loaded a deleted file
+    # We have to save this now to get events into Solr
+    new_file.save!
     aggregate = IoAggregation.where(identifier: intel_obj.id).first
     aggregate.update_aggregations('add', new_file)
     file_events.each { |event|
       state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
       new_file.add_event(event)
     }
-    # Save only after all changes, or we won't get our events back from Fedora!
+    # We have to save again to get events back from Fedora!
     new_file.save!
   end
 
