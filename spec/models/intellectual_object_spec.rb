@@ -66,13 +66,13 @@ describe IntellectualObject do
     describe "#to_solr" do
       subject { FactoryGirl.create(:institutional_intellectual_object) }
       before do
-        #aggregate = IoAggregation.new
-        #aggregate.initialize_object(subject.id)
-        #aggregate.save!
+        aggregate = IoAggregation.new
+        aggregate.initialize_object(subject.id)
+        aggregate.save!
         subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, size: 53)
         subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, size: 47)
-        #aggregate.update_aggregations('add', subject.generic_files[0])
-        #aggregate.update_aggregations('add', subject.generic_files[1])
+        aggregate.update_aggregations('add', subject.generic_files[0])
+        aggregate.update_aggregations('add', subject.generic_files[1])
       end
       let(:solr_doc) { subject.to_solr }
       it "should have fields" do

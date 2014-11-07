@@ -33,12 +33,12 @@ class IntellectualObject < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new)
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
-      #aggregate = IoAggregation.where(identifier: self.id).first
-      #unless aggregate.nil?
-      #  Solrizer.set_field(doc, 'file_format', aggregate.formats_for_solr, :facetable)
-      #  Solrizer.set_field(doc, 'total_file_size', aggregate.file_size, :symbol)
-      #  Solrizer.set_field(doc, 'active_count', aggregate.file_count, :symbol)
-      #end
+      aggregate = IoAggregation.where(identifier: self.id).first
+      unless aggregate.nil?
+        Solrizer.set_field(doc, 'file_format', aggregate.formats_for_solr, :facetable)
+        Solrizer.set_field(doc, 'total_file_size', aggregate.file_size, :symbol)
+        Solrizer.set_field(doc, 'active_count', aggregate.file_count, :symbol)
+      end
     end
   end
 

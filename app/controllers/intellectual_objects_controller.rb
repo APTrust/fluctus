@@ -20,9 +20,9 @@ class IntellectualObjectsController < ApplicationController
   def create
     authorize @institution, :create_through_institution?
     @intellectual_object = @institution.intellectual_objects.new(params[:intellectual_object])
-    #aggregate = IoAggregation.new
-    #aggregate.initialize_object(@intellectual_object.id)
-    #aggregate.save!
+    aggregate = IoAggregation.new
+    aggregate.initialize_object(@intellectual_object.id)
+    aggregate.save!
     super
   end
 
@@ -134,9 +134,9 @@ class IntellectualObjectsController < ApplicationController
         load_institution_for_create_from_json(new_object)
         authorize @institution, :create_through_institution?
         new_object.save!
-        #aggregate = IoAggregation.new
-        #aggregate.initialize_object(new_object.id)
-        #aggregate.save!
+        aggregate = IoAggregation.new
+        aggregate.initialize_object(new_object.id)
+        aggregate.save!
         # Save the ingest and other object-level events.
         state[:object_events].each { |event|
           state[:current_object] = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
@@ -200,8 +200,8 @@ class IntellectualObjectsController < ApplicationController
     new_file.intellectual_object = intel_obj
     new_file.state = 'A' # in case we loaded a deleted file
     new_file.save!
-    #aggregate = IoAggregation.where(identifier: intel_obj.id).first
-    #aggregate.update_aggregations('add', new_file)
+    aggregate = IoAggregation.where(identifier: intel_obj.id).first
+    aggregate.update_aggregations('add', new_file)
     file_events.each { |event|
       state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
       new_file.add_event(event)
