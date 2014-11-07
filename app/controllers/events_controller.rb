@@ -5,7 +5,7 @@ class EventsController < ApplicationController
   before_filter :load_and_authorize_parent_object, only: [:create]
   after_action :verify_authorized, :only => [:index]
 
-  helper_method :search_action_url
+  #helper_method :search_action_url
 
   include Aptrust::GatedSearch
 
@@ -56,9 +56,9 @@ class EventsController < ApplicationController
     end
   end
 
-  def search_action_url *args
-    catalog_index_url *args
-  end
+  #def search_action_url *args
+  #  catalog_index_url *args
+  #end
 
 protected
 

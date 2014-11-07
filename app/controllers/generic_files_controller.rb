@@ -6,6 +6,8 @@ class GenericFilesController < ApplicationController
 
   after_action :verify_authorized, :except => [:create, :index]
 
+  #helper_method :search_action_url
+
   include Aptrust::GatedSearch
   self.solr_search_params_logic += [:for_selected_object]
   self.solr_search_params_logic += [:only_generic_files]
@@ -38,7 +40,7 @@ class GenericFilesController < ApplicationController
     @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
     @generic_file.state = 'A'
     aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    aggregate.update_aggregations('add', @generic_file)
+    aggregate.update_aggregations_solr
     respond_to do |format|
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
@@ -48,6 +50,10 @@ class GenericFilesController < ApplicationController
       end
     end
   end
+
+  #def search_action_url *args
+  #  catalog_index_url *args
+  #end
 
   # /api/v1/objects/:intellectual_object_identifier/files/save_batch
   #
@@ -120,6 +126,9 @@ class GenericFilesController < ApplicationController
         end
       end
 
+      aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
+      aggregate.update_aggregations_solr
+
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
     rescue Exception => ex
       log_exception(ex)
@@ -138,8 +147,7 @@ class GenericFilesController < ApplicationController
     @generic_file.state = 'A'
     if resource.update(params_for_update)
       aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      update_map = [@generic_file, params_for_update]
-      aggregate.update_aggregations('update', update_map)
+      aggregate.update_aggregations_solr
       head :no_content
     else
       log_model_error(resource)
@@ -166,7 +174,7 @@ class GenericFilesController < ApplicationController
                      outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
       aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      aggregate.update_aggregations('delete', @generic_file)
+      aggregate.update_aggregations_solr
       @generic_file.soft_delete(attributes)
       respond_to do |format|
         format.json { head :no_content }

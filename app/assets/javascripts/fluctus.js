@@ -30,6 +30,16 @@ var addClickFunctions = function() {
     }
 }
 
+var addSearchComment = function() {
+    var value = $("#search_field").val()
+    if( value == 'tech_metadata__identifier_tesim') {
+        jQuery('<p/>', {
+            class: "italic",
+            text: "*Searching by File Identifier will bring back Generic File results. Searching by any other field will bring back Intellectual Object Results."
+        }).appendTo("#search-navbar");
+    }
+}
+
 $(document).ready(activate_tabs);
 $(document).on('page:load', activate_tabs);
 $(document).ready(dropdown);
@@ -38,3 +48,5 @@ $(document).ready(fix_search_breadcrumb);
 $(document).on('page:load', fix_search_breadcrumb);
 $(document).ready(addClickFunctions);
 $(document).on('page:load', addClickFunctions);
+$(document).ready(addSearchComment);
+$(document).on('page:load', addSearchComment);

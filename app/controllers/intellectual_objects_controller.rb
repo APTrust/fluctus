@@ -4,12 +4,14 @@ class IntellectualObjectsController < ApplicationController
   before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
   before_filter :load_institution, only: [:index, :create]
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
+  #helper_method :search_action_url
 
   include Aptrust::GatedSearch
   include RecordsControllerBehavior
-
-  apply_catalog_search_params
   self.solr_search_params_logic += [:for_selected_institution]
+  self.solr_search_params_logic += [:only_intellectual_objects]
+  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+  self.solr_search_params_logic += [:only_active_objects]
 
   def index
     authorize @institution
@@ -201,7 +203,7 @@ class IntellectualObjectsController < ApplicationController
     new_file.state = 'A' # in case we loaded a deleted file
     new_file.save!
     aggregate = IoAggregation.where(identifier: intel_obj.id).first
-    aggregate.update_aggregations('add', new_file)
+    aggregate.update_aggregations_solr
     file_events.each { |event|
       state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
       new_file.add_event(event)
@@ -228,8 +230,9 @@ class IntellectualObjectsController < ApplicationController
   end
 
   # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
-  def search_action_url options = {}
+  def search_action_url *args
     institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
+    c#atalog_index_url *args
   end
 
   # Override Fedora's default JSON serialization for our API

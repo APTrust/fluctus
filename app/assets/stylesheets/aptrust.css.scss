@@ -23,6 +23,11 @@ footer {
   }
 }
 
+p.italic {
+  font-style: italic;
+  font-size: 12px;
+}
+
 @mixin fix-title {
   text-indent: 40px;
   width: auto;
