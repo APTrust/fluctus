@@ -44,9 +44,9 @@ class GenericFile < ActiveFedora::Base
 
   def find_latest_fixity_check
     fixity = ''
-    self.premisEvents.events do |event|
-      if event.type == 'fixity_check'
-        if fixity == '' || fixity == nil? || fixity < event.date_time
+    premisEvents.events.each do |event|
+      if event.type.first == 'fixity_check'
+        if fixity == '' || fixity == nil? || fixity.to_datetime < event.date_time
           fixity = event.date_time
         end
       end
