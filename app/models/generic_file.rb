@@ -30,6 +30,7 @@ class GenericFile < ActiveFedora::Base
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
     Solrizer.insert_field(solr_doc, 'gf_institution_name', intellectual_object.institution.name, :symbol)
     Solrizer.insert_field(solr_doc, 'gf_parent', intellectual_object.identifier, :symbol)
+    Solrizer.insert_field(solr_doc, 'latest_fixity', self.find_latest_fixity_check, :symbol)
   end
 
   def self.file_from_solr(pid)
@@ -39,6 +40,37 @@ class GenericFile < ActiveFedora::Base
     initial_result = result.first
     real_result = initial_result.reify
     real_result
+  end
+
+  def find_latest_fixity_check
+    fixity = ''
+    self.premisEvents.events do |event|
+      if event.type == 'fixity_check'
+        if fixity == '' || fixity == nil? || fixity < event.date_time
+          fixity = event.date_time
+        end
+      end
+    end
+    fixity
+  end
+
+  def self.find_files_in_need_of_fixity(date, options={})
+    row = options[:rows] || 10
+    start = options[:start] || 0
+    query ||= []
+    query << ActiveFedora::SolrService.construct_query_for_rel(has_model: GenericFile.to_class_uri)
+    query << ActiveFedora::SolrService.construct_query_for_rel(object_state_ssi: 'A')
+    query << ActiveFedora::SolrService.construct_query_for_rel(latest_fixity: "[* TO #{date}]")
+    solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
+    files = []
+    solr_result.each do |file|
+      file = [file]
+      result = ActiveFedora::SolrService.reify_solr_results(file, {:load_from_solr=>true})
+      initial_result = result.first
+      real_result = initial_result.reify
+      files.push(real_result)
+    end
+    files
   end
 
   def display

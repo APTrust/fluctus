@@ -51,16 +51,13 @@ class GenericFilesController < ApplicationController
 
   # Returns a list of GenericFiles that have not had a fixity
   # check since the specified date.
-  #
-  # TODO: THIS IS A STUB. NEEDS REAL IMPLEMENTATION.
   # AND WE NEED TO ADD THE DATETIME PARAM TO THE QUERY!
   def not_checked_since
     if current_user.admin? == false
       logger.warn("User #{current_user.email} tried to access generic_files_controller#not_checked_since")
       raise ActionController::Forbidden
     end
-    # params[:since]
-    @generic_files = GenericFile.where(object_state_ssi: 'A').limit(20)
+    @generic_files = GenericFile.find_files_in_need_of_fixity(params[:date], {rows: params[:rows], start: params[:start]})
     respond_to do |format|
       # Return active files only, not deleted files!
       format.json { render json: @generic_files.map { |gf| gf.serializable_hash(include: [:checksum]) } }
