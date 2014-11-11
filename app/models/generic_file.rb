@@ -46,8 +46,8 @@ class GenericFile < ActiveFedora::Base
     fixity = ''
     premisEvents.events.each do |event|
       if event.type.first == 'fixity_check'
-        if fixity == '' || fixity == nil? || fixity.to_datetime < event.date_time
-          fixity = event.date_time
+        if fixity == '' || fixity == nil? || Date.parse(fixity.to_s) < Date.parse(event.date_time.to_s)
+          fixity = Date.parse(event.date_time.to_s)
         end
       end
     end
@@ -58,9 +58,9 @@ class GenericFile < ActiveFedora::Base
     row = options[:rows] || 10
     start = options[:start] || 0
     query ||= []
-    query << ActiveFedora::SolrService.construct_query_for_rel(has_model: GenericFile.to_class_uri)
-    query << ActiveFedora::SolrService.construct_query_for_rel(object_state_ssi: 'A')
-    query << ActiveFedora::SolrService.construct_query_for_rel(latest_fixity: "[* TO #{date}]")
+    query << ActiveFedora::SolrService.construct_query_for_rel(has_model: GenericFile.to_class_uri, object_state_ssi: 'A', latest_fixity_ssim: "[* TO #{date}]")
+    #query << "_query_:\"{!raw facet.range=latest_fixity&facet=true&facet.range.start=2014-01-01 00:00:00 -0500&facet.range.end=#{date}}\""
+    puts query
     solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
     files = []
     solr_result.each do |file|

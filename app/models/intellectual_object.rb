@@ -55,8 +55,7 @@ class IntellectualObject < ActiveFedora::Base
     row = options[:rows] || 10
     start = options[:start] || 0
     query ||= []
-    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{pid}")
-    query << ActiveFedora::SolrService.construct_query_for_rel(object_state_ssi: 'A')
+    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{pid}", object_state: 'A')
     solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
     files = []
     solr_result.each do |file|

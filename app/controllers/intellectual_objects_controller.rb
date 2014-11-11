@@ -273,7 +273,7 @@ class IntellectualObjectsController < ApplicationController
     else
       #@intellectual_object ||= IntellectualObject.find(params[:id])
       @intellectual_object ||= IntellectualObject.get_from_solr(params[:id])
-      #@files = IntellectualObject.files_from_solr(params[:id], {rows: 1000, start: 0})
+      @files = IntellectualObject.files_from_solr(params[:id], {rows: 1000, start: 0})
     end
   end
 
