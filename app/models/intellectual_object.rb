@@ -54,7 +54,7 @@ class IntellectualObject < ActiveFedora::Base
   def self.files_from_solr(pid, options={})
     row = options[:rows] || 10
     start = options[:start] || 0
-    files = GenericFile.where(object_state_ssi: 'A', is_part_of_ssim: "info:fedora/#{pid}").order('latest_fixity_dti asc').limit(row)
+    files = GenericFile.where(object_state_ssi: 'A', is_part_of_ssim: "info:fedora/#{pid}").order('latest_fixity_dti asc').offset(start).limit(row)
     files
   end
 

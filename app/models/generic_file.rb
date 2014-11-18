@@ -57,7 +57,7 @@ class GenericFile < ActiveFedora::Base
   def self.find_files_in_need_of_fixity(date, options={})
     row = options[:rows] || 10
     start = options[:start] || 0
-    files = GenericFile.where("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]").order('latest_fixity_dti asc').limit(row)
+    files = GenericFile.where("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]").order('latest_fixity_dti asc').offset(start).limit(row)
     files
   end
 
