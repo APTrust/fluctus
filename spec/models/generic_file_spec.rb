@@ -67,7 +67,6 @@ describe GenericFile do
         solr_doc['tech_metadata__uri_ssim'].should == [subject.uri]
         solr_doc['tech_metadata__created_ssim'].should == [subject.created]
         solr_doc['tech_metadata__modified_ssim'].should == [subject.modified]
-        solr_doc['latest_fixity_ssim'].should_not be nil
       end
     end
 
@@ -87,15 +86,15 @@ describe GenericFile do
     describe "#find_latest_fixity_check" do
       subject { FactoryGirl.create(:generic_file) }
       it "should have a latest fixity index in solr" do
-        date = "2014-08-01 16:33:39 -0500"
-        date_two = "2014-11-01 16:33:39 -0500"
-        date_three = "2014-10-01 16:33:39 -0500"
+        date = "2014-08-01T16:33:39Z"
+        date_two = "2014-11-01T16:33:39Z"
+        date_three = "2014-10-01T16:33:39Z"
         subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date))
         subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date_two))
         subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date_three))
         subject.update_index
         solr_doc = subject.to_solr
-        solr_doc['latest_fixity_ssim'].first.should == date_two
+        solr_doc['latest_fixity_dti'].should == date_two
       end
     end
 
@@ -233,13 +232,17 @@ describe GenericFile do
       GenericFile.destroy_all
     end
     it "should return only files with a fixity older than a given parameter" do
-      date = "2014-08-01 16:33:39 -0500"
-      date_two = "2014-11-01 16:33:39 -0500"
-      param = "2014-09-02 16:33:39 -0500"
+      date = "2014-01-01T16:33:39Z"
+      date_two = "2014-12-12T16:33:39Z"
+      param = "2014-09-02T16:33:39Z"
       subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date))
+      subject.update_index
       subject_two.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date_two))
+      subject_two.update_index
       files = GenericFile.find_files_in_need_of_fixity(param)
-      files.count.should == 1
+      count = 0
+      files.each { count = count+1 }
+      count.should == 1
       files.first.identifier.should == subject.identifier
     end
   end

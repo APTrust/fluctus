@@ -55,7 +55,9 @@
       <h3 class="panel-title">
         Aggregate Data About Preserved Files
       </h3>
-      <p>Solr Query Check: <%= @files.count %></p>
+      <% count = 0 %>
+      <% @files.each {count = count + 1} %>
+      <p>Solr Query Check: <%= count %></p>
     </div>
 
     <div class="panel-body">
