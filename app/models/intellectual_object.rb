@@ -54,29 +54,15 @@ class IntellectualObject < ActiveFedora::Base
   def self.files_from_solr(pid, options={})
     row = options[:rows] || 10
     start = options[:start] || 0
-    #query ||= []
-    #query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{pid}", object_state: 'A', has_model: GenericFile.to_class_uri)
-    #solr_result = IntellectualObject.filter_query(query, :rows => row, :start => start)
-    #files = []
-    #solr_result.each do |file|
-    #  file = [file]
-    #  result = ActiveFedora::SolrService.reify_solr_results(file, {:load_from_solr=>true})
-    #  initial_result = result.first
-    #  real_result = initial_result.reify
-    #  files.push(real_result)
-    #end
     files = GenericFile.where(object_state_ssi: 'A', is_part_of_ssim: "info:fedora/#{pid}").order('latest_fixity_dti asc').limit(row)
     files
   end
 
+  # doesn't work, returns empty array
   def self.filter_query(query, args={})
     raw = args.delete(:raw)
     args = args.merge(:fq=>query, :qt=>'standard')
-    puts "***********************************************************************"
-    puts args
     result = ActiveFedora::SolrService.instance.conn.get('select', :params=>args)
-    puts "***********************************************************************"
-    puts result
     return result if raw
     result['response']['docs']
   end

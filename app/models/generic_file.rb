@@ -57,17 +57,6 @@ class GenericFile < ActiveFedora::Base
   def self.find_files_in_need_of_fixity(date, options={})
     row = options[:rows] || 10
     start = options[:start] || 0
-    #query ||= []
-    #query << ActiveFedora::SolrService.construct_query_for_rel(has_model: GenericFile.to_class_uri, object_state_ssi: 'A', latest_fixity_dti: "[* TO #{date}]")
-    #solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
-    #files = []
-    #solr_result.each do |file|
-    #  file = [file]
-    #  result = ActiveFedora::SolrService.reify_solr_results(file, {:load_from_solr=>true})
-    #  initial_result = result.first
-    #  real_result = initial_result.reify
-    #  files.push(real_result)
-    #end
     files = GenericFile.where("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]").order('latest_fixity_dti asc').limit(row)
     files
   end
