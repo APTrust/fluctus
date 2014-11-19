@@ -63,9 +63,23 @@ class InstitutionsController < ApplicationController
     def set_recent_objects
       if (current_user.admin? && current_user.institution.identifier == @institution.identifier)
         @items = ProcessedItem.order('date').limit(10).reverse_order
+        @size = 0
       else
         @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
+        @size = find_size
       end
       @failed = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES['fail'])
+    end
+
+    def find_size
+      size = 0
+      @institution.intellectual_objects.each do |object|
+        query = "id\:#{RSolr.escape(object.id)}"
+        solr_result = ActiveFedora::SolrService.query(query).first
+        new_size = solr_result['total_file_size_ssim'].first
+        puts "SIZE: #{new_size}"
+        size = size + new_size.to_i
+      end
+      size
     end
 end

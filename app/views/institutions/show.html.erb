@@ -21,6 +21,8 @@
       <dd><%= @institution.intellectual_objects.count %></dd>
       <dt>Processed Items</dt>
       <dd><%= ProcessedItem.where(institution: @institution.identifier).count %></dd>
+      <dt>Total Space Used</dt>
+      <dd><%= number_to_human_size(@size) %></dd>
     </dl>
 
     <%= render "shared/processed_items" %>
