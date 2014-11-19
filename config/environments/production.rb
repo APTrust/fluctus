@@ -80,9 +80,13 @@ Fluctus::Application.configure do
 
   # Sets up mailing host for password resets
   Rails.application.routes.default_url_options[:host] = 'repository.aptrust.org'
+  Rails.application.routes.default_url_options[:protocol] = 'https'
 
   # send password reset emails to a file
-  config.action_mailer.default_url_options = {:host => 'repository.aptrust.org'}
+  config.action_mailer.default_url_options = {
+    :host => 'repository.aptrust.org',
+    :protocol => 'https'
+  }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true

@@ -111,6 +111,7 @@ class GenericFilesController < ApplicationController
         generic_file = (GenericFile.where(tech_metadata__identifier_ssim: gf[:identifier]).first ||
                         @intellectual_object.generic_files.new(gf_without_events))
         generic_file.state = 'A'
+        generic_file.intellectual_object = @intellectual_object if generic_file.intellectual_object.nil?
         if generic_file.id.present?
           # This is an update
           gf_clean_data = remove_existing_checksums(generic_file, gf_without_events)
@@ -125,12 +126,11 @@ class GenericFilesController < ApplicationController
           generic_file.add_event(event)
         end
       end
-
       aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
       aggregate.update_aggregations_solr
-
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
     rescue Exception => ex
+      logger.error("save_batch failed on #{current_object}")
       log_exception(ex)
       generic_files.each do |gf|
         gf.destroy

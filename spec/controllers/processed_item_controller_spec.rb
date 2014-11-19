@@ -88,7 +88,10 @@ describe ProcessedItemController do
     describe "for admin user" do
       before do
         sign_in admin_user
-        ProcessedItem.update_all(reviewed: true)
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['success'],
+                                 reviewed: true)
       end
 
       it "responds successfully with an HTTP 200 status code" do
@@ -106,7 +109,10 @@ describe ProcessedItemController do
     describe "for institutional admin" do
       before do
         sign_in institutional_admin
-        ProcessedItem.update_all(reviewed: true)
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['record'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['success'],
+                                 reviewed: true)
       end
 
       it "assigns the requested items as @items" do
