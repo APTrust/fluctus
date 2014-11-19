@@ -545,7 +545,9 @@ describe ProcessedItemController do
                                       bag_date: '2014-10-17 14:56:56Z',
                                       action: 'Ingest',
                                       stage: 'Record',
-                                      status: 'Success') }
+                                      status: 'Success',
+                                      object_identifier: 'test.edu/item1',
+                                      generic_file_identifier: 'test.edu/item1/file1.pdf') }
 
     describe "for admin user" do
       before do
@@ -567,7 +569,9 @@ describe ProcessedItemController do
             etag: 'etag1', institution: 'inst1',
             retry: 'true', reviewed: 'false',
             bag_date: '2014-10-17 14:56:56Z',
-            action: 'Ingest', stage: 'Record', status: 'Success')
+            action: 'Ingest', stage: 'Record',
+            status: 'Success', object_identifier: 'test.edu/item1',
+            generic_file_identifier: 'test.edu/item1/file1.pdf')
         assigns(:items).should_not include(user_item)
         assigns(:items).should_not include(item)
         assigns(:items).should include(item1)

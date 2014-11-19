@@ -30,6 +30,7 @@ class GenericFile < ActiveFedora::Base
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
     Solrizer.insert_field(solr_doc, 'gf_institution_name', intellectual_object.institution.name, :symbol)
     Solrizer.insert_field(solr_doc, 'gf_parent', intellectual_object.identifier, :symbol)
+    Solrizer.insert_field(solr_doc, 'latest_fixity', self.find_latest_fixity_check, :searchable, :sortable)
   end
 
   def self.file_from_solr(pid)
@@ -39,6 +40,33 @@ class GenericFile < ActiveFedora::Base
     initial_result = result.first
     real_result = initial_result.reify
     real_result
+  end
+
+  def find_latest_fixity_check
+    fixity = ''
+    premisEvents.events.each do |event|
+      if event.type.first == 'fixity_check'
+        if fixity == '' || fixity == nil? || DateTime.parse(fixity.to_s) < DateTime.parse(event.date_time.to_s)
+          fixity = DateTime.parse(event.date_time.to_s)
+        end
+      end
+    end
+    fixity
+  end
+
+  def self.find_files_in_need_of_fixity(date, options={})
+    row = options[:rows] || 10
+    start = options[:start] || 0
+    files = GenericFile.where("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]").order('latest_fixity_dti asc').offset(start).limit(row)
+    files
+  end
+
+  def filter_query(query, args={})
+    raw = args.delete(:raw)
+    args = args.merge(:fq=>query, :qt=>'standard')
+    result = ActiveFedora::SolrService.instance.conn.get('select', :params=>args)
+    return result if raw
+    result['response'['docs']]
   end
 
   def display

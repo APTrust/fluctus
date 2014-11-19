@@ -73,7 +73,7 @@ class ProcessedItemController < ApplicationController
     page_count
   end
 
-  # /api/v1/itemresults/api_search
+  # /api/v1/itemresults/search
   # Allows the API client to pass in some very specific criteria
   def api_search
     @items = ProcessedItem.all
@@ -83,7 +83,8 @@ class ProcessedItemController < ApplicationController
     if Rails.env.test? || Rails.env.development?
       rewrite_params_for_sqlite
     end
-    search_fields = [:name, :etag, :bag_date, :stage, :status, :institution, :retry, :reviewed]
+    search_fields = [:name, :etag, :bag_date, :stage, :status, :institution,
+                     :retry, :reviewed, :object_identifier, :generic_file_identifier]
     search_fields.each do |field|
       if params[field].present?
         if field == :bag_date && (Rails.env.test? || Rails.env.development?)
@@ -166,6 +167,7 @@ class ProcessedItemController < ApplicationController
     delete = Fluctus::Application::FLUCTUS_ACTIONS['delete']
     requested = Fluctus::Application::FLUCTUS_STAGES['requested']
     pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    failed = Fluctus::Application::FLUCTUS_STATUSES['fail']
     @items = ProcessedItem.where(action: delete)
     if(current_user.admin? == false)
       @items = @items.where(institution: current_user.institution.identifier)
@@ -174,8 +176,9 @@ class ProcessedItemController < ApplicationController
     if !request[:generic_file_identifier].blank?
       @items = @items.where(generic_file_identifier: request[:generic_file_identifier])
     else
-      # If user is not looking for a single bag, return all requested/pending items.
-      @items = @items.where(stage: requested, status: pending, retry: true)
+      # If user is not looking for a single bag, return all requested items
+      # where retry is true and status is pending or failed.
+      @items = @items.where(stage: requested, status: [pending, failed], retry: true)
     end
     respond_to do |format|
       format.json { render json: @items, status: :ok }

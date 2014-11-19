@@ -54,18 +54,7 @@ class IntellectualObject < ActiveFedora::Base
   def self.files_from_solr(pid, options={})
     row = options[:rows] || 10
     start = options[:start] || 0
-    query ||= []
-    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{pid}")
-    query << ActiveFedora::SolrService.construct_query_for_rel(object_state_ssi: 'A')
-    solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
-    files = []
-    solr_result.each do |file|
-      file = [file]
-      result = ActiveFedora::SolrService.reify_solr_results(file, {:load_from_solr=>true})
-      initial_result = result.first
-      real_result = initial_result.reify
-      files.push(real_result)
-    end
+    files = GenericFile.where(object_state_ssi: 'A', is_part_of_ssim: "info:fedora/#{pid}").order('latest_fixity_dti asc').offset(start).limit(row)
     files
   end
 
@@ -74,25 +63,35 @@ class IntellectualObject < ActiveFedora::Base
     start = 0
     query ||= []
     query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.id}")
-    query << ActiveFedora::SolrService.construct_query_for_rel(object_state_ssi: 'A')
     solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
     total_files = solr_result.count
     format_map = {}
     size = 0
     solr_result.each do |file|
-      current_format = file['tech_metadata__file_format_ssi']
-      if format_map.include?(current_format)
-        count = format_map[current_format]
-        count = count + 1
-        format_map[current_format] = count
-      else
-        format_map[current_format] = 1
+      unless file['object_state_ssi'] == 'D'
+        current_format = file['tech_metadata__file_format_ssi']
+        if format_map.include?(current_format)
+          count = format_map[current_format]
+          count = count + 1
+          format_map[current_format] = count
+        else
+          format_map[current_format] = 1
+        end
+        current_size = file['tech_metadata__size_lsi'].to_i
+        size = size + current_size
       end
-      current_size = file['tech_metadata__size_lsi'].to_i
-      size = size + current_size
     end
     aggregations = {num_files: total_files, formats: format_map, size: size}
     aggregations
+  end
+
+  # doesn't work, returns empty array
+  def self.filter_query(query, args={})
+    raw = args.delete(:raw)
+    args = args.merge(:fq=>query, :qt=>'standard')
+    result = ActiveFedora::SolrService.instance.conn.get('select', :params=>args)
+    return result if raw
+    result['response']['docs']
   end
 
   def soft_delete(attributes)
