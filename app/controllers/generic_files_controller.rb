@@ -49,10 +49,14 @@ class GenericFilesController < ApplicationController
     end
   end
 
+  # /api/v1/files/not_checked_since?date=2015-01-01T00:00:00Z&start=100&rows=20
   # Returns a list of GenericFiles that have not had a fixity
   # check since the specified date.
-  # AND WE NEED TO ADD THE DATETIME PARAM TO THE QUERY!
   def not_checked_since
+    datetime = Time.parse(params[:date]) rescue nil
+    if datetime.nil?
+      raise ActionController::BadRequest.new(type: "date", e: "Param date is missing or invalid. Hint: Use format '2015-01-31T14:31:36Z'")
+    end
     if current_user.admin? == false
       logger.warn("User #{current_user.email} tried to access generic_files_controller#not_checked_since")
       raise ActionController::Forbidden
