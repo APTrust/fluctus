@@ -4,7 +4,6 @@ class IntellectualObjectsController < ApplicationController
   before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
   before_filter :load_institution, only: [:index, :create]
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
-  #helper_method :search_action_url
 
   include Aptrust::GatedSearch
   include RecordsControllerBehavior
@@ -237,7 +236,12 @@ class IntellectualObjectsController < ApplicationController
   # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
   def search_action_url *args
     institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
-    c#atalog_index_url *args
+    # if params.include?('q') || params.include?('search_field')
+    #   params[:controller] = 'catalog'
+    #   catalog_index_url *args
+    # else
+    #   super
+    # end
   end
 
   # Override Fedora's default JSON serialization for our API

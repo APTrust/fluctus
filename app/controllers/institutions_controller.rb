@@ -3,7 +3,6 @@ class InstitutionsController < ApplicationController
   before_filter :authenticate_user!
   before_action :set_institution, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
-  #helper_method :search_action_url
 
   after_action :verify_authorized, :except => :index
   after_action :verify_policy_scoped, :only => :index
@@ -41,10 +40,6 @@ class InstitutionsController < ApplicationController
     authorize @institution
     update!
   end
-
-  #def search_action_url *args
-  #  catalog_index_url *args
-  #end
 
   include Blacklight::SolrHelper
 

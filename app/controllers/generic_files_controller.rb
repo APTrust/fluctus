@@ -3,10 +3,8 @@ class GenericFilesController < ApplicationController
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
   before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
-
+  #before_action :search_action_url
   after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
-
-  #helper_method :search_action_url
 
   include Aptrust::GatedSearch
   self.solr_search_params_logic += [:for_selected_object]
@@ -51,9 +49,15 @@ class GenericFilesController < ApplicationController
     end
   end
 
-  #def search_action_url *args
-  #  catalog_index_url *args
-  #end
+  # def search_action_url *args
+  #   if params.include?('q') || params.include?('search_field')
+  #     params[:controller] = 'catalog'
+  #     params.delete('intellectual_object_id')
+  #     catalog_index_url *args
+  #   else
+  #     super
+  #   end
+  # end
 
   # Returns a list of GenericFiles that have not had a fixity
   # check since the specified date.
@@ -142,8 +146,6 @@ class GenericFilesController < ApplicationController
           generic_file.add_event(event)
         end
       end
-      aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-      aggregate.update_aggregations_solr
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
     rescue Exception => ex
       logger.error("save_batch failed on #{current_object}")
@@ -155,6 +157,8 @@ class GenericFilesController < ApplicationController
           render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
       }
     end
+    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
+    aggregate.update_aggregations_solr
   end
 
 

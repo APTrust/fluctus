@@ -151,7 +151,7 @@ describe GenericFilesController do
     end
   end
 
-  describe "POST #create_batch" do
+  describe "POST #save_batch" do
     describe "when not signed in" do
       let(:obj1) { @intellectual_object }
       it "should show unauthorized" do
@@ -187,6 +187,7 @@ describe GenericFilesController do
       # new, unsaved PremisEvents.
       describe "and assigning to an object you do have access to" do
         it 'it should create or update multiple files and their events' do
+          aggregate = FactoryGirl.create(:io_aggregation, identifier: batch_obj.id)
           # First post is a create
           post(:save_batch, intellectual_object_id: batch_obj.id, generic_files: gf_data,
                format: 'json', use_route: 'generic_file_create_batch')

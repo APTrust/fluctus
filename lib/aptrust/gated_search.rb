@@ -53,14 +53,12 @@ module Aptrust::GatedSearch
       if user_parameters[:f].include?('tech_metadata__file_format_ssi') ||
           user_parameters[:f].include?('gf_institution_name_ssim') || user_parameters[:f].include?('gf_parent_ssim')
         only_generic_files(solr_parameters, user_parameters)
-      elsif user_parameters[:f].include?('event_type_ssim') || user_parameters[:f].include?('event_outcome_ssim')
-        #only_events(solr_parameters, user_parameters)
       else
         only_intellectual_objects(solr_parameters, user_parameters)
       end
-    elsif user_parameters.include?('intellectual_object_id') && user_parameters.count == 1
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{user_parameters[:intellectual_object_id]}")
+    #elsif user_parameters.include?('intellectual_object_id') && user_parameters.count == 1
+    #  solr_parameters[:fq] ||= []
+    #  solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{user_parameters[:intellectual_object_id]}")
     else
       only_intellectual_objects(solr_parameters, user_parameters)
     end
