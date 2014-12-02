@@ -58,6 +58,33 @@ class IntellectualObject < ActiveFedora::Base
     files
   end
 
+  def aggregations_from_solr
+    row = 100000
+    start = 0
+    query ||= []
+    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.id}")
+    solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
+    total_files = solr_result.count
+    format_map = {}
+    size = 0
+    solr_result.each do |file|
+      unless file['object_state_ssi'] == 'D'
+        current_format = file['tech_metadata__file_format_ssi']
+        if format_map.include?(current_format)
+          count = format_map[current_format]
+          count = count + 1
+          format_map[current_format] = count
+        else
+          format_map[current_format] = 1
+        end
+        current_size = file['tech_metadata__size_lsi'].to_i
+        size = size + current_size
+      end
+    end
+    aggregations = {num_files: total_files, formats: format_map, size: size}
+    aggregations
+  end
+
   # doesn't work, returns empty array
   def self.filter_query(query, args={})
     raw = args.delete(:raw)

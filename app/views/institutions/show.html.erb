@@ -18,9 +18,18 @@
       <dt>Users</dt>
       <dd><%= @institution.users.count %></dd>
       <dt>Intellectual Objects</dt>
-      <dd><%= @institution.intellectual_objects.count %></dd>
+      <dd><%= @object_count %></dd>
       <dt>Processed Items</dt>
-      <dd><%= ProcessedItem.where(institution: @institution.identifier).count %></dd>
+      <dd><%= @item_count %></dd>
+      <% if current_user.admin? && current_user.institution.identifier == @institution.identifier %>
+          <% @size.each do |key, value| %>
+              <dt><%= key %></dt>
+              <dd><%= number_to_human_size(value) %></dd>
+          <% end %>
+      <% else %>
+          <dt>Total Space Used</dt>
+          <dd><%= number_to_human_size(@size) %></dd>
+      <% end %>
     </dl>
 
     <%= render "shared/processed_items" %>

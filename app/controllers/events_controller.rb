@@ -3,6 +3,7 @@ class EventsController < ApplicationController
   before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
   before_filter :load_generic_file, if: :generic_file_identifier_exists?
   before_filter :load_and_authorize_parent_object, only: [:create]
+  #before_filter :search_action_url
   after_action :verify_authorized, :only => [:index]
 
   include Aptrust::GatedSearch
@@ -53,6 +54,16 @@ class EventsController < ApplicationController
       }
     end
   end
+
+  # def search_action_url *args
+  #   if params.include?('q') || params.include?('search_field')
+  #     params[:controller] = 'catalog'
+  #     params.delete('intellectual_object_id')
+  #     catalog_index_url *args
+  #   else
+  #     super
+  #   end
+  # end
 
 protected
 

@@ -3,7 +3,7 @@ class GenericFilesController < ApplicationController
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
   before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
-
+  #before_action :search_action_url
   after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
 
   include Aptrust::GatedSearch
@@ -38,7 +38,7 @@ class GenericFilesController < ApplicationController
     @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
     @generic_file.state = 'A'
     aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    aggregate.update_aggregations('add', @generic_file)
+    aggregate.update_aggregations_solr
     respond_to do |format|
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
@@ -48,6 +48,16 @@ class GenericFilesController < ApplicationController
       end
     end
   end
+
+  # def search_action_url *args
+  #   if params.include?('q') || params.include?('search_field')
+  #     params[:controller] = 'catalog'
+  #     params.delete('intellectual_object_id')
+  #     catalog_index_url *args
+  #   else
+  #     super
+  #   end
+  # end
 
   # /api/v1/files/not_checked_since?date=2015-01-01T00:00:00Z&start=100&rows=20
   # Returns a list of GenericFiles that have not had a fixity
@@ -151,6 +161,8 @@ class GenericFilesController < ApplicationController
           render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
       }
     end
+    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
+    aggregate.update_aggregations_solr
   end
 
 
@@ -159,8 +171,7 @@ class GenericFilesController < ApplicationController
     @generic_file.state = 'A'
     if resource.update(params_for_update)
       aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      update_map = [@generic_file, params_for_update]
-      aggregate.update_aggregations('update', update_map)
+      aggregate.update_aggregations_solr
       head :no_content
     else
       log_model_error(resource)
@@ -187,7 +198,7 @@ class GenericFilesController < ApplicationController
                      outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
       aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      aggregate.update_aggregations('delete', @generic_file)
+      aggregate.update_aggregations_solr
       @generic_file.soft_delete(attributes)
       respond_to do |format|
         format.json { head :no_content }

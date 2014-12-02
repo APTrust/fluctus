@@ -27,6 +27,31 @@ class IoAggregation < ActiveRecord::Base
     io.update_index
   end
 
+  def update_aggregations_solr()
+    row = 100000
+    start = 0
+    query ||= []
+    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.id}")
+    solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
+    total_files = solr_result.count
+    formats = ''
+    size = 0
+    solr_result.each do |file|
+      unless file['object_state_ssi'] == 'D'
+        current_format = file['tech_metadata__file_format_ssi']
+        (formats == '' || formats.nil?) ? formats = current_format : formats = "#{formats},#{current_format}"
+        current_size = file['tech_metadata__size_lsi'].to_i
+        size = size + current_size
+      end
+    end
+    self.file_count = total_files
+    self.file_size = size
+    self.file_format = formats
+    self.save!
+    io = get_intellectual_object
+    io.update_index
+  end
+
   def add_format(format)
     (self.file_format == '' || self.file_format.nil?) ? self.file_format = format : self.file_format = "#{self.file_format},#{format}"
   end
