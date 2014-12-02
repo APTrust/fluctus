@@ -56,25 +56,40 @@ class InstitutionsController < ApplicationController
     end
 
     def set_recent_objects
-      if (current_user.admin? && current_user.institution.identifier == @institution.identifier)
+      if current_user.admin? && current_user.institution.identifier == @institution.identifier
         @items = ProcessedItem.order('date').limit(10).reverse_order
-        @size = 0
+        @size = find_all_sizes
+        @item_count = ProcessedItem.all.count
+        @object_count = IntellectualObject.all.count
       else
         @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
-        @size = find_size
+        @size = find_size(@institution)
+        @item_count = ProcessedItem.where(institution: @institution.identifier).count
+        @object_count = @institution.intellectual_objects.count
       end
       @failed = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES['fail'])
     end
 
-    def find_size
+    def find_size(institution)
       size = 0
-      @institution.intellectual_objects.each do |object|
+      institution.intellectual_objects.each do |object|
         query = "id\:#{RSolr.escape(object.id)}"
         solr_result = ActiveFedora::SolrService.query(query).first
-        new_size = solr_result['total_file_size_ssim'].first
-        puts "SIZE: #{new_size}"
+        new_size = solr_result['total_file_size_ssim'].nil? ? 0 : solr_result['total_file_size_ssim'].first
         size = size + new_size.to_i
       end
+      size
+    end
+
+    def find_all_sizes
+      size = {}
+      total_size = 0
+      Institution.all.each do |inst|
+        current_size = find_size(inst)
+        size[inst.name] = current_size
+        total_size = current_size + total_size
+      end
+      size['APTrust'] = total_size
       size
     end
 end

@@ -7,6 +7,7 @@ describe "Editing an IntellectualObject" do
   let!(:aggregate) { FactoryGirl.create(:io_aggregation, identifier: intellectual_object.id) }
   it "should work" do
     login_as admin_user
+    intellectual_object.to_solr
 
     visit '/'
     fill_in 'q', with: intellectual_object.title
