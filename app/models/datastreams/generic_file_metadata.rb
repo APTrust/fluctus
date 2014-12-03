@@ -1,3 +1,24 @@
+# This file defines the GenericFile datastream, but first we
+# have to add a long-stored-indexed type to Solrizer, or we
+# won't be able to store size info about files larger than 2GB.
+# TODO: Move this?
+module Solrizer
+  module DefaultDescriptors
+    def self.sortable_long
+      Solrizer::SortableLongDescriptor.new(:long, :stored, :indexed)
+    end
+  end
+
+  class SortableLongDescriptor < Solrizer::Descriptor
+    def name_and_converter(field_name, field_type)
+        [field_name + '_lsi']
+    end
+    protected
+    def suffix(field_type)
+      [field_name + '_lsi']
+    end
+  end
+end
 
 class WorldNetVocabulary < RDF::Vocabulary("http://xmlns.com/wordnet/1.6/")
   property :Algorithm
@@ -7,7 +28,7 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
   property :created
   property :modified
   property :size
-  property :format
+  property :file_format
   property :Checksum
   property :checksum
   property :checksumValue
@@ -16,34 +37,44 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
 end
 
 class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
-  map_predicates do |map|
-    map.format(in: FileVocabulary) do |index|
-      index.as :stored_sortable
-    end
-    map.uri(to: :absoluteURI, in: RDF::HTTP)
-    map.size(in: FileVocabulary) do |index|
-      index.as :stored_sortable
-      index.type :integer
-    end
-    map.created(in: FileVocabulary)
-    map.modified(in: FileVocabulary)
-    map.checksum(in: FileVocabulary, class_name: "Checksum")
-
-    map.generic_file_identifier(in: RDF::DC, to: 'identifier') { |index| index.as :symbol, :stored_searchable }
-    map.intellectual_object_identifier(in: RDF::DC, to: 'relation') { |index| index.as :symbol, :stored_searchable }
-    map.institution_identifier(in: RDF::DC, to: 'description') { |index| index.as :symbol, :stored_searchable }
+  property :file_format, predicate: FileVocabulary.file_format do |index|
+    index.as :stored_sortable
+  end
+  property :uri, predicate: RDF::HT.absoluteURI do |index|
+    index.as :symbol
+  end
+  property :size, predicate: FileVocabulary.size do |index|
+    index.as :sortable_long
+  end
+  property :created, predicate: FileVocabulary.created do |index|
+    index.as :symbol
+  end
+  property :modified, predicate: FileVocabulary.modified do |index|
+    index.as :symbol
+  end
+  property :checksum, predicate: FileVocabulary.checksum, class_name: 'Checksum'
+  property :identifier, predicate: RDF::DC.identifier do |index|
+    index.as :stored_searchable, :symbol
+  end
+  property :intellectual_object_identifier, predicate: RDF::DC11.identifier do |index|
+    index.as :stored_searchable
+  end
+  property :institution_identifier, predicate: RDF::DC.relation do |index|
+    index.as :stored_searchable
   end
 
   accepts_nested_attributes_for :checksum
-  class Checksum
-    include ActiveFedora::RdfObject
+  class Checksum < ActiveFedora::Rdf::Resource
+    configure :type => FileVocabulary.Checksum
 
-    rdf_type FileVocabulary.Checksum
-
-    map_predicates do |map|
-      map.algorithm(to: :Algorithm, in: WorldNetVocabulary)
-      map.datetime(to: :created, in: RDF::DC)
-      map.digest(to: :checksumValue, in: FileVocabulary)
+    property :algorithm, predicate: WorldNetVocabulary.Algorithm do |index|
+      index.as :symbol
+    end
+    property :datetime, predicate: RDF::DC.created do |index|
+      index.as :symbol
+    end
+    property :digest, predicate: FileVocabulary.checksumValue do |index|
+      index.as :symbol
     end
   end
 end

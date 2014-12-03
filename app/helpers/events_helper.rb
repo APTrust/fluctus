@@ -11,17 +11,17 @@ module EventsHelper
   end
 
   def generic_file_link(solr_doc)
-    uri = Array(solr_doc['generic_file_uri_ssim']).first
     id  = Array(solr_doc['generic_file_id_ssim']).first
-    link_name = uri ? uri : id
-    link_to link_name, generic_file_path(id)
+    identifier = Array(solr_doc['tech_metadata__identifier_ssim']).first
+    link_name = identifier ? identifier : id
+    link_to link_name, generic_file_path(identifier)
   end
 
   def intellectual_object_link(solr_doc)
     id  = Array(solr_doc['intellectual_object_id_ssim']).first
-    int_obj = IntellectualObject.find(id)
-    identifier = int_obj.intellectual_object_identifier
-    link_to identifier, intellectual_object_path(identifier)
+    identifier = Array(solr_doc['desc_metadata__identifier_ssim']).first
+    link_name = identifier ? identifier : id
+    link_to link_name, intellectual_object_path(identifier)
   end
 
   def display_event_outcome(solr_doc)

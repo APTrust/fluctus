@@ -11,18 +11,26 @@ module Devise
         api_request?
       end
 
-      def authenticate!
-        user = User.where(email: params[:user][:email]).first
+      # This MUST return false, or API sessions will time out.
+      # We don't want API sessions to time out. As long as we
+      # get valid credentials in the header, let the API user in.
+      def store?
+        false
+      end
 
+      # Authenticate API user via email and API key.
+      def authenticate!
+        api_user = request.headers["X-Fluctus-API-User"]
+        api_key = request.headers["X-Fluctus-API-Key"]
+        user = User.find_by_email(api_user)
         unless user
-          fail! 
+          fail!
           return
         end
-
-        user.valid_api_key?(params[:user][:api_secret_key]) ? success!(user) : fail!
+        authenticated = api_key.nil? == false && user.valid_api_key?(api_key)
+        authenticated ? success!(user) : fail!
       end
 
     end
   end
 end
-

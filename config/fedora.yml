@@ -1,4 +1,8 @@
-development:
+development: 
+  user: <%= ENV['FEDORA_USER'] %>
+  password: <%= ENV['FEDORA_PASS'] %>
+  url: <%= ENV['FEDORA_URL'] %>
+demo:
   user: <%= ENV['FEDORA_USER'] %>
   password: <%= ENV['FEDORA_PASS'] %>
   url: <%= ENV['FEDORA_URL'] %>

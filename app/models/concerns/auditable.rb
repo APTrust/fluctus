@@ -20,6 +20,10 @@ module Auditable
       Solrizer.insert_field(solr_doc, "#{namespaced_solr_field_base}_uri", self.uri, :symbol)
     end
 
+    if self.respond_to?(:identifier)
+      Solrizer.insert_field(solr_doc, "#{namespaced_solr_field_base}_identifier", self.identifier, :symbol)
+    end
+
     if self.respond_to?(:intellectual_object_id)
       Solrizer.insert_field(solr_doc, "intellectual_object_id", self.intellectual_object_id, :symbol)
     end

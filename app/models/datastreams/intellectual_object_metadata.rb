@@ -1,19 +1,23 @@
 class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
-  map_predicates do |map|
-    map.title(in: RDF::DC) do |index|
-      index.as :stored_searchable, :sortable
-    end
-    map.description(in: RDF::DC) do |index|
-      index.as :stored_searchable
-    end
-    map.intellectual_object_identifier(in: RDF::DC, to: 'identifier') do |index|
-      index.as :stored_searchable
-    end
-    map.rights(in: RDF::DC) do |index|
-      index.as :facetable
-    end
-    map.institution_identifier(in: RDF::DC, to: 'relation') do |index|
-      index.as :stored_searchable
-    end
+  property :title, predicate: RDF::DC.title do |index|
+    index.as :stored_searchable, :sortable
+  end
+  property :description, predicate: RDF::DC.description do |index|
+    index.as :stored_searchable
+  end
+  property :identifier, predicate: RDF::DC.identifier do |index|
+    index.as :stored_searchable, :symbol
+  end
+  property :alt_identifier, predicate: RDF::DC11.identifier do |index|
+    index.as :stored_searchable, :symbol
+  end
+  property :access, predicate: RDF::DC.rights do |index|
+    index.as :facetable
+  end
+  property :bag_name, predicate: RDF::DC.alternative do |index|
+    index.as :stored_searchable, :symbol
+  end
+  property :institution_identifier, predicate: RDF::DC.relation do |index|
+    index.as :stored_searchable
   end
 end

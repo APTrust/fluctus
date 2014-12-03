@@ -8,6 +8,7 @@
   <li><%= link_to 'Objects', institution_intellectual_objects_path(@institution, sort: 'system_modified_dtsi desc') %></li>
   <li><a href="#users" data-toggle="tab">Users</a></li>
   <li><%= link_to 'Events', institution_events_path(@institution) %></li>
+  <li><%= link_to 'Processed Items', processed_items_path %></li>
 </ul>
 
 <div class="tab-content">
@@ -16,12 +17,24 @@
     <dl class="dl-horizontal">
       <dt>Users</dt>
       <dd><%= @institution.users.count %></dd>
-      <dt>Objects</dt>
-      <dd><%= @institution.intellectual_objects.count %></dd>
+      <dt>Intellectual Objects</dt>
+      <dd><%= @object_count %></dd>
+      <dt>Processed Items</dt>
+      <dd><%= @item_count %></dd>
+      <% if current_user.admin? && current_user.institution.identifier == @institution.identifier %>
+          <% @size.each do |key, value| %>
+              <dt><%= key %></dt>
+              <dd><%= number_to_human_size(value) %></dd>
+          <% end %>
+      <% else %>
+          <dt>Total Space Used</dt>
+          <dd><%= number_to_human_size(@size) %></dd>
+      <% end %>
     </dl>
 
-    <%= render "shared/resque_jobs" %>
+    <%= render "shared/processed_items" %>
 
+    <%= link_to 'View All Jobs', processed_items_path %>
   </div>
 
   <div class="tab-pane" id="stats">

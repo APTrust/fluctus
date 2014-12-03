@@ -43,7 +43,7 @@ Fluctus::Application.configure do
   config.force_ssl = true
 
   # Set to :debug to see everything in the log.
-  config.log_level = :info
+  config.log_level = :warn
 
   # Prepend all log lines with the following tags.
   # config.log_tags = [ :subdomain, :uuid ]
@@ -79,6 +79,26 @@ Fluctus::Application.configure do
   config.log_formatter = ::Logger::Formatter.new
 
   # Sets up mailing host for password resets
-  Rails.application.routes.default_url_options[:host] = 'localhost:3000'
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  Rails.application.routes.default_url_options[:host] = 'repository.aptrust.org'
+  Rails.application.routes.default_url_options[:protocol] = 'https'
+
+  # send password reset emails to a file
+  config.action_mailer.default_url_options = {
+    :host => 'repository.aptrust.org',
+    :protocol => 'https'
+  }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.smtp_settings = {
+    :address => "email-smtp.us-east-1.amazonaws.com",
+    :authentication => :login,
+    :enable_starttls_auto => true,
+    :port    => 465,
+    :user_name => ENV['AWS_SES_USER'],
+    :password => ENV['AWS_SES_PASSWORD']
+  }
+
+
 end

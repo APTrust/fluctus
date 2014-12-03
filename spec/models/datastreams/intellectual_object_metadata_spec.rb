@@ -29,17 +29,29 @@ describe IntellectualObjectMetadata do
   end
 
   it 'should properly set an identifier' do
-    @ds.intellectual_object_identifier.should_not be_empty
+    @ds.identifier.should_not be_empty
     exp = SecureRandom.uuid
-    @ds.intellectual_object_identifier = exp
-    @ds.intellectual_object_identifier.should == [exp]
+    @ds.identifier = exp
+    @ds.identifier.should == [exp]
   end
 
-  it 'should properly set rights' do
-    @ds.rights.should_not be_empty
-    exp = ['consortial', 'institution', 'restricted'].sample
-    @ds.rights = exp
-    @ds.rights.should == [exp]
+  it 'should properly set acccess' do
+    @ds.access.should_not be_empty
+    exp = ['consortia', 'institution', 'restricted'].sample
+    @ds.access = exp
+    @ds.access.should == [exp]
+  end
+
+  it 'should properly set an alternative identifier' do
+    exp = 'alt_identifier/123456'
+    @ds.alt_identifier = exp
+    @ds.alt_identifier.should == [exp]
+  end
+
+  it 'should properly set a bag name' do
+    exp = '12345678'
+    @ds.bag_name = exp
+    @ds.bag_name.should == [exp]
   end
 end
 

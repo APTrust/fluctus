@@ -1,0 +1,38 @@
+<% unless (params[:qq].nil? || params[:qq] == '') && @selected == {} %>
+  <div id="appliedParams" class="clearfix constraints-container">
+    <div class="pull-right">
+       <a class="catalog_startOverLink btn btn-sm btn-text" href="/itemresults" id="startOverLink">Start Over</a>
+    </div>
+    <span class="constraints-label">You searched for: </span>
+    <% unless params[:qq].nil? || params[:qq] == '' %>
+      <span class="btn-group appliedFilter constraint query">
+        <span class="constraint-value btn btn-sm btn-default btn-disabled">
+          <% if params[:pi_search_field].nil? || params[:pi_search_field] == '' || params[:pi_search_field] == 'All Fields' %>
+            <span class="filterValue"><%= params[:qq] %></span>
+          <% else %>
+            <span class="filterName"><%= params[:pi_search_field] %></span>
+            <span class="filterValue"><%= params[:qq] %></span>
+          <% end %>
+        </span>
+        <a class="btn btn-default btn-sm remove" href="<%=url_for(params.except :qq)%>">
+          <span class="glyphicon glyphicon-remove"></span>
+          <span class="sr-only">Remove constraint <%= params[:qq] %></span>
+        </a>
+      </span>
+    <% end %>
+    <% if @selected %>
+      <% @selected.each do |key, value| %>
+        <span class="btn-group appliedFilter constraint filter">
+          <span class="constraint-value btn btn-sm btn-default btn-disabled">
+            <span class="filterName"><%= key.capitalize %></span>
+            <span class="filterValue"><%= value %></span>
+          </span>
+          <a class="btn btn-default btn-sm remove" href="<%=url_for(params.except key)%>">
+            <span class="glyphicon glyphicon-remove"></span>
+            <span class="sr-only">Remove constraint <%= key %>: <%= value %></span>
+          </a>
+        </span>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

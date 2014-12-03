@@ -2,12 +2,12 @@ require 'spec_helper'
 
 describe EventsController do
 
-  let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution, rights: 'institution') }
+  let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution, access: 'institution') }
   let(:file) { FactoryGirl.create(:generic_file, intellectual_object: object) }
   let(:event_attrs) { FactoryGirl.attributes_for(:premis_event_fixity_generation) }
 
   # An object and a file from a different institution:
-  let(:someone_elses_object) { FactoryGirl.create(:intellectual_object, rights: 'institution') }
+  let(:someone_elses_object) { FactoryGirl.create(:intellectual_object, access: 'institution') }
   let(:someone_elses_file) { FactoryGirl.create(:generic_file, intellectual_object: someone_elses_object) }
 
 
@@ -36,6 +36,15 @@ describe EventsController do
         assigns(:document_list).length.should == 1
         assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
       end
+
+      it "can view objects events by object identifier (API)" do
+        get :index, intellectual_object_identifier: someone_elses_object.identifier, use_route: 'events_by_object_identifier_path'
+        expect(response).to be_success
+        assigns(:intellectual_object).should == someone_elses_object
+        assigns(:document_list).length.should == 1
+        assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
+      end
+
     end
   end
 
@@ -57,6 +66,16 @@ describe EventsController do
         flash[:notice].should =~ /Successfully created new event/
       end
 
+      it 'creates an event for the generic file using generic file identifier (API)' do
+        file.premisEvents.events.count.should == 0
+        post :create, generic_file_identifier: URI.escape(file.identifier), event: event_attrs, format: :json, use_route: 'events_by_file_identifier_path'
+        file.reload
+        file.premisEvents.events.count.should == 1
+        assigns(:parent_object).should == file
+        # API response should be 201/created instead of redirect that the HTML client gets
+        expect(response.status).to eq(201)
+      end
+
       it 'creates an event for an intellectual object' do
         object.premisEvents.events.count.should == 0
         post :create, intellectual_object_identifier: object, event: event_attrs
@@ -68,6 +87,20 @@ describe EventsController do
         assigns(:event).should_not be_nil
         flash[:notice].should =~ /Successfully created new event/
       end
+
+
+      it 'creates an event for an intellectual object by object identifier' do
+        object.premisEvents.events.count.should == 0
+        post :create, intellectual_object_identifier: URI.escape(object.identifier), event: event_attrs, use_route: 'events_by_object_identifier_path'
+        object.reload
+
+        object.premisEvents.events.count.should == 1
+        response.should redirect_to intellectual_object_path(object)
+        assigns(:parent_object).should == object
+        assigns(:event).should_not be_nil
+        flash[:notice].should =~ /Successfully created new event/
+      end
+
 
       it 'if it fails, it prints a fail message' do
         file.premisEvents.events.count.should == 0
@@ -144,6 +177,16 @@ describe EventsController do
         end
       end
 
+      describe 'events for a generic file' do
+        it 'shows the events for that file, sorted by time' do
+          get :index, generic_file_id: file
+          expect(response).to be_success
+          assigns(:generic_file).should == file
+          assigns(:document_list).length.should == 3
+          assigns(:document_list).map(&:id).should == [@event2.identifier.first, @event3.identifier.first, @event.identifier.first]
+        end
+      end
+
       describe "for an institution where you don't have permission" do
         it 'denies access' do
           get :index, institution_identifier: someone_elses_file.institution.institution_identifier
@@ -155,6 +198,14 @@ describe EventsController do
       describe "for an intellectual object where you don't have permission" do
         it 'denies access' do
           get :index, intellectual_object_identifier: someone_elses_object
+          expect(response).to redirect_to root_url
+          flash[:alert].should =~ /You are not authorized/
+        end
+      end
+
+      describe "for a generic file where you don't have permission" do
+        it 'denies access' do
+          get :index, generic_file_id: someone_elses_file
           expect(response).to redirect_to root_url
           flash[:alert].should =~ /You are not authorized/
         end

@@ -1,4 +1,4 @@
-<% if can?(:generate_api_key, @user) %>
+<% if policy(@user).generate_api_key? %>
   <h4> API Secret Key </h4>
 
   <% unless @user.encrypted_api_secret_key %>
@@ -9,7 +9,7 @@
   <div>
     <%= link_to 'Generate API Secret Key',
                 generate_api_key_user_path(@user),
-                class: 'btn doc-action-btn',
+                class: 'btn doc-action-btn btn-normal',
                 method: :patch,
                 data: { confirm: generate_key_confirmation_msg(@user) } %>
   </div>

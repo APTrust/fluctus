@@ -23,3 +23,20 @@ production:
   database: db/production.sqlite3
   pool: 5
   timeout: 5000
+
+# Test/demo server. Put db connection info in environment, not in
+# source repo!!
+demo:
+  adapter: postgresql
+  database: fluctus
+  username: <%= ENV['FLUCTUS_DB_USER'] %>
+  host:     <%= ENV['FLUCTUS_DB_HOST'] %>
+  password: <%= ENV['FLUCTUS_DB_PWD'] %>
+
+# Production: repository.aptrust.org
+production:
+  adapter: postgresql
+  database: fluctus
+  username: <%= ENV['FLUCTUS_DB_USER'] %>
+  host:     <%= ENV['FLUCTUS_DB_HOST'] %>
+  password: <%= ENV['FLUCTUS_DB_PWD'] %>

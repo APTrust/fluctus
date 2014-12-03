@@ -1,30 +1,65 @@
 class UsersController < ApplicationController
   inherit_resources
-  load_and_authorize_resource
   before_filter :authenticate_user!
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :generate_api_key, :admin_password_reset]
+  after_action :verify_authorized, :except => :index
+  after_action :verify_policy_scoped, :only => :index
+
+  def index
+    @users = policy_scope(User)
+  end
+
+  def new
+    @user = User.new
+    authorize @user
+  end
+
+  def create
+    @user = build_resource
+    authorize @user
+    create!
+  end
+
+  def show
+    authorize @user
+    show!
+  end
+
+  def edit
+    authorize @user
+    edit!
+  end
+
+  def update
+    authorize @user
+    update!
+  end
 
   def destroy
-    name = @user.to_s
+    authorize @user
     destroy!(notice: "User #{@user.to_s} was deleted.")
   end
 
   def edit_password
     @user = current_user
+    authorize @user
   end
 
   def update_password
     @user = User.find(current_user.id)
+    authorize @user
     if @user.update_with_password(user_params)
       sign_in @user, :bypass => true
       redirect_to root_path
       flash[:notice] = "Successfully changed password."
     else
-      redirect_to root_path
-      flash[:alert] = "Current password was incorrect. Password has not been changed."
+      render :edit_password
+      #flash[:alert] = "Current password was incorrect, new password was too short, or passwords did not match. Password has not been changed."
     end
   end
 
   def generate_api_key
+    authorize @user
     @user.generate_api_key
 
     if @user.save
@@ -39,27 +74,54 @@ class UsersController < ApplicationController
     redirect_to user_path(@user)
   end
 
+  def admin_password_reset
+    authorize current_user
+    password = SecureRandom.hex(4)
+    @user.password = password
+    @user.password_confirmation = password
+    @user.save!
+    redirect_to @user
+    flash[:notice] = "Reset password for #{@user.email}. Please notify the user that #{password} is their new password."
+  end
+
   private
 
+    # If an id is passed through params, use it.  Otherwise default to show the current user.
+    def set_user
+      @user = params[:id].nil? ? current_user : User.find(params[:id])
+    end
+
     def build_resource_params
-      [params.fetch(:user, {}).permit(:name, :email, :phone_number, :password, :password_confirmation).tap do |p|
+      [params.fetch(:user, {}).permit(:name, :email, :phone_number, :password, :password_confirmation, :institution_pid).tap do |p|
         p[:institution_pid] = build_institution_pid if params[:user][:institution_pid]
         p[:role_ids] = build_role_ids if params[:user][:role_ids]
       end]
     end
 
     def build_institution_pid
-      institution = Institution.find(params[:user][:institution_pid])
-      authorize!(:add_user, institution)
-      institution.id
+      if params[:user][:institution_pid].empty?
+        if @user.nil?
+          instituion = ''
+        else
+          institution = Institution.find(@user.institution_pid)
+        end
+      else
+        institution = Institution.find(params[:user][:institution_pid])
+      end
+      unless institution.nil?
+        authorize institution, :add_user?
+        institution.id
+      end
     end
 
     def build_role_ids
       [].tap do |role_ids|
-        roles = Role.find(params[:user][:role_ids].reject &:blank?)
-        roles.each do |role|
-          authorize!(:add_user, role)
-          role_ids << role.id
+        unless params[:user][:role_ids].empty?
+          roles = Role.find(params[:user][:role_ids])
+
+            authorize roles, :add_user?
+            role_ids << roles.id
+
         end
       end
     end

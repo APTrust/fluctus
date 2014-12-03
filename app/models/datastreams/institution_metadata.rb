@@ -1,7 +1,11 @@
 class InstitutionMetadata < ActiveFedora::RdfxmlRDFDatastream
-  map_predicates do |map|
-    map.name(in: RDF::DC, to: 'title') { |index| index.as :symbol, :stored_searchable }
-    map.brief_name(in: RDF::DC, to: 'alternative')
-    map.institution_identifier(in: RDF::DC, to: 'identifier') { |index| index.as :symbol, :stored_searchable }
+  property :name, predicate: RDF::DC.title do |index|
+    index.as :stored_searchable, :symbol
+  end
+  property :brief_name, predicate: RDF::DC.alternative do |index|
+    index.as :symbol
+  end
+  property :identifier, predicate: RDF::DC.identifier do |index|
+    index.as :stored_searchable, :symbol
   end
 end

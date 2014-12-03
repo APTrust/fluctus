@@ -3,18 +3,25 @@ require 'spec_helper'
 describe GenericFileMetadata do
 
   before do
+    #noinspection RubyArgCount
     subject.stub(:pid).and_return("fake:123")
   end
-  
+
   it 'should set a a proper format' do
-    subject.format = 'application/pdf'
-    subject.format.should ==  ['application/pdf']
+    subject.file_format = 'application/pdf'
+    subject.file_format.should ==  ['application/pdf']
   end
 
   it 'should set uri attributes' do
     uri = "baguri/data/#{Faker::Lorem.characters(char_count=rand(3..10))}.pdf"
     subject.uri = uri
     subject.uri.should == [uri]
+  end
+
+  it 'should set an identifier' do
+    ident = "test.edu/12345678/data/filename.xml"
+    subject.identifier = ident
+    subject.identifier.should == [ident]
   end
 
   it 'should set size attributes' do
@@ -48,12 +55,12 @@ describe GenericFileMetadata do
   end
 
   describe "#to_solr" do
-    subject { FactoryGirl.build(:generic_file, size: 128774003 ).to_solr }
-    it "should have size indexed as an integer" do
-      expect(subject['tech_metadata__size_isi']).to eq '128774003'
+    subject { FactoryGirl.build(:generic_file, size: 128774003000 ).to_solr }
+    it "should have size indexed as a long" do
+      expect(subject['tech_metadata__size_lsi']).to eq '128774003000'
     end
     it "should have mime type indexed " do
-      expect(subject['tech_metadata__format_ssi']).to eq "application/xml"
+      expect(subject['tech_metadata__file_format_ssi']).to eq "application/xml"
     end
   end
 end

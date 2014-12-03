@@ -13,37 +13,63 @@
     <dl class="dl-horizontal dl-invert">
       <dt>Institution</dt>
       <dd><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %> [<%= @intellectual_object.institution.brief_name %>]</dd>
-      <dt>Rights</dt>
-      <dd><%= @intellectual_object.rights %></dd>
+      <dt>Access</dt>
+      <dd><%= @intellectual_object.access %></dd>
       <dt>Identifier</dt>
-      <dd><%= @intellectual_object.intellectual_object_identifier %></dd>
+      <dd><%= @intellectual_object.identifier %></dd>
+      <dt>Bag Name</dt>
+      <dd><%= @intellectual_object.bag_name %></dd>
       <dt> Last Modified </dt>
       <dd> <%= @intellectual_object.modified_date %> </dd>
+      <dt>Description</dt>
+      <dd><%= @intellectual_object.description %></dd>
+      <% if @intellectual_object.alt_identifier.count >= 1  %>
+          <dt>Alternate Identifiers</dt>
+      <% end %>
+      <% @intellectual_object.alt_identifier.each do |alt_ident| %>
+          <dd><%= alt_ident %></dd>
+      <% end %>
     </dl>
   </div>
 
-  <div class="object_events">
-    <h3> Events </h3>
-    <%= link_to "View Events", intellectual_object_events_path(@intellectual_object), class: 'btn btn-primary' %>
-  </div>
-
-  <div class="object_children">
-    <h3>Preserved Files</h3>
-    <% @intellectual_object.generic_files.each do |gf| %>
-          <h4><%= link_to gf.generic_file_identifier, gf  %></h4>
-        <dl class="dl-horizontal dl-invert">
-          <dt>Last Fixity</dt>
-          <dd><span class="label label-success">Success</span></dd>
-          <dt>MimeType<dt>
-          <dd><%= gf.format %></dd>
-          <dt>Filesize<dt>
-          <dd><%= number_to_human_size(gf.size) %></dd>
-        </dl>
-
+  <div class="panel">
+    <%= link_to intellectual_object_files_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+        <i class="glyphicon glyphicon-list-alt"></i> View Preserved Files
     <% end %>
-  </div>
-</div>
+    <%= link_to intellectual_object_events_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+        <i class="glyphicon glyphicon-eye-open"></i> View Events
+    <% end %>
+    <% unless @intellectual_object.state == 'D' %>
+      <% if current_user.admin? || (current_user.institutional_admin? && current_user.institution_pid == @intellectual_object.institution_id) %>
+        <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+            <i class="glyphicon glyphicon-download"></i> Restore Object
+        <% end %>
+      <% end %>
+      <%= render_document_sidebar_partial %>
+    <% end %>
 
-<div id="sidebar" class="col-md-3">
-   <%= render_document_sidebar_partial %>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        Aggregate Data About Preserved Files
+      </h3>
+    </div>
+
+    <div class="panel-body">
+      <dl class="dl-horizontal dl-invert">
+        <% aggregate = IoAggregation.where(identifier: @intellectual_object.id).first %>
+        <% aggregations = @intellectual_object.aggregations_from_solr %>
+        <dt>Files Preserved </dt>
+        <dd><%= aggregate.file_count %></dd>
+        <dt>Total File Size<dt>
+        <dd><%= number_to_human_size(aggregate.file_size) %></dd>
+        <% aggregate.format_to_map.each do |key, value| %>
+            <dt><%= key %></dt>
+            <dd><%= value %></dd>
+        <% end %>
+      </dl>
+    </div>
+  </div>
 </div>

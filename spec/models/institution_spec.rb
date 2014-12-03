@@ -4,14 +4,28 @@ describe Institution do
   subject { FactoryGirl.build(:institution) }
 
   it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:institution_identifier) }
+  it { should validate_presence_of(:identifier) }
 
   it 'should retun a proper solr_doc' do
     subject.to_solr['desc_metadata__name_tesim'].should == [subject.name]
   end
 
   describe "#name_is_unique" do
-    it { should validate_uniqueness_of(:name) }
+    it "should validate uniqueness of the name" do
+      one = FactoryGirl.create(:institution, name: "test")
+      two = FactoryGirl.build(:institution, name: "test")
+      two.should_not be_valid
+      two.errors[:name].should include("has already been taken")
+    end
+  end
+
+  describe "#identifier_is_unique" do
+    it "should validate uniqueness of the identifier" do
+      one = FactoryGirl.create(:institution, identifier: "test.edu")
+      two = FactoryGirl.build(:institution, identifier: "test.edu")
+      two.should_not be_valid
+      two.errors[:identifier].should include("has already been taken")
+    end
   end
 
   describe "#identifier_is_unique" do
@@ -27,18 +41,28 @@ describe Institution do
         subject.save!
       end
       let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: subject) }
-      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: '166311750.0') }
-      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, format: 'audio/wav', size: '143732461.0' ) }
+      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: 166311750, identifier: 'test.edu/123/data/file.xml') }
+      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, file_format: 'audio/wav', size: 143732461, identifier: 'test.edu/123/data/file.wav') }
       it "should return a hash" do
-        expect(subject.bytes_by_format).to eq({"all"=>310044211.0,
+        expect(subject.bytes_by_format).to eq({"all"=>310044211,
                                                'application/xml' => 166311750,
-                                               'audio/wav' => 143732461.0})
+                                               'audio/wav' => 143732461})
       end
     end
   end
 
+  describe "#get_from_solr" do
+    subject { FactoryGirl.create(:institution) }
+    it "should grab the institution from solr and create an institution object for the data" do
+      inst = Institution.get_from_solr(subject.id)
+      inst.identifier.should == subject.identifier
+      inst.name.should == subject.name
+      inst.brief_name.should == subject.brief_name
+    end
+  end
+
   describe "a saved instance" do
-    before do 
+    before do
       subject.save
     end
 
@@ -47,12 +71,11 @@ describe Institution do
     end
     describe "with an associated user" do
       let!(:user) { FactoryGirl.create(:user, name: "Zeke", institution_pid: subject.pid)  }
-
       it "should contain the appropriate User" do
         subject.users.should eq [user]
       end
 
-      it 'deleting should be blocked' do 
+      it 'deleting should be blocked' do
         subject.destroy.should be_false
         expect(Institution.exists?(subject.pid)).to be_true
       end
@@ -73,6 +96,5 @@ describe Institution do
         expect(Institution.exists?(subject.pid)).to be_true
       end
     end
-
   end
 end

@@ -1,28 +1,36 @@
 module ApplicationHelper
   def show_link(object, content = nil, options={})
-    content ||= '<i class="glyphicon glyphicon-eye-open"></i> <strong>View</strong>'
-    options[:class] = 'btn doc-action-btn' if options[:class].nil?
-    link_to(content.html_safe, object, options) if can?(:read, object)
+    content ||= '<i class="glyphicon glyphicon-eye-open"></i> View'
+    options[:class] = 'btn doc-action-btn btn-normal' if options[:class].nil?
+    link_to(content.html_safe, object, options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).show?
   end
 
   def edit_link(object, content = nil, options={})
-    content ||= '<i class="glyphicon glyphicon-edit"></i> <strong>Edit</strong>'
-    options[:class] = 'btn doc-action-btn' if options[:class].nil?
-    link_to(content.html_safe, [:edit, object], options) if can?(:update, object)
+    content ||= '<i class="glyphicon glyphicon-edit"></i> Edit'
+    options[:class] = 'btn doc-action-btn btn-normal' if options[:class].nil?
+    link_to(content.html_safe, [:edit, object], options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).edit?
   end
 
   def destroy_link(object, content = nil, options={})
-    content ||= '<i class="glyphicon glyphicon-trash"></i> <strong>Delete</strong>'
+    content ||= '<i class="glyphicon glyphicon-trash"></i> Delete'
     options[:class] = 'btn doc-action-btn btn-danger' if options[:class].nil?
     options[:method] = :delete if options[:method].nil?
+    options[:data] = { confirm: 'Are you sure?' } if options[:confirm].nil?
+    link_to(content.html_safe, object, options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).destroy?
+  end
+
+  def admin_password_link(object, content = nil, options={})
+    content ||= '<i class="glyphicon glyphicon-warning-sign"></i> Reset User Password'
+    options[:class] = 'btn doc-action-btn btn-danger' if options[:class].nil?
+    options[:method] = :get if options[:method].nil?
     options[:data] = { confirm: 'Are you sure?' }if options[:confirm].nil?
-    link_to(content.html_safe, object, options) if can?(:destroy, object)
+    link_to(content.html_safe, [:admin_password_reset, object], options) if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).admin_password_reset?
   end
 
   def create_link(object, content = nil, options={})
-    content ||= '<i class="glyphicon glyphicon-plus"></i> <strong>Create</strong>'
-    options[:class] = 'btn doc-action-btn' if options[:class].nil?
-    if can?(:create, object)
+    content ||= '<i class="glyphicon glyphicon-plus"></i> Create'
+    options[:class] = 'btn doc-action-btn btn-success' if options[:class].nil?
+    if policy(object.class == SolrDocument ? ActiveFedora::Base.find(object.id) : object).create?
       object_class = (object.kind_of?(Class) ? object : object.class)
       link_to(content.html_safe, [:new, object_class.name.underscore.to_sym], options)
     end

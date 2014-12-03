@@ -8,11 +8,11 @@ module UsersHelper
 
   # Returns a list of roles we have permission to assign
   def roles_for_select
-     Role.all.select {|role| can? :add_user, role }.sort.map {|r| [r.name.titleize, r.id] }
+     Role.all.select {|role| policy(role).add_user? }.sort.map {|r| [r.name.titleize, r.id] }
   end
 
   def institutions_for_select
-     Institution.all.select {|institution| can? :add_user, institution }
+     Institution.all.select {|institution| policy(institution).add_user? }
   end
 
   def generate_key_confirmation_msg(user)

@@ -2,11 +2,11 @@
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
   config.secret_key = ENV['DEVISE_SECRET_KEY']
-  
+
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
-  config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+  config.mailer_sender = "help@aptrust.org"
 
   # Configure the class responsible to send e-mails.
   config.mailer = "Devise::Mailer"
@@ -138,6 +138,10 @@ Devise.setup do |config|
   # ==> Configuration for :timeoutable
   # The time you want to timeout the user session without activity. After this
   # time the user will be asked for credentials again. Default is 30 minutes.
+  # This applies to Web users only. API users don't have a timeout, since they
+  # pass an API key in every request.
+  # See lib/devise/strategies/api_key_authenticatable.rb
+  #
   config.timeout_in = 30.minutes
 
   # If true, expires auth token on session timeout.

@@ -8,7 +8,7 @@ Bundler.require(:default, Rails.env)
 
 module Fluctus
   class Application < Rails::Application
-    
+
     config.generators do |g|
       g.test_framework :rspec, :spec => true
     end
@@ -30,5 +30,39 @@ module Fluctus
     # config.i18n.default_locale = :de
 
     VERSION = "0.5.dev"
+
+    config.i18n.enforce_available_locales = true
+
+    #GLOBALS
+    FLUCTUS_STATUSES = {
+        'pend' => 'Pending',
+        'start' => 'Started',
+        'success' => 'Success',
+        'fail' => 'Failed',
+        'cancel' => 'Cancelled'
+    }
+
+    FLUCTUS_STAGES = {
+        'requested' => 'Requested',
+        'receive' => 'Receive',
+        'fetch' => 'Fetch',
+        'unpack' => 'Unpack',
+        'validate' => 'Validate',
+        'store' => 'Store',
+        'record' => 'Record',
+        'clean' => 'Cleanup',
+        'resolve' => 'Resolve'
+      }
+
+    FLUCTUS_ACTIONS = {
+        'ingest' => 'Ingest',
+        'fixity' => 'Fixity Check',
+        'restore' => 'Restore',
+        'delete' => 'Delete'
+    }
+
+    APTRUST_NAME = 'APTrust'
+    APTRUST_ID = 'aptrust.org'
+
   end
 end

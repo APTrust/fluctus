@@ -26,10 +26,5 @@ describe InstitutionsController do
     it "routes to #update" do
       put("/institutions/test.com").should route_to("institutions#update", :institution_identifier => "test.com")
     end
-
-    it "routes to #destroy" do
-      delete("/institutions/test.com").should route_to("institutions#destroy", :institution_identifier => "test.com")
-    end
-
   end
 end

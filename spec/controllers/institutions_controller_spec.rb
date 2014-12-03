@@ -52,18 +52,18 @@ describe InstitutionsController do
       end
 
       it "responds successfully with an HTTP 200 status code" do
-        get :show, institution_identifier: admin_user.institution.institution_identifier
+        get :show, institution_identifier: admin_user.institution.identifier
         expect(response).to be_success
         expect(response.status).to eq(200)
       end
 
       it "renders the index template" do
-        get :show, institution_identifier: admin_user.institution.institution_identifier
+        get :show, institution_identifier: admin_user.institution.identifier
         expect(response).to render_template("show")
       end
 
       it "assigns the requested institution as @institution" do
-        get :show, institution_identifier: admin_user.institution.institution_identifier
+        get :show, institution_identifier: admin_user.institution.identifier
         assigns(:institution).should eq( admin_user.institution)
       end
 
@@ -75,18 +75,18 @@ describe InstitutionsController do
       end
 
       it "responds successfully with an HTTP 200 status code" do
-        get :show, institution_identifier: institutional_admin.institution.institution_identifier
+        get :show, institution_identifier: institutional_admin.institution.identifier
         expect(response).to be_success
         expect(response.status).to eq(200)
       end
 
       it "renders the index template" do
-        get :show, institution_identifier: institutional_admin.institution.institution_identifier
+        get :show, institution_identifier: institutional_admin.institution.identifier
         expect(response).to render_template("show")
       end
 
       it "assigns the requested institution as @institution" do
-        get :show, institution_identifier: institutional_admin.institution.institution_identifier
+        get :show, institution_identifier: institutional_admin.institution.identifier
         assigns(:institution).should eq(institutional_admin.institution)
       end
     end
@@ -113,23 +113,10 @@ describe InstitutionsController do
     end
   end
 
-  describe "DELETE destroy" do
-    describe "with admin user" do
-      let(:institution) { FactoryGirl.create(:institution) }
-      before do
-        sign_in admin_user
-      end
-
-      it "should be successful" do
-        delete :destroy, institution_identifier: institution.institution_identifier
-        response.should redirect_to(institutions_url)
-      end
-    end
-  end
-
   describe "POST create" do
     describe "with admin user" do
       let (:attributes) { FactoryGirl.attributes_for(:institution) }
+
       before do
         sign_in admin_user
       end

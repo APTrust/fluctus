@@ -7,11 +7,11 @@ class Institution < ActiveFedora::Base
 
   has_many :intellectual_objects, property: :is_part_of
 
-  has_attributes :name, :brief_name, :institution_identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :name, :brief_name, :identifier, datastream: 'descMetadata', multiple: false
 
-  validates :name, :institution_identifier, presence: true
+  validates :name, :identifier, presence: true
   validate :name_is_unique
-  validate :institution_identifier_is_unique
+  validate :identifier_is_unique
 
   before_destroy :check_for_associations
 
@@ -24,19 +24,32 @@ class Institution < ActiveFedora::Base
     User.where(institution_pid: self.pid).to_a.sort_by(&:name)
   end
 
+  def serializable_hash(options={})
+    { pid: pid, name: name, brief_name: brief_name, identifier: identifier }
+  end
+
+  def self.get_from_solr(pid)
+    query = "id\:#{RSolr.escape(pid)}"
+    solr_result = ActiveFedora::SolrService.query(query)
+    result = ActiveFedora::SolrService.reify_solr_results(solr_result,{:load_from_solr=>true})
+    initial_result = result.first
+    real_result = initial_result.reify
+    real_result
+  end
+
   def bytes_by_format
     resp = ActiveFedora::SolrService.instance.conn.get 'select', :params => {
-      'q' => 'tech_metadata__size_isi:[* TO *]',
+      'q' => 'tech_metadata__size_lsi:[* TO *]',
       'fq' =>[ActiveFedora::SolrService.construct_query_for_rel(:has_model => GenericFile.to_class_uri),
               "_query_:\"{!raw f=institution_uri_ssim}#{internal_uri}\""],
       'stats' => true,
       'fl' => '',
-      'stats.field' =>'tech_metadata__size_isi',
-      'stats.facet' => 'tech_metadata__format_ssi'
+      'stats.field' =>'tech_metadata__size_lsi',
+      'stats.facet' => 'tech_metadata__file_format_ssi'
     }
-    stats = resp['stats']['stats_fields']['tech_metadata__size_isi']
+    stats = resp['stats']['stats_fields']['tech_metadata__size_lsi']
     if stats
-      cross_tab = stats['facets']['tech_metadata__format_ssi'].each_with_object({}) { |(k,v), obj|
+      cross_tab = stats['facets']['tech_metadata__file_format_ssi'].each_with_object({}) { |(k,v), obj|
         obj[k] = v['sum']
       }
       cross_tab['all'] = stats['sum']
@@ -55,16 +68,18 @@ class Institution < ActiveFedora::Base
   # becomes problematic on update because the name exists already and the validation fails.  Therefore
   # we must remove self from the array before testing for uniqueness.
   def name_is_unique
+    return if self.name.nil?
     errors.add(:name, "has already been taken") if Institution.where(desc_metadata__name_ssim: self.name).reject{|r| r == self}.any?
   end
 
-  def institution_identifier_is_unique
+  def identifier_is_unique
+    return if self.identifier.nil?
     count = 0;
-    Institution.all.each do |inst|
-      count += 1 if inst.institution_identifier == self.institution_identifier
-    end
+    insts = Institution.where(desc_metadata__identifier_ssim: self.identifier)
+    count +=1 if insts.count == 1 && insts.first.id != self.id
+    count = insts.count if insts.count > 1
     if(count > 0)
-      errors.add(:institution_identifier, "has already been taken")
+      errors.add(:identifier, "has already been taken")
     end
   end
 

@@ -3,8 +3,9 @@ FactoryGirl.define do
     name { Faker::Name.name }
     email { Faker::Internet.email }
     phone_number { Faker::PhoneNumber.phone_number }
-    password { Faker::Internet.password }
+    password { "password" }
     institution_pid { FactoryGirl.create(:institution).pid }
+    roles { [Role.where(name: 'public').first_or_create] }
   
     factory :aptrust_user, class: "User" do
       institution_pid { 

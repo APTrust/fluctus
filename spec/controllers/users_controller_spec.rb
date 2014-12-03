@@ -31,7 +31,7 @@ describe UsersController do
 
     describe "can create Institutional Administrators" do
       let(:institutional_admin_role_id) { Role.where(name: 'institutional_admin').first_or_create.id}
-      let(:attributes) { FactoryGirl.attributes_for(:user, :role_ids => [institutional_admin_role_id]) }
+      let(:attributes) { FactoryGirl.attributes_for(:user, role_ids: institutional_admin_role_id) }
 
       it "unless no parameters are passed" do
         expect {
@@ -52,6 +52,13 @@ describe UsersController do
       get :edit, id: institutional_admin
       response.should be_successful
       expect(assigns[:user]).to eq institutional_admin 
+    end
+
+    it 'can perform a password reset' do
+      password = institutional_admin.password
+      get :admin_password_reset, id: institutional_admin
+      expect(assigns[:user]).to eq institutional_admin
+      expect(assigns[:user].password).not_to eq password
     end
 
     describe "can update Institutional Administrators" do
@@ -151,7 +158,7 @@ describe UsersController do
       describe "at my institution" do
         describe "with institutional_user role" do
           let(:institutional_user_role_id) { Role.where(name: 'institutional_user').first_or_create.id}
-          let(:attributes) { FactoryGirl.attributes_for(:user, :institution_pid=>institutional_admin.institution_pid, :role_ids => [institutional_user_role_id]) }
+          let(:attributes) { FactoryGirl.attributes_for(:user, :institution_pid=>institutional_admin.institution_pid, role_ids: institutional_user_role_id) }
           it 'should be successful' do
             expect {
               post :create, user: attributes
@@ -161,7 +168,8 @@ describe UsersController do
           end
         end
         describe "with institutional_admin role" do
-          let(:attributes) { FactoryGirl.attributes_for(:user, institution_pid: institutional_admin.institution_pid, role_ids: [institutional_admin_role_id]) }
+          let(:institutional_admin_role_id) {Role.where(name: 'institutional_admin').first_or_create.id}
+          let(:attributes) { FactoryGirl.attributes_for(:user, institution_pid: institutional_admin.institution_pid, role_ids: institutional_admin_role_id) }
           it 'should be successful' do
             expect {
               post :create, user: attributes

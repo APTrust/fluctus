@@ -1,0 +1,42 @@
+<table class="table">
+  <thead>
+  <tr>
+    <th></th>
+    <th>Name</th>
+    <th>Etag</th>
+    <th>Institution</th>
+    <th>Processed</th>
+    <th>Action</th>
+    <th>Stage</th>
+    <th>Status</th>
+    <% if current_user.admin? %>
+        <th>Reviewed?</th>
+    <% end %>
+  </tr>
+  </thead>
+  <tbody>
+  <% @items.each do |item| %>
+      <tr class="<%= item.status %>">
+        <td><% if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'] %>
+          <input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" >
+        <% end %></td>
+        <td><a href="<%= processed_item_path(id: item.id) %>" ><%= item.name %></a></td>
+        <td><%= item.etag %></td>
+        <td><%= item.institution %></td>
+        <td><%= time_ago_in_words item.date %></td>
+        <td><%= item.action %></td>
+        <td><%= item.stage %></td>
+        <td><%= item.status %></td>
+        <% if current_user.admin? %>
+            <td><%= item.reviewed %></td>
+        <% end %>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+<% if (@items.length == 0) %>
+    <p>There are no items to display at this time.</p>
+<% end %>
+<div class="paging">
+  <%= paginate @items %>
+</div>

@@ -21,30 +21,30 @@ class EventVocabulary < RDF::Vocabulary("http://multimedialab.elis.ugent.be/user
 end
 
 class PremisEventsMetadata < ActiveFedora::RdfxmlRDFDatastream
-  map_predicates do |map|
-    map.events(to: :Event, in: EventVocabulary, class_name: "Event")
-  end
+  property :events, predicate: EventVocabulary.Event, class_name: 'Event'
 
+  def serializable_hash(options={})
+    events.map do |event|
+      event.serializable_hash
+    end
+  end
   accepts_nested_attributes_for :events
 end
 
-class Event
-  include ActiveFedora::RdfObject
+class Event < ActiveFedora::Rdf::Resource
+  configure :type => EventVocabulary
 
-  rdf_type EventVocabulary
+  property :identifier, predicate: EventVocabulary.eventIdentifier
+  property :type, predicate: EventVocabulary.eventType
+  property :date_time, predicate: EventVocabulary.eventDateTime
+  property :detail, predicate: EventVocabulary.eventDetail
+  property :outcome, predicate: EventVocabulary.eventOutcome
+  property :outcome_detail, predicate: EventVocabulary.eventOutcomeDetail
+  property :outcome_information, predicate: EventVocabulary.eventOutcomeInformation
+  property :object, predicate: EventVocabulary.linkingObject
+  property :agent, predicate: EventVocabulary.linkingAgent
 
-  map_predicates do |map|
-    map.identifier(to: :eventIdentifier, in: EventVocabulary)
-    map.type(to: :eventType, in: EventVocabulary)
-    map.date_time(to: :eventDateTime, in: EventVocabulary)
-    map.detail(to: :eventDetail, in: EventVocabulary)
-    map.outcome(to: :eventOutcome, in: EventVocabulary)
-    map.outcome_detail(to: :eventOutcomeDetail, in: EventVocabulary)
-    map.outcome_information(to: :eventOutcomeInformation, in: EventVocabulary)
-    map.object(to: :linkingObject, in: EventVocabulary)
-    map.agent(to: :linkingAgent, in: EventVocabulary)
-  end
-
+  #noinspection RubyArgCount
   def initialize(graph=RDF::Graph.new, subject=nil)
     super
     init_identifier
@@ -52,11 +52,32 @@ class Event
   end
 
   def to_solr(solr_doc={}, opts={})
+    Solrizer.insert_field(solr_doc, 'event_identifier', self.identifier, :symbol)
     Solrizer.insert_field(solr_doc, 'event_type', self.type, :symbol)
     Solrizer.insert_field(solr_doc, 'event_outcome', self.outcome, :symbol)
     Solrizer.insert_field(solr_doc, 'event_date_time', self.date_time, :sortable, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_outcome_detail', self.outcome_detail, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_detail', self.detail, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_outcome_information', self.outcome_information, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_object', self.object, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_agent', self.agent, :symbol)
     solr_doc.merge!(SOLR_DOCUMENT_ID => self.identifier.first)
     solr_doc
+  end
+
+  # Serialize JSON for the API
+  def serializable_hash(options={})
+    {
+        identifier: identifier.first,
+        type: type.first,
+        date_time: Time.parse(date_time.first).iso8601,
+        detail: detail.first,
+        outcome: outcome.first,
+        outcome_detail: outcome_detail.first,
+        object: object.first,
+        agent: agent.first,
+        outcome_information: outcome_information.first,
+    }
   end
 
 private
@@ -65,10 +86,7 @@ private
   end
 
   def init_identifier
-    if self.identifier.empty?
-      uuid = UUIDTools::UUID.timestamp_create
-      self.identifier = uuid
-    end
+    self.identifier = UUIDTools::UUID.timestamp_create.to_s if self.identifier.empty?
   end
 
 end

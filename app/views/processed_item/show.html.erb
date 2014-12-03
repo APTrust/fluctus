@@ -1,0 +1,67 @@
+<div id="content" class="col-md-10">
+  <ol class="breadcrumb">
+    <li><a href="#"><%= link_to current_user.institution.name, current_user.institution %></a></li>
+  </ol>
+
+  <section class="page-header">
+    <h2><%= @processed_item.name %></h2>
+  </section>
+
+  <section class="queue">
+    <table class="table">
+      <tbody>
+        <tr>
+          <tr>
+            <th>Name</th>
+            <td><%= @processed_item.name %></td>
+          </tr>
+          <tr>
+            <th>Institution</th>
+            <td><%= @processed_item.institution %></td>
+          </tr>
+          <tr>
+            <th>Bucket</th>
+            <td><%= @processed_item.bucket %></td>
+          </tr>
+          <tr>
+            <th>Etag</th>
+            <td><%= @processed_item.etag %></td>
+          </tr>
+          <tr>
+            <th>Object Identifier</th>
+            <th><%= @processed_item.object_identifier %></th>
+          </tr>
+          <% unless @processed_item.generic_file_identifier.nil? %>
+            <tr>
+              <th>Generic File Identifier</th>
+              <th><%= @processed_item.generic_file_identifier %></th>
+            </tr>
+          <% end %>
+          <tr>
+            <th>Bag Date</th>
+            <td><%= @processed_item.bag_date %></td>
+          </tr>
+          <tr>
+            <th>Date Processed</th>
+            <td><%= @processed_item.date %></td>
+          </tr>
+          <tr>
+            <th>Action</th>
+            <td><%= @processed_item.action %></td>
+          </tr>
+          <tr>
+            <th>Stage</th>
+            <td><%= @processed_item.stage %></td>
+          </tr>
+          <tr class="<%= @processed_item.status %>">
+            <th>Status</th>
+            <td><%= @processed_item.status %></td>
+          </tr>
+          <tr>
+            <th>Note / Error</th>
+            <td><%= @processed_item.note %></td>
+          </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

@@ -4,22 +4,22 @@ FactoryGirl.define do
     institution { FactoryGirl.create(:institution) }
     title { Faker::Lorem.sentence }
     description { Faker::Lorem.paragraph }
-    intellectual_object_identifier { "#{institution.institution_identifier}/#{SecureRandom.uuid}" }
-    institution_identifier { "#{institution.institution_identifier}" }
-    rights { ['consortial', 'institution', 'restricted'].sample }
+    identifier { "#{institution.identifier}/#{SecureRandom.uuid}" }
+    access { ['consortia', 'institution', 'restricted'].sample }
+    alt_identifier { [] }
+    bag_name { identifier.split("/")[1] }
 
     factory :consortial_intellectual_object, class: IntellectualObject do
-      rights { 'consortial' }
+      access { 'consortia' }
     end
 
     factory :institutional_intellectual_object, class: IntellectualObject do
-      rights { 'institution' }
+      access { 'institution' }
     end
 
     factory :restricted_intellectual_object, class: IntellectualObject do
-      rights { 'restricted' }
+      access { 'restricted' }
     end
 
   end
-
 end

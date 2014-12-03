@@ -5,6 +5,7 @@
 #   git config --global core.excludesfile '~/.gitignore_global'
 
 .rvmrc
+.ruby-version
 
 # Ignore bundler config.
 /.bundle
@@ -14,7 +15,7 @@
 /db/*.sqlite3-journal
 
 # Ignore all logfiles and tempfiles.
-/log/*.log
+/log
 /tmp
 /jetty
 
@@ -26,6 +27,7 @@
 .idea
 .project
 *.sublime-text.*
+*~
 
 # OS Files
 .DS_Store

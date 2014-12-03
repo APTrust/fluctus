@@ -17,6 +17,7 @@ gem 'coffee-rails', '~> 4.0.0'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
@@ -28,6 +29,8 @@ group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
 end
+
+gem 'kaminari'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
@@ -41,14 +44,18 @@ end
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e'  # TODO: Upgrade to 7.0 release
-gem 'active-fedora', '7.0.0.rc1'
+#gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e'
+gem 'hydra-head', '7.0.0'
+gem 'active-fedora', '7.0.4'
 gem 'hydra-editor', '~> 0.2.2'
 gem 'order_up', '0.0.1'
 gem 'resque', '~> 1.25'
 
 gem "devise"
 gem 'figaro'
+# as an authorization replacement for CanCan
+gem "pundit"
+
 #gem 'omniauth-google-oauth2'
 gem 'simple_form', '~> 3.0.1'
 gem "hydra-role-management", "~> 0.1.0"
@@ -58,13 +65,18 @@ gem 'uuidtools'
 
 group :development do
   gem 'meta_request'
-  # gem 'better_errors'
+  gem 'better_errors'
+  gem 'binding_of_caller'
 end
-group :development, :test do
-  gem 'factory_girl_rails'
-  gem 'faker', github: 'stympy/faker'
+
+group :development, :test, :demo do
   gem "jettywrapper"
   gem 'sqlite3'
+end
+
+group :development, :test, :demo, :production do
+  gem 'factory_girl_rails'
+  gem 'faker', github: 'stympy/faker'
   gem 'quiet_assets'
   gem "rspec-rails"
 end
