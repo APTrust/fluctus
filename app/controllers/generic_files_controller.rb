@@ -3,7 +3,6 @@ class GenericFilesController < ApplicationController
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
   before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
-  #before_action :search_action_url
   after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
 
   include Aptrust::GatedSearch
@@ -48,16 +47,6 @@ class GenericFilesController < ApplicationController
       end
     end
   end
-
-  # def search_action_url *args
-  #   if params.include?('q') || params.include?('search_field')
-  #     params[:controller] = 'catalog'
-  #     params.delete('intellectual_object_id')
-  #     catalog_index_url *args
-  #   else
-  #     super
-  #   end
-  # end
 
   # /api/v1/files/not_checked_since?date=2015-01-01T00:00:00Z&start=100&rows=20
   # Returns a list of GenericFiles that have not had a fixity

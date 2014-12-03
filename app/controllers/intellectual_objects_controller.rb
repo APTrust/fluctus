@@ -234,14 +234,8 @@ class IntellectualObjectsController < ApplicationController
   end
 
   # Override Blacklight so that it has the "institution_id" set even when we're on a show page (e.g. /objects/foo:123)
-  def search_action_url *args
+  def search_action_url options = {}
     institution_intellectual_objects_path(params[:institution_id] || @intellectual_object.institution_id)
-    # if params.include?('q') || params.include?('search_field')
-    #   params[:controller] = 'catalog'
-    #   catalog_index_url *args
-    # else
-    #   super
-    # end
   end
 
   # Override Fedora's default JSON serialization for our API
