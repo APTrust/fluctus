@@ -1,8 +1,8 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
-  before_filter :set_intellectual_object, only: [:create, :update, :save_batch, :index]
   before_filter :set_generic_file, only: [:show, :update, :destroy]
+  before_filter :set_intellectual_object, only: [:update, :create, :save_batch, :index]
   after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
 
   include Aptrust::GatedSearch

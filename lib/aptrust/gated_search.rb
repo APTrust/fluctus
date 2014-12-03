@@ -41,11 +41,6 @@ module Aptrust::GatedSearch
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(has_model: GenericFile.to_class_uri)
   end
 
-  def only_events(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(has_model: EventSolrDoc)
-  end
-
   def only_appropriate_objects(solr_parameters, user_parameters)
     if user_parameters[:search_field] == 'tech_metadata__identifier_tesim'
       only_generic_files(solr_parameters, user_parameters)
@@ -56,9 +51,6 @@ module Aptrust::GatedSearch
       else
         only_intellectual_objects(solr_parameters, user_parameters)
       end
-    #elsif user_parameters.include?('intellectual_object_id') && user_parameters.count == 1
-    #  solr_parameters[:fq] ||= []
-    #  solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{user_parameters[:intellectual_object_id]}")
     else
       only_intellectual_objects(solr_parameters, user_parameters)
     end

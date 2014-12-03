@@ -2,16 +2,10 @@ class EventsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
   before_filter :load_generic_file, if: :generic_file_identifier_exists?
-  before_filter :load_and_authorize_parent_object, only: [:create]
-<<<<<<< HEAD
-  before_filter :load_and_authorize_intellectual_object, only: [:index], if: :intellectual_object_id_exists?
-  #load_and_authorize_resource :intellectual_object, only: [:index], if: :intellectual_object_id_exists?
-  before_filter :load_and_authorize_institution, only: [:index], if: :inst_id_exists?
-  #load_and_authorize_resource :institution, only: [:index], if: :inst_id_exists?
-=======
-  #before_filter :search_action_url
+  #before_filter :load_and_authorize_parent_object, only: [:create]
+  #before_filter :load_and_authorize_intellectual_object, only: [:index], if: :intellectual_object_id_exists?
+  #before_filter :load_and_authorize_institution, only: [:index], if: :inst_id_exists?
   after_action :verify_authorized, :only => [:index]
->>>>>>> develop
 
   include Aptrust::GatedSearch
 
@@ -62,16 +56,6 @@ class EventsController < ApplicationController
     end
   end
 
-  # def search_action_url *args
-  #   if params.include?('q') || params.include?('search_field')
-  #     params[:controller] = 'catalog'
-  #     params.delete('intellectual_object_id')
-  #     catalog_index_url *args
-  #   else
-  #     super
-  #   end
-  # end
-
 protected
 
   def inst_id_exists?
@@ -111,7 +95,6 @@ protected
   end
 
   def load_and_authorize_parent_object
-<<<<<<< HEAD
     #parent_id = params['generic_file_id'] || params['intellectual_object_id']
     if params['intellectual_object_identifier'].nil?
       @parent_object = ActiveFedora::Base.find(params['generic_file_id'])
@@ -125,13 +108,11 @@ protected
     end
     #@parent_object = ActiveFedora::Base.find(parent_id)
     authorize! :update, @parent_object
-=======
     if @parent_object.nil?
       parent_id = params['generic_file_id'] || params['intellectual_object_id']
       @parent_object = ActiveFedora::Base.find(parent_id)
     end
     authorize @parent_object, :add_event?
->>>>>>> develop
   end
 
   def load_and_authorize_intellectual_object

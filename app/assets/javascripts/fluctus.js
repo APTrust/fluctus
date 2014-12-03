@@ -9,6 +9,7 @@ var dropdown = function() {
 
 function add_form_classes() {
     $("#tabs-2 form").addClass("search-query-form form-inline clearfix navbar-form");
+    $("#tabs-1 form").addClass("search-query-form form-inline clearfix navbar-form");
 }
 
 function select_pi_tab() {
