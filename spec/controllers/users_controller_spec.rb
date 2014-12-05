@@ -73,7 +73,7 @@ describe UsersController do
       it 'when the parameters are invalid' do
         patch :update, id: institutional_admin, user: {phone_number: 'f121'}
         response.should be_successful
-        expect(assigns[:user].errors.include?(:phone_number)).to be_true
+        expect(assigns[:user].errors.include?(:phone_number)).to be true
       end
 
       it 'cannot set api_secret_key in an update' do

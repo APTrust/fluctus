@@ -27,7 +27,7 @@ class GenericFilesController < ApplicationController
       format.json { render json: object_as_json }
       format.html {
         @events = Kaminari.paginate_array(@generic_file.premisEvents.events).page(params[:page]).per(10)
-        render html: @generic_file
+        super
       }
     end
   end
