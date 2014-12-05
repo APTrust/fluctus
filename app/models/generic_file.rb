@@ -27,7 +27,7 @@ class GenericFile < ActiveFedora::Base
   delegate :institution, to: :intellectual_object
 
   def to_param
-    generic_file_identifier
+    identifier
   end
 
   def to_solr(solr_doc = {})
@@ -94,10 +94,9 @@ class GenericFile < ActiveFedora::Base
 
   def set_identifiers
     self.institution_identifier = self.intellectual_object.institution_identifier
-    self.intellectual_object_identifier = self.intellectual_object.intellectual_object_identifier
+    self.intellectual_object_identifier = self.intellectual_object.identifier
   end
 
-  private
   # This is for serializing JSON in the API.
   # Be sure all datetimes are formatted as ISO8601,
   # or some JSON parsers (like the golang parser)
@@ -149,6 +148,8 @@ class GenericFile < ActiveFedora::Base
   def has_checksum?(digest)
     find_checksum_by_digest(digest).nil? == false
   end
+
+  private
 
   def update_parent_index
     #TODO in order to improve performance, you can put this work in a background job

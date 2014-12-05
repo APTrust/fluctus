@@ -28,10 +28,6 @@ describe Institution do
     end
   end
 
-  describe "#identifier_is_unique" do
-    it { should validate_uniqueness_of(:institution_identifier) }
-  end
-
   describe "bytes_by_format" do
     it "should return a hash" do
       expect(subject.bytes_by_format).to eq({"all"=>0})

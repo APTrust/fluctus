@@ -16,7 +16,7 @@ class Institution < ActiveFedora::Base
   before_destroy :check_for_associations
 
   def to_param
-    institution_identifier
+    identifier
   end
 
   # Return the users that belong to this institution.  Sorted by name for display purposes primarily.

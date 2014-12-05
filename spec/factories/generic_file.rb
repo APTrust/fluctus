@@ -8,7 +8,6 @@ FactoryGirl.define do
     size { rand(20000..500000000) }
     created { "#{Time.now}" }
     modified { "#{Time.now}" }
-    generic_file_identifier { "#{intellectual_object.intellectual_object_identifier}/data/filename.xml" }
 
     after(:build) do  |generic_file|
       generic_file.techMetadata.checksum.build({

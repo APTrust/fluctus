@@ -27,7 +27,7 @@ class IntellectualObject < ActiveFedora::Base
   before_destroy :check_for_associations
 
   def to_param
-   intellectual_object_identifier
+   identifier
   end
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor
@@ -127,7 +127,7 @@ class IntellectualObject < ActiveFedora::Base
   end
 
   def set_institution_identifier
-    self.institution_identifier = self.institution.institution_identifier
+    self.institution_identifier = self.institution.identifier
   end
 
   private

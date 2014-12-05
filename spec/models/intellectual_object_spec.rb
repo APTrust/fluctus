@@ -7,7 +7,7 @@ describe IntellectualObject do
   end
 
   it { should validate_presence_of(:title) }
-  it { should validate_presence_of(:intellectual_object_identifier) }
+  it { should validate_presence_of(:identifier) }
   it { should validate_presence_of(:institution) }
   it { should validate_presence_of(:access)}
 
