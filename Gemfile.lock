@@ -467,7 +467,6 @@ DEPENDENCIES
   quiet_assets
   rails (= 4.1.8)
   rails_12factor
-  resque (~> 1.25)
   rspec-activemodel-mocks
   rspec-its
   rspec-rails (~> 3.0.0)

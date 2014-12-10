@@ -21,4 +21,7 @@ branches:
     - develop
 before_install:
   - gem install bundler
+before_script:
+  - rake db:migrate RAILS_ENV=test
+  - rake db:test:prepare
 

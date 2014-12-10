@@ -50,7 +50,6 @@ gem 'hydra-head', '7.0.0'
 gem 'active-fedora', '7.0.4'
 gem 'hydra-editor', '~> 0.2.2'
 gem 'order_up', '0.0.1'
-gem 'resque', '~> 1.25'
 
 gem "devise"
 gem 'figaro'
