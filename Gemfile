@@ -82,13 +82,13 @@ group :development, :test, :demo, :production do
   gem 'factory_girl_rails'
   gem 'faker', github: 'stympy/faker'
   gem 'quiet_assets'
-  gem 'rspec-rails', '~> 2.99'
+  gem 'rspec-rails', '~> 3.0.0'
   gem 'rspec-its'
   gem 'rspec-activemodel-mocks'
 end
 
 group :test do
-  gem 'capybara'
+  gem 'capybara', '2.3.0'
   gem 'shoulda-matchers'
   gem 'coveralls', require: false
 end
