@@ -10,7 +10,7 @@ describe IntellectualObjectsController do
 
     describe 'when not signed in' do
       it 'should redirect to login' do
-        get :index, institution_id: 'apt:123'
+        get :index, institution_identifier: 'apt.edu'
         expect(response).to redirect_to root_url + 'users/sign_in'
       end
     end

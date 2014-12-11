@@ -56,12 +56,6 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :identifier, predicate: RDF::DC.identifier do |index|
     index.as :stored_searchable, :symbol
   end
-  property :intellectual_object_identifier, predicate: RDF::DC11.identifier do |index|
-    index.as :stored_searchable
-  end
-  property :institution_identifier, predicate: RDF::DC.relation do |index|
-    index.as :stored_searchable
-  end
 
   accepts_nested_attributes_for :checksum
   class Checksum < ActiveFedora::Rdf::Resource

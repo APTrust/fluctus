@@ -50,7 +50,7 @@ class User < ActiveRecord::Base
 
   def institution_identifier
     institution = Institution.find(self.institution_pid)
-    institution.institution_identifier
+    institution.identifier
   end
 
   # Blacklight uses #to_s on youruser class to get a user-displayable 

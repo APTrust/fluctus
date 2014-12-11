@@ -17,7 +17,4 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :bag_name, predicate: RDF::DC.alternative do |index|
     index.as :stored_searchable, :symbol
   end
-  property :institution_identifier, predicate: RDF::DC.relation do |index|
-    index.as :stored_searchable
-  end
 end

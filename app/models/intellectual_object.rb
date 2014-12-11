@@ -10,7 +10,7 @@ class IntellectualObject < ActiveFedora::Base
   has_many :generic_files, property: :is_part_of
   accepts_nested_attributes_for :generic_files
 
-  has_attributes :title, :access, :description, :identifier, :institution_identifier, :bag_name, datastream: 'descMetadata', multiple: false
+  has_attributes :title, :access, :description, :identifier, :bag_name, datastream: 'descMetadata', multiple: false
   has_attributes :alt_identifier, datastream: 'descMetadata', multiple: true
 
   validates_presence_of :title
@@ -22,12 +22,16 @@ class IntellectualObject < ActiveFedora::Base
 
   before_save :set_permissions
   before_save :set_bag_name
-  before_save :set_institution_identifier
   before_save :active_files
   before_destroy :check_for_associations
 
   def to_param
    identifier
+  end
+
+  def institution_identifier
+    inst = self.identifier.split('/')
+    inst[0]
   end
 
   # This governs which fields show up on the editor. This is part of the expected interface for hydra-editor
