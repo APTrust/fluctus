@@ -21,7 +21,7 @@ namespace :fluctus do
         ['University of Virginia','uva', 'virginia.edu'],
         ['Virginia Tech','vatech', 'vt.edu'],
         ['Test University','test', 'test.edu'],
-        ['Indiana University Bloomington', 'iub', 'iub.edu']
+        ['Indiana University Bloomington', 'iub', 'indiana.edu']
   ]
 
 

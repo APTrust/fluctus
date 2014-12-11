@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.0.3'
+gem 'rails', '4.1.8'
 
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 4.0.0'
+gem 'sass-rails', '4.0.3'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
@@ -31,6 +31,7 @@ group :doc do
 end
 
 gem 'kaminari'
+gem 'minitest'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
@@ -49,7 +50,6 @@ gem 'hydra-head', '7.0.0'
 gem 'active-fedora', '7.0.4'
 gem 'hydra-editor', '~> 0.2.2'
 gem 'order_up', '0.0.1'
-gem 'resque', '~> 1.25'
 
 gem "devise"
 gem 'figaro'
@@ -57,7 +57,7 @@ gem 'figaro'
 gem "pundit"
 
 #gem 'omniauth-google-oauth2'
-gem 'simple_form', '~> 3.0.1'
+gem 'simple_form', '~> 3.0.2'
 gem "hydra-role-management", "~> 0.1.0"
 gem 'phony_rails'
 gem 'inherited_resources'
@@ -78,11 +78,13 @@ group :development, :test, :demo, :production do
   gem 'factory_girl_rails'
   gem 'faker', github: 'stympy/faker'
   gem 'quiet_assets'
-  gem "rspec-rails"
+  gem 'rspec-rails', '~> 3.0.0'
+  gem 'rspec-its'
+  gem 'rspec-activemodel-mocks'
 end
 
 group :test do
-  gem 'capybara'
+  gem 'capybara', '2.3.0'
   gem 'shoulda-matchers'
   gem 'coveralls', require: false
 end

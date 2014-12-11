@@ -93,8 +93,8 @@ class UsersController < ApplicationController
 
     def build_resource_params
       [params.fetch(:user, {}).permit(:name, :email, :phone_number, :password, :password_confirmation, :institution_pid).tap do |p|
-        p[:institution_pid] = build_institution_pid if params[:user][:institution_pid]
-        p[:role_ids] = build_role_ids if params[:user][:role_ids]
+        p[:institution_pid] = build_institution_pid if params[:user][:institution_pid] unless params[:user].nil?
+        p[:role_ids] = build_role_ids if params[:user][:role_ids] unless params[:user].nil?
       end]
     end
 

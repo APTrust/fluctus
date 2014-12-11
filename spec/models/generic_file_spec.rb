@@ -3,8 +3,8 @@ require 'spec_helper'
 describe GenericFile do
 
   it 'uses the Auditable module to create premis events' do
-    GenericFile.included_modules.include?(Auditable).should be_true
-    subject.respond_to?(:add_event).should be_true
+    GenericFile.included_modules.include?(Auditable).should be true
+    subject.respond_to?(:add_event).should be true
   end
 
   it 'should have a techMetadata datastream' do
@@ -28,11 +28,11 @@ describe GenericFile do
   it { should validate_presence_of(:file_format) }
   it { should validate_presence_of(:identifier)}
   it "should validate presence of a checksum" do
-    expect(subject.valid?).to be_false
+    expect(subject.valid?).to be false
     expect(subject.errors[:checksum]).to eq ["can't be blank"]
     subject.checksum_attributes = [{digest: '1234'}]
     # other fields cause the object to not be valid. This forces recalculating errors
-    expect(subject.valid?).to be_false
+    expect(subject.valid?).to be false
     expect(subject.errors[:checksum]).to be_empty
   end
 

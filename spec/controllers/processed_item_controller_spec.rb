@@ -101,7 +101,7 @@ describe ProcessedItemController do
 
       it "assigns the correct @items" do
         get :get_reviewed, format: :json
-        assigns(:items).should have(ProcessedItem.count).items
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
       end
 
     end
@@ -118,7 +118,7 @@ describe ProcessedItemController do
       it "assigns the requested items as @items" do
         get :get_reviewed, format: :json
         assigns(:items).should include(user_item)
-        assigns(:items).should have(1).items
+        expect(assigns(:items).count).to eq(1)
       end
     end
   end
@@ -141,13 +141,13 @@ describe ProcessedItemController do
 
       it "assigns the correct @items" do
         get :items_for_restore, format: :json
-        assigns(:items).should have(ProcessedItem.count).items
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
       end
 
       it "does not include items where retry == false" do
         ProcessedItem.update_all(retry: false)
         get :items_for_restore, format: :json
-        assigns(:items).should have(0).items
+        expect(assigns(:items).count).to eq(0)
       end
 
     end
@@ -167,7 +167,7 @@ describe ProcessedItemController do
       it "assigns the requested items as @items" do
         get :items_for_restore, format: :json
         assigns(:items).should include(user_item)
-        assigns(:items).should have(ProcessedItem.count).items
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
       end
     end
 
@@ -185,7 +185,7 @@ describe ProcessedItemController do
 
       it "should return only items with the specified object_identifier" do
         get :items_for_restore, object_identifier: "mickey/mouse", format: :json
-        assigns(:items).should have(2).items
+        expect(assigns(:items).count).to eq(2)
       end
     end
   end
@@ -208,13 +208,13 @@ describe ProcessedItemController do
 
       it "assigns the correct @items" do
         get :items_for_delete, format: :json
-        assigns(:items).should have(ProcessedItem.count).items
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
       end
 
       it "does not include items where retry == false" do
         ProcessedItem.update_all(retry: false)
         get :items_for_delete, format: :json
-        assigns(:items).should have(0).items
+        expect(assigns(:items).count).to eq(0)
       end
 
     end
@@ -233,7 +233,7 @@ describe ProcessedItemController do
       it "assigns the requested items as @items" do
         get :items_for_delete, format: :json
         assigns(:items).should include(user_item)
-        assigns(:items).should have(ProcessedItem.count).items
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
       end
     end
 
@@ -257,7 +257,7 @@ describe ProcessedItemController do
 
       it "should return only items with the specified object_identifier" do
         get :items_for_delete, generic_file_identifier: "mickey/mouse/club", format: :json
-        assigns(:items).should have(2).items
+        expect(assigns(:items).count).to eq(2)
       end
     end
   end
@@ -304,7 +304,7 @@ describe ProcessedItemController do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
              stage: 'Resolve', status: 'Success', note: 'Buzz', retry: true,
              use_route: 'item_set_restoration_status')
-        assigns(:items).should have(ProcessedItem.count).items
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
       end
 
       it "updates the correct @items" do

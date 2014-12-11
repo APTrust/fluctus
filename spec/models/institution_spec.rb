@@ -72,8 +72,8 @@ describe Institution do
       end
 
       it 'deleting should be blocked' do
-        subject.destroy.should be_false
-        expect(Institution.exists?(subject.pid)).to be_true
+        subject.destroy.should be false
+        expect(Institution.exists?(subject.pid)).to be true
       end
 
       describe "or two" do
@@ -88,8 +88,8 @@ describe Institution do
       let!(:item) { FactoryGirl.create(:intellectual_object, institution: subject) }
       after { item.destroy }
       it 'deleting should be blocked' do
-        subject.destroy.should be_false
-        expect(Institution.exists?(subject.pid)).to be_true
+        subject.destroy.should be false
+        expect(Institution.exists?(subject.pid)).to be true
       end
     end
   end

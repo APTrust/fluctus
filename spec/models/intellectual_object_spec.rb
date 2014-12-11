@@ -135,7 +135,7 @@ describe IntellectualObject do
       end
 
       it 'should not be destroyable' do
-        expect(subject.destroy).to be_false
+        expect(subject.destroy).to be false
       end
 
       it 'should fill in an empty bag name with data from the identifier' do

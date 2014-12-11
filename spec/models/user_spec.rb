@@ -53,7 +53,7 @@ describe User do
 
   describe '#api_secret_key' do
     it 'method exists' do
-      user.respond_to?(:api_secret_key).should be_true
+      user.respond_to?(:api_secret_key).should be true
     end
 
     it 'returns the unencrypted key if it has been set' do
@@ -99,7 +99,7 @@ describe User do
     it "doesn't include the API key" do
       user.api_secret_key = '123abc123abc123abc'
       user.encrypted_api_secret_key.should_not be_nil
-      user.to_json.match(/api_secret_key/).present?.should be_false
+      user.to_json.match(/api_secret_key/).present?.should be false
     end
   end
 

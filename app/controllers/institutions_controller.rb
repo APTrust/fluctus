@@ -10,6 +10,7 @@ class InstitutionsController < ApplicationController
   def index
     respond_to do |format|
       @institutions = policy_scope(Institution)
+      @sizes = find_all_sizes
       format.json { render json: @institutions.map { |inst| inst.serializable_hash } }
       format.html { render "index" }
     end
@@ -57,7 +58,7 @@ class InstitutionsController < ApplicationController
     def set_recent_objects
       if current_user.admin? && current_user.institution.identifier == @institution.identifier
         @items = ProcessedItem.order('date').limit(10).reverse_order
-        @size = find_all_sizes
+        @size = find_apt_size
         @item_count = ProcessedItem.all.count
         @object_count = IntellectualObject.all.count
       else
@@ -75,6 +76,17 @@ class InstitutionsController < ApplicationController
         query = "id\:#{RSolr.escape(object.id)}"
         solr_result = ActiveFedora::SolrService.query(query).first
         new_size = solr_result['total_file_size_ssim'].nil? ? 0 : solr_result['total_file_size_ssim'].first
+        size = size + new_size.to_i
+      end
+      size
+    end
+
+    def find_apt_size
+      size = 0
+      IntellectualObject.all.each do |obj|
+        query = "id\:#{RSolr.escape(obj.id)}"
+        solr_result = ActiveFedora::SolrService.query(query).first
+        new_size = solr_result['total_file_size_ssim'].nil? ? 0 :solr_result['total_file_size_ssim'].first
         size = size + new_size.to_i
       end
       size

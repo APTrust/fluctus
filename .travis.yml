@@ -21,5 +21,6 @@ branches:
     - develop
 before_install:
   - gem install bundler
-services:
-  - redis-server
+before_script:
+  - bundle exec rake db:migrate RAILS_ENV=test
+

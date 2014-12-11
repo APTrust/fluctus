@@ -57,7 +57,7 @@ describe GenericFilesController do
     end
 
     it 'responds successfully' do
-      response.should render_template(:show)
+      expect(response).to render_template("show")
       response.should be_successful
     end
 
