@@ -222,6 +222,8 @@ class IntellectualObjectsController < ApplicationController
       state[:object_events] = attr_value
     when 'generic_files'
       state[:object_files] = attr_value
+    when "alt_identifier"
+      new_object.alt_identifier = attr_value
     else
       new_object[attr_name.to_s] = attr_value.to_s
     end
