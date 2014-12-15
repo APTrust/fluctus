@@ -141,12 +141,6 @@ namespace :fluctus do
         aggregate.initialize_object(item.id)
         aggregate.save!
 
-        # for mark as reviewed testing, add a bunch of other fake processed items.
-        # proc_items = 5
-        # proc_items.times.each do
-        #   FactoryGirl.create(:processed_item, institution: institution.identifier, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
-        # end
-
         num_files = args[:numGenFiles].to_i
         num_files.times.each do |file_count|
           puts "== ** Creating generic file object #{file_count+1} of #{num_files} for intellectual_object #{ item.pid }"
