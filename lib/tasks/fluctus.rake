@@ -135,6 +135,8 @@ namespace :fluctus do
 
         # add processed item for intellectual object
         FactoryGirl.create(:processed_item, institution: institution.identifier, name: name, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
+
+        # add an aggregation object for the intellectual object
         aggregate = IoAggregation.new
         aggregate.initialize_object(item.id)
         aggregate.save!

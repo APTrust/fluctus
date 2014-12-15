@@ -9,9 +9,7 @@
     <th>Action</th>
     <th>Stage</th>
     <th>Status</th>
-    <% if current_user.admin? %>
-        <th>Reviewed?</th>
-    <% end %>
+    <th>Reviewed?</th>
   </tr>
   </thead>
   <tbody>
@@ -27,9 +25,7 @@
         <td><%= item.action %></td>
         <td><%= item.stage %></td>
         <td><%= item.status %></td>
-        <% if current_user.admin? %>
-            <td><%= item.reviewed %></td>
-        <% end %>
+        <td><%= item.reviewed.to_s.capitalize %></td>
       </tr>
   <% end %>
   </tbody>
