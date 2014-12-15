@@ -8,7 +8,7 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :file_format, :created, :modified, :identifier, :intellectual_object_identifier, :institution_identifier, datastream: 'techMetadata', multiple: false
+  has_attributes :uri, :size, :file_format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
   delegate :checksum_attributes=, :checksum, to: :techMetadata
 
   validates_presence_of :uri
@@ -21,7 +21,6 @@ class GenericFile < ActiveFedora::Base
   validate :identifier_is_unique
 
   before_save :copy_permissions_from_intellectual_object
-  before_save :set_identifiers
   after_save :update_parent_index
 
   delegate :institution, to: :intellectual_object
@@ -92,9 +91,14 @@ class GenericFile < ActiveFedora::Base
     save!
   end
 
-  def set_identifiers
-    self.institution_identifier = self.intellectual_object.institution_identifier
-    self.intellectual_object_identifier = self.intellectual_object.identifier
+  def institution_identifier
+    ident = self.identifier.split('/')
+    ident[0]
+  end
+
+  def intellectual_object_identifier
+    ident = self.identifier.split('/')
+    ident[1]
   end
 
   # This is for serializing JSON in the API.

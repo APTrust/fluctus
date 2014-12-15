@@ -245,6 +245,7 @@ class IntellectualObjectsController < ApplicationController
 
   def set_institution
     @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
+    params[:id] = @institution.id
   end
 
   # Convienence method for pulling back the intellectual object by
@@ -252,11 +253,12 @@ class IntellectualObjectsController < ApplicationController
     #nil handling?
     @intellectual_object = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
     @institution = @intellectual_object.institution
+    params[:id] = @intellectual_object.id
   end
 
   # Set the search params for the page return based on the insitution.
   def for_selected_institution(solr_parameters, user_parameters)
-    return unless params[:institution_id]
+    return unless params[:institution_identifier]
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{@institution.id}")
   end
