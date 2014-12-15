@@ -121,6 +121,49 @@ class IntellectualObject < ActiveFedora::Base
     files
   end
 
+  # This is for serializing JSON in the API.
+  def serializable_hash(options={})
+    data = {
+        id: id,
+        title: title,
+        description: description,
+        access: access,
+        bag_name: bag_name,
+        identifier: identifier,
+        state: state,
+    }
+    data.merge!(alt_identifier: serialize_alt_identifiers)
+    if options.has_key?(:include)
+      options[:include].each do |opt|
+        if opt.is_a?(Hash) && opt.has_key?(:active_files)
+          data.merge!(active_files: serialize_active_files(opt[:active_files]))
+        end
+      end
+      data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
+    end
+    data
+  end
+
+  def serialize_active_files(options={})
+    self.active_files.each do |file|
+      file.serializable_hash(options)
+    end
+  end
+
+  def serialize_events
+    self.premisEvents.events.map do |event|
+      event.serializable_hash
+    end
+  end
+
+  def serialize_alt_identifiers
+    data = []
+    alt_identifier.each do |ident|
+      data.push(ident)
+    end
+    data
+  end
+
   private
   def identifier_is_unique
     return if self.identifier.nil?
