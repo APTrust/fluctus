@@ -63,7 +63,7 @@ gem 'inherited_resources'
 gem 'uuidtools'
 
 # S3 connector
-gem 'aws-s3'
+gem 'aws-s3', github: 'bartoszkopinski/aws-s3'
 
 group :development do
   gem 'meta_request'
