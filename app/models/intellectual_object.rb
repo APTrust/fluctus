@@ -145,7 +145,7 @@ class IntellectualObject < ActiveFedora::Base
   end
 
   def serialize_active_files(options={})
-    self.active_files.each do |file|
+    self.active_files.map do |file|
       file.serializable_hash(options)
     end
   end
