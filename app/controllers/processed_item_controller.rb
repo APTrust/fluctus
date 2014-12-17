@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:index, :search, :api_search, :get_reviewed, :review_all, :delete_test_items, :ingested_since, :show_reviewed, :items_for_delete, :items_for_restore]
+  after_action :verify_authorized, :except => [:index, :search, :api_search, :get_reviewed, :delete_test_items, :ingested_since, :show_reviewed, :items_for_delete, :items_for_restore]
 
   def create
     authorize @processed_item
@@ -293,6 +293,7 @@ class ProcessedItemController < ApplicationController
     if current_user.admin?
       items = ProcessedItem.all
       items.each do |item|
+        authorize item, :mark_as_reviewed?
         if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
           item.reviewed = true
           item.save!
