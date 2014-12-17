@@ -238,6 +238,8 @@ class IntellectualObjectsController < ApplicationController
       state[:object_events] = attr_value
     when 'generic_files'
       state[:object_files] = attr_value
+    when "alt_identifier"
+      new_object.alt_identifier = attr_value
     else
       new_object[attr_name.to_s] = attr_value.to_s
     end
@@ -274,8 +276,8 @@ class IntellectualObjectsController < ApplicationController
     if params[:include_relations]
       # Return only active files, but call them generic_files
       data = @intellectual_object.serializable_hash(include: [:premisEvents, active_files: { include: [:checksum, :premisEvents]}])
-      data['generic_files'] = data.delete('active_files')
-      data['state'] = @intellectual_object.state
+      data[:generic_files] = data.delete(:active_files)
+      data[:state] = @intellectual_object.state
       data
     else
       @intellectual_object.serializable_hash()

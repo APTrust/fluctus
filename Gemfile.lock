@@ -1,4 +1,13 @@
 GIT
+  remote: git://github.com/bartoszkopinski/aws-s3.git
+  revision: 6d8525e5f69d4d46ff51a30ca8976c7584b68f36
+  specs:
+    aws-s3 (0.6.3)
+      builder
+      mime-types
+      xml-simple
+
+GIT
   remote: git://github.com/stympy/faker.git
   revision: b1b842f2dba5540bbb034a37ef67e74548226e13
   specs:
@@ -45,10 +54,6 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     arel (5.0.1.20140414130214)
-    aws-s3 (0.6.3)
-      builder
-      mime-types
-      xml-simple
     bcrypt-ruby (3.1.2)
     better_errors (2.0.0)
       coderay (>= 1.0.0)
@@ -418,6 +423,7 @@ PLATFORMS
 
 DEPENDENCIES
   active-fedora (= 7.0.4)
+  aws-s3!
   better_errors
   binding_of_caller
   capybara (= 2.3.0)
