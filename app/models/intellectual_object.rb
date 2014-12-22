@@ -91,7 +91,7 @@ class IntellectualObject < ActiveFedora::Base
   end
 
   def update_aggregations
-    aggregate = IoAggregation.where(identifier: self.id)
+    aggregate = IoAggregation.where(identifier: self.id).first
     aggregate.update_aggregations_solr
   end
 

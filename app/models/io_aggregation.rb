@@ -27,7 +27,7 @@ class IoAggregation < ActiveRecord::Base
     io.update_index
   end
 
-  def update_aggregations_solr()
+  def update_aggregations_solr
     row = 100000
     start = 0
     query ||= []
