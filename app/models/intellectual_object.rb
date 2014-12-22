@@ -85,6 +85,11 @@ class IntellectualObject < ActiveFedora::Base
     aggregations
   end
 
+  def update_aggregations
+    aggregate = IoAggregation.where(identifier: self.id)
+    aggregate.update_aggregations_solr
+  end
+
   # doesn't work, returns empty array
   def self.filter_query(query, args={})
     raw = args.delete(:raw)

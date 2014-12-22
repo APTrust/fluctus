@@ -31,7 +31,7 @@ class IoAggregation < ActiveRecord::Base
     row = 100000
     start = 0
     query ||= []
-    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.id}")
+    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.identifier}")
     solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
     total_files = solr_result.count
     formats = ''
