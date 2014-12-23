@@ -274,13 +274,10 @@ class ProcessedItemController < ApplicationController
   end
 
   def review_all
-    institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
-    current_user.admin? ? items = ProcessedItem.all : items = ProcessedItem.where(bucket: institution_bucket)
+    current_user.admin? ? items = ProcessedItem.all : items = ProcessedItem.where(institution: current_user.institution.identifier)
     authorize items
-    puts "After authorization, session variable is: #{session[:purge_datetime]}"
     items.each do |item|
       if item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'])
-        puts "Inside if statement."
         item.reviewed = true
         item.save!
       end

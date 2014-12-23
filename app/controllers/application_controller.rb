@@ -30,7 +30,6 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource)
     session[:purge_datetime] = Time.now.utc
-    puts "Set session variable for review all: #{session[:purge_datetime]}"
     session[:show_reviewed] = false
     root_path()
   end

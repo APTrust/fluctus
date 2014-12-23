@@ -181,7 +181,6 @@ class IntellectualObject < ActiveFedora::Base
     objects = IntellectualObject.where(desc_metadata__identifier_ssim: self.identifier)
     count +=1 if objects.count == 1 && objects.first.id != self.id
     count = objects.count if objects.count > 1
-    #puts "Count: #{count}, Identifier: #{self.identifier}"
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end
