@@ -43,7 +43,12 @@ class IntellectualObject < ActiveFedora::Base
     super(solr_doc).tap do |doc|
       Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
       aggregate = IoAggregation.where(identifier: self.id).first
-      unless aggregate.nil?
+      if aggregate.nil?
+        aggregates = aggregations_from_solr
+        Solrizer.set_field(doc, 'file_format', aggregates[:formats], :facetable)
+        Solrizer.set_field(doc, 'total_file_size', aggregates[:size], :symbol)
+        Solrizer.set_field(doc, 'active_count', aggregates[:num_files], :symbol)
+      else
         Solrizer.set_field(doc, 'file_format', aggregate.formats_for_solr, :facetable)
         Solrizer.set_field(doc, 'total_file_size', aggregate.file_size, :symbol)
         Solrizer.set_field(doc, 'active_count', aggregate.file_count, :symbol)
@@ -68,7 +73,7 @@ class IntellectualObject < ActiveFedora::Base
   end
 
   def aggregations_from_solr
-    row = 100000
+    row = 1000000
     start = 0
     query ||= []
     query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.id}")
@@ -92,6 +97,11 @@ class IntellectualObject < ActiveFedora::Base
     end
     aggregations = {num_files: total_files, formats: format_map, size: size}
     aggregations
+  end
+
+  def update_aggregations
+    aggregate = IoAggregation.where(identifier: self.id).first
+    aggregate.update_aggregations_solr
   end
 
   # doesn't work, returns empty array
@@ -180,7 +190,6 @@ class IntellectualObject < ActiveFedora::Base
     objects = IntellectualObject.where(desc_metadata__identifier_ssim: self.identifier)
     count +=1 if objects.count == 1 && objects.first.id != self.id
     count = objects.count if objects.count > 1
-    #puts "Count: #{count}, Identifier: #{self.identifier}"
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end

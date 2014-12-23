@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:index, :search, :api_search, :get_reviewed, :delete_test_items, :ingested_since, :show_reviewed, :items_for_delete, :items_for_restore]
+  after_action :verify_authorized, :except => [:delete_test_items, :ingested_since, :show_reviewed]
 
   def create
     authorize @processed_item
@@ -42,27 +42,16 @@ class ProcessedItemController < ApplicationController
     field = params[:pi_search_field]
     @institution = current_user.institution
     params[:pi_sort] = 'date' if params[:pi_sort].nil?
-    if current_user.admin?
-      if field == 'Name'
-        @processed_items = ProcessedItem.where('name LIKE ?', search_param)
-      elsif field == 'Etag'
-        @processed_items = ProcessedItem.where('etag LIKE ?', search_param)
-      elsif params[:qq] == '*'
-        @processed_items = ProcessedItem.all
-      else
-        @processed_items = ProcessedItem.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
-      end
+    current_user.admin? ? initial_items = ProcessedItem.all : initial_items = ProcessedItem.where(institution: @institution.identifier)
+    authorize initial_items
+    if field == 'Name'
+      @processed_items = initial_items.where('name LIKE ?', search_param)
+    elsif field == 'Etag'
+      @processed_items = initial_items.where('etag LIKE ?', search_param)
+    elsif params[:qq] == '*'
+      @processed_items = initial_items
     else
-      institution_items = ProcessedItem.where(institution: @institution.identifier)
-      if field == 'Name'
-        @processed_items = institution_items.where('name LIKE ?', search_param)
-      elsif field == 'Etag'
-        @processed_items = institution_items.where('etag LIKE ?', search_param)
-      elsif params[:qq] == '*'
-        @processed_items = institution_items
-      else
-        @processed_items = institution_items.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
-      end
+      @processed_items = initial_items.where('name LIKE ? OR etag LIKE ?', search_param, search_param)
     end
     @processed_items = @processed_items.order(params[:pi_sort])
     @processed_items = @processed_items.reverse_order if params[:pi_sort] == 'date'
@@ -76,10 +65,8 @@ class ProcessedItemController < ApplicationController
   # /api/v1/itemresults/search
   # Allows the API client to pass in some very specific criteria
   def api_search
-    @items = ProcessedItem.all
-    if current_user.admin? == false
-      @items = ProcessedItem.where(institution: current_user.institution.identifier)
-    end
+    current_user.admin? ? @items = ProcessedItem.all : @items = ProcessedItem.where(institution: current_user.institution.identifier)
+    authorize @items, :search?
     if Rails.env.test? || Rails.env.development?
       rewrite_params_for_sqlite
     end
@@ -120,6 +107,7 @@ class ProcessedItemController < ApplicationController
         format.json { render json: err, status: :bad_request }
       else
         @items = ProcessedItem.where("action='Ingest' and date >= ?", dtSince)
+        authorize @items, :index?
         format.json { render json: @items, status: :ok }
       end
     end
@@ -138,9 +126,8 @@ class ProcessedItemController < ApplicationController
     requested = Fluctus::Application::FLUCTUS_STAGES['requested']
     pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
     @items = ProcessedItem.where(action: restore)
-    if(current_user.admin? == false)
-      @items = @items.where(institution: current_user.institution.identifier)
-    end
+    @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
+    authorize @items
     # Get items for a single object, which may consist of multiple bags.
     # Return anything for that object identifier with action=Restore and retry=true
     if !request[:object_identifier].blank?
@@ -169,9 +156,8 @@ class ProcessedItemController < ApplicationController
     pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
     failed = Fluctus::Application::FLUCTUS_STATUSES['fail']
     @items = ProcessedItem.where(action: delete)
-    if(current_user.admin? == false)
-      @items = @items.where(institution: current_user.institution.identifier)
-    end
+    @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
+    authorize @items
     # Return a record for a single file?
     if !request[:generic_file_identifier].blank?
       @items = @items.where(generic_file_identifier: request[:generic_file_identifier])
@@ -259,9 +245,8 @@ class ProcessedItemController < ApplicationController
                                  stage: Fluctus::Application::FLUCTUS_STAGES['record'],
                                  status: Fluctus::Application::FLUCTUS_STATUSES['success'],
                                  reviewed: true)
-    unless current_user.admin?
-      @items = @items.where(institution: current_user.institution.identifier)
-    end
+    @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
+    authorize @items, :index?
     respond_to do |format|
       format.json { render json: @items, status: :ok }
     end
@@ -289,29 +274,17 @@ class ProcessedItemController < ApplicationController
   end
 
   def review_all
-    institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
-    if current_user.admin?
-      items = ProcessedItem.all
-      items.each do |item|
-        authorize item, :mark_as_reviewed?
-        if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
-          item.reviewed = true
-          item.save!
-        end
-      end
-    else
-      items = ProcessedItem.where(bucket: institution_bucket)
-      items.each do |item|
-        authorize item, :mark_as_reviewed?
-        if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
-          item.reviewed = true
-          item.save!
-        end
+    current_user.admin? ? items = ProcessedItem.all : items = ProcessedItem.where(institution: current_user.institution.identifier)
+    authorize items
+    items.each do |item|
+      if item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'])
+        item.reviewed = true
+        item.save!
       end
     end
-
     session[:purge_datetime] = Time.now.utc
     redirect_to :back
+    flash[:notice] = 'All items have been marked as reviewed.'
   rescue ActionController::RedirectBackError
     redirect_to root_path
     flash[:notice] = 'All items have been marked as reviewed.'
@@ -366,7 +339,10 @@ class ProcessedItemController < ApplicationController
 
   def page_count
     @total_number = @filtered_items.count
-    if params[:page].nil?
+    if @total_number == 0
+      @second_number = 0
+      @first_number = 0
+    elsif params[:page].nil?
       @second_number = 10
       @first_number = 1
     else
@@ -386,7 +362,6 @@ class ProcessedItemController < ApplicationController
     params.permit(:object_identifier, :stage, :status, :note, :retry)
   end
 
-
   def set_items
     unless (session[:select_notice].nil? || session[:select_notice] == '')
       flash[:notice] = session[:select_notice]
@@ -394,17 +369,15 @@ class ProcessedItemController < ApplicationController
     end
     @institution = current_user.institution
     params[:pi_sort] = 'date' if params[:pi_sort].nil?
-    if(session[:show_reviewed] == 'true')
-      @processed_items = ProcessedItem.where(institution: @institution.identifier).order(params[:pi_sort])
-    else
-      @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order(params[:pi_sort])
-    end
+    (session[:show_reviewed] == 'true') ? @processed_items = ProcessedItem.where(institution: @institution.identifier).order(params[:pi_sort]) :
+        @processed_items = ProcessedItem.where(institution: @institution.identifier, reviewed: false).order(params[:pi_sort])
     @processed_items = ProcessedItem.order(params[:pi_sort]) if current_user.admin?
     @processed_items = @processed_items.reverse_order if params[:pi_sort] == 'date'
     filter_items
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
+    authorize @items, :index?
     page_count
     session[:purge_datetime] = Time.now.utc if params[:page] == 1 || params[:page].nil?
   end

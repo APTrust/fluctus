@@ -433,6 +433,7 @@ describe ProcessedItemController do
 
   describe "Post #review_all" do
     let!(:failed_item) { FactoryGirl.create(:processed_item, action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'], status: Fluctus::Application::FLUCTUS_STATUSES['fail']) }
+    let!(:second_item) { FactoryGirl.create(:processed_item, action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'], status: Fluctus::Application::FLUCTUS_STATUSES['fail'], bucket: "aptrust.receiving.#{institution.identifier}", institution: institution.identifier) }
     describe "as admin user" do
       before do
         sign_in admin_user
@@ -454,6 +455,20 @@ describe ProcessedItemController do
         expect(response.status).to eq(302)
         ProcessedItem.find(failed_item.id).reviewed.should eq(true)
       end
+    end
+
+    describe "as institutional admin user" do
+      before do
+        sign_in institutional_admin
+        session[:purge_datetime] = Time.now.utc
+      end
+
+      it "should update all items associated with user's institution's review fields to true" do
+        post :review_all
+        expect(response.status).to eq(302)
+        ProcessedItem.find(second_item.id).reviewed.should eq(true)
+      end
+
     end
   end
 

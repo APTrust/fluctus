@@ -141,6 +141,10 @@ namespace :fluctus do
         aggregate.initialize_object(item.id)
         aggregate.save!
 
+        5.times.each do |count|
+          FactoryGirl.create(:processed_item, institution: institution.identifier)
+        end
+
         num_files = args[:numGenFiles].to_i
         num_files.times.each do |file_count|
           puts "== ** Creating generic file object #{file_count+1} of #{num_files} for intellectual_object #{ item.pid }"

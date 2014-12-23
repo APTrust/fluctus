@@ -9,11 +9,11 @@ class ProcessedItemPolicy < ApplicationPolicy
 	end
 
 	def index?
-    user.admin? ||  (user.institution.identifier == record.institution)
+    record.first.nil? || user.admin? ||  (user.institution.identifier == record.first.institution)
   end
 
   def search?
-    user.admin? || (user.institution.identifier == record.institution)
+    record.first.nil? || user.admin? || (user.institution.identifier == record.first.institution)
   end
 
 	def show?
@@ -34,7 +34,7 @@ class ProcessedItemPolicy < ApplicationPolicy
   end
 
   def review_all?
-    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
   end
 
 	def destroy?
@@ -46,11 +46,11 @@ class ProcessedItemPolicy < ApplicationPolicy
   end
 
   def items_for_delete?
-    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
   end
 
   def items_for_restore?
-    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
   end
 
 	class Scope
