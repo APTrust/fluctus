@@ -64,7 +64,7 @@ class IntellectualObject < ActiveFedora::Base
   end
 
   def aggregations_from_solr
-    row = 100000
+    row = 1000000
     start = 0
     query ||= []
     query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.id}")

@@ -28,7 +28,7 @@ class IoAggregation < ActiveRecord::Base
   end
 
   def update_aggregations_solr
-    row = 100000
+    row = 1000000
     start = 0
     query ||= []
     query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.identifier}")
