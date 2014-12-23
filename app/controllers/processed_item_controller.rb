@@ -277,14 +277,17 @@ class ProcessedItemController < ApplicationController
     institution_bucket = 'aptrust.receiving.'+ current_user.institution.identifier
     current_user.admin? ? items = ProcessedItem.all : items = ProcessedItem.where(bucket: institution_bucket)
     authorize items
+    puts "After authorization, session variable is: #{session[:purge_datetime]}"
     items.each do |item|
-      if (item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail']))
+      if item.date < session[:purge_datetime] && (item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'])
+        puts "Inside if statement."
         item.reviewed = true
         item.save!
       end
     end
     session[:purge_datetime] = Time.now.utc
     redirect_to :back
+    flash[:notice] = 'All items have been marked as reviewed.'
   rescue ActionController::RedirectBackError
     redirect_to root_path
     flash[:notice] = 'All items have been marked as reviewed.'

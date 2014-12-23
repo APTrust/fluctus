@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   include ApiAuth
   # Authorization mechanism
   include Pundit
-    # Please be sure to impelement current_user and user_session. Blacklight depends on
+  # Please be sure to implement current_user and user_session. Blacklight depends on
   # these methods in order to perform user specific actions.
 
   layout 'blacklight'
@@ -30,6 +30,7 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource)
     session[:purge_datetime] = Time.now.utc
+    puts "Set session variable for review all: #{session[:purge_datetime]}"
     session[:show_reviewed] = false
     root_path()
   end
