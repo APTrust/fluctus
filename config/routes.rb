@@ -33,6 +33,7 @@ Fluctus::Application.routes.draw do
   get "files/:generic_file_identifier/events", to: 'events#index', as: :generic_file_events, :constraints => { :generic_file_identifier => file_ptrn }
   get "files/:generic_file_identifier", to: 'generic_files#show', as: :generic_file, :constraints => { :generic_file_identifier => file_ptrn }
   delete "files/:generic_file_identifier", to: 'generic_files#destroy', :constraints => { :generic_file_identifier => file_ptrn }
+  get 'files/:intellectual_object_identifier/index', to: 'generic_files#index', as: :intellectual_object_files, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
 
   # resources :institutions, except: [:destroy] do
   #   resources :intellectual_objects, only: [:index, :create], path: 'objects'
@@ -48,8 +49,10 @@ Fluctus::Application.routes.draw do
   # resources :generic_files, path: 'files' do
   #   resources :events, only: [:index]
   # end
-
-  get 'files/:intellectual_object_id/index', to: 'generic_files#index', as: :intellectual_object_files
+  #
+  # resources :generic_files, only: [:show, :destroy], path: 'files' do
+  #   resources :events, only: [:create]
+  # end
 
   devise_for :users
 
@@ -60,10 +63,6 @@ Fluctus::Application.routes.draw do
   end
 
   get 'users/:id/admin_password_reset', to: 'users#admin_password_reset', as: :admin_password_reset_user
-
-  resources :generic_files, only: [:show, :destroy], path: 'files' do
-    resources :events, only: [:create]
-  end
 
   get '/itemresults/search', to: 'processed_item#search', as: :processed_item_search
   post '/itemresults/search', to: 'processed_item#search'

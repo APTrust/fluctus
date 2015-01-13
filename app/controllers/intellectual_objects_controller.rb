@@ -1,8 +1,8 @@
 class IntellectualObjectsController < ApplicationController
 
   before_filter :authenticate_user!
-  before_filter :set_institution, only: [:index, :create]
-  before_filter :set_intellectual_object, only: [:show, :edit, :update, :destroy, :restore]
+  before_filter :load_institution, only: [:index, :create]
+  before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
 
   include Aptrust::GatedSearch
@@ -246,16 +246,12 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def set_institution
-    @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
-    params[:id] = @institution.id
+
   end
 
   # Convienence method for pulling back the intellectual object by
   def set_intellectual_object
-    #nil handling?
-    @intellectual_object = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
-    @institution = @intellectual_object.institution
-    params[:id] = @intellectual_object.id
+
   end
 
   # Set the search params for the page return based on the insitution.
@@ -291,7 +287,11 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def load_object
-    if params[:identifier] && params[:id].blank?
+    if params[:intellectual_object_identifier]
+      @intellectual_object = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier]).first
+      @institution = @intellectual_object.institution
+      params[:id] = @intellectual_object.id
+    elsif params[:identifier] && params[:id].blank?
       identifier = params[:identifier].gsub(/%2F/i, "/")
       @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first
 
@@ -311,8 +311,13 @@ class IntellectualObjectsController < ApplicationController
   end
 
   def load_institution
-    #@institution ||= Institution.find(params[:institution_id])
-    @institution ||= Institution.get_from_solr(params[:institution_id])
+    if params[:institution_id]
+      #@institution ||= Institution.find(params[:institution_id])
+      @institution ||= Institution.get_from_solr(params[:institution_id])
+    else
+      @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
+    end
+    params[:id] = @institution.id
   end
 
   def load_institution_for_create_from_json(object)
