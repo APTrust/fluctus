@@ -9,7 +9,7 @@ Development | [![Build Status (Development)](https://travis-ci.org/APTrust/fluct
 
 ## APTrust Admin Console (Hydra Head)
 
-This application aims to use the entire Hydra stack to manage all APTrust interactions with Fedora.  
+This application aims to use the entire Hydra stack to manage all APTrust interactions with Fedora.
 
 ### Requirements
 
@@ -21,7 +21,11 @@ Overall Fluctus targets the following versions or later
 * Rails >= 4.0.0
 * hydra-head >= 6.3.4
 
-## Setup Instructions
+## Setup Instructions (Vagrant VM)
+
+For an easy setup using Vagrant, see the [Vagrant setup instructions](https://github.com/APTrust/ansible-playbooks/blob/master/README.md) in the ansible-playboooks repo.
+
+## Setup Instructions (Without VM)
 
 For development we follow the typical setup defined in the
 [Tutorial: Dive Into Hydra](https://github.com/projecthydra/hydra/wiki/Dive-into-Hydra)
@@ -127,5 +131,3 @@ object = IntellectualObject.first
 object.update_index
 object.premisEvents.events.each {|e| write_event_to_solr(e) }
 ```
-
-
