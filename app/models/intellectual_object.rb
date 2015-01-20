@@ -188,8 +188,10 @@ class IntellectualObject < ActiveFedora::Base
     return if self.identifier.nil?
     count = 0;
     objects = IntellectualObject.where(desc_metadata__identifier_ssim: self.identifier)
-    count +=1 if objects.count == 1 && objects.first.id != self.id
-    count = objects.count if objects.count > 1
+    unless objects.count == 0
+      count +=1 if objects.count == 1 && objects.first.id != self.id
+      count = objects.count if objects.count > 1
+    end
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end

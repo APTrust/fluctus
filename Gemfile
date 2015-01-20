@@ -73,7 +73,7 @@ end
 
 group :development, :test, :demo do
   gem "jettywrapper"
-  gem 'sqlite3'
+  gem 'sqlite3', '1.3.10'
 end
 
 group :development, :test, :demo, :production do
