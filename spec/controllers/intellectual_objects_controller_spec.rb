@@ -144,21 +144,20 @@ describe IntellectualObjectsController do
       describe 'as an institutional_user' do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
         before { sign_in user }
-
         it 'should be unauthorized' do
           get :edit, id: obj1
           expect(response).to redirect_to root_url
           expect(flash[:alert]).to eq 'You are not authorized to access this page.'
         end
       end
+
       describe 'as an institutional_admin' do
         let(:user) { FactoryGirl.create(:user, :institutional_admin) }
         before { sign_in user }
-
-        it 'should show the object' do
-          get :show, id: obj1
-          expect(response).to be_successful
-          expect(assigns(:intellectual_object)).to eq obj1
+        it 'should be unauthorized' do
+          get :edit, id: obj1
+          expect(response).to redirect_to root_url
+          expect(flash[:alert]).to eq 'You are not authorized to access this page.'
         end
       end
     end
