@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
 
-  sequence(:uri) { |n| "#file:///#{intellectual_object.intellectual_object_identifier}/data/#{n}filename.xml" }
+  sequence(:uri) { |n| "#file:///#{intellectual_object.identifier}/data/#{n}filename.xml" }
 
   factory :generic_file_tech_metadata, :class => 'GenericFileMetadata' do
     file_format { 'application/xml' }

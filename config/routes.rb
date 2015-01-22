@@ -17,23 +17,23 @@ Fluctus::Application.routes.draw do
   #object_identifier_ptrn = /[^\/]*/
   get "objects/:institution_identifier", to: 'intellectual_objects#index', as: :institution_intellectual_objects, :constraints => { :institution_identifier => institution_ptrn }
   post "objects/:institution_identifier", to: 'intellectual_objects#create', :constraints => { :institution_identifier => institution_ptrn }
-  get "objects/:intellectual_object_identifier", to: 'intellectual_objects#show', as: :intellectual_object, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  patch "objects/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  put "objects/:intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  delete "objects/:intellectual_object_identifier", to: 'intellectual_objects#destroy', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  get "objects/:intellectual_object_identifier/edit", to: 'intellectual_objects#edit', as: :edit_intellectual_object, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  get "objects/:intellectual_object_identifier/events", to: 'events#index', as: :intellectual_object_events, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  post "objects/:intellectual_object_identifier/events", to: 'events#create', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  get 'objects/:intellectual_object_identifier/restore', to: 'intellectual_objects#restore', as: :intellectual_object_restore, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  get "objects/*intellectual_object_identifier", to: 'intellectual_objects#show', as: :intellectual_object, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  patch "objects/*intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  put "objects/*intellectual_object_identifier", to: 'intellectual_objects#update', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  delete "objects/*intellectual_object_identifier", to: 'intellectual_objects#destroy', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  get "objects/*intellectual_object_identifier/edit", to: 'intellectual_objects#edit', as: :edit_intellectual_object, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  get "objects/*intellectual_object_identifier/events", to: 'events#index', as: :intellectual_object_events, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  post "objects/*intellectual_object_identifier/events", to: 'events#create', :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  get 'objects/*intellectual_object_identifier/restore', to: 'intellectual_objects#restore', as: :intellectual_object_restore, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
 
   #Generic File Routes
   file_ptrn = /(\w+\.)*\w+(\.edu|\.com|\.org)\/[\w\-\.]+/
-  post "objects/:intellectual_object_identifier/data", to: 'generic_files#create', as: :intellectual_object_generic_files, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
-  patch "objects/:generic_file_identifier", to: 'generic_files#update', :constraints => { :generic_file_identifier => file_ptrn }, trailing_slash: true, format: 'json'
-  get "files/:generic_file_identifier/events", to: 'events#index', as: :generic_file_events, :constraints => { :generic_file_identifier => file_ptrn }
-  get "files/:generic_file_identifier", to: 'generic_files#show', as: :generic_file, :constraints => { :generic_file_identifier => file_ptrn }
-  delete "files/:generic_file_identifier", to: 'generic_files#destroy', :constraints => { :generic_file_identifier => file_ptrn }
-  get 'files/:intellectual_object_identifier/index', to: 'generic_files#index', as: :intellectual_object_files, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  post "objects/*intellectual_object_identifier/data", to: 'generic_files#create', as: :intellectual_object_generic_files, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
+  patch "objects/*generic_file_identifier", to: 'generic_files#update', :constraints => { :generic_file_identifier => file_ptrn }, trailing_slash: true, format: 'json'
+  get "files/*generic_file_identifier/events", to: 'events#index', as: :generic_file_events, :constraints => { :generic_file_identifier => file_ptrn }
+  get "files/*generic_file_identifier", to: 'generic_files#show', as: :generic_file, :constraints => { :generic_file_identifier => file_ptrn }
+  delete "files/*generic_file_identifier", to: 'generic_files#destroy', :constraints => { :generic_file_identifier => file_ptrn }
+  get 'files/*intellectual_object_identifier/index', to: 'generic_files#index', as: :intellectual_object_files, :constraints => { :intellectual_object_identifier => object_identifier_ptrn }
 
   # resources :institutions, except: [:destroy] do
   #   resources :intellectual_objects, only: [:index, :create], path: 'objects'

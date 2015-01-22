@@ -10,13 +10,7 @@ describe EventsHelper do
     it 'returns a link for the GenericFile' do
       solr_doc = { 'generic_file_id_ssim' => [id],
                    'generic_file_identifier_ssim' => [identifier]}
-      expected_result =  "<a href=\"/files/#{id}\">#{identifier}</a>"
-      helper.generic_file_link(solr_doc).should == expected_result
-    end
-
-    it "returns a link for the GenericFile, even if it doesn't know the identifier" do
-      solr_doc = { 'generic_file_id_ssim' => [id] }
-      expected_result =  "<a href=\"/files/#{id}\">#{id}</a>"
+      expected_result =  "<a href=\"/files/#{identifier}\">#{identifier}</a>"
       helper.generic_file_link(solr_doc).should == expected_result
     end
   end
@@ -25,13 +19,7 @@ describe EventsHelper do
     it 'returns a link for the IntellectualObject' do
       solr_doc = { 'intellectual_object_id_ssim' => [id],
                    'intellectual_object_identifier_ssim' => [identifier]}
-      expected_result =  "<a href=\"/objects/#{id}\">#{identifier}</a>"
-      helper.intellectual_object_link(solr_doc).should == expected_result
-    end
-
-    it "returns a link for the IntellectualObject, even if it doesn't know the identifier" do
-      solr_doc = { 'intellectual_object_id_ssim' => [id] }
-      expected_result =  "<a href=\"/objects/#{id}\">#{id}</a>"
+      expected_result =  "<a href=\"/objects/#{identifier}\">#{identifier}</a>"
       helper.intellectual_object_link(solr_doc).should == expected_result
     end
   end

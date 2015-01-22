@@ -2,9 +2,7 @@ class EventsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
   before_filter :load_generic_file, if: :generic_file_identifier_exists?
-  #before_filter :load_and_authorize_parent_object, only: [:create]
-  #before_filter :load_and_authorize_intellectual_object, only: [:index], if: :intellectual_object_id_exists?
-  #before_filter :load_and_authorize_institution, only: [:index], if: :inst_id_exists?
+
   after_action :verify_authorized, :only => [:index]
 
   include Aptrust::GatedSearch
@@ -16,14 +14,14 @@ class EventsController < ApplicationController
   self.solr_search_params_logic += [:sort_chronologically]
 
   def index
-    if params['institution_id']
-      @institution = Institution.find(params['institution_id'])
+    if params['institution_identifier']
+      @institution = Institution.where(desc_metadata__identifier_ssim: params['institution_identifier']).first
       obj = @institution
-    elsif params['intellectual_object_id']
-      @intellectual_object = IntellectualObject.find(params['intellectual_object_id'])
+    elsif params['intellectual_object_identifier']
+      @intellectual_object = IntellectualObject.where(desc_metadata__identifier_ssim: params['intellectual_object_identifier']).first
       obj = @intellectual_object
-    elsif params['generic_file_id']
-      @generic_file = GenericFile.find(params['generic_file_id'])
+    elsif params['generic_file_identifier']
+      @generic_file = GenericFile.where(tech_metadata__identifier_ssim: params['generic_file_id']).first
       obj = @generic_file
     end
     authorize obj
@@ -58,18 +56,6 @@ class EventsController < ApplicationController
 
 protected
 
-  def inst_id_exists?
-    params['institution_identifier']
-  end
-
-  def intellectual_object_id_exists?
-    params['intellectual_object_identifier']
-  end
-
-  def generic_file_id_exists?
-    params['generic_file_id']
-  end
-
   def intellectual_object_identifier_exists?
     params['intellectual_object_identifier']
   end
@@ -101,7 +87,7 @@ protected
     else
       io_options = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier])
       io_options.each do |io|
-        if params[:intellectual_object_identifier] == io.intellectual_object_identifier
+        if params[:intellectual_object_identifier] == io.identifier
           @parent_object = io
         end
       end
@@ -116,9 +102,9 @@ protected
   end
 
   def load_and_authorize_intellectual_object
-    io_options = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier])
+    io_options = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier])
     io_options.each do |io|
-      if params[:intellectual_object_identifier] == io.intellectual_object_identifier
+      if params[:intellectual_object_identifier] == io.identifier
         @intellectual_object = io
       end
     end
@@ -126,7 +112,7 @@ protected
   end
 
   def load_and_authorize_institution
-    @institution = Institution.where(desc_metadata__institution_identifier_tesim: params[:institution_identifier]).first
+    @institution = Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
     authorize! params[:action].to_sym, @institution
   end
 

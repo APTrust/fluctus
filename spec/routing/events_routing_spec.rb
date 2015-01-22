@@ -4,11 +4,11 @@ describe "Routes for Events" do
 
   it 'has a route to create events for a generic file' do
     expect(
-      post: 'files/hello:123/events'
+      post: 'files/apt.org/123/data/file.pdf/events'
     ).to(
       route_to(controller: 'events',
                action: 'create',
-               generic_file_id: 'hello:123'
+               generic_file_identifier: 'apt.org/123/data/file.pdf'
       )
     )
   end

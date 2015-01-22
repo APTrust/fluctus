@@ -56,7 +56,7 @@ describe EventsController do
     describe 'POST create' do
       it 'creates an event for the generic file' do
         file.premisEvents.events.count.should == 0
-        post :create, generic_file_id: file, event: event_attrs
+        post :create, generic_file_identifier: file, event: event_attrs
         file.reload
 
         file.premisEvents.events.count.should == 1
@@ -105,7 +105,7 @@ describe EventsController do
       it 'if it fails, it prints a fail message' do
         file.premisEvents.events.count.should == 0
         GenericFile.any_instance.should_receive(:save).and_return(false) # Make it fail
-        post :create, generic_file_id: file, event: event_attrs
+        post :create, generic_file_identifier: file, event: event_attrs
         file.reload
         file.premisEvents.events.count.should == 0
         flash[:alert].should =~ /Unable to create event/
@@ -115,7 +115,7 @@ describe EventsController do
     describe "POST create a file where you don't have permission" do
       it 'denies access' do
         someone_elses_file.premisEvents.events.count.should == 0
-        post :create, generic_file_id: someone_elses_file, event: event_attrs
+        post :create, generic_file_identifier: someone_elses_file, event: event_attrs
         someone_elses_file.reload
 
         someone_elses_file.premisEvents.events.count.should == 0
@@ -134,7 +134,7 @@ describe EventsController do
     describe 'POST create' do
       it 'denies access' do
         file.premisEvents.events.count.should == 0
-        post :create, generic_file_id: file, event: event_attrs
+        post :create, generic_file_identifier: file, event: event_attrs
         file.reload
 
         file.premisEvents.events.count.should == 0
@@ -179,7 +179,7 @@ describe EventsController do
 
       describe 'events for a generic file' do
         it 'shows the events for that file, sorted by time' do
-          get :index, generic_file_id: file
+          get :index, generic_file_identifier: file
           expect(response).to be_success
           assigns(:generic_file).should == file
           assigns(:document_list).length.should == 3
@@ -205,7 +205,7 @@ describe EventsController do
 
       describe "for a generic file where you don't have permission" do
         it 'denies access' do
-          get :index, generic_file_id: someone_elses_file
+          get :index, generic_file_identifier: someone_elses_file
           expect(response).to redirect_to root_url
           flash[:alert].should =~ /You are not authorized/
         end
@@ -219,7 +219,7 @@ describe EventsController do
 
     describe 'POST create' do
       before do
-        post :create, generic_file_id: file, event: event_attrs
+        post :create, generic_file_identifier: file, event: event_attrs
       end
 
       it 'redirects to login' do

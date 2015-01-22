@@ -92,7 +92,7 @@ describe IntellectualObjectsController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        get :show, intellectual_object_identifier: obj1.identifier
+        get :show, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -102,7 +102,7 @@ describe IntellectualObjectsController do
       before { sign_in user }
         
       it "should show the object" do
-        get :show, intellectual_object_identifier: obj1.identifier
+        get :show, intellectual_object_identifier: obj1
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
       end
@@ -135,7 +135,7 @@ describe IntellectualObjectsController do
     describe 'when not signed in' do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       it "should redirect to login" do
-        get :edit, intellectual_object_identifier: obj1.identifier
+        get :edit, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -146,7 +146,7 @@ describe IntellectualObjectsController do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
         before { sign_in user }
         it "should be unauthorized" do
-          get :edit, intellectual_object_identifier: obj1.identifier
+          get :edit, intellectual_object_identifier: obj1
           expect(response).to redirect_to root_url
           expect(flash[:alert]).to eq 'You are not authorized to access this page.'
         end
@@ -155,8 +155,18 @@ describe IntellectualObjectsController do
       describe 'as an institutional_admin' do
         let(:user) { FactoryGirl.create(:user, :institutional_admin) }
         before { sign_in user }
-        it "should show the object" do
-          get :edit, intellectual_object_identifier: obj1.identifier
+        it "should be unauthorized" do
+          get :edit, intellectual_object_identifier: obj1
+          expect(response).to redirect_to root_url
+          expect(flash[:alert]).to eq 'You are not authorized to access this page.'
+        end
+      end
+
+      describe 'as an admin' do
+        let(:user) { FactoryGirl.create(:user, :admin) }
+        before { sign_in user }
+        it 'should show the object' do
+          get :edit, intellectual_object_identifier: obj1
           expect(response).to be_successful
           expect(assigns(:intellectual_object)).to eq obj1
         end
@@ -464,7 +474,7 @@ describe IntellectualObjectsController do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       after { obj1.destroy }
       it "should redirect to login" do
-        delete :destroy, intellectual_object_identifier: obj1.identifier
+        delete :destroy, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_url + "users/sign_in"
       end
     end
@@ -498,7 +508,7 @@ describe IntellectualObjectsController do
       after { obj1.destroy }
 
       it 'should redirect to login' do
-        get :restore, intellectual_object_identifier: obj1.identifier
+        get :restore, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_url + 'users/sign_in'
       end
 
@@ -523,7 +533,7 @@ describe IntellectualObjectsController do
       end
 
       it 'should mark only the latest processed item for restore' do
-        get :restore, intellectual_object_identifier: obj1.identifier
+        get :restore, intellectual_object_identifier: obj1
         expect(response).to redirect_to obj1
         count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                     stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
@@ -550,7 +560,7 @@ describe IntellectualObjectsController do
       end
 
       it 'should mark the processed item for restore' do
-        get :restore, intellectual_object_identifier: obj1.identifier
+        get :restore, intellectual_object_identifier: obj1
         expect(response).to redirect_to obj1
         count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
                                     stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
