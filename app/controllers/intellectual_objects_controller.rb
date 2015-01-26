@@ -245,15 +245,6 @@ class IntellectualObjectsController < ApplicationController
     end
   end
 
-  def set_institution
-
-  end
-
-  # Convienence method for pulling back the intellectual object by
-  def set_intellectual_object
-
-  end
-
   # Set the search params for the page return based on the insitution.
   def for_selected_institution(solr_parameters, user_parameters)
     return unless params[:institution_identifier]

@@ -24,10 +24,10 @@ describe GenericFilesController do
           FactoryGirl.attributes_for(:premis_event_fixity_generation)
       ]
       file.save!
-      get :show, id: file.pid
+      get :show, generic_file_identifier: file
     end
 
-    it 'can index files by intel obj identifier' do
+    it 'can index files by intellectual object identifier' do
       get :index, intellectual_object_identifier: URI.encode(@intellectual_object.identifier), format: :json
       expect(response).to be_successful
       expect(assigns(:intellectual_object)).to eq @intellectual_object
@@ -53,7 +53,7 @@ describe GenericFilesController do
         FactoryGirl.attributes_for(:premis_event_fixity_generation)
       ]
       file.save!
-      get :show, id: file.pid
+      get :show, generic_file_identifier: file
     end
 
     it 'responds successfully' do
@@ -155,7 +155,7 @@ describe GenericFilesController do
     describe "when not signed in" do
       let(:obj1) { @intellectual_object }
       it "should show unauthorized" do
-        post(:save_batch, intellectual_object_id: obj1.id, generic_files: [],
+        post(:save_batch, intellectual_object_identifier: obj1.identifier, generic_files: [],
              format: 'json', use_route: 'generic_file_create_batch')
         expect(response.code).to eq "401" # unauthorized
       end
@@ -174,7 +174,7 @@ describe GenericFilesController do
 
       describe "and assigning to an object you don't have access to" do
         it "should be forbidden" do
-          post(:save_batch, intellectual_object_id: obj2.id, generic_files: [],
+          post(:save_batch, intellectual_object_identifier: obj2.identifier, generic_files: [],
                format: 'json', use_route: 'generic_file_create_batch')
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error", "message"=>"You are not authorized to access this page."})
@@ -209,7 +209,7 @@ describe GenericFilesController do
           gf_data[0]['file_format'] = 'text/apple'
           gf_data[1]['file_format'] = 'text/orange'
 
-          post(:save_batch, intellectual_object_id: batch_obj.id, generic_files: gf_data,
+          post(:save_batch, intellectual_object_identifier: batch_obj.identifier, generic_files: gf_data,
                format: 'json', use_route: 'generic_file_create_batch')
           expect(response.code).to eq "201"
           return_data = JSON.parse(response.body)
@@ -234,7 +234,7 @@ describe GenericFilesController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        patch :update, intellectual_object_identifier: file.intellectual_object, id: file.id, trailing_slash: true
+        patch :update, intellectual_object_identifier: file.intellectual_object, generic_file_identifier: file, trailing_slash: true
         expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
@@ -246,7 +246,7 @@ describe GenericFilesController do
       describe "and deleteing a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it "should be forbidden" do
-          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file.identifier, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
@@ -254,13 +254,13 @@ describe GenericFilesController do
 
       describe "and you have access to the file" do
         it "should delete the file" do
-          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(assigns[:generic_file].size).to eq 99
           expect(response.code).to eq '204'
         end
 
         it "should update the file by identifier (API)" do
-          patch :update, identifier: URI.escape(file.identifier), id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, generic_file_identifier: URI.escape(file.identifier), id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(assigns[:generic_file].size).to eq 99
           expect(response.code).to eq '204'
         end
@@ -285,7 +285,7 @@ describe GenericFilesController do
 
     describe "when not signed in" do
       it "should redirect to login" do
-        delete :destroy, id: file
+        delete :destroy, generic_file_identifier: file
         expect(response).to redirect_to root_url + "users/sign_in"
         expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
       end
@@ -297,7 +297,7 @@ describe GenericFilesController do
       describe "and deleting a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it "should be forbidden" do
-          delete :destroy, id: file, format: 'json'
+          delete :destroy, generic_file_identifier: file, format: 'json'
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
@@ -305,14 +305,14 @@ describe GenericFilesController do
 
       describe "and you have access to the file" do
         it "should delete the file" do
-          delete :destroy, id: file, format: 'json'
+          delete :destroy, generic_file_identifier: file, format: 'json'
           expect(assigns[:generic_file].state).to eq 'D'
           expect(response.code).to eq '204'
         end
 
         it 'delete the file with html response' do
           file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id)
-          delete :destroy, id: file
+          delete :destroy, generic_file_identifier: file
           expect(response).to redirect_to intellectual_object_path(file.intellectual_object)
           expect(assigns[:generic_file].state).to eq 'D'
           expect(flash[:notice]).to eq "Delete job has been queued for file: #{file.uri}"
@@ -320,7 +320,7 @@ describe GenericFilesController do
 
         it "should create a ProcessedItem with the delete request" do
           file = FactoryGirl.create(:generic_file, intellectual_object_id: @intellectual_object.id)
-          delete :destroy, id: file, format: 'json'
+          delete :destroy, generic_file_identifier: file, format: 'json'
           pi = ProcessedItem.where(generic_file_identifier: file.identifier).first
           expect(pi).not_to be_nil
           expect(pi.object_identifier).to eq @intellectual_object.identifier

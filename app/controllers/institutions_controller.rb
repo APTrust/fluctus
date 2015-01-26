@@ -1,7 +1,7 @@
 class InstitutionsController < ApplicationController
   inherit_resources
   before_filter :authenticate_user!
-  before_action :set_institution, only: [:edit, :update, :show, :destroy]
+  before_action :load_institution, only: [:edit, :update, :show, :destroy]
   respond_to :json, :html
 
   after_action :verify_authorized, :except => :index
@@ -45,7 +45,7 @@ class InstitutionsController < ApplicationController
   include Blacklight::SolrHelper
 
   private
-    def set_institution
+    def load_institution
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
       set_recent_objects
     end

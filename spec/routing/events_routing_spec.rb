@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Routes for Events" do
+describe 'Routes for Events' do
 
   it 'has a route to create events for a generic file' do
     expect(

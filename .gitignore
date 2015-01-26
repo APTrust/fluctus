@@ -37,3 +37,6 @@
 
 # Ignore jetty directory (from hydra-jetty)
 /jetty
+
+# Ignore the ansible directory
+/ansible-playbooks

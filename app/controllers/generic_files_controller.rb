@@ -1,8 +1,8 @@
 class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
-  before_filter :set_generic_file, only: [:show, :update, :destroy]
-  before_filter :set_intellectual_object, only: [:update, :create, :save_batch, :index]
+  before_filter :load_generic_file, only: [:show, :update, :destroy]
+  before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
   after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
 
   include Aptrust::GatedSearch
@@ -204,32 +204,6 @@ class GenericFilesController < ApplicationController
 
   protected
 
-  def set_intellectual_object
-    search_param = ''
-    if params[:intellectual_object_identifier].nil?
-      search_param = params[:generic_file_identifier].split("/")
-    else
-      search_param = params[:intellectual_object_identifier]
-    end
-    @intellectual_object = IntellectualObject.where(desc_metadata__identifier_tesim: params[:intellectual_object_identifier]).first
-    @institution = @intellectual_object.institution
-  end
-
-  def set_generic_file
-    search_params = params[:generic_file_identifier].split("/")
-    inst_ident = search_params[0]
-    obj_ident = search_params[1]
-    filename = ''
-    i = 3
-    while i < search_params.size
-      filename = "#{filename}/#{search_params[i]}"
-      i = i+1
-    end
-    @generic_file = GenericFile.where(desc_metadata__identifier_tesim: params[:generic_file_identifier]).first
-    @intellectual_object = @generic_file.intellectual_object
-    @institution = @intellectual_object.institution
-  end
-
   def filter_parameters
     params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
                                                                    :modified, :file_format,
@@ -258,13 +232,13 @@ class GenericFilesController < ApplicationController
   def load_intellectual_object
     if params[:intellectual_object_identifier]
       objId = params[:intellectual_object_identifier].gsub(/%2F/i, '/')
-      @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: objId).first
+      @intellectual_object = IntellectualObject.where(desc_metadata__identifier_ssim: objId).first
       params[:intellectual_object_id] = @intellectual_object.id
     elsif params[:intellectual_object_id]
       #@intellectual_object ||= IntellectualObject.find(params[:intellectual_object_id])
-      @intellectual_object ||= IntellectualObject.get_from_solr(params[:intellectual_object_id])
+      @intellectual_object = IntellectualObject.get_from_solr(params[:intellectual_object_id])
     else
-      @intellectual_object ||= GenericFile.find(params[:id]).intellectual_object
+      @intellectual_object = GenericFile.find(params[:id]).intellectual_object
     end
   end
 
@@ -312,6 +286,8 @@ class GenericFilesController < ApplicationController
       #@generic_file ||= GenericFile.find(params[:id])
       @generic_file ||=GenericFile.file_from_solr(params[:id])
     end
+    @intellectual_object = @generic_file.intellectual_object
+    @institution = @intellectual_object.institution
   end
 
   def for_selected_object(solr_parameters, user_parameters)
