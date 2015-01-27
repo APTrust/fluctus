@@ -2,8 +2,9 @@ class EventsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_intellectual_object, if: :intellectual_object_identifier_exists?
   before_filter :load_generic_file, if: :generic_file_identifier_exists?
+  before_filter :load_and_authorize_parent_object, only: [:create]
 
-  after_action :verify_authorized, :only => [:index]
+  after_action :verify_authorized, only: [:index, :create]
 
   include Aptrust::GatedSearch
 
@@ -21,7 +22,7 @@ class EventsController < ApplicationController
       @intellectual_object = IntellectualObject.where(desc_metadata__identifier_ssim: params['intellectual_object_identifier']).first
       obj = @intellectual_object
     elsif params['generic_file_identifier']
-      @generic_file = GenericFile.where(tech_metadata__identifier_ssim: params['generic_file_id']).first
+      @generic_file = GenericFile.where(tech_metadata__identifier_ssim: params['generic_file_identifier']).first
       obj = @generic_file
     end
     authorize obj
@@ -77,43 +78,14 @@ protected
   def load_generic_file
     gfid = params[:generic_file_identifier].gsub(/%2F/i, '/')
     @parent_object = GenericFile.where(tech_metadata__identifier_ssim: gfid).first
-    params['generic_file_id'] = @parent_object.id
+    params[:generic_file_id] = @parent_object.id
   end
 
   def load_and_authorize_parent_object
-    #parent_id = params['generic_file_id'] || params['intellectual_object_id']
-    if params['intellectual_object_identifier'].nil?
-      @parent_object = ActiveFedora::Base.find(params['generic_file_id'])
-    else
-      io_options = IntellectualObject.where(desc_metadata__intellectual_object_identifier_tesim: params[:intellectual_object_identifier])
-      io_options.each do |io|
-        if params[:intellectual_object_identifier] == io.identifier
-          @parent_object = io
-        end
-      end
-    end
-    #@parent_object = ActiveFedora::Base.find(parent_id)
-    authorize! :update, @parent_object
     if @parent_object.nil?
-      parent_id = params['generic_file_id'] || params['intellectual_object_id']
-      @parent_object = ActiveFedora::Base.find(parent_id)
+      params[:intellectual_object_identifier] ? load_intellectual_object : load_generic_file
     end
     authorize @parent_object, :add_event?
-  end
-
-  def load_and_authorize_intellectual_object
-    io_options = IntellectualObject.where(desc_metadata__identifier_ssim: params[:intellectual_object_identifier])
-    io_options.each do |io|
-      if params[:intellectual_object_identifier] == io.identifier
-        @intellectual_object = io
-      end
-    end
-    authorize! params[:action].to_sym, @intellectual_object
-  end
-
-  def load_and_authorize_institution
-    @institution = Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
-    authorize! params[:action].to_sym, @institution
   end
 
   def for_selected_institution(solr_parameters, user_parameters)
