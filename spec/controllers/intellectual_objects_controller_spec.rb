@@ -165,10 +165,10 @@ describe IntellectualObjectsController do
       describe 'as an admin' do
         let(:user) { FactoryGirl.create(:user, :admin) }
         before { sign_in user }
-        it 'should show the object' do
+        it 'should not show the object' do
           get :edit, intellectual_object_identifier: obj1
-          expect(response).to be_successful
-          expect(assigns(:intellectual_object)).to eq obj1
+          expect(response).to redirect_to root_url
+          expect(flash[:alert]).to eq 'You are not authorized to access this page.'
         end
       end
     end

@@ -12,7 +12,7 @@ describe IntellectualObjectPolicy do
       should permit(:create_through_intellectual_object)
       should permit(:show)
       should permit(:update) 
-      should permit(:edit)
+      should_not permit(:edit)
       should permit(:add_event)
       should permit(:soft_delete)
       should permit(:destroy)
