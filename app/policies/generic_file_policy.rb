@@ -35,8 +35,8 @@ class GenericFilePolicy < ApplicationPolicy
 	end
 
 	def edit?
-		update?
-	end	
+		false
+	end
 
 	def destroy?
 		soft_delete?
