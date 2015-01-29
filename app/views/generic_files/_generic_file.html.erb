@@ -16,8 +16,6 @@
   </section>
 
   <dl class="document-metadata dl-horizontal dl-invert">
-    <dt> Identifier: </dt>
-    <dd> <%= Array(generic_file['tech_metadata__identifier_ssim']).first %> </dd>
 
     <dt> Institution: </dt>
     <dd> <%= Array(generic_file['gf_institution_name_ssim']).first %> </dd>
@@ -27,6 +25,12 @@
 
     <dt> Filesize: </dt>
     <dd> <%= number_to_human_size(Array(generic_file['tech_metadata__size_lsi']).first) %> </dd>
+
+    <dt> Created: </dt>
+    <dd> <%= Array(generic_file['tech_metadata__created_ssim']).first %> </dd>
+
+    <dt> Last Modified: </dt>
+    <dd> <%= Array(generic_file['tech_metadata__modified_ssim']).first %> </dd>
 
     <% if generic_file['object_state_ssi'] == 'D' %>
         <dt>State</dt>
