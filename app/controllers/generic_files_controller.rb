@@ -281,13 +281,15 @@ class GenericFilesController < ApplicationController
       @generic_file ||= GenericFile.where(tech_metadata__identifier_ssim: gfid).first
       # Solr permissions handler expects params[:id] to be the object ID,
       # and will blow up if it's not. So humor it.
-      params[:id] = @generic_file.id
+      params[:id] = @generic_file.id unless @generic_file.nil?
     elsif params[:id]
       #@generic_file ||= GenericFile.find(params[:id])
       @generic_file ||=GenericFile.file_from_solr(params[:id])
     end
-    @intellectual_object = @generic_file.intellectual_object
-    @institution = @intellectual_object.institution
+    unless @generic_file.nil?
+      @intellectual_object = @generic_file.intellectual_object
+      @institution = @intellectual_object.institution
+    end
   end
 
   def for_selected_object(solr_parameters, user_parameters)
