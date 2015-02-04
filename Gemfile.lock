@@ -1,13 +1,4 @@
 GIT
-  remote: git://github.com/bartoszkopinski/aws-s3.git
-  revision: 6d8525e5f69d4d46ff51a30ca8976c7584b68f36
-  specs:
-    aws-s3 (0.6.3)
-      builder
-      mime-types
-      xml-simple
-
-GIT
   remote: git://github.com/stympy/faker.git
   revision: b1b842f2dba5540bbb034a37ef67e74548226e13
   specs:
@@ -54,6 +45,11 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     arel (5.0.1.20140414130214)
+    aws-sdk-core (2.0.21)
+      builder (~> 3.0)
+      jmespath (~> 1.0)
+      multi_json (~> 1.0)
+      multi_xml (~> 0.5)
     bcrypt-ruby (3.1.2)
     better_errors (2.0.0)
       coderay (>= 1.0.0)
@@ -178,6 +174,8 @@ GEM
       i18n
       logger
       mediashelf-loggable
+    jmespath (1.0.2)
+      multi_json (~> 1.0)
     jquery-rails (3.1.0)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
@@ -218,6 +216,7 @@ GEM
     mini_portile (0.6.1)
     minitest (5.4.3)
     multi_json (1.10.1)
+    multi_xml (0.5.5)
     net-http-persistent (2.9.4)
     netrc (0.8.0)
     nokogiri (1.6.5)
@@ -423,7 +422,7 @@ PLATFORMS
 
 DEPENDENCIES
   active-fedora (= 7.0.4)
-  aws-s3!
+  aws-sdk-core
   better_errors
   binding_of_caller
   capybara (= 2.3.0)
