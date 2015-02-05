@@ -71,8 +71,8 @@ class IntellectualObjectsController < ApplicationController
                      detail: 'Object deleted from S3 storage',
                      outcome: 'Success',
                      outcome_detail: current_user.email,
-                     object: 'Ruby aws-s3 gem',
-                     agent: 'https://github.com/marcel/aws-s3/tree/master',
+                     object: 'Goamz S3 Client',
+                     agent: 'https://github.com/crowdmob/goamz',
                      outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
       resource.soft_delete(attributes)

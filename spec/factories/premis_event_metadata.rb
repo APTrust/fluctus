@@ -11,8 +11,8 @@ FactoryGirl.define do
     outcome { "success" }
     outcome_detail { "MD5:#{SecureRandom.hex(16)}" }
     outcome_information { "Multipart Put using md5 checksum" }
-    object { "ruby aws-s3 gem" }
-    agent { "https://github.com/marcel/aws-s3/tree/master" }
+    object { "Goamz S3 Client" }
+    agent { "https://github.com/crowdmob/goamz" }
 
     factory :premis_event_ingest_fail do
       detail { "Error copying to S3" }

@@ -280,8 +280,8 @@ describe IntellectualObjectsController do
                 detail: 'Copied all files to perservation bucket',
                 outcome: 'Success',
                 outcome_detail: '1 files copied',
-                object: 'goamz S3 client',
-                agent: 'https://launchpad.net/goamz',
+                object: 'Goamz S3 Client',
+                agent: 'https://github.com/crowdmob/goamz',
                 outcome_information: 'Multipart put using md5 checksum'
               },
               { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
