@@ -21,24 +21,24 @@ namespace :bagman do
   end
 
   # Returns a hash of institutions that already exist. Key is
-  # institution name, value is Institution object. We need this
+  # institution title, value is Institution object. We need this
   # to determine whether we need to create a new institution
   # for some record we just imported from the bagman log.
   def get_institutions
     institutions = {}
     Institution.all.each do |inst|
-      institutions[inst.name] = inst
+      institutions[inst.title] = inst
     end
     institutions
   end
 
-  # Make sure the institution with the specified name exists.
+  # Make sure the institution with the specified title exists.
   # Create it if necessary.
-  def ensure_institution(name, institutions)
-    if institutions[name].nil?
-      inst = Institution.create!(name: name)
-      institutions[name] = inst
-      puts "Created institution #{name}"
+  def ensure_institution(title, institutions)
+    if institutions[title].nil?
+      inst = Institution.create!(title: title)
+      institutions[title] = inst
+      puts "Created institution #{title}"
     end
   end
 
@@ -78,19 +78,19 @@ namespace :bagman do
   # This parses a single generic file record from the JSON data
   # and returns a GenericFile object.
   def new_generic_file(gf, int_obj)
-    uri_prefix = "https://s3.amazon.aws.com/aptrust.storage.#{int_obj.institution.name}/"
+    uri_prefix = "https://s3.amazon.aws.com/aptrust.storage.#{int_obj.institution.title}/"
     file = GenericFile.new(intellectual_object: int_obj,
                            format: gf['MimeType'],
                            uri: uri_prefix + gf['Path'],
-                           size: gf['Size'],
+                           file_size: gf['Size'],
                            created: gf['Created'].gsub(' ', ''),
                            modified: gf['Modified'].gsub(' ', ''))
-    file.techMetadata.checksum.build({
+    file.techMetadata.file_checksum.build({
                      algorithm: 'md5',
                      datetime: Time.now.to_s,
                      digest: gf['Md5']
                  })
-    file.techMetadata.checksum.build({
+    file.techMetadata.file_checksum.build({
                      algorithm: 'sha256',
                      datetime: Time.now.to_s,
                      digest: gf['Sha256']
@@ -109,7 +109,7 @@ namespace :bagman do
   # identifier.
   def new_identifier_assignment(identifier, timestamp)
     {
-      type: "identifier_assignment",
+      event_type: "identifier_assignment",
       date_time: timestamp,
       detail: "S3 key generated for file",
       outcome: "success",
@@ -124,7 +124,7 @@ namespace :bagman do
   # sha256 sum.
   def new_fixity_generation(sha256sum, timestamp)
     {
-      type: "fixity_generation",
+      event_type: "fixity_generation",
       date_time: timestamp,
       detail: "Calculated new fixity value",
       outcome: "success",

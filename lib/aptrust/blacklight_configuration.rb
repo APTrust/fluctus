@@ -6,7 +6,7 @@ module Aptrust
 
       configure_blacklight do |config|
         title_field =       solr_name('desc_metadata__title', :stored_searchable)
-        institution_field = solr_name('institution_name', :stored_sortable)
+        institution_field = solr_name('institution_title', :stored_sortable)
         identifier_field =  solr_name('desc_metadata__identifier', :stored_searchable)
         description_field = solr_name('desc_metadata__description', :stored_searchable)
         access_field = solr_name('desc_metadata__access', :facetable)
@@ -16,7 +16,7 @@ module Aptrust
         event_type_field = solr_name('event_type', :symbol)
         event_outcome_field = solr_name('event_outcome', :symbol)
         gf_format_field = solr_name('tech_metadata__file_format', :stored_sortable)
-        gf_institution_field = solr_name('gf_institution_name', :symbol)
+        gf_institution_field = solr_name('gf_institution_title', :symbol)
         gf_parent_field = solr_name('gf_parent', :symbol)
         gf_identifier_field = solr_name('tech_metadata__identifier', :stored_searchable)
 

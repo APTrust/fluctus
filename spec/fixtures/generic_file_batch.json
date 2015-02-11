@@ -1,12 +1,12 @@
 [
     {
         "uri": "https://s3.amazonaws.com/aptrust.test.preservation/971983db-1eeb-4f22-427c-606cfcbff48c",
-        "size": 2388,
+        "file_size": 2388,
         "created": "2014-04-14T11:55:25-04:00",
         "modified": "2014-04-14T11:55:25-04:00",
         "file_format": "text/plain",
         "identifier": "virginia.edu/virginia.edu.uva-lib_2278801/data/datastream-DC",
-        "checksum": [
+        "file_checksum": [
             {
                 "algorithm": "md5",
                 "digest": "44d85cf4810d6c6fe87750117633e461",
@@ -21,7 +21,7 @@
         "premisEvents": [
             {
                 "identifier": "00000000-1111-1111-1111-00000000",
-                "type": "fixity_generation",
+                "event_type": "fixity_generation",
                 "date_time": "2012-01-01",
                 "detail": "generated checksum",
                 "outcome": "Success",
@@ -32,7 +32,7 @@
             },
             {
                 "identifier": "00000000-2222-2222-2222-00000000",
-                "type": "fixity_generation",
+                "event_type": "fixity_generation",
                 "date_time": "2012-01-01",
                 "detail": "generated checksum",
                 "outcome": "Success",
@@ -45,12 +45,12 @@
     },
     {
         "uri": "https://s3.amazonaws.com/aptrust.test.preservation/80180ef5-ca77-4b50-43d1-52f60fe9d4cd",
-        "size": 579,
+        "file_size": 579,
         "created": "2014-04-14T11:55:26-04:00",
         "modified": "2014-04-14T11:55:26-04:00",
         "file_format": "application/xml",
         "identifier": "virginia.edu/virginia.edu.uva-lib_2278801/data/datastream-RELS-EXT",
-        "checksum": [
+        "file_checksum": [
             {
                 "algorithm": "md5",
                 "digest": "ff731b9a1758618f6cc22538dede6174",
@@ -65,7 +65,7 @@
         "premisEvents": [
             {
                 "identifier": "00000000-3333-3333-3333-00000000",
-                "type": "fixity_generation",
+                "event_type": "fixity_generation",
                 "date_time": "2012-01-01",
                 "detail": "generated checksum",
                 "outcome": "Success",
@@ -76,7 +76,7 @@
             },
             {
                 "identifier": "00000000-4444-4444-4444-00000000",
-                "type": "fixity_generation",
+                "event_type": "fixity_generation",
                 "date_time": "2012-01-01",
                 "detail": "generated checksum",
                 "outcome": "Success",

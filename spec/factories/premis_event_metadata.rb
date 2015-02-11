@@ -5,7 +5,7 @@
 FactoryGirl.define do
 
   factory :premis_event_ingest, class: PremisEventsMetadata do
-    type { 'ingest' }
+    event_type { 'ingest' }
     date_time { "#{Time.now}" }
     detail { "Completed copy to S3 storage" }
     outcome { "success" }
@@ -22,7 +22,7 @@ FactoryGirl.define do
   end
 
   factory :premis_event_validation, class: PremisEventsMetadata do
-    type { 'validation' }
+    event_type { 'validation' }
     date_time { "#{Time.now}" }
     detail { "Check against bag manifest checksum" }
     outcome { "success" }
@@ -31,7 +31,7 @@ FactoryGirl.define do
   end
 
   factory :premis_event_fixity_generation, class: PremisEventsMetadata do
-    type { 'fixity_generation' }
+    event_type { 'fixity_generation' }
     date_time { "#{Time.now}" }
     detail { "Calculated new fixity value" }
     outcome { "success" }
@@ -47,7 +47,7 @@ FactoryGirl.define do
   end
 
   factory :premis_event_fixity_check, class: PremisEventsMetadata do
-    type { 'fixity_check' }
+    event_type { 'fixity_check' }
     date_time { "#{Time.now}" }
     detail { "Fixity check against registered hash" }
     outcome { "success" }
@@ -64,7 +64,7 @@ FactoryGirl.define do
   end
 
   factory :premis_event_identifier, class: PremisEventsMetadata do
-    type { 'identifier_assignment' }
+    event_type { 'identifier_assignment' }
     date_time { "#{Time.now}" }
     detail { "S3 key generated for file" }
     outcome { "success" }

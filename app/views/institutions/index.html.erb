@@ -13,8 +13,8 @@
   <tbody>
     <% @institutions.each do |institution| %>
       <tr id="<%= institution.id %>">
-        <td><%= link_to_if policy(institution).show?, institution.name, institution_path(institution), class: "block-link" %></td>
-        <td><%= number_to_human_size(@sizes[institution.name]) %></td>
+        <td><%= link_to_if policy(institution).show?, institution.title, institution_path(institution), class: "block-link" %></td>
+        <td><%= number_to_human_size(@sizes[institution.title]) %></td>
         <td><%= edit_link institution %></td>
       </tr>
     <% end %>

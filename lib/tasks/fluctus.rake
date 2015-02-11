@@ -29,7 +29,7 @@ namespace :fluctus do
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
 
-    i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt')
+    i = Institution.create!(title: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt')
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     %w(admin institutional_admin institutional_user).each do |role|
@@ -107,25 +107,25 @@ namespace :fluctus do
     puts "Creating #{num_insts} Institutions"
     num_insts.times.each do |count|
       puts "== Creating number #{count+1} of #{num_insts}: #{partner_list[count+1].first} "
-      FactoryGirl.create(:institution, name: partner_list[count+1].first, brief_name: partner_list[count+1][1],
+      FactoryGirl.create(:institution, title: partner_list[count+1].first, brief_name: partner_list[count+1][1],
                          identifier: partner_list[count+1].last)
     end
 
     puts 'Creating Users for each Institution'
     Institution.all.each do |institution|
-      next unless institution.name != 'APTrust'
+      next unless institution.title != 'APTrust'
 
-      puts "Populating content for #{institution.name}"
+      puts "Populating content for #{institution.title}"
 
       num_users = rand(1..5)
       num_users.times.each do |count|
-        puts "== Creating user #{count+1} of #{num_users} for #{institution.name}"
+        puts "== Creating user #{count+1} of #{num_users} for #{institution.title}"
         FactoryGirl.create(:user, :institutional_user, institution_pid: institution.pid)
       end
 
       num_items = args[:numIntObjects].to_i
       num_items.times.each do |count|
-        puts "== Creating intellectual object #{count+1} of #{num_items} for #{institution.name}"
+        puts "== Creating intellectual object #{count+1} of #{num_items} for #{institution.title}"
         name = "#{SecureRandom.uuid}"
         bag_name = "#{name}.tar"
         ident = "#{institution.identifier}/#{name}"
@@ -202,7 +202,7 @@ namespace :fluctus do
     puts 'Creating Institutions'
     partner_list.count.times.each do |count|
       puts "== Creating number #{count+1} of #{partner_list.count}: #{partner_list[count].first} "
-      FactoryGirl.create(:institution, name: partner_list[count].first,
+      FactoryGirl.create(:institution, title: partner_list[count].first,
                                 brief_name: partner_list[count][1],
                                 identifier: partner_list[count].last)
     end
@@ -210,7 +210,7 @@ namespace :fluctus do
     user_inst.each do |user_id, inst_identifier|
       user = User.find(user_id)
       inst = Institution.where(desc_metadata__identifier_ssim: inst_identifier).first
-      puts "Associating user #{user.email} with institution #{inst.name}"
+      puts "Associating user #{user.email} with institution #{inst.title}"
       user.institution_pid = inst.pid
       user.save
     end

@@ -275,7 +275,7 @@ describe IntellectualObjectsController do
             bag_name: '',
             premisEvents: [
               { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
-                type: 'ingest',
+                event_type: 'ingest',
                 date_time: '2014-07-14T15:11:01-04:00',
                 detail: 'Copied all files to perservation bucket',
                 outcome: 'Success',
@@ -285,7 +285,7 @@ describe IntellectualObjectsController do
                 outcome_information: 'Multipart put using md5 checksum'
               },
               { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
-                type: 'identifier_assignment',
+                event_type: 'identifier_assignment',
                 date_time: '2014-07-14T15:11:02-04:00',
                 detail: 'Assigned bag identifier',
                 outcome: 'Success',
@@ -297,12 +297,12 @@ describe IntellectualObjectsController do
             ],
             generic_files: [
               { uri: 'https://s3.amazonaws.com/aptrust.test.preservation/47e00844-a53a-46de-5d93-d8ecff0e0e4b',
-                size: 4853,
+                file_size: 4853,
                 created: '2014-04-25T14:06:39-04:00',
                 modified: '2014-04-25T14:06:39-04:00',
                 file_format: 'application/xml',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
-                checksum: [
+                file_checksum: [
                   { algorithm: 'md5',
                     digest: '1202ef3562a201060bbdb5a7c6d37d91',
                     datetime: '2014-04-25T14:06:39-04:00'
@@ -314,7 +314,7 @@ describe IntellectualObjectsController do
                 ],
                 premisEvents: [
                   { identifier: '155fb018-5ba0-440c-62a0-fc5dfe30dfd3',
-                    type: 'fixity_check',
+                    event_type: 'fixity_check',
                     date_time: '2014-07-14T15:10:58-04:00',
                     detail: 'Fixity check against registered hash',
                     outcome: 'Success',
@@ -324,7 +324,7 @@ describe IntellectualObjectsController do
                     outcome_information: 'Fixity matches'
                   },
                   { identifier: 'd656fd3b-5876-4e21-6449-44a3f6df3b81',
-                    type: 'ingest',
+                    event_type: 'ingest',
                     date_time: '2014-07-14T15:10:58-04:00',
                     detail: 'Completed copy to S3',
                     outcome: 'Success',
@@ -334,7 +334,7 @@ describe IntellectualObjectsController do
                     outcome_information: 'Put using md5 checksum'
                   },
                   { identifier: '1f5671c6-ca2e-4b98-4847-54407338e7f6',
-                    type: 'fixity_generation',
+                    event_type: 'fixity_generation',
                     date_time: '2014-07-14T19:10:58Z',
                     detail: 'Calculated new fixity value',
                     outcome: 'Success',
@@ -344,7 +344,7 @@ describe IntellectualObjectsController do
                     outcome_information: ''
                   },
                   { identifier: '9f6f4e83-e796-4a19-49af-c8feaf9fd167',
-                    type: 'identifier_assignment',
+                    event_type: 'identifier_assignment',
                     date_time: '2014-07-14T19:10:58Z',
                     detail: 'Assigned new institution.bag/path identifier',
                     outcome: 'Success',
@@ -354,7 +354,7 @@ describe IntellectualObjectsController do
                     outcome_information: ''
                   },
                   { identifier: '318a6e86-8b0a-4e73-5f54-9e3ccd98a5b3',
-                    type: 'identifier_assignment',
+                    event_type: 'identifier_assignment',
                     date_time: '2014-07-14T19:10:58Z',
                     detail: 'Assigned new storage URL identifier',
                     outcome: 'Success',
@@ -366,12 +366,12 @@ describe IntellectualObjectsController do
                 ]
               },
               { uri: 'https://s3.amazonaws.com/aptrust.test.preservation/eb41cb20-0c60-4725-4402-ba38002a79b8',
-                size: 72,
+                file_size: 72,
                 created: '2014-04-25T14:06:39-04:00',
                 modified: '2014-04-25T14:06:39-04:00',
                 file_format: 'text/plain',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
-                checksum: [
+                file_checksum: [
                   { algorithm: 'md5',
                     digest: '3ab392455183820d9f6a5c641ec1dea7',
                     datetime: '2014-04-25T14:06:39-04:00'
@@ -383,7 +383,7 @@ describe IntellectualObjectsController do
                 ],
                 premisEvents: [
                   { identifier: '74eb8c26-88ab-444f-4aab-d7f9c2cef550',
-                    type: 'fixity_check',
+                    event_type: 'fixity_check',
                     date_time: '2014-07-14T15:10:58-04:00',
                     detail: 'Fixity check against registered hash',
                     outcome: 'Success',
@@ -393,7 +393,7 @@ describe IntellectualObjectsController do
                     outcome_information: 'Fixity matches'
                   },
                   { identifier: '8e04d3a0-097b-4600-60fb-56e16ebba46f',
-                    type: 'ingest',
+                    event_type: 'ingest',
                     date_time: '2014-07-14T15:10:58-04:00',
                     detail: 'Completed copy to S3',
                     outcome: 'Success',
@@ -403,7 +403,7 @@ describe IntellectualObjectsController do
                     outcome_information: 'Put using md5 checksum'
                   },
                   { identifier: 'ce53b4f9-9ada-4d72-695c-21cb118f5918',
-                    type: 'fixity_generation',
+                    event_type: 'fixity_generation',
                     date_time: '2014-07-14T19:10:58Z',
                     detail: 'Calculated new fixity value',
                     outcome: 'Success',
@@ -413,7 +413,7 @@ describe IntellectualObjectsController do
                     outcome_information: ''
                   },
                   { identifier: '42f07e80-c025-40fe-6784-0c397be03556',
-                    type: 'identifier_assignment',
+                    event_type: 'identifier_assignment',
                     date_time: '2014-07-14T19:10:58Z',
                     detail: 'Assigned new institution.bag/path identifier',
                     outcome: 'Success',
@@ -423,7 +423,7 @@ describe IntellectualObjectsController do
                     outcome_information: ''
                   },
                   { identifier: 'a517c55a-f5b8-4313-7db2-13c65ed9baa0',
-                    type: 'identifier_assignment',
+                    event_type: 'identifier_assignment',
                     date_time: '2014-07-14T19:10:58Z',
                     detail: 'Assigned new storage URL identifier',
                     outcome: 'Success',

@@ -3,19 +3,19 @@ require 'spec_helper'
 describe Institution do
   subject { FactoryGirl.build(:institution) }
 
-  it { should validate_presence_of(:name) }
+  it { should validate_presence_of(:title) }
   it { should validate_presence_of(:identifier) }
 
   it 'should retun a proper solr_doc' do
-    subject.to_solr['desc_metadata__name_tesim'].should == [subject.name]
+    subject.to_solr['desc_metadata__title_tesim'].should == [subject.title]
   end
 
-  describe "#name_is_unique" do
-    it "should validate uniqueness of the name" do
-      one = FactoryGirl.create(:institution, name: "test")
-      two = FactoryGirl.build(:institution, name: "test")
+  describe "#title_is_unique" do
+    it "should validate uniqueness of the title" do
+      one = FactoryGirl.create(:institution, title: "test")
+      two = FactoryGirl.build(:institution, title: "test")
       two.should_not be_valid
-      two.errors[:name].should include("has already been taken")
+      two.errors[:title].should include("has already been taken")
     end
   end
 
@@ -37,8 +37,8 @@ describe Institution do
         subject.save!
       end
       let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: subject) }
-      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: 166311750, identifier: 'test.edu/123/data/file.xml') }
-      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, file_format: 'audio/wav', size: 143732461, identifier: 'test.edu/123/data/file.wav') }
+      let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, file_size: 166311750, identifier: 'test.edu/123/data/file.xml') }
+      let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, file_format: 'audio/wav', file_size: 143732461, identifier: 'test.edu/123/data/file.wav') }
       it "should return a hash" do
         expect(subject.bytes_by_format).to eq({"all"=>310044211,
                                                'application/xml' => 166311750,
@@ -52,7 +52,7 @@ describe Institution do
     it "should grab the institution from solr and create an institution object for the data" do
       inst = Institution.get_from_solr(subject.id)
       inst.identifier.should == subject.identifier
-      inst.name.should == subject.name
+      inst.title.should == subject.title
       inst.brief_name.should == subject.brief_name
     end
   end

@@ -1,6 +1,6 @@
 <div id="content" class="col-md-10">
   <ol class="breadcrumb">
-    <li><a href="#"><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %></a></li>
+    <li><a href="#"><%= link_to @generic_file.intellectual_object.institution.title, @generic_file.intellectual_object.institution %></a></li>
     <li><a href="#"><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %></a></li>
     <li class="active"><%= @generic_file.display %></li>
   </ol>
@@ -12,7 +12,7 @@
   <section class="object_info">
     <dl class="dl-horizontal dl-invert">
       <dt>Institution</dt>
-      <dd><%= link_to @generic_file.intellectual_object.institution.name, @generic_file.intellectual_object.institution %> [<%= @generic_file.intellectual_object.institution.brief_name %>]</dd>
+      <dd><%= link_to @generic_file.intellectual_object.institution.title, @generic_file.intellectual_object.institution %> [<%= @generic_file.intellectual_object.institution.brief_name %>]</dd>
       <dt>Intellectual Object</dt>
       <dd><%= link_to @generic_file.intellectual_object.title, @generic_file.intellectual_object %> [<%= @generic_file.intellectual_object.access %>]</dd>
       <dt>Identifier</dt>
@@ -22,13 +22,13 @@
       <dt>MimeType<dt>
       <dd><%= @generic_file.file_format %></dd>
       <dt>Filesize<dt>
-      <dd><%= number_to_human_size(@generic_file.size) %></dd>
+      <dd><%= number_to_human_size(@generic_file.file_size) %></dd>
       <dt>Created</dt>
       <dd><%= @generic_file.created %> (<%= time_ago_in_words @generic_file.created %>)</dd>
       <dt>Modified</dt>
       <dd><%= @generic_file.modified %> (<%= time_ago_in_words @generic_file.modified %>)</dd>
       <dt>Checksums</dt>
-      <% @generic_file.checksum.each do |checksum| %>
+      <% @generic_file.file_checksum.each do |checksum| %>
       <dd><strong><%= checksum.algorithm.first %>:</strong><%= checksum.digest.first %> generated <%= time_ago_in_words(checksum.datetime.first) %> ago</dd>
       <% end %>
     </dl>

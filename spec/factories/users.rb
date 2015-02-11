@@ -2,14 +2,14 @@ FactoryGirl.define do
   factory :user, class: "User" do
     name { Faker::Name.name }
     email { Faker::Internet.email }
-    phone_number { Faker::PhoneNumber.phone_number }
+    phone_number { Faker::Base.numerify('+90(###) ### ####') }
     password { "password" }
     institution_pid { FactoryGirl.create(:institution).pid }
     roles { [Role.where(name: 'public').first_or_create] }
   
     factory :aptrust_user, class: "User" do
       institution_pid { 
-        aptrust_institution = Institution.where(desc_metadata__name_tesim: 'APTrust')
+        aptrust_institution = Institution.where(desc_metadata__title_tesim: 'APTrust')
         if aptrust_institution.count == 1
           aptrust_institution.first.pid
         elsif aptrust_institution.count > 1

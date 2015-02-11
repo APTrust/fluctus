@@ -1,5 +1,5 @@
 class InstitutionMetadata < ActiveFedora::RdfxmlRDFDatastream
-  property :name, predicate: RDF::DC.title do |index|
+  property :title, predicate: RDF::DC.title do |index|
     index.as :stored_searchable, :symbol
   end
   property :brief_name, predicate: RDF::DC.alternative do |index|

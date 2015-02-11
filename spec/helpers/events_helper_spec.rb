@@ -81,7 +81,7 @@ describe EventsHelper do
     it 'includes institution name if viewing institution events' do
       inst = FactoryGirl.build(:institution)
       assign(:institution, inst)
-      helper.event_catalog_title.should == "Events for #{inst.name}"
+      helper.event_catalog_title.should == "Events for #{inst.title}"
     end
 
     it 'includes object title if viewing events for an object' do

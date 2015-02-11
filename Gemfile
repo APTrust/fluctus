@@ -46,8 +46,8 @@ gem 'minitest'
 # gem 'debugger', group: [:development, :test]
 
 #gem 'hydra-head', github: 'projecthydra/hydra-head', ref: '2be4b2a0a3a0b7cf68e38bfecc7cd7f318ceee3e'
-gem 'hydra-head', '7.0.0'
-gem 'active-fedora', '7.0.4'
+gem 'hydra-head', '8.0.0.beta1'
+gem 'active-fedora', '8.0.0.rc2'
 gem 'hydra-editor', '~> 0.2.2'
 
 gem "devise"

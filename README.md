@@ -120,7 +120,7 @@ The format is as follows::
 So as an example, if you were to query for "APTrust" in the name field of the descMetadata
 datastream in the Institution model you would search as follows::
 
-  ins = Institution.where(desc_metadata__name_tesim: "APTrust")
+  ins = Institution.where(desc_metadata__title_tesim: "APTrust")
 
 # Re-indexing objects in solr:
 

@@ -41,7 +41,7 @@ class IntellectualObject < ActiveFedora::Base
 
   def to_solr(solr_doc=Hash.new)
     super(solr_doc).tap do |doc|
-      Solrizer.set_field(doc, 'institution_name', institution.name, :stored_sortable)
+      Solrizer.set_field(doc, 'institution_title', institution.title, :stored_sortable)
       aggregate = IoAggregation.where(identifier: self.id).first
       if aggregate.nil?
         aggregates = aggregations_from_solr
@@ -91,7 +91,7 @@ class IntellectualObject < ActiveFedora::Base
         else
           format_map[current_format] = 1
         end
-        current_size = file['tech_metadata__size_lsi'].to_i
+        current_size = file['tech_metadata__file_size_lsi'].to_i
         size = size + current_size
       end
     end
@@ -130,7 +130,7 @@ class IntellectualObject < ActiveFedora::Base
 
   def gf_size
     size = 0
-    self.generic_files.each { |gf| size = size+gf.size unless gf.state == 'D' }
+    self.generic_files.each { |gf| size = size+gf.file_size unless gf.state == 'D' }
     size
   end
 

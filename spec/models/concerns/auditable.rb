@@ -47,7 +47,7 @@ describe Auditable do
       reload.premisEvents.events.length.should == 1
       event = reload.premisEvents.events.first
       event.outcome.should == ['success']
-      event.type.should == ['ingest']
+      event.event_type.should == ['ingest']
       event.detail.first.should =~ /copy to s3/i
     end
 
@@ -62,7 +62,7 @@ describe Auditable do
       reload.premisEvents.events.length.should == 2
       event = reload.premisEvents.events.last
       event.outcome.should == ['success']
-      event.type.should == ['ingest']
+      event.event_type.should == ['ingest']
       event.detail.first.should =~ /copy to s3/i
     end
 

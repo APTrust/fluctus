@@ -66,7 +66,7 @@ class IntellectualObjectsController < ApplicationController
       redirect_to @intellectual_object
       flash[:alert] = 'This item has already been deleted.'
     elsif pending == 'false'
-      attributes = { type: 'delete',
+      attributes = { event_type: 'delete',
                      date_time: "#{Time.now}",
                      detail: 'Object deleted from S3 storage',
                      outcome: 'Success',
@@ -140,7 +140,7 @@ class IntellectualObjectsController < ApplicationController
         aggregate.save!
         # Save the ingest and other object-level events.
         state[:object_events].each { |event|
-          state[:current_object] = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
+          state[:current_object] = "IntellectualObject Event #{event['event_type']} / #{event['identifier']}"
           new_object.add_event(event)
         }
         # Save all the files and their events.
@@ -209,12 +209,12 @@ class IntellectualObjectsController < ApplicationController
       case file_attr_name
       when 'premisEvents'
         file_events = file_attr_value
-      when 'checksum'
+      when 'file_checksum'
         file_checksums = file_attr_value
       else
         new_file[file_attr_name.to_s] = file_attr_value.to_s
       end }
-    file_checksums.each { |checksum| new_file.techMetadata.checksum.build(checksum) }
+    file_checksums.each { |checksum| new_file.techMetadata.file_checksum.build(checksum) }
     state[:current_object] = "GenericFile #{new_file.identifier}"
     new_file.intellectual_object = intel_obj
     new_file.state = 'A' # in case we loaded a deleted file
@@ -223,7 +223,7 @@ class IntellectualObjectsController < ApplicationController
     aggregate = IoAggregation.where(identifier: intel_obj.id).first
     aggregate.update_aggregations_solr
     file_events.each { |event|
-      state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
+      state[:current_object] = "GenericFile Event #{event['event_type']} / #{event['identifier']}"
       new_file.add_event(event)
     }
     # We have to save again to get events back from Fedora!
@@ -262,7 +262,7 @@ class IntellectualObjectsController < ApplicationController
   def object_as_json
     if params[:include_relations]
       # Return only active files, but call them generic_files
-      data = @intellectual_object.serializable_hash(include: [:premisEvents, active_files: { include: [:checksum, :premisEvents]}])
+      data = @intellectual_object.serializable_hash(include: [:premisEvents, active_files: { include: [:file_checksum, :premisEvents]}])
       data[:generic_files] = data.delete(:active_files)
       data[:state] = @intellectual_object.state
       data

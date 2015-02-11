@@ -21,9 +21,9 @@ describe 'Faceting' do
   
     describe 'Events list' do
       before do
-        @event1 = file.add_event(type: 'Type 1', outcome: 'Outcome 1')
-        @event2 = file.add_event(type: 'Type 2', outcome: 'Outcome 2')
-        @event3 = file.add_event(type: 'Type 3', outcome: 'Outcome 3')
+        @event1 = file.add_event(event_type: 'Type 1', outcome: 'Outcome 1')
+        @event2 = file.add_event(event_type: 'Type 2', outcome: 'Outcome 2')
+        @event3 = file.add_event(event_type: 'Type 3', outcome: 'Outcome 3')
         file.save!
       end
   
@@ -39,8 +39,8 @@ describe 'Faceting' do
 
         page.should have_css("dd", text: @event2.outcome.first)
         page.should_not have_css("dd", text: @event1.outcome.first)
-        page.should have_css("dd", text: @event2.type.first)
-        page.should_not have_css("dd", text: @event1.type.first)
+        page.should have_css("dd", text: @event2.event_type.first)
+        page.should_not have_css("dd", text: @event1.event_type.first)
       end
 
       it 'facet by event outcome' do
@@ -55,8 +55,8 @@ describe 'Faceting' do
 
         page.should have_css("dd", text: @event2.outcome.first)
         page.should_not have_css("dd", text: @event1.outcome.first)
-        page.should have_css("dd", text: @event2.type.first)
-        page.should_not have_css("dd", text: @event1.type.first)
+        page.should have_css("dd", text: @event2.event_type.first)
+        page.should_not have_css("dd", text: @event1.event_type.first)
       end
     end
   end

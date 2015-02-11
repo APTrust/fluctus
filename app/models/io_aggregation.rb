@@ -13,14 +13,14 @@ class IoAggregation < ActiveRecord::Base
     if action == 'add'
       add_format(file.file_format)
       add_to_count
-      add_to_size(file.size)
+      add_to_size(file.file_size)
     elsif action == 'update'
       change_format(file)
       change_size(file)
     elsif action == 'delete'
       remove_format(file.file_format)
       remove_from_count
-      remove_from_size(file.size)
+      remove_from_size(file.file_size)
     end
     self.save!
     io = get_intellectual_object
@@ -40,7 +40,7 @@ class IoAggregation < ActiveRecord::Base
       unless file['object_state_ssi'] == 'D'
         current_format = file['tech_metadata__file_format_ssi']
         (formats == '' || formats.nil?) ? formats = current_format : formats = "#{formats},#{current_format}"
-        current_size = file['tech_metadata__size_lsi'].to_i
+        current_size = file['tech_metadata__file_size_lsi'].to_i
         size = size + current_size
       end
     end
@@ -92,9 +92,9 @@ class IoAggregation < ActiveRecord::Base
   def change_size(file)
     gf = file[0]
     parameters = file[1]
-    unless parameters[:size].nil? || parameters[:size].to_i == gf.size.to_i
-      add_to_size(parameters[:size])
-      remove_from_size(gf.size)
+    unless parameters[:file_size].nil? || parameters[:file_size].to_i == gf.size.to_i
+      add_to_size(parameters[:file_size])
+      remove_from_size(gf.file_size)
     end
   end
 

@@ -63,7 +63,7 @@ class GenericFilesController < ApplicationController
     @generic_files = GenericFile.find_files_in_need_of_fixity(params[:date], {rows: params[:rows], start: params[:start]})
     respond_to do |format|
       # Return active files only, not deleted files!
-      format.json { render json: @generic_files.map { |gf| gf.serializable_hash(include: [:checksum]) } }
+      format.json { render json: @generic_files.map { |gf| gf.serializable_hash(include: [:file_checksum]) } }
       format.html { super }
     end
   end
@@ -111,15 +111,15 @@ class GenericFilesController < ApplicationController
     begin
       params[:generic_files].each do |gf|
         current_object = "GenericFile #{gf[:identifier]}"
-        if gf[:checksum].blank?
+        if gf[:file_checksum].blank?
           raise "GenericFile #{gf[:identifier]} is missing checksums."
         end
         if gf[:premisEvents].blank?
           raise "GenericFile #{gf[:identifier]} is missing Premis Events."
         end
-        gf_without_events = gf.except(:premisEvents, :checksum)
+        gf_without_events = gf.except(:premisEvents, :file_checksum)
         # Change param name to make inherited resources happy.
-        gf_without_events[:checksum_attributes] = gf[:checksum]
+        gf_without_events[:file_checksum_attributes] = gf[:file_checksum]
         # Load the existing generic file, or create a new one.
         generic_file = (GenericFile.where(tech_metadata__identifier_ssim: gf[:identifier]).first ||
                         @intellectual_object.generic_files.new(gf_without_events))
@@ -135,7 +135,7 @@ class GenericFilesController < ApplicationController
         end
         generic_files.push(generic_file)
         gf[:premisEvents].each do |event|
-          current_object = "Event #{event[':type']} id #{event[:identifier]} for #{gf[:identifier]}"
+          current_object = "Event #{event[':event_type']} id #{event[:identifier]} for #{gf[:identifier]}"
           generic_file.add_event(event)
         end
       end
@@ -177,7 +177,7 @@ class GenericFilesController < ApplicationController
       redirect_to @generic_file
       flash[:alert] = 'This file has already been deleted.'
     elsif result == 'true'
-      attributes = { type: 'delete',
+      attributes = { event_type: 'delete',
                      date_time: "#{Time.now}",
                      detail: 'Object deleted from S3 storage',
                      outcome: 'Success',
@@ -205,9 +205,9 @@ class GenericFilesController < ApplicationController
   protected
 
   def filter_parameters
-    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
+    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :file_size, :created,
                                                                    :modified, :file_format,
-                                                                   checksum_attributes: [:digest, :algorithm, :datetime])
+                                                                   file_checksum_attributes: [:digest, :algorithm, :datetime])
   end
 
   # When updating a generic file, the client will likely send back
@@ -220,7 +220,7 @@ class GenericFilesController < ApplicationController
   # checks will be recorded as PremisEvents.
   # Fixes bug https://www.pivotaltracker.com/story/show/73796812
   def params_for_update
-    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :size, :created,
+    params[:generic_file] &&= params.require(:generic_file).permit(:uri, :content_uri, :identifier, :file_size, :created,
                                                                    :modified, :file_format)
   end
 
@@ -245,7 +245,7 @@ class GenericFilesController < ApplicationController
   # Override Fedora's default JSON serialization for our API
   def object_as_json
     if params[:include_relations]
-      @generic_file.serializable_hash(include: [:checksum, :premisEvents])
+      @generic_file.serializable_hash(include: [:file_checksum, :premisEvents])
     else
       @generic_file.serializable_hash()
     end
@@ -255,7 +255,7 @@ class GenericFilesController < ApplicationController
   # hashes that include checksum and PremisEvent data. That hash is
   # suitable for JSON serialization back to the API client.
   def array_as_json(list_of_generic_files)
-    list_of_generic_files.map { |gf| gf.serializable_hash(include: [:checksum, :premisEvents]) }
+    list_of_generic_files.map { |gf| gf.serializable_hash(include: [:file_checksum, :premisEvents]) }
   end
 
   # Remove existing checksums from submitted generic file data.
@@ -264,8 +264,8 @@ class GenericFilesController < ApplicationController
   # This prevents duplicate checksums from accumulating in the metadata.
   def remove_existing_checksums(generic_file, gf_params)
     copy_of_params = gf_params.deep_dup
-    generic_file.checksum.each do |existing_checksum|
-      copy_of_params[:checksum_attributes].delete_if do |submitted_checksum|
+    generic_file.file_checksum.each do |existing_checksum|
+      copy_of_params[:file_checksum_attributes].delete_if do |submitted_checksum|
         generic_file.has_checksum?(submitted_checksum[:digest])
       end
     end

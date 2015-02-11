@@ -31,11 +31,12 @@ class PremisEventsMetadata < ActiveFedora::RdfxmlRDFDatastream
   accepts_nested_attributes_for :events
 end
 
-class Event < ActiveFedora::Rdf::Resource
+class Event < ActiveTriples::Resource
+  include ActiveFedora::RDF::Persistence
   configure :type => EventVocabulary
 
   property :identifier, predicate: EventVocabulary.eventIdentifier
-  property :type, predicate: EventVocabulary.eventType
+  property :event_type, predicate: EventVocabulary.eventType
   property :date_time, predicate: EventVocabulary.eventDateTime
   property :detail, predicate: EventVocabulary.eventDetail
   property :outcome, predicate: EventVocabulary.eventOutcome
@@ -53,7 +54,7 @@ class Event < ActiveFedora::Rdf::Resource
 
   def to_solr(solr_doc={}, opts={})
     Solrizer.insert_field(solr_doc, 'event_identifier', self.identifier, :symbol)
-    Solrizer.insert_field(solr_doc, 'event_type', self.type, :symbol)
+    Solrizer.insert_field(solr_doc, 'event_type', self.event_type, :symbol)
     Solrizer.insert_field(solr_doc, 'event_outcome', self.outcome, :symbol)
     Solrizer.insert_field(solr_doc, 'event_date_time', self.date_time, :sortable, :symbol)
     Solrizer.insert_field(solr_doc, 'event_outcome_detail', self.outcome_detail, :symbol)
@@ -69,7 +70,7 @@ class Event < ActiveFedora::Rdf::Resource
   def serializable_hash(options={})
     {
         identifier: identifier.first,
-        type: type.first,
+        event_type: event_type.first,
         date_time: Time.parse(date_time.first).iso8601,
         detail: detail.first,
         outcome: outcome.first,

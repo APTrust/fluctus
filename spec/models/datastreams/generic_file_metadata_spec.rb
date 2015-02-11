@@ -26,8 +26,8 @@ describe GenericFileMetadata do
 
   it 'should set size attributes' do
     sz = rand(2000...50000000000)
-    subject.size = sz
-    subject.size.should == [sz]
+    subject.file_size = sz
+    subject.file_size.should == [sz]
   end
 
   it 'should set created attributes' do
@@ -48,16 +48,16 @@ describe GenericFileMetadata do
         datetime: Time.now.to_s,
         digest: SecureRandom.hex
     }
-    subject.checksum_attributes = [exp]
-    subject.checksum.last.algorithm.should == [exp[:algorithm]]
-    subject.checksum.last.datetime.should == [exp[:datetime]]
-    subject.checksum.last.digest.should == [exp[:digest]]
+    subject.file_checksum_attributes = [exp]
+    subject.file_checksum.last.algorithm.should == [exp[:algorithm]]
+    subject.file_checksum.last.datetime.should == [exp[:datetime]]
+    subject.file_checksum.last.digest.should == [exp[:digest]]
   end
 
   describe "#to_solr" do
-    subject { FactoryGirl.build(:generic_file, size: 128774003000 ).to_solr }
+    subject { FactoryGirl.build(:generic_file, file_size: 128774003000 ).to_solr }
     it "should have size indexed as a long" do
-      expect(subject['tech_metadata__size_lsi']).to eq '128774003000'
+      expect(subject['tech_metadata__file_size_lsi']).to eq '128774003000'
     end
     it "should have mime type indexed " do
       expect(subject['tech_metadata__file_format_ssi']).to eq "application/xml"

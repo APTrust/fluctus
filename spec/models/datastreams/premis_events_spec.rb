@@ -9,7 +9,7 @@ describe PremisEventsMetadata do
   before do
     @e_fix = subject.events.build(
         identifier: "123",
-        type: "fixity generation",
+        event_type: "fixity generation",
         date_time: "#{Time.now}",
         detail:  "S3 fixity check",
         outcome: "success",
@@ -19,7 +19,7 @@ describe PremisEventsMetadata do
         agent: "Amazon S3 Fixity App"
     )
     subject.events.build(
-        type: "Bag Creation",
+        event_type: "Bag Creation",
         date_time: Time.now,
         detail: "Bag created with service.",
         outcome: "this is my outcome",
@@ -69,7 +69,7 @@ describe Event do
     it 'contains the fields needed for search, sort, display' do
       event = meta.events.build(attrs)
       event.to_solr['id'].should == attrs[:identifier]
-      event.to_solr['event_type_ssim'].should == [attrs[:type]]
+      event.to_solr['event_type_ssim'].should == [attrs[:event_type]]
       event.to_solr['event_outcome_ssim'].should == [attrs[:outcome]]
       event.to_solr['event_date_time_si'].should == attrs[:date_time]
       event.to_solr['event_date_time_ssim'].should == [attrs[:date_time]]

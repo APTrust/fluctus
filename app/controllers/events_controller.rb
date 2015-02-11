@@ -124,7 +124,7 @@ protected
   def event_params
     params.require(:intellectual_object).permit(
                 :identifier,
-                :type,
+                :event_type,
                 :outcome,
                 :outcome_detail,
                 :outcome_information,

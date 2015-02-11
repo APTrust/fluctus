@@ -22,18 +22,18 @@ describe GenericFile do
   end
 
   it { should validate_presence_of(:uri) }
-  it { should validate_presence_of(:size) }
+  it { should validate_presence_of(:file_size) }
   it { should validate_presence_of(:created) }
   it { should validate_presence_of(:modified) }
   it { should validate_presence_of(:file_format) }
   it { should validate_presence_of(:identifier)}
   it "should validate presence of a checksum" do
     expect(subject.valid?).to be false
-    expect(subject.errors[:checksum]).to eq ["can't be blank"]
-    subject.checksum_attributes = [{digest: '1234'}]
+    expect(subject.errors[:file_checksum]).to eq ["can't be blank"]
+    subject.file_checksum_attributes = [{digest: '1234'}]
     # other fields cause the object to not be valid. This forces recalculating errors
     expect(subject.valid?).to be false
-    expect(subject.errors[:checksum]).to be_empty
+    expect(subject.errors[:file_checksum]).to be_empty
   end
 
   describe "#identifier_is_unique" do
@@ -50,7 +50,7 @@ describe GenericFile do
       subject.intellectual_object = intellectual_object
     end
 
-    let(:institution) { mock_model Institution, internal_uri: 'info:fedora/testing:123', name: 'Mock Name' }
+    let(:institution) { mock_model Institution, internal_uri: 'info:fedora/testing:123', title: 'Mock Name' }
     let(:intellectual_object) { mock_model IntellectualObject, institution: institution, identifier: 'info:fedora/testing:123/1234567' }
 
     describe "#to_solr" do
@@ -58,12 +58,12 @@ describe GenericFile do
       let(:solr_doc) { subject.to_solr }
       it "should index the institution, so we can do aggregations without a join query" do
         solr_doc['institution_uri_ssim'].should == ['info:fedora/testing:123']
-        solr_doc['gf_institution_name_ssim'].should == ['Mock Name']
+        solr_doc['gf_institution_title_ssim'].should == ['Mock Name']
         solr_doc['gf_parent_ssim'].should == ['info:fedora/testing:123/1234567']
         solr_doc['tech_metadata__identifier_ssim'].should == [subject.identifier]
         solr_doc['tech_metadata__identifier_tesim'].should == [subject.identifier]
         solr_doc['tech_metadata__file_format_ssi'].should == subject.file_format
-        solr_doc['tech_metadata__size_lsi'].should == subject.size.to_s
+        solr_doc['tech_metadata__file_size_lsi'].should == subject.file_size.to_s
         solr_doc['tech_metadata__uri_ssim'].should == [subject.uri]
         solr_doc['tech_metadata__created_ssim'].should == [subject.created]
         solr_doc['tech_metadata__modified_ssim'].should == [subject.modified]
@@ -79,7 +79,7 @@ describe GenericFile do
         file.file_format.should == subject.file_format
         file.created.should == subject.created
         file.modified.should == subject.modified
-        file.size.should == subject.size
+        file.file_size.should == subject.file_size
       end
     end
 
@@ -152,14 +152,14 @@ describe GenericFile do
 
         it "should set the state to deleted and index the object state" do
           expect {
-            subject.soft_delete({type: 'delete', outcome_detail: "joe@example.com"})
+            subject.soft_delete({event_type: 'delete', outcome_detail: "joe@example.com"})
           }.to change { subject.premisEvents.events.count}.by(1)
           expect(subject.state).to eq 'D'
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
         end
 
         it "should create a ProcessedItem showing delete was requested" do
-          subject.soft_delete({type: 'delete', outcome_detail: "user@example.com"})
+          subject.soft_delete({event_type: 'delete', outcome_detail: "user@example.com"})
           pi = ProcessedItem.where(generic_file_identifier: subject.identifier).first
           expect(pi).not_to be_nil
           expect(pi.object_identifier).to eq subject.intellectual_object.identifier
@@ -181,29 +181,29 @@ describe GenericFile do
           h1 = subject.serializable_hash
           expect(h1.has_key?(:id)).to be true
           expect(h1.has_key?(:uri)).to be true
-          expect(h1.has_key?(:size)).to be true
+          expect(h1.has_key?(:file_size)).to be true
           expect(h1.has_key?(:created)).to be true
           expect(h1.has_key?(:modified)).to be true
           expect(h1.has_key?(:file_format)).to be true
           expect(h1.has_key?(:identifier)).to be true
           expect(h1.has_key?(:state)).to be true
 
-          h2 = subject.serializable_hash(include: [:checksum, :premisEvents])
+          h2 = subject.serializable_hash(include: [:file_checksum, :premisEvents])
           expect(h2.has_key?(:id)).to be true
           expect(h2.has_key?(:uri)).to be true
-          expect(h2.has_key?(:size)).to be true
+          expect(h2.has_key?(:file_size)).to be true
           expect(h2.has_key?(:created)).to be true
           expect(h2.has_key?(:modified)).to be true
           expect(h2.has_key?(:file_format)).to be true
           expect(h2.has_key?(:identifier)).to be true
           expect(h2.has_key?(:state)).to be true
-          expect(h2.has_key?(:checksum)).to be true
+          expect(h2.has_key?(:file_checksum)).to be true
           expect(h2.has_key?(:premisEvents)).to be true
         end
       end
 
       describe "find_checksum_by_digest" do
-        let(:digest) { subject.checksum.last.digest.first.to_s }
+        let(:digest) { subject.file_checksum.last.digest.first.to_s }
         it "should find the checksum" do
           expect(subject.find_checksum_by_digest(digest)).not_to be_empty
         end
@@ -213,7 +213,7 @@ describe GenericFile do
       end
 
       describe "has_checksum?" do
-        let(:digest) { subject.checksum.last.digest.first.to_s }
+        let(:digest) { subject.file_checksum.last.digest.first.to_s }
         it "should return true if checksum is present" do
           expect(subject.has_checksum?(digest)).to be true
         end

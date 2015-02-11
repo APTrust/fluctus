@@ -46,7 +46,7 @@ module Aptrust::GatedSearch
       only_generic_files(solr_parameters, user_parameters)
     elsif user_parameters.include?('f')
       if user_parameters[:f].include?('tech_metadata__file_format_ssi') ||
-          user_parameters[:f].include?('gf_institution_name_ssim') || user_parameters[:f].include?('gf_parent_ssim')
+          user_parameters[:f].include?('gf_institution_title_ssim') || user_parameters[:f].include?('gf_parent_ssim')
         only_generic_files(solr_parameters, user_parameters)
       else
         only_intellectual_objects(solr_parameters, user_parameters)

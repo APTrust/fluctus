@@ -52,7 +52,7 @@ class InstitutionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def build_resource_params
-      params[:action] == 'new' ? [] : [params.require(:institution).permit(:name, :identifier)]
+      params[:action] == 'new' ? [] : [params.require(:institution).permit(:title, :identifier)]
     end
 
     def set_recent_objects
@@ -97,7 +97,7 @@ class InstitutionsController < ApplicationController
       total_size = 0
       Institution.all.each do |inst|
         current_size = find_size(inst)
-        size[inst.name] = current_size
+        size[inst.title] = current_size
         total_size = current_size + total_size
       end
       size['APTrust'] = total_size

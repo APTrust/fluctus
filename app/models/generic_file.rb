@@ -8,11 +8,11 @@ class GenericFile < ActiveFedora::Base
 
   belongs_to :intellectual_object, property: :is_part_of
 
-  has_attributes :uri, :size, :file_format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
-  delegate :checksum_attributes=, :checksum, to: :techMetadata
+  has_attributes :uri, :file_size, :file_format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
+  delegate :file_checksum_attributes=, :file_checksum, to: :techMetadata
 
   validates_presence_of :uri
-  validates_presence_of :size
+  validates_presence_of :file_size
   validates_presence_of :created
   validates_presence_of :modified
   validates_presence_of :file_format
@@ -32,7 +32,7 @@ class GenericFile < ActiveFedora::Base
   def to_solr(solr_doc = {})
     super
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
-    Solrizer.insert_field(solr_doc, 'gf_institution_name', intellectual_object.institution.name, :symbol)
+    Solrizer.insert_field(solr_doc, 'gf_institution_title', intellectual_object.institution.title, :symbol)
     Solrizer.insert_field(solr_doc, 'gf_parent', intellectual_object.identifier, :symbol)
     Solrizer.insert_field(solr_doc, 'latest_fixity', self.find_latest_fixity_check, :searchable, :sortable)
   end
@@ -49,7 +49,7 @@ class GenericFile < ActiveFedora::Base
   def find_latest_fixity_check
     fixity = ''
     premisEvents.events.each do |event|
-      if event.type.first == 'fixity_check'
+      if event.event_type.first == 'fixity_check'
         if fixity == '' || fixity == nil? || DateTime.parse(fixity.to_s) < DateTime.parse(event.date_time.to_s)
           fixity = DateTime.parse(event.date_time.to_s)
         end
@@ -111,7 +111,7 @@ class GenericFile < ActiveFedora::Base
     data = {
       id: id,
       uri: uri,
-      size: size.to_i,
+      file_size: file_size.to_i,
       created: Time.parse(created).iso8601,
       modified: Time.parse(modified).iso8601,
       file_format: file_format,
@@ -119,14 +119,14 @@ class GenericFile < ActiveFedora::Base
       state: state,
     }
     if options.has_key?(:include)
-      data.merge!(checksum: serialize_checksums) if options[:include].include?(:checksum)
+      data.merge!(file_checksum: serialize_checksums) if options[:include].include?(:file_checksum)
       data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
     end
     data
   end
 
   def serialize_checksums
-    checksum.map do |cs|
+    file_checksum.map do |cs|
       {
         algorithm: cs.algorithm.first,
         digest: cs.digest.first,
@@ -145,7 +145,7 @@ class GenericFile < ActiveFedora::Base
   # No need to specify algorithm, since we're using md5 and sha256,
   # and their digests have different lengths.
   def find_checksum_by_digest(digest)
-    checksum.select { |cs| digest.strip == cs.digest.first.to_s.strip }.first
+    file_checksum.select { |cs| digest.strip == cs.digest.first.to_s.strip }.first
   end
 
   # Returns true if the GenericFile has a checksum with the specified digest.
@@ -171,13 +171,13 @@ class GenericFile < ActiveFedora::Base
   end
 
   def has_right_number_of_checksums
-    if(checksum.count == 0)
-      errors.add(:checksum, "can't be blank")
+    if(file_checksum.count == 0)
+      errors.add(:file_checksum, "can't be blank")
     else
       algorithms = Array.new
-      checksum.each do |cs|
+      file_checksum.each do |cs|
         if (algorithms.include? cs)
-          errors.add(:checksum, "can't have multiple checksums with same algorithm")
+          errors.add(:file_checksum, "can't have multiple checksums with same algorithm")
         else
           algorithms.push(cs)
         end

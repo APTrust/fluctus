@@ -8,10 +8,10 @@ FactoryGirl.define do
     file_format { 'application/xml' }
     identifier { "virginia.edu.#{self.intellectual_object.identifier}/data/#{n}filename.xml" }
     uri
-    size { rand(20000..500000000) }
+    file_size { rand(20000..500000000) }
     created { "#{Time.now}" }
     modified { "#{Time.now}" }
-    checksum_attributes {
+    file_checksum_attributes {
       [{
            algorithm: 'sha256',
            datetime: Time.now.to_s,

@@ -18,13 +18,13 @@
   <dl class="document-metadata dl-horizontal dl-invert">
 
     <dt> Institution: </dt>
-    <dd> <%= Array(generic_file['gf_institution_name_ssim']).first %> </dd>
+    <dd> <%= Array(generic_file['gf_institution_title_ssim']).first %> </dd>
 
     <dt> MimeType: </dt>
     <dd> <%= Array(generic_file['tech_metadata__file_format_ssi']).first %> </dd>
 
     <dt> Filesize: </dt>
-    <dd> <%= number_to_human_size(Array(generic_file['tech_metadata__size_lsi']).first) %> </dd>
+    <dd> <%= number_to_human_size(Array(generic_file['tech_metadata__file_size_lsi']).first) %> </dd>
 
     <dt> Created: </dt>
     <dd> <%= Array(generic_file['tech_metadata__created_ssim']).first %> </dd>
