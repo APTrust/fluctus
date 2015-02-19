@@ -9,23 +9,23 @@ describe UserPolicy do
     describe "when the user is any other user" do
       let(:other_user) { FactoryGirl.create(:user) }
       it do
-        should permit(:create)
-        should permit(:new)
-        should permit(:show)
-        should permit(:update)
-        should permit(:edit)
-        should permit(:generate_api_key)
-        should permit(:edit_password)
-        should permit(:update_password)
-        should permit(:destroy)
-        should permit(:admin_password_reset)
+        should allow(:create)
+        should allow(:new)
+        should allow(:show)
+        should allow(:update)
+        should allow(:edit)
+        should allow(:generate_api_key)
+        should allow(:edit_password)
+        should allow(:update_password)
+        should allow(:destroy)
+        should allow(:admin_password_reset)
       end
     end
     describe "when the user is him/herself" do
       let(:other_user) { user }
       it do
-        should permit(:generate_api_key)
-        should permit(:admin_password_reset)
+        should allow(:generate_api_key)
+        should allow(:admin_password_reset)
       end
     end
   end
@@ -36,38 +36,38 @@ describe UserPolicy do
       describe "in my institution" do
         let(:other_user) { FactoryGirl.create(:user, institution_pid: institution.pid) }
         it do
-          should permit(:create)
-          should permit(:new)
-          should permit(:show)
-          should permit(:update)
-          should permit(:edit)
-          should_not permit(:generate_api_key)
-          should_not permit(:edit_password)
-          should_not permit(:update_password)
-          should permit(:destroy)
-          should_not permit(:admin_password_reset)
+          should allow(:create)
+          should allow(:new)
+          should allow(:show)
+          should allow(:update)
+          should allow(:edit)
+          should_not allow(:generate_api_key)
+          should_not allow(:edit_password)
+          should_not allow(:update_password)
+          should allow(:destroy)
+          should_not allow(:admin_password_reset)
         end
       end
 
       describe "not in my institution" do
         let(:other_user) { FactoryGirl.create(:user) }        
         it do
-          should_not permit(:show)
-          should_not permit(:update)
-          should_not permit(:edit)
-          should_not permit(:generate_api_key)
-          should_not permit(:edit_password)
-          should_not permit(:update_password)
-          should_not permit(:destroy)
-          should_not permit(:admin_password_reset)
+          should_not allow(:show)
+          should_not allow(:update)
+          should_not allow(:edit)
+          should_not allow(:generate_api_key)
+          should_not allow(:edit_password)
+          should_not allow(:update_password)
+          should_not allow(:destroy)
+          should_not allow(:admin_password_reset)
         end
       end
     end
     describe "when the user is him/herself" do
       let(:other_user) { user }
       it do
-        should permit(:generate_api_key)
-        should_not permit(:admin_password_reset)
+        should allow(:generate_api_key)
+        should_not allow(:admin_password_reset)
       end
     end
   end
@@ -78,44 +78,44 @@ describe UserPolicy do
       describe "in my institution" do
         let(:other_user) { FactoryGirl.create(:user, institution_pid: institution.pid) }
         it do
-          should_not permit(:create)
-          should_not permit(:new)
-          should_not permit(:show)
-          should_not permit(:update)   
-          should_not permit(:edit)
-          should_not permit(:generate_api_key)
-          should_not permit(:edit_password) 
-          should_not permit(:update_password)
-          should_not permit(:destroy)
-          should_not permit(:admin_password_reset)
+          should_not allow(:create)
+          should_not allow(:new)
+          should_not allow(:show)
+          should_not allow(:update)
+          should_not allow(:edit)
+          should_not allow(:generate_api_key)
+          should_not allow(:edit_password)
+          should_not allow(:update_password)
+          should_not allow(:destroy)
+          should_not allow(:admin_password_reset)
         end 
       end
 
       describe "not in my institution" do
         let(:other_user) { FactoryGirl.create(:user) }
         it do
-          should_not permit(:show)
-          should_not permit(:update)
-          should_not permit(:edit) 
-          should_not permit(:generate_api_key) 
-          should_not permit(:edit_password) 
-          should_not permit(:update_password) 
-          should_not permit(:destroy)
-          should_not permit(:admin_password_reset)
+          should_not allow(:show)
+          should_not allow(:update)
+          should_not allow(:edit)
+          should_not allow(:generate_api_key)
+          should_not allow(:edit_password)
+          should_not allow(:update_password)
+          should_not allow(:destroy)
+          should_not allow(:admin_password_reset)
         end 
       end
 
       describe "him/herself" do
         let(:other_user) { user }
         it do
-          should permit(:show)
-          should permit(:update) 
-          should permit(:edit)
-          should permit(:generate_api_key)
-          should permit(:edit_password) 
-          should permit(:update_password)
-          should_not permit(:destroy)
-          should_not permit(:admin_password_reset)
+          should allow(:show)
+          should allow(:update)
+          should allow(:edit)
+          should allow(:generate_api_key)
+          should allow(:edit_password)
+          should allow(:update_password)
+          should_not allow(:destroy)
+          should_not allow(:admin_password_reset)
         end
       end
     end
@@ -125,14 +125,14 @@ describe UserPolicy do
     let(:user) { FactoryGirl.create(:user) }
     let(:other_user) { FactoryGirl.create(:user, :institutional_user, institution_pid: institution.pid) }
     it do
-      should_not permit(:create)
-      should_not permit(:new)
-      should_not permit(:show)
-      should_not permit(:update)    
-      should_not permit(:edit)
-      should_not permit(:generate_api_key)
-      should_not permit(:destroy)
-      should_not permit(:admin_password_reset)
+      should_not allow(:create)
+      should_not allow(:new)
+      should_not allow(:show)
+      should_not allow(:update)
+      should_not allow(:edit)
+      should_not allow(:generate_api_key)
+      should_not allow(:destroy)
+      should_not allow(:admin_password_reset)
     end
   end 
 end

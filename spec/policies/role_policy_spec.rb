@@ -10,17 +10,17 @@ describe RolePolicy do
 
     describe "with admin role" do 
       let(:role) { Role.where(name: 'admin').first }
-      it { should permit(:add_user) }
+      it { should allow(:add_user) }
     end
 
     describe "with institutional_admin role" do
       let(:role) { Role.where(name: 'institutional_admin').first }
-      it { should permit(:add_user) }
+      it { should allow(:add_user) }
     end
 
     describe "with institutional_user role" do
       let(:role) { Role.where(name: 'institutional_user').first }
-      it { should permit(:add_user) }
+      it { should allow(:add_user) }
     end
   end
 
@@ -29,17 +29,17 @@ describe RolePolicy do
 
     describe "with admin role" do 
       let(:role) { Role.where(name: 'admin').first }
-      it { should_not permit(:add_user) }
+      it { should_not allow(:add_user) }
     end
 
     describe "with institutional_admin role" do
       let(:role) { Role.where(name: 'institutional_admin').first }
-      it { should permit(:add_user) }
+      it { should allow(:add_user) }
     end
 
     describe "with institutional_user role" do
       let(:role) { Role.where(name: 'institutional_user').first }
-      it { should permit(:add_user) }
+      it { should allow(:add_user) }
     end
   end
 
@@ -47,17 +47,17 @@ describe RolePolicy do
     let(:user) { FactoryGirl.create(:user, :institutional_user, institution_pid: institution.pid )}
     describe "with admin role" do 
       let(:role) { Role.where(name: 'admin').first }
-      it { should_not permit(:add_user) }
+      it { should_not allow(:add_user) }
     end
 
     describe "with institutional_admin role" do
       let(:role) { Role.where(name: 'institutional_admin').first }
-      it { should_not permit(:add_user) }
+      it { should_not allow(:add_user) }
     end
 
     describe "with institutional_user role" do
       let(:role) { Role.where(name: 'institutional_user').first }
-      it { should_not permit(:add_user) }
+      it { should_not allow(:add_user) }
     end
   end
   
@@ -65,17 +65,17 @@ describe RolePolicy do
     let(:user) { FactoryGirl.create(:user) }
     describe "with admin role" do 
       let(:role) { Role.where(name: 'admin').first }
-      it { should_not permit(:add_user) }
+      it { should_not allow(:add_user) }
     end
 
     describe "with institutional_admin role" do
       let(:role) { Role.where(name: 'institutional_admin').first }
-      it { should_not permit(:add_user) }
+      it { should_not allow(:add_user) }
     end
 
     describe "with institutional_user role" do
       let(:role) { Role.where(name: 'institutional_user').first }
-      it { should_not permit(:add_user) }
+      it { should_not allow(:add_user) }
     end
   end 
 end

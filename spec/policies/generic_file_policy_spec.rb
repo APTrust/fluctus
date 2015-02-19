@@ -9,13 +9,12 @@ describe GenericFilePolicy do
     let(:generic_file) { FactoryGirl.build(:generic_file)}
 
     it "access any generic file" do 
-      should permit(:add_event)
-      should permit(:show)
-      should permit(:show) 
-      should permit(:update) 
-      should_not permit(:edit)
-      should permit(:soft_delete) 
-      should permit(:destroy)
+      should allow(:add_event)
+      should allow(:show)
+      should allow(:update)
+      should_not allow(:edit)
+      should allow(:soft_delete)
+      should allow(:destroy)
     end
   end
 
@@ -27,12 +26,12 @@ describe GenericFilePolicy do
       let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
 
       it do
-        should permit(:show)
-        should permit(:soft_delete)
-        should permit(:add_event) 
-        should_not permit(:update) 
-        should_not permit(:edit)
-        should permit(:destroy)
+        should allow(:show)
+        should allow(:soft_delete)
+        should allow(:add_event)
+        should_not allow(:update)
+        should_not allow(:edit)
+        should allow(:destroy)
       end
     end
 
@@ -41,12 +40,12 @@ describe GenericFilePolicy do
         let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object) }
         let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
         it do
-          should_not permit(:add_event)
-          should permit(:show)
-          should_not permit(:update)
-          should_not permit(:edit)
-          should_not permit(:soft_delete)
-          should_not permit(:destroy)
+          should_not allow(:add_event)
+          should allow(:show)
+          should_not allow(:update)
+          should_not allow(:edit)
+          should_not allow(:soft_delete)
+          should_not allow(:destroy)
         end
       end
 
@@ -54,12 +53,12 @@ describe GenericFilePolicy do
         let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object) }
         let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
         it do
-          should_not permit(:add_event)
-          should_not permit(:show)
-          should_not permit(:update)
-          should_not permit(:edit)
-          should_not permit(:soft_delete)
-          should_not permit(:destroy)
+          should_not allow(:add_event)
+          should_not allow(:show)
+          should_not allow(:update)
+          should_not allow(:edit)
+          should_not allow(:soft_delete)
+          should_not allow(:destroy)
         end
       end
     end
@@ -74,12 +73,12 @@ describe GenericFilePolicy do
           let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object, institution: institution) }
           let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
           it do
-            should_not permit(:add_event)
-            should_not permit(:update)    
-            should_not permit(:edit)
-            should_not permit(:soft_delete) 
-            should_not permit(:destroy) 
-            should permit(:show) 
+            should_not allow(:add_event)
+            should_not allow(:update)
+            should_not allow(:edit)
+            should_not allow(:soft_delete)
+            should_not allow(:destroy)
+            should allow(:show)
           end
         end
         describe "and it belongs to an institutional accessible object" do
@@ -87,14 +86,14 @@ describe GenericFilePolicy do
                                          institution: institution) }
           let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
           
-          it { should permit(:show) }
+          it { should allow(:show) }
         end
         describe "and is it belongs to a restricted accessible object" do
           let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object,
                                          institution: institution) }
           let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
           
-          it { should_not permit(:show) }
+          it { should_not allow(:show) }
         end
       end
 
@@ -103,25 +102,25 @@ describe GenericFilePolicy do
           let(:intellectual_object) { FactoryGirl.create(:consortial_intellectual_object) }
           let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
           it do
-            should_not permit(:add_event) 
-            should_not permit(:update)   
-            should_not permit(:edit)
-            should_not permit(:soft_delete) 
-            should_not permit(:destroy) 
-            should permit(:show) 
+            should_not allow(:add_event)
+            should_not allow(:update)
+            should_not allow(:edit)
+            should_not allow(:soft_delete)
+            should_not allow(:destroy)
+            should allow(:show)
           end
         end
         describe "and it belongs to an institutional accessible object" do
           let(:intellectual_object) { FactoryGirl.create(:institutional_intellectual_object) }
           let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
           
-          it { should_not permit(:show) }
+          it { should_not allow(:show) }
         end
         describe "and is it belongs to a restricted accessible object" do
           let(:intellectual_object) { FactoryGirl.create(:restricted_intellectual_object) }
           let(:generic_file) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object) }
           
-          it { should_not permit(:show) }
+          it { should_not allow(:show) }
         end
       end
     end
@@ -132,12 +131,12 @@ describe GenericFilePolicy do
     let(:generic_file) { FactoryGirl.build(:generic_file)}
     
     it do 
-      should_not permit(:show)
-      should_not permit(:update)    
-      should_not permit(:edit)
-      should_not permit(:add_event)
-      should_not permit(:soft_delete) 
-      should_not permit(:destroy) 
+      should_not allow(:show)
+      should_not allow(:update)
+      should_not allow(:edit)
+      should_not allow(:add_event)
+      should_not allow(:soft_delete)
+      should_not allow(:destroy)
     end
   end 
 end
