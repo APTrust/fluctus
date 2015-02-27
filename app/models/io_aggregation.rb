@@ -92,7 +92,7 @@ class IoAggregation < ActiveRecord::Base
   def change_size(file)
     gf = file[0]
     parameters = file[1]
-    unless parameters[:file_size].nil? || parameters[:file_size].to_i == gf.size.to_i
+    unless parameters[:file_size].nil? || parameters[:file_size].to_i == gf.file_size.to_i
       add_to_size(parameters[:file_size])
       remove_from_size(gf.file_size)
     end

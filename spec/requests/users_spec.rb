@@ -3,8 +3,9 @@ require 'spec_helper'
 describe "Users" do
   describe "DELETE users", :type => :feature do
     before do
-      @user = FactoryGirl.create(:user, :admin)
-      @user2 = FactoryGirl.create(:user)
+      @institution = FactoryGirl.create(:institution)
+      @user = FactoryGirl.create(:user, :institutional_admin, institution_pid: @institution.id)
+      @user2 = FactoryGirl.create(:user, institution_pid: @institution.id)
     end
 
     it "should provide message after delete with name of deleted instituion" do

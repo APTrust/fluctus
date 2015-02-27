@@ -32,7 +32,7 @@ class GenericFile < ActiveFedora::Base
   def to_solr(solr_doc = {})
     super
     Solrizer.insert_field(solr_doc, 'institution_uri', intellectual_object.institution.internal_uri, :symbol)
-    Solrizer.insert_field(solr_doc, 'gf_institution_title', intellectual_object.institution.title, :symbol)
+    Solrizer.insert_field(solr_doc, 'gf_institution_name', intellectual_object.institution.title, :symbol)
     Solrizer.insert_field(solr_doc, 'gf_parent', intellectual_object.identifier, :symbol)
     Solrizer.insert_field(solr_doc, 'latest_fixity', self.find_latest_fixity_check, :searchable, :sortable)
   end

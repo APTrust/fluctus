@@ -127,7 +127,9 @@ class GenericFilesController < ApplicationController
         generic_file.intellectual_object = @intellectual_object if generic_file.intellectual_object.nil?
         if generic_file.id.present?
           # This is an update
+          puts "HEREEEEE"
           gf_clean_data = remove_existing_checksums(generic_file, gf_without_events)
+          puts "HERE. Cleaned up: #{gf_clean_data[:file_checksum_attributes]}"
           generic_file.update(gf_clean_data)
         else
           # New GenericFile
@@ -135,23 +137,24 @@ class GenericFilesController < ApplicationController
         end
         generic_files.push(generic_file)
         gf[:premisEvents].each do |event|
-          current_object = "Event #{event[':event_type']} id #{event[:identifier]} for #{gf[:identifier]}"
+          current_object = "Event #{event[:event_type]} id #{event[:identifier]} for #{gf[:identifier]}"
           generic_file.add_event(event)
+          puts "Here. Checksum: #{generic_file.file_checksum.first.digest}"
         end
       end
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
-    rescue Exception => ex
-      logger.error("save_batch failed on #{current_object}")
-      log_exception(ex)
-      generic_files.each do |gf|
-        gf.destroy
-      end
-      respond_to { |format| format.json {
-          render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
-      }
+    # rescue Exception => ex
+    #   logger.error("save_batch failed on #{current_object}")
+    #   log_exception(ex)
+    #   generic_files.each do |gf|
+    #     gf.destroy
+    #   end
+    #   respond_to { |format| format.json {
+    #       render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
+    #   }
     end
-    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    aggregate.update_aggregations_solr
+    # aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
+    # aggregate.update_aggregations_solr
   end
 
 

@@ -32,7 +32,7 @@ module EventsHelper
     if @parent_object && @parent_object.respond_to?(:title)
       "Events for #{@parent_object.title}"
     elsif @institution
-      "Events for #{@institution.name}"
+      "Events for #{@institution.title}"
     else
       "Events"
     end

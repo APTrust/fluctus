@@ -80,7 +80,7 @@ class UsersController < ApplicationController
     @user.password = password
     @user.password_confirmation = password
     @user.save!
-    redirect_to @user
+    redirect_to user_path(@user)
     flash[:notice] = "Reset password for #{@user.email}. Please notify the user that #{password} is their new password."
   end
 

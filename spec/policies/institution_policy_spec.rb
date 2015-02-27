@@ -9,21 +9,21 @@ describe InstitutionPolicy do
     let(:user) { FactoryGirl.create(:user, :admin, institution_pid: institution.pid) }
     describe "access any institution" do 
       it do
-      	should allow(:create)
-        should allow(:create_through_institution)
-        should allow(:new)
-        should allow(:show)
-        should allow(:update)
-        should allow(:edit)
-        should allow(:add_user)
-        should_not allow(:destroy)
+      	should allow_to(:create)
+        should allow_to(:create_through_institution)
+        should allow_to(:new)
+        should allow_to(:show)
+        should allow_to(:update)
+        should allow_to(:edit)
+        should allow_to(:add_user)
+        should_not allow_to(:destroy)
       end
     end
 
     describe "access an intellectual object's institution" do
       let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
       let(:institution) { intellectual_object.institution}
-      it { should allow(:add_user)}
+      it { should allow_to(:add_user)}
     end
   end
 
@@ -32,28 +32,28 @@ describe InstitutionPolicy do
       describe "in my institution" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: institution.pid) } 
       	it do
-          should allow(:show)
-          should_not allow(:create)
-          should allow(:create_through_institution)
-          should_not allow(:new)
-          should allow(:update)
-          should allow(:edit)
-          should allow(:add_user)
-          should_not allow(:destroy)
+          should allow_to(:show)
+          should_not allow_to(:create)
+          should allow_to(:create_through_institution)
+          should_not allow_to(:new)
+          should allow_to(:update)
+          should allow_to(:edit)
+          should allow_to(:add_user)
+          should_not allow_to(:destroy)
         end
       end
 
       describe "not in my institution" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: other_institution.pid) } 
         it do
-          should_not allow(:create)
-          should_not allow(:create_through_institution)
-          should_not allow(:new)
-          should_not allow(:show)
-          should_not allow(:update)
-          should_not allow(:edit)
-          should_not allow(:add_user)
-          should_not allow(:destroy)
+          should_not allow_to(:create)
+          should_not allow_to(:create_through_institution)
+          should_not allow_to(:new)
+          should_not allow_to(:show)
+          should_not allow_to(:update)
+          should_not allow_to(:edit)
+          should_not allow_to(:add_user)
+          should_not allow_to(:destroy)
         end
       end
     end
@@ -65,14 +65,14 @@ describe InstitutionPolicy do
     	 let(:user) { FactoryGirl.create(:user, :institutional_user, 
                                      institution_pid: institution.pid) }
         it do
-          should allow(:show)
-          should_not allow(:create)
-          should_not allow(:create_through_institution)
-          should_not allow(:new)
-          should_not allow(:update)
-          should_not allow(:edit)
-          should_not allow(:add_user)
-          should_not allow(:destroy)
+          should allow_to(:show)
+          should_not allow_to(:create)
+          should_not allow_to(:create_through_institution)
+          should_not allow_to(:new)
+          should_not allow_to(:update)
+          should_not allow_to(:edit)
+          should_not allow_to(:add_user)
+          should_not allow_to(:destroy)
         end
       end
 
@@ -80,14 +80,14 @@ describe InstitutionPolicy do
         let(:user) { FactoryGirl.create(:user, :institutional_user, 
                                      institution_pid: other_institution.pid) }
         it do
-          should_not allow(:create)
-          should_not allow(:create_through_institution)
-          should_not allow(:new)
-          should_not allow(:show)
-          should_not allow(:update)
-          should_not allow(:edit)
-          should_not allow(:add_user)
-          should_not allow(:destroy)
+          should_not allow_to(:create)
+          should_not allow_to(:create_through_institution)
+          should_not allow_to(:new)
+          should_not allow_to(:show)
+          should_not allow_to(:update)
+          should_not allow_to(:edit)
+          should_not allow_to(:add_user)
+          should_not allow_to(:destroy)
         end
       end
     end
@@ -96,14 +96,14 @@ describe InstitutionPolicy do
 	context "for an authenticated user without a user group" do
     let(:user) { FactoryGirl.create(:user) }
     it do
-      should_not allow(:show)
-      should_not allow(:create)
-      should_not allow(:create_through_institution)
-      should_not allow(:new)
-      should_not allow(:update)
-      should_not allow(:edit)
-      should_not allow(:add_user)
-      should_not allow(:destroy)
+      should_not allow_to(:show)
+      should_not allow_to(:create)
+      should_not allow_to(:create_through_institution)
+      should_not allow_to(:new)
+      should_not allow_to(:update)
+      should_not allow_to(:edit)
+      should_not allow_to(:add_user)
+      should_not allow_to(:destroy)
     end
   end
 end

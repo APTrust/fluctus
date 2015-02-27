@@ -10,13 +10,13 @@ describe ProcessedItemPolicy do
     let(:processed_item) { FactoryGirl.create(:processed_item)}
 
     it do
-      should allow(:create)
-      should allow(:new)
-      should allow(:show)
-      should allow(:update)
-      should allow(:edit)
-      should allow(:mark_as_reviewed)
-      should_not allow(:destroy)
+      should allow_to(:create)
+      should allow_to(:new)
+      should allow_to(:show)
+      should allow_to(:update)
+      should allow_to(:edit)
+      should allow_to(:mark_as_reviewed)
+      should_not allow_to(:destroy)
     end
   end
 
@@ -27,26 +27,26 @@ describe ProcessedItemPolicy do
       describe "in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item, institution: institution.identifier) }
         it do
-          should_not allow(:create)
-          should_not allow(:new)
-          should allow(:show)
-          should allow(:update)
-          should allow(:edit)
-          should allow(:mark_as_reviewed)
-          should_not allow(:destroy)
+          should_not allow_to(:create)
+          should_not allow_to(:new)
+          should allow_to(:show)
+          should allow_to(:update)
+          should allow_to(:edit)
+          should allow_to(:mark_as_reviewed)
+          should_not allow_to(:destroy)
         end
       end
 
       describe "not in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
         it do
-          should_not allow(:create)
-          should_not allow(:new)
-          should_not allow(:show)
-          should_not allow(:update)
-          should_not allow(:edit)
-          should_not allow(:mark_as_reviewed)
-          should_not allow(:destroy)
+          should_not allow_to(:create)
+          should_not allow_to(:new)
+          should_not allow_to(:show)
+          should_not allow_to(:update)
+          should_not allow_to(:edit)
+          should_not allow_to(:mark_as_reviewed)
+          should_not allow_to(:destroy)
         end
       end
     end
@@ -59,26 +59,26 @@ describe ProcessedItemPolicy do
       describe "in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item, institution: institution.identifier) }
     		it do
-          should_not allow(:create)
-      		should_not allow(:new)
-      		should allow(:show)
-      		should_not allow(:update)
-      		should_not allow(:edit)
-      		should_not allow(:mark_as_reviewed)
-      		should_not allow(:destroy)
+          should_not allow_to(:create)
+      		should_not allow_to(:new)
+      		should allow_to(:show)
+      		should_not allow_to(:update)
+      		should_not allow_to(:edit)
+      		should_not allow_to(:mark_as_reviewed)
+      		should_not allow_to(:destroy)
         end
     	end
 
     	describe "not in my institution" do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
         it do
-          should_not allow(:create)
-          should_not allow(:new)
-          should_not allow(:show)
-          should_not allow(:update)
-          should_not allow(:edit)
-          should_not allow(:mark_as_reviewed)
-          should_not allow(:destroy)
+          should_not allow_to(:create)
+          should_not allow_to(:new)
+          should_not allow_to(:show)
+          should_not allow_to(:update)
+          should_not allow_to(:edit)
+          should_not allow_to(:mark_as_reviewed)
+          should_not allow_to(:destroy)
         end	
       end
     end
@@ -88,13 +88,13 @@ describe ProcessedItemPolicy do
     let(:user) { FactoryGirl.create(:user) }
     let(:processed_item) { FactoryGirl.create(:processed_item)}
     it do
-      should_not allow(:create)
-      should_not allow(:new)
-      should_not allow(:show)
-      should_not allow(:update)
-      should_not allow(:edit)
-      should_not allow(:mark_as_reviewed)
-      should_not allow(:destroy)
+      should_not allow_to(:create)
+      should_not allow_to(:new)
+      should_not allow_to(:show)
+      should_not allow_to(:update)
+      should_not allow_to(:edit)
+      should_not allow_to(:mark_as_reviewed)
+      should_not allow_to(:destroy)
     end
   end 
 end
