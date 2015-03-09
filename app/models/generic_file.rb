@@ -9,7 +9,7 @@ class GenericFile < ActiveFedora::Base
   belongs_to :intellectual_object, property: :is_part_of
 
   has_attributes :uri, :file_size, :file_format, :created, :modified, :identifier, datastream: 'techMetadata', multiple: false
-  delegate :file_checksum_attributes=, :file_checksum, to: :techMetadata
+  delegate :filechecksum_attributes=, :filechecksum, to: :techMetadata
 
   validates_presence_of :uri
   validates_presence_of :file_size
@@ -119,14 +119,14 @@ class GenericFile < ActiveFedora::Base
       state: state,
     }
     if options.has_key?(:include)
-      data.merge!(file_checksum: serialize_checksums) if options[:include].include?(:file_checksum)
+      data.merge!(filechecksum: serialize_checksums) if options[:include].include?(:filechecksum)
       data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
     end
     data
   end
 
   def serialize_checksums
-    file_checksum.map do |cs|
+    filechecksum.map do |cs|
       {
         algorithm: cs.algorithm.first,
         digest: cs.digest.first,
@@ -145,7 +145,7 @@ class GenericFile < ActiveFedora::Base
   # No need to specify algorithm, since we're using md5 and sha256,
   # and their digests have different lengths.
   def find_checksum_by_digest(digest)
-    file_checksum.select { |cs| digest.strip == cs.digest.first.to_s.strip }.first
+    filechecksum.select { |cs| digest.strip == cs.digest.first.to_s.strip }.first
   end
 
   # Returns true if the GenericFile has a checksum with the specified digest.
@@ -171,13 +171,13 @@ class GenericFile < ActiveFedora::Base
   end
 
   def has_right_number_of_checksums
-    if(file_checksum.count == 0)
-      errors.add(:file_checksum, "can't be blank")
+    if(filechecksum.count == 0)
+      errors.add(:filechecksum, "can't be blank")
     else
       algorithms = Array.new
-      file_checksum.each do |cs|
+      filechecksum.each do |cs|
         if (algorithms.include? cs)
-          errors.add(:file_checksum, "can't have multiple checksums with same algorithm")
+          errors.add(:filechecksum, "can't have multiple checksums with same algorithm")
         else
           algorithms.push(cs)
         end

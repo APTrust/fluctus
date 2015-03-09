@@ -95,7 +95,7 @@ describe GenericFilesController do
       describe "and assigning to an object you don't have access to" do
         let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
         it "should be forbidden" do
-          post :create, intellectual_object_identifier: obj1.identifier, generic_file: {uri: 'path/within/bag', file_size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', file_checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+          post :create, intellectual_object_identifier: obj1.identifier, generic_file: {uri: 'path/within/bag', file_size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', filechecksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
           expect(response.code).to eq "403" # forbidden
           expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
          end
@@ -105,7 +105,7 @@ describe GenericFilesController do
         post :create, intellectual_object_identifier: obj1.identifier, generic_file: {foo: 'bar'}, format: 'json'
         expect(response.code).to eq '422' #Unprocessable Entity
         expect(JSON.parse(response.body)).to eq( {
-          "file_checksum" => ["can't be blank"],
+          "filechecksum" => ["can't be blank"],
           "created" => ["can't be blank"],
           "file_format" => ["can't be blank"],
           "identifier" => ["can't be blank"],
@@ -117,7 +117,7 @@ describe GenericFilesController do
       it "should update fields" do
         # and the parent's solr document should have been updated (but it's not stored, so we can't query it)
         #IntellectualObject.any_instance.should_receive(:update_index)
-        post :create, intellectual_object_identifier: obj1.identifier, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', file_size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/puppy.jpg', file_checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        post :create, intellectual_object_identifier: obj1.identifier, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/puppy.jpg', file_size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/puppy.jpg', filechecksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
         expect(response.code).to eq '201'
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/bag'
@@ -128,7 +128,7 @@ describe GenericFilesController do
 
       it "should add generic file using API identifier" do
         identifier = URI.escape(obj1.identifier)
-        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/cat.jpg', file_size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/cat.jpg', file_checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/bag', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/cat.jpg', file_size: 12314121, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/cat.jpg', filechecksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
         expect(response.code).to eq '201'
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/bag'
@@ -139,7 +139,7 @@ describe GenericFilesController do
 
       it "should create generic files larger than 2GB" do
         identifier = URI.escape(obj1.identifier)
-        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/dog', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/dog.jpg', file_size: 300000000000, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/dog.jpg', file_checksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
+        post :create, intellectual_object_identifier: identifier, generic_file: {uri: 'path/within/dog', content_uri: 'http://s3-eu-west-1.amazonaws.com/mybucket/dog.jpg', file_size: 300000000000, created: '2001-12-31', modified: '2003-03-13', file_format: 'text/html', identifier: 'test.edu/12345678/data/mybucket/dog.jpg', filechecksum_attributes: [{digest: "123ab13df23", algorithm: 'MD6', datetime: '2003-03-13T12:12:12Z'}]}, format: 'json'
         expect(response.code).to eq '201'
         assigns(:generic_file).tap do |file|
           expect(file.uri).to eq 'path/within/dog'
@@ -200,8 +200,8 @@ describe GenericFilesController do
           expect(return_data[1]['state']).to eq 'A'
           expect(return_data[0]['premisEvents'].count).to eq 2
           expect(return_data[1]['premisEvents'].count).to eq 2
-          expect(return_data[0]['file_checksum'].count).to eq 2
-          expect(return_data[1]['file_checksum'].count).to eq 2
+          expect(return_data[0]['filechecksum'].count).to eq 2
+          expect(return_data[1]['filechecksum'].count).to eq 2
 
           # Now alter data and post again. Should be an update.
           id1 = return_data[0]['id']
@@ -220,8 +220,8 @@ describe GenericFilesController do
           expect(return_data[1]['file_format']).to eq 'text/orange'
           expect(return_data[0]['premisEvents'].count).to eq 2
           expect(return_data[1]['premisEvents'].count).to eq 2
-          expect(return_data[0]['file_checksum'].count).to eq 2
-          expect(return_data[1]['file_checksum'].count).to eq 2
+          expect(return_data[0]['filechecksum'].count).to eq 2
+          expect(return_data[1]['filechecksum'].count).to eq 2
         end
       end
 

@@ -204,17 +204,17 @@ class IntellectualObjectsController < ApplicationController
     # object was previously deleted and is now being re-ingested.
     gfid = file['identifier'].gsub(/%2F/i, '/')
     new_file = GenericFile.where(tech_metadata__identifier_ssim: gfid).first || GenericFile.new()
-    file_events, file_checksums = []
+    file_events, filechecksums = []
     file.each { |file_attr_name, file_attr_value|
       case file_attr_name
       when 'premisEvents'
         file_events = file_attr_value
-      when 'file_checksum'
-        file_checksums = file_attr_value
+      when 'filechecksum'
+        filechecksums = file_attr_value
       else
         new_file[file_attr_name.to_s] = file_attr_value.to_s
       end }
-    file_checksums.each { |checksum| new_file.techMetadata.file_checksum.build(checksum) }
+    filechecksums.each { |checksum| new_file.techMetadata.filechecksum.build(checksum) }
     state[:current_object] = "GenericFile #{new_file.identifier}"
     new_file.intellectual_object = intel_obj
     new_file.state = 'A' # in case we loaded a deleted file
@@ -262,7 +262,7 @@ class IntellectualObjectsController < ApplicationController
   def object_as_json
     if params[:include_relations]
       # Return only active files, but call them generic_files
-      data = @intellectual_object.serializable_hash(include: [:premisEvents, active_files: { include: [:file_checksum, :premisEvents]}])
+      data = @intellectual_object.serializable_hash(include: [:premisEvents, active_files: { include: [:filechecksum, :premisEvents]}])
       data[:generic_files] = data.delete(:active_files)
       data[:state] = @intellectual_object.state
       data

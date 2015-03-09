@@ -49,7 +49,7 @@ describe IntellectualObject do
 
     it 'should properly set an alternative identifier' do
       exp = 'test.edu/123456'
-      subject.alt_identifier = exp
+      subject.alt_identifier = [exp]
       subject.alt_identifier.should == [exp]
     end
 
@@ -76,7 +76,7 @@ describe IntellectualObject do
       end
       let(:solr_doc) { subject.to_solr }
       it "should have fields" do
-        solr_doc['institution_title_ssi'].should == subject.institution.name
+        solr_doc['institution_title_ssi'].should == subject.institution.title
         solr_doc['is_part_of_ssim'].should == subject.institution.internal_uri
         # Searchable
         solr_doc['desc_metadata__title_tesim'].should == [subject.title]

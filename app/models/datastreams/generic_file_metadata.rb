@@ -29,9 +29,9 @@ class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Proper
   property :modified
   property :size
   property :file_format
-  property :file_Checksum
-  property :file_checksum
-  property :file_checksumValue
+  property :fileChecksum
+  property :filechecksum
+  property :filechecksumValue
 
   property :File
 end
@@ -52,15 +52,15 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :modified, predicate: FileVocabulary.modified do |index|
     index.as :symbol
   end
-  property :file_checksum, predicate: FileVocabulary.file_checksum, class_name: 'File_Checksum'
+  property :filechecksum, predicate: FileVocabulary.filechecksum, class_name: 'FileChecksum'
   property :identifier, predicate: RDF::DC.identifier do |index|
     index.as :stored_searchable, :symbol
   end
 
-  accepts_nested_attributes_for :file_checksum
-  class File_Checksum < ActiveTriples::Resource
+  accepts_nested_attributes_for :filechecksum
+  class FileChecksum < ActiveTriples::Resource
     include ActiveFedora::RDF::Persistence
-    configure :type => FileVocabulary.file_Checksum
+    configure :type => FileVocabulary.fileChecksum
 
     property :algorithm, predicate: WorldNetVocabulary.Algorithm do |index|
       index.as :symbol
@@ -68,7 +68,7 @@ class GenericFileMetadata < ActiveFedora::RdfxmlRDFDatastream
     property :datetime, predicate: RDF::DC.created do |index|
       index.as :symbol
     end
-    property :digest, predicate: FileVocabulary.file_checksumValue do |index|
+    property :digest, predicate: FileVocabulary.filechecksumValue do |index|
       index.as :symbol
     end
   end

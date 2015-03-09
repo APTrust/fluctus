@@ -48,10 +48,10 @@ describe GenericFileMetadata do
         datetime: Time.now.to_s,
         digest: SecureRandom.hex
     }
-    subject.file_checksum_attributes = [exp]
-    subject.file_checksum.last.algorithm.should == [exp[:algorithm]]
-    subject.file_checksum.last.datetime.should == [exp[:datetime]]
-    subject.file_checksum.last.digest.should == [exp[:digest]]
+    subject.filechecksum_attributes = [exp]
+    subject.filechecksum.last.algorithm.should == [exp[:algorithm]]
+    subject.filechecksum.last.datetime.should == [exp[:datetime]]
+    subject.filechecksum.last.digest.should == [exp[:digest]]
   end
 
   describe "#to_solr" do

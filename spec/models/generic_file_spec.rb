@@ -29,11 +29,11 @@ describe GenericFile do
   it { should validate_presence_of(:identifier)}
   it "should validate presence of a checksum" do
     expect(subject.valid?).to be false
-    expect(subject.errors[:file_checksum]).to eq ["can't be blank"]
-    subject.file_checksum_attributes = [{digest: '1234'}]
+    expect(subject.errors[:filechecksum]).to eq ["can't be blank"]
+    subject.filechecksum_attributes = [{digest: '1234'}]
     # other fields cause the object to not be valid. This forces recalculating errors
     expect(subject.valid?).to be false
-    expect(subject.errors[:file_checksum]).to be_empty
+    expect(subject.errors[:filechecksum]).to be_empty
   end
 
   describe "#identifier_is_unique" do
@@ -188,7 +188,7 @@ describe GenericFile do
           expect(h1.has_key?(:identifier)).to be true
           expect(h1.has_key?(:state)).to be true
 
-          h2 = subject.serializable_hash(include: [:file_checksum, :premisEvents])
+          h2 = subject.serializable_hash(include: [:filechecksum, :premisEvents])
           expect(h2.has_key?(:id)).to be true
           expect(h2.has_key?(:uri)).to be true
           expect(h2.has_key?(:file_size)).to be true
@@ -197,13 +197,13 @@ describe GenericFile do
           expect(h2.has_key?(:file_format)).to be true
           expect(h2.has_key?(:identifier)).to be true
           expect(h2.has_key?(:state)).to be true
-          expect(h2.has_key?(:file_checksum)).to be true
+          expect(h2.has_key?(:filechecksum)).to be true
           expect(h2.has_key?(:premisEvents)).to be true
         end
       end
 
       describe "find_checksum_by_digest" do
-        let(:digest) { subject.file_checksum.last.digest.first.to_s }
+        let(:digest) { subject.filechecksum.last.digest.first.to_s }
         it "should find the checksum" do
           expect(subject.find_checksum_by_digest(digest)).not_to be_empty
         end
@@ -213,7 +213,7 @@ describe GenericFile do
       end
 
       describe "has_checksum?" do
-        let(:digest) { subject.file_checksum.last.digest.first.to_s }
+        let(:digest) { subject.filechecksum.last.digest.first.to_s }
         it "should return true if checksum is present" do
           expect(subject.has_checksum?(digest)).to be true
         end

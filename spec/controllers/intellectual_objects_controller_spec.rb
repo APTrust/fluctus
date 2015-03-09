@@ -302,7 +302,7 @@ describe IntellectualObjectsController do
                 modified: '2014-04-25T14:06:39-04:00',
                 file_format: 'application/xml',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
-                file_checksum: [
+                filechecksum: [
                   { algorithm: 'md5',
                     digest: '1202ef3562a201060bbdb5a7c6d37d91',
                     datetime: '2014-04-25T14:06:39-04:00'
@@ -371,7 +371,7 @@ describe IntellectualObjectsController do
                 modified: '2014-04-25T14:06:39-04:00',
                 file_format: 'text/plain',
                 identifier: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
-                file_checksum: [
+                filechecksum: [
                   { algorithm: 'md5',
                     digest: '3ab392455183820d9f6a5c641ec1dea7',
                     datetime: '2014-04-25T14:06:39-04:00'

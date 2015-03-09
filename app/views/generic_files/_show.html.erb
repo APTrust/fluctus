@@ -28,7 +28,7 @@
       <dt>Modified</dt>
       <dd><%= @generic_file.modified %> (<%= time_ago_in_words @generic_file.modified %>)</dd>
       <dt>Checksums</dt>
-      <% @generic_file.file_checksum.each do |checksum| %>
+      <% @generic_file.filechecksum.each do |checksum| %>
       <dd><strong><%= checksum.algorithm.first %>:</strong><%= checksum.digest.first %> generated <%= time_ago_in_words(checksum.datetime.first) %> ago</dd>
       <% end %>
     </dl>

@@ -11,7 +11,7 @@ FactoryGirl.define do
     file_size { rand(20000..500000000) }
     created { "#{Time.now}" }
     modified { "#{Time.now}" }
-    file_checksum_attributes {
+    filechecksum_attributes {
       [{
            algorithm: 'sha256',
            datetime: Time.now.to_s,
