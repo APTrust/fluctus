@@ -81,7 +81,14 @@ class Institution < ActiveFedora::Base
     if(count > 0)
       errors.add(:identifier, "has already been taken")
     end
-  end
+    unless self.identifier.include?('.')
+      errors.add(:identifier, "must be a valid domain name")
+    end
+    unless self.identifier.include?('com') || self.identifier.include?('org') || self.identifier.include?('edu')
+      errors.add(:identifier, "must end in '.com', '.org', or '.edu'")
+    end
+
+    end
 
   def check_for_associations
     # Check for related Users
