@@ -2,11 +2,12 @@ FactoryGirl.define do
   factory :user, class: "User" do
     name { Faker::Name.name }
     email { Faker::Internet.email }
-    phone_number { Faker::Base.numerify('+90(###) ### ####') }
+    phone_number { '13034506249' }
+    #phone_number { Faker::Base.numerify('+1(###) ### ####') }
+    #phone_number { Faker::PhoneNumber.cell_phone }
     password { "password" }
     institution_pid { FactoryGirl.create(:institution).pid }
     roles { [Role.where(name: 'public').first_or_create] }
-  
     factory :aptrust_user, class: "User" do
       institution_pid { 
         aptrust_institution = Institution.where(desc_metadata__title_tesim: 'APTrust')
