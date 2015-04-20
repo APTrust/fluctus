@@ -444,6 +444,7 @@ describe IntellectualObjectsController do
           expect(response.code).to eq '201'
           expect(assigns(:intellectual_object).title).to eq 'Test Title'
           expect(assigns(:intellectual_object).bag_name).to eq 'ncsu.1840.16-388'
+          expect(assigns(:intellectual_object).generic_files.count).to eq 2
         }.to change(IntellectualObject, :count).by(1)
       end
 
