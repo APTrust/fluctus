@@ -215,6 +215,7 @@ class IntellectualObjectsController < ApplicationController
         new_file[file_attr_name.to_s] = file_attr_value.to_s
       end }
     filechecksums.each { |checksum| new_file.techMetadata.filechecksum.build(checksum) }
+
     state[:current_object] = "GenericFile #{new_file.identifier}"
     new_file.intellectual_object = intel_obj
     new_file.state = 'A' # in case we loaded a deleted file
