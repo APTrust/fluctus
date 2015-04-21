@@ -14,7 +14,7 @@
       <dt>Institution</dt>
       <dd><%= link_to @intellectual_object.institution.name, @intellectual_object.institution %> [<%= @intellectual_object.institution.brief_name %>]</dd>
       <dt>Access</dt>
-      <dd><%= @intellectual_object.access %></dd>
+      <dd><%= @intellectual_object.access.capitalize %></dd>
       <dt>Identifier</dt>
       <dd><%= @intellectual_object.identifier %></dd>
       <dt>Bag Name</dt>
