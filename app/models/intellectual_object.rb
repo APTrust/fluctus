@@ -122,6 +122,8 @@ class IntellectualObject < ActiveFedora::Base
         gf.soft_delete(attributes)
       end
       save!
+      aggregate = IoAggregation.where(identifier: self.id).first
+      aggregate.update_aggregations_solr
       ActiveRecord::Base.connection.close
     end
   end

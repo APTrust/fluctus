@@ -188,7 +188,11 @@ describe IntellectualObjectsController do
     describe 'when signed in' do
       let(:user) { FactoryGirl.create(:user, :admin) }
       let(:obj1) { FactoryGirl.create(:institutional_intellectual_object) }
-      before { sign_in user }
+      let(:aggregate) { FactoryGirl.create(:io_aggregation, identifier: obj1.id) }
+      before {
+        sign_in user
+        aggregate.save!
+      }
 
       it "should update the search counter" do
         patch :update, intellectual_object_identifier: obj1, counter: '5'
@@ -496,7 +500,7 @@ describe IntellectualObjectsController do
         pi = FactoryGirl.create(:ingested_item, object_identifier: obj1.identifier)
         delete :destroy, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_path
-        expect(flash[:notice]).to eq "Delete job has been queued for object: #{obj1.title}"
+        expect(flash[:notice]).to eq "Delete job has been queued for object: #{obj1.title}. Depending on the size of the object, it may take a few minutes for all associated files to be marked as deleted."
         expect(assigns(:intellectual_object).state).to eq 'D'
       end
     end

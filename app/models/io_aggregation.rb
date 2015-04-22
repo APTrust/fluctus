@@ -33,11 +33,12 @@ class IoAggregation < ActiveRecord::Base
     query ||= []
     query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.identifier}")
     solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
-    total_files = solr_result.count
+    total_files = 0
     formats = ''
     size = 0
     solr_result.each do |file|
       unless file['object_state_ssi'] == 'D'
+        total_files = total_files + 1
         current_format = file['tech_metadata__file_format_ssi']
         (formats == '' || formats.nil?) ? formats = current_format : formats = "#{formats},#{current_format}"
         current_size = file['tech_metadata__size_lsi'].to_i

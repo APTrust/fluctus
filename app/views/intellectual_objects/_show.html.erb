@@ -29,6 +29,10 @@
       <% @intellectual_object.alt_identifier.each do |alt_ident| %>
           <dd><%= alt_ident %></dd>
       <% end %>
+      <% if @intellectual_object.state == 'D' %>
+          <dt><i><b>State</b></i></dt>
+          <dd><i>This object has been deleted.</i></dd>
+      <% end %>
     </dl>
   </div>
 
