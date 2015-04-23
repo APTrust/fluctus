@@ -42,7 +42,47 @@ describe GenericFilesController do
       expect(response_data.select{|f| f['state'] == 'A'}.count).to eq 2
       expect(response_data.select{|f| f['state'] != 'A'}.count).to eq 0
     end
+  end
 
+  describe "GET #file_summary" do
+    before do
+      sign_in user
+      file.premisEvents.events_attributes = [
+          FactoryGirl.attributes_for(:premis_event_ingest),
+          FactoryGirl.attributes_for(:premis_event_fixity_generation)
+      ]
+      file.save!
+      get :show, generic_file_identifier: file
+    end
+
+    it 'can index files by intellectual object identifier' do
+      get :file_summary, intellectual_object_identifier: CGI.escape(@intellectual_object.identifier), format: :json, use_route: 'file_summary'
+      expect(response).to be_successful
+      expect(assigns(:intellectual_object)).to eq @intellectual_object
+    end
+
+    it 'returns only active files with uri, size and identifier attributes' do
+      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, uri:"https://one", identifier: 'one', state: 'A')
+      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, uri:"https://two", identifier: 'two', state: 'D')
+      get :file_summary, intellectual_object_identifier: CGI.escape(@intellectual_object.identifier), format: :json, use_route: 'file_summary'
+      expect(response).to be_successful
+
+      # Reload, or the files don't appear
+      @intellectual_object.reload
+
+      active_files = {}
+      @intellectual_object.active_files.each do |f|
+        active_files[f.uri] = f
+      end
+      response_data = JSON.parse(response.body)
+      response_data.each do |file_summary|
+        generic_file = active_files[file_summary['uri']]
+        expect(generic_file).not_to be_nil
+        expect(file_summary['uri']).to eq generic_file.uri
+        expect(file_summary['size']).to eq generic_file.size
+        expect(file_summary['identifier']).to eq generic_file.identifier
+      end
+    end
   end
 
   describe "GET #show" do

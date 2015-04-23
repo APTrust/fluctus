@@ -2,7 +2,7 @@ class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
-  before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
+  before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index, :file_summary]
   after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
 
   include Aptrust::GatedSearch
@@ -45,6 +45,38 @@ class GenericFilesController < ApplicationController
         log_model_error(@generic_file)
         format.json { render json: @generic_file.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  # GET /file_summary/intellectual_object_identifier/
+  #
+  # This method handles a special case for PivotalTracker bug #92961148.
+  # ActiveFedora has a hard-coded limit of 1000 on the number of related
+  # objects it will return (see http://bit.ly/1K9CSoq), so we cannot get
+  # all of an objects files through intellectual_object.generic_files.
+  # In addition, reifying the Solr result through ActiveFedora::SolrService.reify_solr_result
+  # is way too slow. Returning a list of 20k files + checksums may take over
+  # an hour. So this method gives us a summary list of an object's files,
+  # with just the information we need to restore the object. For about 10k files,
+  # this method takes ~2 seconds, vs. ~60 minutes using full-blown ActiveFedora objects.
+  #
+  # This method is for the API only, so there is no HTML response.
+  # The restoration service code calls this. No one else really needs it.
+  def file_summary
+    authorize @intellectual_object
+    data = []
+    GenericFile.find_in_batches(object_state_ssi: 'A', gf_parent_ssim: @intellectual_object.identifier) do |batch|
+      batch.each do |solr_hash|
+        file = {}
+        file['size'] = solr_hash['tech_metadata__size_lsi']
+        file['identifier'] = solr_hash['tech_metadata__identifier_ssim'].first
+        file['uri'] = solr_hash['tech_metadata__uri_ssim'].first
+        data << file
+      end
+    end
+    respond_to do |format|
+      format.json { render json: data }
+      format.html { super }
     end
   end
 
