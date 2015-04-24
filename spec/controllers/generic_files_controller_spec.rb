@@ -72,11 +72,13 @@ describe GenericFilesController do
 
       active_files = {}
       @intellectual_object.active_files.each do |f|
-        active_files[f.uri] = f
+        key = "#{f.uri}-#{f.size}"
+        active_files[key] = f
       end
       response_data = JSON.parse(response.body)
       response_data.each do |file_summary|
-        generic_file = active_files[file_summary['uri']]
+        key = "#{file_summary['uri']}-#{file_summary['size']}"
+        generic_file = active_files[key]
         expect(generic_file).not_to be_nil
         expect(file_summary['uri']).to eq generic_file.uri
         expect(file_summary['size']).to eq generic_file.size
