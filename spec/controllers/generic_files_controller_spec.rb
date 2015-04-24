@@ -62,8 +62,8 @@ describe GenericFilesController do
     end
 
     it 'returns only active files with uri, size and identifier attributes' do
-      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, uri:"https://one", identifier: 'one', state: 'A')
-      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, uri:"https://two", identifier: 'two', state: 'D')
+      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, uri:"https://one", identifier: 'file_one', state: 'A')
+      FactoryGirl.create(:generic_file, intellectual_object: @intellectual_object, uri:"https://two", identifier: 'file_two', state: 'D')
       get :file_summary, intellectual_object_identifier: CGI.escape(@intellectual_object.identifier), format: :json, use_route: 'file_summary'
       expect(response).to be_successful
 
