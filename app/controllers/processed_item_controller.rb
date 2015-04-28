@@ -209,9 +209,13 @@ class ProcessedItemController < ApplicationController
     # Fix Apache/Passenger passthrough of %2f-encoded slashes in identifier
     params[:object_identifier] = params[:object_identifier].gsub(/%2F/i, "/")
     @items = ProcessedItem.where(object_identifier: params[:object_identifier],
-                                 action: Fluctus::Application::FLUCTUS_ACTIONS['restore'])
+                                 action: Fluctus::Application::FLUCTUS_ACTIONS['restore']).order(created_at: :desc)
     authorize @items
-    results = @items.map { |item| item.update_attributes(params_for_status_update) }
+
+    # PivotalTracker #93375060. If we have multiple restore requests for the
+    # same bag (with same e-tag), only update the most recent restore request.
+    results = update_unique
+
     respond_to do |format|
       if @items.count == 0
         error = { error: "No items for object identifier #{params[:object_identifier]}" }
@@ -414,6 +418,23 @@ class ProcessedItemController < ApplicationController
       raise ActiveRecord::RecordNotFound
     end
     authorize @processed_item, :show?
+  end
+
+  # PivotalTracker #93375060. If we have multiple restore requests for the
+  # same bag (with same e-tag), only update the most recent restore request.
+  # Return value is an array of booleans, indicating whether each updated
+  # succeeded.
+  def update_unique
+    already_updated = {}
+    results = []
+    @items.each do |item|
+      key = "#{item.object_identifier}|#{item.etag}"
+      if !already_updated[key]
+        results << item.update_attributes(params_for_status_update)
+        already_updated[key] = true
+      end
+    end
+    results
   end
 
   def rewrite_params_for_sqlite
