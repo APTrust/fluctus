@@ -300,21 +300,22 @@ describe ProcessedItemController do
         expect(response).to be_success
       end
 
-      it "assigns the correct @items" do
+      it "assigns the correct @item" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
              stage: 'Resolve', status: 'Success', note: 'Buzz', retry: true,
              use_route: 'item_set_restoration_status')
-        expect(assigns(:items).count).to eq(ProcessedItem.count)
+        expected_item = ProcessedItem.where(object_identifier: 'ned/flanders').order(created_at: :desc).first
+        expect(assigns(:item).id).to eq(expected_item.id)
       end
 
-      it "updates the correct @items" do
+      it "updates the correct @item" do
         ProcessedItem.first.update(object_identifier: "homer/simpson")
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
              stage: 'Resolve', status: 'Success', note: 'Aldrin', retry: true,
              use_route: 'item_set_restoration_status')
         update_count = ProcessedItem.where(object_identifier: 'ned/flanders',
                                            stage: 'Resolve', status: 'Success', retry: true).count
-        expect(update_count).to eq(ProcessedItem.count - 1)
+        expect(update_count).to eq(1)
       end
 
       it "returns 404 for no matching records" do
