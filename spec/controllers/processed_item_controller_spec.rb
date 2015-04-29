@@ -300,21 +300,22 @@ describe ProcessedItemController do
         expect(response).to be_success
       end
 
-      it "assigns the correct @items" do
+      it "assigns the correct @item" do
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
              stage: 'Resolve', status: 'Success', note: 'Buzz', retry: true,
              use_route: 'item_set_restoration_status')
-        expect(assigns(:items).count).to eq(ProcessedItem.count)
+        expected_item = ProcessedItem.where(object_identifier: 'ned/flanders').order(created_at: :desc).first
+        expect(assigns(:item).id).to eq(expected_item.id)
       end
 
-      it "updates the correct @items" do
+      it "updates the correct @item" do
         ProcessedItem.first.update(object_identifier: "homer/simpson")
         post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
              stage: 'Resolve', status: 'Success', note: 'Aldrin', retry: true,
              use_route: 'item_set_restoration_status')
         update_count = ProcessedItem.where(object_identifier: 'ned/flanders',
                                            stage: 'Resolve', status: 'Success', retry: true).count
-        expect(update_count).to eq(ProcessedItem.count - 1)
+        expect(update_count).to eq(1)
       end
 
       it "returns 404 for no matching records" do
@@ -331,7 +332,45 @@ describe ProcessedItemController do
              use_route: 'item_set_restoration_status')
         expect(response.status).to eq(400)
       end
+    end
 
+    describe "for admin user - with duplicate entries" do
+      before do
+        sign_in admin_user
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: false,
+                                 object_identifier: "ned/flanders",
+                                 etag: "12345678")
+      end
+
+      # PivotalTracker #93375060
+      # All Processed Items now have the same identifier and etag.
+      # When we update the restoration record, it should update only one
+      # record (the latest). None of the older restore requests should
+      # be touched.
+      it "updates the correct @items" do
+        post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
+             stage: 'Resolve', status: 'Success', note: 'Aldrin', retry: true,
+             use_route: 'item_set_restoration_status')
+        update_count = ProcessedItem.where(object_identifier: 'ned/flanders',
+                                           stage: 'Resolve', status: 'Success', retry: true).count
+        # Should be only one item updated...
+        expect(update_count).to eq(1)
+        # ... and it should be the most recent
+        restore_items = ProcessedItem.where(object_identifier: 'ned/flanders',
+                        action: Fluctus::Application::FLUCTUS_ACTIONS['restore']).order(created_at: :desc)
+        restore_items.each_with_index do |item, index|
+          if index == 0
+            # first item should be updated
+            expect(item.status).to eq('Success')
+          else
+            # all other items should not be updated
+            expect(item.status).to eq(Fluctus::Application::FLUCTUS_STATUSES['pend'])
+          end
+        end
+      end
     end
   end
 
