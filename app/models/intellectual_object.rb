@@ -118,12 +118,16 @@ class IntellectualObject < ActiveFedora::Base
     self.add_event(attributes)
     save!
     Thread.new() do
-      generic_files.each do |gf|
-        gf.soft_delete(attributes)
-      end
-      save!
+      background_deletion(attributes)
       ActiveRecord::Base.connection.close
     end
+  end
+
+  def background_deletion(attributes)
+    generic_files.each do |gf|
+      gf.soft_delete(attributes)
+    end
+    save!
   end
 
   def gf_count
