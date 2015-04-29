@@ -30,27 +30,29 @@ class IoAggregation < ActiveRecord::Base
   def update_aggregations_solr
     row = 1000000
     start = 0
-    query ||= []
-    query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.identifier}")
-    solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
-    total_files = 0
-    formats = ''
-    size = 0
-    solr_result.each do |file|
-      unless file['object_state_ssi'] == 'D'
-        total_files = total_files + 1
-        current_format = file['tech_metadata__file_format_ssi']
-        (formats == '' || formats.nil?) ? formats = current_format : formats = "#{formats},#{current_format}"
-        current_size = file['tech_metadata__size_lsi'].to_i
-        size = size + current_size
-      end
-    end
-    self.file_count = total_files
-    self.file_size = size
-    self.file_format = formats
-    self.save!
     io = get_intellectual_object
-    io.update_index
+    unless io.state == 'D'
+      query ||= []
+      query << ActiveFedora::SolrService.construct_query_for_rel(is_part_of: "info:fedora/#{self.identifier}")
+      solr_result = ActiveFedora::SolrService.query(query, :rows => row, :start => start)
+      total_files = 0
+      formats = ''
+      size = 0
+      solr_result.each do |file|
+        unless file['object_state_ssi'] == 'D'
+          total_files = total_files + 1
+          current_format = file['tech_metadata__file_format_ssi']
+          (formats == '' || formats.nil?) ? formats = current_format : formats = "#{formats},#{current_format}"
+          current_size = file['tech_metadata__size_lsi'].to_i
+          size = size + current_size
+        end
+      end
+      self.file_count = total_files
+      self.file_size = size
+      self.file_format = formats
+      self.save!
+      io.update_index
+    end
   end
 
   def add_format(format)
