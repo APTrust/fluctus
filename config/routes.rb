@@ -22,6 +22,7 @@ Fluctus::Application.routes.draw do
   delete 'objects/*intellectual_object_identifier', to: 'intellectual_objects#destroy', intellectual_object_identifier: object_identifier_ptrn
   get 'objects/*intellectual_object_identifier/edit', to: 'intellectual_objects#edit', as: :edit_intellectual_object, intellectual_object_identifier: object_identifier_ptrn
   get 'objects/*intellectual_object_identifier/restore', to: 'intellectual_objects#restore', as: :intellectual_object_restore, intellectual_object_identifier: object_identifier_ptrn
+  get 'objects/*intellectual_object_identifier/dpn', to: 'intellectual_objects#dpn', as: :intellectual_object_dpn, intellectual_object_identifier: object_identifier_ptrn
   get 'events/*intellectual_object_identifier', to: 'events#index', as: :intellectual_object_events, intellectual_object_identifier: object_identifier_ptrn
   post 'events/*intellectual_object_identifier', to: 'events#create', intellectual_object_identifier: object_identifier_ptrn
 

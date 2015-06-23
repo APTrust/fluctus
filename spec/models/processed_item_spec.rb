@@ -2,6 +2,7 @@ require 'spec_helper'
 
 ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
 restore = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+dpn = Fluctus::Application::FLUCTUS_ACTIONS['dpn']
 requested = Fluctus::Application::FLUCTUS_STAGES['requested']
 receive = Fluctus::Application::FLUCTUS_STAGES['receive']
 record = Fluctus::Application::FLUCTUS_STAGES['record']
@@ -13,15 +14,15 @@ pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
 # Creates an item we can save. We'll set action, stage and status
 # for various tests below
 def setup_item(subject)
-  subject.name = "sample_bag.tar"
-  subject.etag = "12345"
-  subject.institution = "hardknocks.edu"
+  subject.name = 'sample_bag.tar'
+  subject.etag = '12345'
+  subject.institution = 'hardknocks.edu'
   subject.bag_date = Time.now()
-  subject.bucket = "aptrust.receiving.hardknocks.edu"
+  subject.bucket = 'aptrust.receiving.hardknocks.edu'
   subject.date = Time.now()
-  subject.note = "Note"
-  subject.outcome = "Outcome"
-  subject.user = "user"
+  subject.note = 'Note'
+  subject.outcome = 'Outcome'
+  subject.user = 'user'
 end
 
 describe ProcessedItem do
@@ -152,25 +153,25 @@ describe ProcessedItem do
     subject.stage = record
     subject.status = success
     subject.save!
-    subject.object_identifier.should == "hardknocks.edu/sample_bag"
+    subject.object_identifier.should == 'hardknocks.edu/sample_bag'
   end
 
   it 'should set object identifier in before_save if not ingested (multi part bag)' do
     setup_item(subject)
-    subject.name = "sesame.street.b046.of249.tar"
+    subject.name = 'sesame.street.b046.of249.tar'
     subject.action = ingest
     subject.stage = record
     subject.status = success
     subject.save!
-    subject.object_identifier.should == "hardknocks.edu/sesame.street"
+    subject.object_identifier.should == 'hardknocks.edu/sesame.street'
   end
 
   describe 'work queue methods' do
-    ingest_date = Time.parse("2014-06-01")
+    ingest_date = Time.parse('2014-06-01')
     before do
       3.times do
         ingest_date = ingest_date + 1.days
-        FactoryGirl.create(:processed_item, object_identifier: "abc/123",
+        FactoryGirl.create(:processed_item, object_identifier: 'abc/123',
                            action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
                            stage: Fluctus::Application::FLUCTUS_STAGES['record'],
                            status: Fluctus::Application::FLUCTUS_STATUSES['success'],
@@ -179,35 +180,48 @@ describe ProcessedItem do
     end
 
     it 'should return the last ingested version when asked' do
-      pi = ProcessedItem.last_ingested_version("abc/123")
-      pi.object_identifier.should == "abc/123"
+      pi = ProcessedItem.last_ingested_version('abc/123')
+      pi.object_identifier.should == 'abc/123'
       pi.date.should == ingest_date
     end
 
     it 'should create a restoration request when asked' do
-      pi = ProcessedItem.create_restore_request("abc/123", "mikey@example.com")
+      pi = ProcessedItem.create_restore_request('abc/123', 'mikey@example.com')
       pi.action.should == Fluctus::Application::FLUCTUS_ACTIONS['restore']
       pi.stage.should == Fluctus::Application::FLUCTUS_STAGES['requested']
       pi.status.should == Fluctus::Application::FLUCTUS_STATUSES['pend']
-      pi.note.should == "Restore requested"
-      pi.outcome.should == "Not started"
-      pi.user.should == "mikey@example.com"
+      pi.note.should == 'Restore requested'
+      pi.outcome.should == 'Not started'
+      pi.user.should == 'mikey@example.com'
+      pi.retry.should == true
+      pi.reviewed.should == false
+      pi.id.should_not be_nil
+    end
+
+    it 'should create a dpn request when asked' do
+      pi = ProcessedItem.create_dpn_request('abc/123', 'mikey@example.com')
+      pi.action.should == Fluctus::Application::FLUCTUS_ACTIONS['dpn']
+      pi.stage.should == Fluctus::Application::FLUCTUS_STAGES['requested']
+      pi.status.should == Fluctus::Application::FLUCTUS_STATUSES['pend']
+      pi.note.should == 'Requested item be sent to DPN'
+      pi.outcome.should == 'Not started'
+      pi.user.should == 'mikey@example.com'
       pi.retry.should == true
       pi.reviewed.should == false
       pi.id.should_not be_nil
     end
 
     it 'should create a delete request when asked' do
-      pi = ProcessedItem.create_delete_request("abc/123", "abc/123/doc.pdf", "mikey@example.com")
+      pi = ProcessedItem.create_delete_request('abc/123', 'abc/123/doc.pdf', 'mikey@example.com')
       pi.action.should == Fluctus::Application::FLUCTUS_ACTIONS['delete']
       pi.stage.should == Fluctus::Application::FLUCTUS_STAGES['requested']
       pi.status.should == Fluctus::Application::FLUCTUS_STATUSES['pend']
-      pi.note.should == "Delete requested"
-      pi.outcome.should == "Not started"
-      pi.user.should == "mikey@example.com"
+      pi.note.should == 'Delete requested'
+      pi.outcome.should == 'Not started'
+      pi.user.should == 'mikey@example.com'
       pi.retry.should == true
       pi.reviewed.should == false
-      pi.generic_file_identifier.should == "abc/123/doc.pdf"
+      pi.generic_file_identifier.should == 'abc/123/doc.pdf'
       pi.id.should_not be_nil
     end
 

@@ -32,6 +32,9 @@ class ProcessedItem < ActiveRecord::Base
          elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete']
            pending = 'delete'
            break
+         elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['dpn']
+           pending = 'dpn'
+           break
          end
       end
     end
@@ -92,14 +95,33 @@ class ProcessedItem < ActiveRecord::Base
     restore_item.action = Fluctus::Application::FLUCTUS_ACTIONS['restore']
     restore_item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
     restore_item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
-    restore_item.note = "Restore requested"
-    restore_item.outcome = "Not started"
+    restore_item.note = 'Restore requested'
+    restore_item.outcome = 'Not started'
     restore_item.user = requested_by
     restore_item.retry = true
     restore_item.reviewed = false
     restore_item.date = Time.now
     restore_item.save!
     restore_item
+  end
+
+  def self.create_dpn_request(intellectual_object_identifier, requested_by)
+    item = ProcessedItem.last_ingested_version(intellectual_object_identifier)
+    if item.nil?
+      raise ActiveRecord::RecordNotFound
+    end
+    dpn_item = item.dup
+    dpn_item.action = Fluctus::Application::FLUCTUS_ACTIONS['dpn']
+    dpn_item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
+    dpn_item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    dpn_item.note = 'Requested item be sent to DPN'
+    dpn_item.outcome = 'Not started'
+    dpn_item.user = requested_by
+    dpn_item.retry = true
+    dpn_item.reviewed = false
+    dpn_item.date = Time.now
+    dpn_item.save!
+    dpn_item
   end
 
   # Creates a ProcessedItem record showing that someone has requested
@@ -114,8 +136,8 @@ class ProcessedItem < ActiveRecord::Base
     delete_item.action = Fluctus::Application::FLUCTUS_ACTIONS['delete']
     delete_item.stage = Fluctus::Application::FLUCTUS_STAGES['requested']
     delete_item.status = Fluctus::Application::FLUCTUS_STATUSES['pend']
-    delete_item.note = "Delete requested"
-    delete_item.outcome = "Not started"
+    delete_item.note = 'Delete requested'
+    delete_item.outcome = 'Not started'
     delete_item.user = requested_by
     delete_item.retry = true
     delete_item.reviewed = false

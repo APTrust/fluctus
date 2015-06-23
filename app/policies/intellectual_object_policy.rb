@@ -66,7 +66,11 @@ class IntellectualObjectPolicy < ApplicationPolicy
 
   def restore?
     user.admin? || (user.institutional_admin? && user.institution_pid == record.institution_id)
-  end
+	end
+
+	def dpn?
+		user.admin? || (user.institutional_admin? && user.institution_pid == record.institution_id)
+	end
 
   class Scope
     attr_reader :user, :scope

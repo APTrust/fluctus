@@ -48,6 +48,9 @@
         <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
             <i class="glyphicon glyphicon-download"></i> Restore Object
         <% end %>
+        <%= link_to intellectual_object_dpn_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
+            <i class="glyphicon glyphicon-send"></i> Send Object To DPN
+        <% end %>
       <% end %>
       <%= render_document_sidebar_partial %>
     <% end %>

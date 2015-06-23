@@ -2,7 +2,7 @@ class IntellectualObjectsController < ApplicationController
 
   before_filter :authenticate_user!
   before_filter :load_institution, only: [:index, :create]
-  before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore]
+  before_filter :load_object, only: [:show, :edit, :update, :destroy, :restore, :dpn]
   after_action :verify_authorized, :except => [:index, :create, :create_from_json]
 
   include Aptrust::GatedSearch
@@ -105,6 +105,23 @@ class IntellectualObjectsController < ApplicationController
     else
       redirect_to @intellectual_object
       flash[:alert] = "Your object cannot be queued for restoration at this time due to a pending #{pending} request."
+    end
+  end
+
+  # get 'objects/:id/dpn'
+  def dpn
+    authorize @intellectual_object
+    pending = ProcessedItem.pending?(@intellectual_object.identifier)
+    if @intellectual_object.state == 'D'
+      redirect_to @intellectual_object
+      flash[:alert] = 'This item has been deleted and cannot be sent to DPN.'
+    elsif pending == 'false'
+      ProcessedItem.create_dpn_request(@intellectual_object.identifier, current_user.email)
+      redirect_to @intellectual_object
+      flash[:notice] = 'Your item has been queued for DPN.'
+    else
+      redirect_to @intellectual_object
+      flash[:alert] = "Your object cannot be sent to DPN at this time due to a pending #{pending} request."
     end
   end
 

@@ -575,4 +575,70 @@ describe IntellectualObjectsController do
     end
   end
 
+  describe 'send an object to dpn' do
+    describe 'when not signed in' do
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+      after { obj1.destroy }
+
+      it 'should redirect to login' do
+        get :dpn, intellectual_object_identifier: obj1
+        expect(response).to redirect_to root_url + 'users/sign_in'
+      end
+
+    end
+
+    describe 'when signed in as an admin' do
+      let(:user) { FactoryGirl.create(:user, :admin) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
+
+      before do
+        FactoryGirl.create(:ingested_item)
+        ProcessedItem.update_all(object_identifier: obj1.identifier)
+        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        sign_in user
+      end
+
+      after do
+        ProcessedItem.delete_all
+      end
+
+      it 'should mark the processed item as sent to dpn' do
+        get :dpn, intellectual_object_identifier: obj1
+        expect(response).to redirect_to obj1
+        count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['dpn'],
+                                    stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                    retry: true).count
+        expect(count).to eq(1)
+      end
+
+    end
+
+    describe 'when signed in as an institutional admin' do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:obj1) { FactoryGirl.create(:consortial_intellectual_object, institution: user.institution) }
+
+      before do
+        FactoryGirl.create(:ingested_item)
+        ProcessedItem.update_all(object_identifier: obj1.identifier)
+        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        sign_in user
+      end
+
+      after do
+        ProcessedItem.delete_all
+      end
+
+      it 'should mark the processed item as sent to dpn' do
+        get :dpn, intellectual_object_identifier: obj1
+        expect(response).to redirect_to obj1
+        count = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['dpn'],
+                                    stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                    status: Fluctus::Application::FLUCTUS_STATUSES['pend']).count
+        expect(count).to eq(1)
+
+      end
+    end
+  end
+
 end
