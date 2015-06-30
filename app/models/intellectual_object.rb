@@ -124,7 +124,18 @@ class IntellectualObject < ActiveFedora::Base
   end
 
   def in_dpn?
-    false
+    object_in_dpn = false
+    dpn = Fluctus::Application::FLUCTUS_ACTIONS['dpn']
+    record = Fluctus::Application::FLUCTUS_STAGES['record']
+    success = Fluctus::Application::FLUCTUS_STATUSES['success']
+    dpn_items = ProcessedItem.where(object_identifier: self.identifier, action: dpn)
+    dpn_items.each do |item|
+      if item.stage == record && item.status == success
+        object_in_dpn = true
+        break
+      end
+    end
+    object_in_dpn
   end
 
   def background_deletion(attributes)
