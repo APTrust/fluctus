@@ -123,6 +123,10 @@ class IntellectualObject < ActiveFedora::Base
     end
   end
 
+  def in_dpn?
+    false
+  end
+
   def background_deletion(attributes)
     generic_files.each do |gf|
       gf.soft_delete(attributes)

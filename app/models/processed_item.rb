@@ -33,7 +33,7 @@ class ProcessedItem < ActiveRecord::Base
            pending = 'delete'
            break
          elsif item.action == Fluctus::Application::FLUCTUS_ACTIONS['dpn']
-           pending = 'dpn'
+           pending = 'DPN'
            break
          end
       end
