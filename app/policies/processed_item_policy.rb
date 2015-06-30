@@ -53,6 +53,10 @@ class ProcessedItemPolicy < ApplicationPolicy
     record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
   end
 
+  def items_for_dpn?
+    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
+  end
+
   class Scope
     attr_reader :user, :scope
 

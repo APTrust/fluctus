@@ -29,10 +29,18 @@
       <% @intellectual_object.alt_identifier.each do |alt_ident| %>
           <dd><%= alt_ident %></dd>
       <% end %>
+      <dt>DPN Status</dt>
+      <% if @intellectual_object.in_dpn? %>
+          <dd>Item has been uploaded to DPN.</dd>
+      <% else %>
+          <dd>Item does not reside in DPN.</dd>
+      <% end %>
       <% if @intellectual_object.state == 'D' %>
           <dt><i><b>State</b></i></dt>
           <dd><i>This object has been deleted.</i></dd>
       <% end %>
+
+
     </dl>
   </div>
 

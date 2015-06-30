@@ -141,6 +141,34 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  # get '/api/v1/itemresults/items_for_dpn'
+  # Returns a list of items the users have requested
+  # to be queued for DPN. These will always be
+  # IntellectualObjects. If param object_identifier is supplied,
+  # it returns all DPN requests for the object. Otherwise,
+  # it returns pending requests for all objects where retry is true.
+  # (This is because retry gets set to false when the requestor encounters
+  # some fatal error. There is no sense in reprocessing those requests.)
+  def items_for_dpn
+    dpn = Fluctus::Application::FLUCTUS_ACTIONS['dpn']
+    requested = Fluctus::Application::FLUCTUS_STAGES['requested']
+    pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    @items = ProcessedItem.where(action: dpn)
+    @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
+    authorize @items
+    # Get items for a single object, which may consist of multiple bags.
+    # Return anything for that object identifier with action=DPN and retry=true
+    if !request[:object_identifier].blank?
+      @items = @items.where(object_identifier: request[:object_identifier])
+    else
+      # If user is not looking for a single bag, return all requested/pending items.
+      @items = @items.where(stage: requested, status: pending, retry: true)
+    end
+    respond_to do |format|
+      format.json { render json: @items, status: :ok }
+    end
+  end
+
 
   # get '/api/v1/itemresults/items_for_delete'
   # Returns a list of items the users have requested

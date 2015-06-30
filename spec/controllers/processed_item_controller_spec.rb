@@ -190,6 +190,72 @@ describe ProcessedItemController do
     end
   end
 
+  describe "GET #items_for_dpn" do
+    describe "for admin user" do
+      before do
+        sign_in admin_user
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['dpn'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: true)
+      end
+
+      it "responds successfully with an HTTP 200 status code" do
+        get :items_for_dpn, format: :json
+        expect(response).to be_success
+      end
+
+      it "assigns the correct @items" do
+        get :items_for_dpn, format: :json
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
+      end
+
+      it "does not include items where retry == false" do
+        ProcessedItem.update_all(retry: false)
+        get :items_for_dpn, format: :json
+        expect(assigns(:items).count).to eq(0)
+      end
+
+    end
+
+    describe "for institutional admin" do
+      before do
+        sign_in institutional_admin
+        2.times { FactoryGirl.create(:processed_item) }
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['dpn'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 institution: institutional_admin.institution.identifier,
+                                 retry: true)
+
+      end
+
+      it "assigns the requested items as @items" do
+        get :items_for_dpn, format: :json
+        assigns(:items).should include(user_item)
+        expect(assigns(:items).count).to eq(ProcessedItem.count)
+      end
+    end
+
+    describe "with object_identifier param" do
+      before do
+        3.times do
+          FactoryGirl.create(:processed_item, action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'])
+        end
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['dpn'],
+                                 institution: institution.identifier,
+                                 retry: true)
+        ProcessedItem.all.limit(2).update_all(object_identifier: "mickey/mouse")
+        sign_in institutional_admin
+      end
+
+      it "should return only items with the specified object_identifier" do
+        get :items_for_dpn, object_identifier: "mickey/mouse", format: :json
+        expect(assigns(:items).count).to eq(2)
+      end
+    end
+  end
+
 
   describe "GET #items_for_delete" do
     describe "for admin user" do
