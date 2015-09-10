@@ -56,7 +56,7 @@
         <%= link_to intellectual_object_restore_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal'} do %>
             <i class="glyphicon glyphicon-download"></i> Restore Object
         <% end %>
-        <% unless @intellectual_object.in_dpn? %>
+        <% unless @intellectual_object.in_dpn? || (Rails.env.production? && Fluctus::Application::DPN_STATUS == false)%>
             <%= link_to intellectual_object_dpn_path(@intellectual_object), {class: 'btn doc-action-btn btn-normal', id: 'dpn-button'} do %>
                 <i class="glyphicon glyphicon-send dpn"></i> Send Object To DPN
             <% end %>

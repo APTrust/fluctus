@@ -62,6 +62,8 @@ module Fluctus
         'dpn' => 'DPN'
     }
 
+    DPN_STATUS = false
+
     APTRUST_NAME = 'APTrust'
     APTRUST_ID = 'aptrust.org'
 
