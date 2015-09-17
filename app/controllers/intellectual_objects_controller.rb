@@ -27,6 +27,7 @@ class IntellectualObjectsController < ApplicationController
     super
   end
 
+
   def show
     authorize @intellectual_object
     if @intellectual_object.nil? || @intellectual_object.state == 'D'
@@ -112,7 +113,10 @@ class IntellectualObjectsController < ApplicationController
   def dpn
     authorize @intellectual_object
     pending = ProcessedItem.pending?(@intellectual_object.identifier)
-    if @intellectual_object.state == 'D'
+    if Rails.env.production? && (Fluctus::Application::DPN_STATUS == false)
+      redirect_to @intellectual_object
+      flash[:alert] = 'We are not currently sending objects to DPN.'
+    elsif @intellectual_object.state == 'D'
       redirect_to @intellectual_object
       flash[:alert] = 'This item has been deleted and cannot be sent to DPN.'
     elsif pending == 'false'
