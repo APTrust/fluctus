@@ -47,12 +47,25 @@ class InstitutionsController < ApplicationController
   private
     def load_institution
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
-      set_recent_objects
+      #set_recent_objects
+      set_recent_object_variables_temp_fix
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def build_resource_params
       params[:action] == 'new' ? [] : [params.require(:institution).permit(:name, :identifier)]
+    end
+
+    def set_recent_object_variables_temp_fix
+      if current_user.admin? && current_user.institution.identifier == @institution.identifier
+        @items = ProcessedItem.order('date').limit(10).reverse_order
+      else
+        @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
+      end
+      @size = 0
+      @item_count = 0
+      @object_count = 0
+      @failed = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES['fail'])
     end
 
     def set_recent_objects
