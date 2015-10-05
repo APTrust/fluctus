@@ -8,7 +8,7 @@ namespace :fluctus do
         ['Columbia University', 'cul', 'columbia.edu'],
         ['Johns Hopkins University', 'jhu', 'jhu.edu'],
         ['North Carolina State University', 'ncsu', 'ncsu.edu'],
-        ['Pennsylvania State University', 'psu', 'psu.edu'],
+        ['Pennsylvania State University', 'pst', 'psu.edu'],
         ['Syracuse University', 'syr', 'syr.edu'],
         ['University of Chicago', 'uchi', 'uchicago.edu'],
         ['University of Cincinnati', 'ucin', 'uc.edu'],
