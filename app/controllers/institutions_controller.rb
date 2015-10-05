@@ -46,6 +46,7 @@ class InstitutionsController < ApplicationController
 
   private
     def load_institution
+      redirect_to root_path
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
       #set_recent_objects
       set_recent_object_variables_temp_fix
