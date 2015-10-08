@@ -413,18 +413,19 @@ class ProcessedItemController < ApplicationController
   # Sets the count for each status/stage/action/institution.
   # Assumes @items has been set first.
   def set_counts
+    items = @filtered_items || @processed_items
     @counts = {}
     @statuses.each do |status|
-      @counts[status] = @items.where(status: status).count()
+      @counts[status] = items.where(status: status).count()
     end
     @stages.each do |stage|
-      @counts[stage] = @items.where(stage: stage).count()
+      @counts[stage] = items.where(stage: stage).count()
     end
     @actions.each do |action|
-      @counts[action] = @items.where(action: action).count()
+      @counts[action] = items.where(action: action).count()
     end
     @institutions.each do |institution|
-      @counts[institution] = @items.where(institution: institution).count()
+      @counts[institution] = items.where(institution: institution).count()
     end
   end
 
