@@ -34,6 +34,12 @@ describe ProcessedItemController do
         get :index
         assigns(:institution).should eq( admin_user.institution)
       end
+
+      it "assigns @counts" do
+        get :index
+        assigns(:counts).should include(Fluctus::Application::FLUCTUS_ACTIONS['ingest'])
+      end
+
     end
 
     describe "for institutional admin" do
@@ -45,6 +51,12 @@ describe ProcessedItemController do
         get :index
         assigns(:items).should include(user_item)
       end
+
+      it "assigns @counts" do
+        get :index
+        assigns(:counts).should include(Fluctus::Application::FLUCTUS_ACTIONS['ingest'])
+      end
+
     end
   end
 
