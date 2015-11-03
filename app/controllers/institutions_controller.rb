@@ -47,10 +47,8 @@ class InstitutionsController < ApplicationController
 
   private
     def load_institution
-      redirect_to root_path
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
-      #set_recent_objects
-      set_recent_object_variables_temp_fix
+      set_recent_objects
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
@@ -58,62 +56,27 @@ class InstitutionsController < ApplicationController
       params[:action] == 'new' ? [] : [params.require(:institution).permit(:name, :identifier)]
     end
 
-    def set_recent_object_variables_temp_fix
-      if current_user.admin? && current_user.institution.identifier == @institution.identifier
-        @items = ProcessedItem.order('date').limit(10).reverse_order
-      else
-        @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
-      end
-      @size = 0
-      @item_count = 0
-      @object_count = 0
-      @failed = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES['fail'])
-    end
-
     def set_recent_objects
       if current_user.admin? && current_user.institution.identifier == @institution.identifier
         @items = ProcessedItem.order('date').limit(10).reverse_order
-        @size = find_apt_size
+        @size = GenericFile.bytes_by_format['all']
         @item_count = ProcessedItem.all.count
         @object_count = IntellectualObject.all.count
       else
         @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
-        @size = find_size(@institution)
+        @size = @institution.bytes_by_format()['all']
         @item_count = ProcessedItem.where(institution: @institution.identifier).count
         @object_count = @institution.intellectual_objects.count
       end
       @failed = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES['fail'])
     end
 
-    def find_size(institution)
-      size = 0
-      institution.intellectual_objects.each do |object|
-        query = "id\:#{RSolr.escape(object.id)}"
-        solr_result = ActiveFedora::SolrService.query(query).first
-        new_size = solr_result['total_file_size_ssim'].nil? ? 0 : solr_result['total_file_size_ssim'].first
-        size = size + new_size.to_i
-      end
-      size
-    end
-
-    def find_apt_size
-      size = 0
-      IntellectualObject.all.each do |obj|
-        query = "id\:#{RSolr.escape(obj.id)}"
-        solr_result = ActiveFedora::SolrService.query(query).first
-        new_size = solr_result['total_file_size_ssim'].nil? ? 0 :solr_result['total_file_size_ssim'].first
-        size = size + new_size.to_i
-      end
-      size
-    end
-
     def find_all_sizes
       size = {}
       total_size = 0
       Institution.all.each do |inst|
-        current_size = find_size(inst)
-        size[inst.name] = current_size
-        total_size = current_size + total_size
+        size[inst.name] = inst.bytes_by_format()['all']
+        total_size = size[inst.name] + total_size
       end
       size['APTrust'] = total_size
       size

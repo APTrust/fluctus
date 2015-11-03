@@ -112,12 +112,8 @@ Fluctus::Application.routes.draw do
   mount Hydra::RoleManagement::Engine => '/'
 
   authenticated :user do
-    #root to: 'institutions#show', as: 'authenticated_root'
-    root to: 'processed_item#search', as: 'authenticated_root'
-    # Rails 4 users must specify the 'as' option to give it a unique name
-    # root :to => "main#dashboard", :as => "authenticated_root"
+    root to: 'institutions#show', as: 'authenticated_root'
   end
 
-  #root :to => 'catalog#index'
-  root :to => 'processed_item#search'
+  root :to => 'catalog#index'
 end

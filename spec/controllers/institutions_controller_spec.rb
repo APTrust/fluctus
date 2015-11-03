@@ -10,8 +10,8 @@ describe InstitutionsController do
   let(:institutional_admin) { FactoryGirl.create(:user, :institutional_admin) }
 
   describe "GET #index" do
-    describe "for admin users" do 
-      before do 
+    describe "for admin users" do
+      before do
         sign_in admin_user
       end
 
@@ -33,8 +33,8 @@ describe InstitutionsController do
   end
 
   describe "GET #new" do
-    describe "for admin users" do 
-      before do 
+    describe "for admin users" do
+      before do
         sign_in admin_user
       end
 
@@ -46,21 +46,21 @@ describe InstitutionsController do
   end
 
   describe "GET #show" do
-    describe "for admin user" do 
+    describe "for admin user" do
       before do
         sign_in admin_user
       end
 
-      # it "responds successfully with an HTTP 200 status code" do
-      #   get :show, institution_identifier: admin_user.institution.to_param
-      #   expect(response).to be_success
-      #   expect(response.status).to eq(200)
-      # end
+      it "responds successfully with an HTTP 200 status code" do
+        get :show, institution_identifier: admin_user.institution.to_param
+        expect(response).to be_success
+        expect(response.status).to eq(200)
+      end
 
-      # it "renders the show template" do
-      #   get :show, institution_identifier: admin_user.institution.to_param
-      #   expect(response).to render_template("show")
-      # end
+      it "renders the show template" do
+        get :show, institution_identifier: admin_user.institution.to_param
+        expect(response).to render_template("show")
+      end
 
       it "assigns the requested institution as @institution" do
         get :show, institution_identifier: admin_user.institution.to_param
@@ -69,21 +69,21 @@ describe InstitutionsController do
 
     end
 
-    describe "for institutional_admin user" do 
-      before do 
+    describe "for institutional_admin user" do
+      before do
         sign_in institutional_admin
       end
 
-      # it "responds successfully with an HTTP 200 status code" do
-      #   get :show, institution_identifier: institutional_admin.institution.to_param
-      #   expect(response).to be_success
-      #   expect(response.status).to eq(200)
-      # end
+      it "responds successfully with an HTTP 200 status code" do
+        get :show, institution_identifier: institutional_admin.institution.to_param
+        expect(response).to be_success
+        expect(response.status).to eq(200)
+      end
 
-      # it "renders the show template" do
-      #   get :show, institution_identifier: institutional_admin.institution.to_param
-      #   expect(response).to render_template("show")
-      # end
+      it "renders the show template" do
+        get :show, institution_identifier: institutional_admin.institution.to_param
+        expect(response).to render_template("show")
+      end
 
       it "assigns the requested institution as @institution" do
         get :show, institution_identifier: institutional_admin.institution.to_param
@@ -91,20 +91,20 @@ describe InstitutionsController do
       end
     end
 
-    describe "for institutional_user user" do 
-      before do 
+    describe "for institutional_user user" do
+      before do
         sign_in institutional_user
       end
-      # it "responds successfully with an HTTP 200 status code" do
-      #   get :show, institution_identifier: institutional_user.institution.to_param
-      #   expect(response).to be_success
-      #   expect(response.status).to eq(200)
-      # end
+      it "responds successfully with an HTTP 200 status code" do
+        get :show, institution_identifier: institutional_user.institution.to_param
+        expect(response).to be_success
+        expect(response.status).to eq(200)
+      end
 
-      # it "renders the show template" do
-      #   get :show, institution_identifier: institutional_user.institution.to_param
-      #   expect(response).to render_template("show")
-      # end
+      it "renders the show template" do
+        get :show, institution_identifier: institutional_user.institution.to_param
+        expect(response).to render_template("show")
+      end
 
       it "assigns the requested institution as @institution" do
         get :show, institution_identifier: institutional_user.institution.to_param

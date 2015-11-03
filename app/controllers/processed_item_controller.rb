@@ -59,6 +59,7 @@ class ProcessedItemController < ApplicationController
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
+    set_counts
     page_count
   end
 
@@ -404,8 +405,28 @@ class ProcessedItemController < ApplicationController
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
     authorize @items, :index?
+    set_counts
     page_count
     session[:purge_datetime] = Time.now.utc if params[:page] == 1 || params[:page].nil?
+  end
+
+  # Sets the count for each status/stage/action/institution.
+  # Assumes @items has been set first.
+  def set_counts
+    items = @filtered_items || @processed_items
+    @counts = {}
+    @statuses.each do |status|
+      @counts[status] = items.where(status: status).count()
+    end
+    @stages.each do |stage|
+      @counts[stage] = items.where(stage: stage).count()
+    end
+    @actions.each do |action|
+      @counts[action] = items.where(action: action).count()
+    end
+    @institutions.each do |institution|
+      @counts[institution] = items.where(institution: institution).count()
+    end
   end
 
   # Users can hit the show route via /id or /etag/name/bag_date.
