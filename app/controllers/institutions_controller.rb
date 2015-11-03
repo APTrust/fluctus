@@ -10,8 +10,7 @@ class InstitutionsController < ApplicationController
   def index
     respond_to do |format|
       @institutions = policy_scope(Institution)
-      #@sizes = find_all_sizes
-      @sizes = find_all_sizes_temp_fix
+      @sizes = find_all_sizes
       format.json { render json: @institutions.map { |inst| inst.serializable_hash } }
       format.html { render "index" }
     end
@@ -79,15 +78,6 @@ class InstitutionsController < ApplicationController
         total_size = size[inst.name] + total_size
       end
       size['APTrust'] = total_size
-      size
-    end
-
-    def find_all_sizes_temp_fix
-      size = {}
-      Institution.all.each do |inst|
-        size[inst.name] = 0
-      end
-      size['APTrust'] = 0
       size
     end
 end
