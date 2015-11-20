@@ -6,7 +6,7 @@ class IntellectualObjectMetadata < ActiveFedora::RdfxmlRDFDatastream
     index.as :stored_searchable
   end
   property :identifier, predicate: RDF::DC.identifier do |index|
-    index.as :stored_searchable, :symbol
+    index.as :stored_searchable, :symbol, :stored_sortable, :facetable
   end
   property :alt_identifier, predicate: RDF::DC11.identifier do |index|
     index.as :stored_searchable, :symbol

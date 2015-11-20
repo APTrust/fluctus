@@ -126,7 +126,9 @@ namespace :fluctus do
       num_items = args[:numIntObjects].to_i
       num_items.times.each do |count|
         puts "== Creating intellectual object #{count+1} of #{num_items} for #{institution.name}"
-        name = "#{SecureRandom.uuid}"
+        #name = "#{SecureRandom.uuid}"
+        #bag_name = "#{name}.tar"
+        name = "#{institution.identifier}.spectator_1961-#{rand(12)}-#{rand(31)}_001"
         bag_name = "#{name}.tar"
         ident = "#{institution.identifier}/#{name}"
         item = FactoryGirl.create(:intellectual_object, institution: institution, identifier: ident, bag_name: bag_name)
