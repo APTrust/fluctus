@@ -7,12 +7,14 @@ describe InstitutionMetadata do
     @datastream.name = "Test"
     @datastream.brief_name = "tst"
     @datastream.identifier = "test.org"
+    @datastream.dpn_uuid = "1234/test.org"
   end
 
   it 'should retain properties' do
     @datastream.name.first.should == "Test"
     @datastream.brief_name.first.should == "tst"
     @datastream.identifier.first.should == "test.org"
+    @datastream.dpn_uuid.first.should == "1234/test.org"
   end
 
 end

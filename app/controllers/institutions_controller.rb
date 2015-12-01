@@ -12,7 +12,7 @@ class InstitutionsController < ApplicationController
       @institutions = policy_scope(Institution)
       @sizes = find_all_sizes
       format.json { render json: @institutions.map { |inst| inst.serializable_hash } }
-      format.html { render "index" }
+      format.html { render 'index' }
     end
   end
 
@@ -28,8 +28,22 @@ class InstitutionsController < ApplicationController
   end
 
   def show
-    authorize @institution
-    show!
+    authorize @institution || Institution.new
+    if @institution.nil? || @institution.state == 'D'
+      respond_to do |format|
+        format.json {render :nothing => true, :status => 404}
+        format.html {
+          redirect_to root_path
+          flash[:alert] = 'The institution you requested does not exist or has been deleted.'
+        }
+      end
+    else
+      set_recent_objects
+      respond_to do |format|
+        format.json { render json: object_as_json }
+        format.html
+      end
+    end
   end
 
   def edit
@@ -47,7 +61,6 @@ class InstitutionsController < ApplicationController
   private
     def load_institution
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
-      set_recent_objects
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

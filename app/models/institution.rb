@@ -7,7 +7,7 @@ class Institution < ActiveFedora::Base
 
   has_many :intellectual_objects, property: :is_part_of
 
-  has_attributes :name, :brief_name, :identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :name, :brief_name, :identifier, :dpn_uuid, datastream: 'descMetadata', multiple: false
 
   validates :name, :identifier, presence: true
   validate :name_is_unique
@@ -25,7 +25,7 @@ class Institution < ActiveFedora::Base
   end
 
   def serializable_hash(options={})
-    { pid: pid, name: name, brief_name: brief_name, identifier: identifier }
+    { pid: pid, name: name, brief_name: brief_name, identifier: identifier, dpn_uuid: dpn_uuid }
   end
 
   def self.get_from_solr(pid)

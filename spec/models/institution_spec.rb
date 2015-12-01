@@ -54,6 +54,7 @@ describe Institution do
       inst.identifier.should == subject.identifier
       inst.name.should == subject.name
       inst.brief_name.should == subject.brief_name
+      inst.dpn_uuid.should == subject.dpn_uuid
     end
   end
 

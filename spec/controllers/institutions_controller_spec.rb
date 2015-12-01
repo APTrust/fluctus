@@ -111,6 +111,22 @@ describe InstitutionsController do
         assigns(:institution).should eq(institutional_user.institution)
       end
     end
+
+    describe "for an API user" do
+      before do
+        sign_in admin_user
+      end
+      it "responds successfully with an HTTP 200 status code" do
+        get :show, institution_identifier: CGI.escape(admin_user.institution.to_param)
+        expect(response).to be_success
+        expect(response.status).to eq(200)
+      end
+
+      it "should provide a 404 code when an incorrect identifier is provided" do
+        get :show, institution_identifier: CGI.escape('notreal.edu'), format: 'json'
+        expect(response.status).to eq(404)
+      end
+    end
   end
 
   describe "POST create" do
