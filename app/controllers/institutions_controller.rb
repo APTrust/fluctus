@@ -40,7 +40,7 @@ class InstitutionsController < ApplicationController
     else
       set_recent_objects
       respond_to do |format|
-        format.json { render json: object_as_json }
+        format.json { render json: @institution }
         format.html
       end
     end

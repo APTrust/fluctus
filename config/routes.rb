@@ -81,7 +81,7 @@ Fluctus::Application.routes.draw do
   post '/api/v1/itemresults/restoration_status/:object_identifier', to: 'processed_item#set_restoration_status', as: :item_set_restoration_status, object_identifier: /.*/
   post '/api/v1/itemresults/delete_test_items', to: 'processed_item#delete_test_items', format: 'json'
 
-  get '/api/v1/institutions:institution_identifier', to: 'institutions#show', format: 'json', institution_identifier: institution_ptrn
+  get '/api/v1/institutions/:institution_identifier', to: 'institutions#show', format: 'json', institution_identifier: institution_ptrn
 
   post '/api/v1/objects/include_nested', to: 'intellectual_objects#create_from_json', format: 'json'
   post '/api/v1/objects/:intellectual_object_identifier/files/save_batch', to: 'generic_files#save_batch', format: 'json', intellectual_object_identifier: /[^\/]*/, as: :generic_files_save_batch
