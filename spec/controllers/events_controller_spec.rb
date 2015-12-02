@@ -37,7 +37,7 @@ describe EventsController do
         assigns(:document_list).map(&:id).should == @someone_elses_event.identifier
       end
 
-      it "can view objects events by object identifier (API)" do
+      it 'can view objects events by object identifier (API)' do
         get :index, intellectual_object_identifier: someone_elses_object.identifier, use_route: 'events_by_object_identifier_path'
         expect(response).to be_success
         assigns(:intellectual_object).should == someone_elses_object
@@ -145,9 +145,9 @@ describe EventsController do
 
     describe 'GET index' do
       before do
-        oldest_time = "2014-01-13 10:15:00 -0600"
-        middle_time = "2014-01-13 10:30:00 -0600"
-        newest_time = "2014-01-13 10:45:00 -0600"
+        oldest_time = '2014-01-13 10:15:00 -0600'
+        middle_time = '2014-01-13 10:30:00 -0600'
+        newest_time = '2014-01-13 10:45:00 -0600'
 
         @event = file.add_event(event_attrs.merge(date_time: oldest_time))
         @event2 = file.add_event(event_attrs.merge(date_time: newest_time))
@@ -223,8 +223,8 @@ describe EventsController do
       end
 
       it 'redirects to login' do
-        expect(response).to redirect_to root_url + "users/sign_in"
-        expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
+        expect(response).to redirect_to root_url + 'users/sign_in'
+        expect(flash[:alert]).to eq 'You need to sign in or sign up before continuing.'
       end
     end
 
@@ -234,8 +234,8 @@ describe EventsController do
       end
 
       it 'redirects to login' do
-        expect(response).to redirect_to root_url + "users/sign_in"
-        expect(flash[:alert]).to eq "You need to sign in or sign up before continuing."
+        expect(response).to redirect_to root_url + 'users/sign_in'
+        expect(flash[:alert]).to eq 'You need to sign in or sign up before continuing.'
       end
     end
   end
