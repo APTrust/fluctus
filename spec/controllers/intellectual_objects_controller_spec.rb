@@ -26,8 +26,8 @@ describe IntellectualObjectsController do
       before { sign_in user }
       describe 'as an institutional user' do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
-        describe "and viewing my institution" do
-          it "should show the results that I have access to that belong to the institution" do
+        describe 'and viewing my institution' do
+          it 'should show the results that I have access to that belong to the institution' do
             get :index, institution_identifier: user.institution_identifier
             expect(response).to be_successful
             expect(assigns(:document_list).size).to eq 3
@@ -35,17 +35,17 @@ describe IntellectualObjectsController do
             expect(assigns(:document_list).map &:id).to match_array [obj2.id, obj4.id, obj6.id]
           end
 
-          it "should match a partial search on title" do
+          it 'should match a partial search on title' do
             get :index, institution_identifier: user.institution_identifier, q: 'Rugby'
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj2.id]
           end
-          it "should match a partial search on description" do
+          it 'should match a partial search on description' do
             get :index, institution_identifier: user.institution_identifier, q: 'Guangzhou'
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
           end
-          it "should match an exact search on identifier" do
+          it 'should match an exact search on identifier' do
             get :index, institution_identifier: user.institution_identifier, q: obj4.identifier
             expect(response).to be_successful
             expect(assigns(:document_list).map &:id).to match_array [obj4.id]
@@ -62,8 +62,8 @@ describe IntellectualObjectsController do
           end
         end
 
-        describe "and viewing another institution" do
-          it "should redirect" do
+        describe 'and viewing another institution' do
+          it 'should redirect' do
             get :index, institution_identifier: another_institution.identifier
             expect(response).to redirect_to root_url
             expect(flash[:alert]).to eq 'You are not authorized to access this page.'
@@ -73,8 +73,8 @@ describe IntellectualObjectsController do
 
       describe 'when signed in as an admin' do
         let(:user) { FactoryGirl.create(:user, :admin) }
-        describe "and viewing another institution" do
-          it "should show the results that I have access to that belong to the institution " do
+        describe 'and viewing another institution' do
+          it 'should show the results that I have access to that belong to the institution' do
             get :index, institution_identifier: another_institution.identifier
             expect(response).to be_successful
             expect(assigns(:document_list).size).to eq 3
@@ -90,10 +90,10 @@ describe IntellectualObjectsController do
     let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
     after { obj1.destroy }
 
-    describe "when not signed in" do
-      it "should redirect to login" do
+    describe 'when not signed in' do
+      it 'should redirect to login' do
         get :show, intellectual_object_identifier: obj1
-        expect(response).to redirect_to root_url + "users/sign_in"
+        expect(response).to redirect_to root_url + 'users/sign_in'
       end
     end
 
@@ -101,19 +101,19 @@ describe IntellectualObjectsController do
       let(:user) { FactoryGirl.create(:user, :institutional_user) }
       before { sign_in user }
         
-      it "should show the object" do
+      it 'should show the object' do
         get :show, intellectual_object_identifier: obj1
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
       end
 
-      it "should show the object by identifier for API users" do
+      it 'should show the object by identifier for API users' do
         get :show, identifier: CGI.escape(obj1.identifier), use_route: 'object_by_identifier'
         expect(response).to be_successful
         expect(assigns(:intellectual_object)).to eq obj1
       end
 
-      it "should include only active generic files for API users" do
+      it 'should include only active generic files for API users' do
         FactoryGirl.create(:generic_file, intellectual_object: obj1, identifier: 'one', state: 'A')
         FactoryGirl.create(:generic_file, intellectual_object: obj1, identifier: 'two', state: 'D')
         get(:show, identifier: CGI.escape(obj1.identifier), use_route: 'object_by_identifier',
@@ -134,9 +134,9 @@ describe IntellectualObjectsController do
 
     describe 'when not signed in' do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
-      it "should redirect to login" do
+      it 'should redirect to login' do
         get :edit, intellectual_object_identifier: obj1
-        expect(response).to redirect_to root_url + "users/sign_in"
+        expect(response).to redirect_to root_url + 'users/sign_in'
       end
     end
 
@@ -145,7 +145,7 @@ describe IntellectualObjectsController do
       describe 'as an institutional_user' do
         let(:user) { FactoryGirl.create(:user, :institutional_user) }
         before { sign_in user }
-        it "should be unauthorized" do
+        it 'should be unauthorized' do
           get :edit, intellectual_object_identifier: obj1
           expect(response).to redirect_to root_url
           expect(flash[:alert]).to eq 'You are not authorized to access this page.'
@@ -155,7 +155,7 @@ describe IntellectualObjectsController do
       describe 'as an institutional_admin' do
         let(:user) { FactoryGirl.create(:user, :institutional_admin) }
         before { sign_in user }
-        it "should be unauthorized" do
+        it 'should be unauthorized' do
           get :edit, intellectual_object_identifier: obj1
           expect(response).to redirect_to root_url
           expect(flash[:alert]).to eq 'You are not authorized to access this page.'
@@ -179,7 +179,7 @@ describe IntellectualObjectsController do
 
     describe 'when not signed in' do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
-      it "should redirect to login" do
+      it 'should redirect to login' do
         patch :update, intellectual_object_identifier: obj1, intellectual_object: {title: 'Foo' }
         expect(response).to redirect_to root_url + 'users/sign_in'
       end
@@ -194,25 +194,25 @@ describe IntellectualObjectsController do
         aggregate.save!
       }
 
-      it "should update the search counter" do
+      it 'should update the search counter' do
         patch :update, intellectual_object_identifier: obj1, counter: '5'
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(session[:search][:counter]).to eq '5'
       end
        
-      it "should update fields" do
+      it 'should update fields' do
         patch :update, intellectual_object_identifier: obj1, intellectual_object: {title: 'Foo'}
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
-      it "should update via json" do
+      it 'should update via json' do
         patch :update, intellectual_object_identifier: obj1, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response).to be_successful
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
 
-      it "should update fields when called with identifier (API)" do
+      it 'should update fields when called with identifier (API)' do
         patch :update, identifier: CGI.escape(obj1.identifier), intellectual_object: {title: 'Foo'}, use_route: 'object_update_by_identifier'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
@@ -221,10 +221,10 @@ describe IntellectualObjectsController do
 
   describe 'create an object' do
 
-    describe "when not signed in" do
-      it "should redirect to login" do
+    describe 'when not signed in' do
+      it 'should redirect to login' do
         post :create, institution_identifier: FactoryGirl.create(:institution).identifier, intellectual_object: {title: 'Foo' }
-        expect(response).to redirect_to root_url + "users/sign_in"
+        expect(response).to redirect_to root_url + 'users/sign_in'
         expect(flash[:alert]).to eq 'You need to sign in or sign up before continuing.'
       end
     end
@@ -233,19 +233,19 @@ describe IntellectualObjectsController do
       let(:user) { FactoryGirl.create(:user, :institutional_admin) }
       before { sign_in user }
         
-      it "should only allow assigning institutions you have access to" do
+      it 'should only allow assigning institutions you have access to' do
         post :create, institution_identifier: FactoryGirl.create(:institution).identifier, intellectual_object: {title: 'Foo'}, format: 'json'
-        expect(response.code).to eq "403" # forbidden
-        expect(JSON.parse(response.body)).to eq({"status"=>"error","message"=>"You are not authorized to access this page."})
+        expect(response.code).to eq '403' # forbidden
+        expect(JSON.parse(response.body)).to eq({'status'=>'error','message'=>'You are not authorized to access this page.'})
        end
 
-      it "should show errors" do
+      it 'should show errors' do
         post :create, institution_identifier: user.institution_identifier, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response.code).to eq '422' #Unprocessable Entity
-        expect(JSON.parse(response.body)).to eq({"identifier" => ["can't be blank"],"access" => ["can't be blank"]})
+        expect(JSON.parse(response.body)).to eq({'identifier' => ["can't be blank"],'access' => ["can't be blank"]})
       end
 
-      it "should update fields" do
+      it 'should update fields' do
         post :create, institution_identifier: user.institution_identifier, intellectual_object: {title: 'Foo', identifier: 'test.edu/124', access: 'restricted', bag_name: '124'}, format: 'json'
         expect(response.code).to eq '201'
         expect(assigns(:intellectual_object).title).to eq 'Foo'
@@ -453,16 +453,16 @@ describe IntellectualObjectsController do
 
       it 'should roll back when nested items are invalid' do
         obj = sample_object()
-        obj[:identifier] = "ncsu.edu/ncsu.ahchoo"
-        obj[:premisEvents].each { |pe| pe[:identifier] += "_1" }
+        obj[:identifier] = 'ncsu.edu/ncsu.ahchoo'
+        obj[:premisEvents].each { |pe| pe[:identifier] += '_1' }
         obj[:generic_files].each { |gf|
-          gf[:identifier] += "_1"
-          gf[:premisEvents].each { |pe| pe[:identifier] += "_1" }
+          gf[:identifier] += '_1'
+          gf[:premisEvents].each { |pe| pe[:identifier] += '_1' }
         }
         # Missing format is invalid. This will cause create_from_json
         # to fail after it's already built up some generic files and
         # events.
-        obj[:generic_files][1][:file_format] = ""
+        obj[:generic_files][1][:file_format] = ''
         expect {
           post :create_from_json, institution_identifier: any_institution.identifier, include_nested: 'true', intellectual_object: [obj], format: 'json'
           expect(response.code).to eq '422'
@@ -477,9 +477,9 @@ describe IntellectualObjectsController do
     describe 'when not signed in' do
       let(:obj1) { FactoryGirl.create(:consortial_intellectual_object) }
       after { obj1.destroy }
-      it "should redirect to login" do
+      it 'should redirect to login' do
         delete :destroy, intellectual_object_identifier: obj1
-        expect(response).to redirect_to root_url + "users/sign_in"
+        expect(response).to redirect_to root_url + 'users/sign_in'
       end
     end
 
@@ -489,14 +489,14 @@ describe IntellectualObjectsController do
       before { sign_in user }
       after { ProcessedItem.delete_all }
 
-      it "should update via json" do
+      it 'should update via json' do
         pi = FactoryGirl.create(:ingested_item, object_identifier: obj1.identifier)
         delete :destroy, intellectual_object_identifier: obj1, format: 'json'
         expect(response.code).to eq '204'
         expect(assigns(:intellectual_object).state).to eq 'D'
       end
 
-      it "should update via html" do
+      it 'should update via html' do
         pi = FactoryGirl.create(:ingested_item, object_identifier: obj1.identifier)
         delete :destroy, intellectual_object_identifier: obj1
         expect(response).to redirect_to root_path
@@ -527,8 +527,8 @@ describe IntellectualObjectsController do
           FactoryGirl.create(:ingested_item)
         end
         ProcessedItem.update_all(object_identifier: obj1.identifier)
-        ProcessedItem.first.update(object_identifier: "some.edu/some.bag")
-        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        ProcessedItem.first.update(object_identifier: 'some.edu/some.bag')
+        request.env['HTTP_REFERER'] = 'OzzyOsbourne'
         sign_in user
       end
 
@@ -555,7 +555,7 @@ describe IntellectualObjectsController do
       before do
         FactoryGirl.create(:ingested_item)
         ProcessedItem.update_all(object_identifier: obj1.identifier)
-        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        request.env['HTTP_REFERER'] = 'OzzyOsbourne'
         sign_in user
       end
 
@@ -594,7 +594,7 @@ describe IntellectualObjectsController do
       before do
         FactoryGirl.create(:ingested_item)
         ProcessedItem.update_all(object_identifier: obj1.identifier)
-        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        request.env['HTTP_REFERER'] = 'OzzyOsbourne'
         sign_in user
       end
 
@@ -621,7 +621,7 @@ describe IntellectualObjectsController do
       before do
         FactoryGirl.create(:ingested_item)
         ProcessedItem.update_all(object_identifier: obj1.identifier)
-        request.env["HTTP_REFERER"] = "OzzyOsbourne"
+        request.env['HTTP_REFERER'] = 'OzzyOsbourne'
         sign_in user
       end
 
