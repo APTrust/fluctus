@@ -4,24 +4,24 @@ RSpec::Core::RakeTask.new(:rspec => 'test:prepare') { |t| t.rspec_opts = ['--col
 namespace :fluctus do
 
   partner_list = [
-        ['APTrust', 'apt', 'aptrust.org'],
-        ['Columbia University', 'cul', 'columbia.edu'],
-        ['Johns Hopkins University', 'jhu', 'jhu.edu'],
-        ['North Carolina State University', 'ncsu', 'ncsu.edu'],
-        ['Pennsylvania State University', 'pst', 'psu.edu'],
-        ['Syracuse University', 'syr', 'syr.edu'],
-        ['University of Chicago', 'uchi', 'uchicago.edu'],
-        ['University of Cincinnati', 'ucin', 'uc.edu'],
-        ['University of Connecticut', 'uconn', 'uconn.edu'],
-        ['University of Maryland', 'mdu', 'umd.edu'],
-        ['University of Miami', 'um', 'miami.edu'],
-        ['University of Michigan', 'umich', 'umich.edu'],
-        ['University of North Carolina at Chapel Hill', 'unc', 'unc.edu'],
-        ['University of Notre Dame', 'und', 'nd.edu'],
-        ['University of Virginia','uva', 'virginia.edu'],
-        ['Virginia Tech','vatech', 'vt.edu'],
-        ['Test University','test', 'test.edu'],
-        ['Indiana University Bloomington', 'iub', 'indiana.edu']
+        ['APTrust', 'apt', 'aptrust.org', nil],
+        ['Columbia University', 'cul', 'columbia.edu', nil],
+        ['Johns Hopkins University', 'jhu', 'jhu.edu', nil],
+        ['North Carolina State University', 'ncsu', 'ncsu.edu', nil],
+        ['Pennsylvania State University', 'pst', 'psu.edu', nil],
+        ['Syracuse University', 'syr', 'syr.edu', nil],
+        ['University of Chicago', 'uchi', 'uchicago.edu', nil],
+        ['University of Cincinnati', 'ucin', 'uc.edu', nil],
+        ['University of Connecticut', 'uconn', 'uconn.edu', nil],
+        ['University of Maryland', 'mdu', 'umd.edu', nil],
+        ['University of Miami', 'um', 'miami.edu', nil],
+        ['University of Michigan', 'umich', 'umich.edu', nil],
+        ['University of North Carolina at Chapel Hill', 'unc', 'unc.edu', nil],
+        ['University of Notre Dame', 'und', 'nd.edu', nil],
+        ['University of Virginia','uva', 'virginia.edu', nil],
+        ['Virginia Tech','vatech', 'vt.edu', nil],
+        ['Test University','test', 'test.edu', '9a000000-0000-4000-a000-000000000005'],
+        ['Indiana University Bloomington', 'iub', 'indiana.edu', nil]
   ]
 
 
@@ -107,8 +107,9 @@ namespace :fluctus do
     puts "Creating #{num_insts} Institutions"
     num_insts.times.each do |count|
       puts "== Creating number #{count+1} of #{num_insts}: #{partner_list[count+1].first} "
-      FactoryGirl.create(:institution, name: partner_list[count+1].first, brief_name: partner_list[count+1][1],
-                         identifier: partner_list[count+1].last)
+      partner = partner_list[count+1]
+      i = FactoryGirl.create(:institution, name: partner[0], brief_name: partner[1],
+                         identifier: partner[2], dpn_uuid: partner[3])
     end
 
     puts 'Creating Users for each Institution'
@@ -202,9 +203,12 @@ namespace :fluctus do
     puts 'Creating Institutions'
     partner_list.count.times.each do |count|
       puts "== Creating number #{count+1} of #{partner_list.count}: #{partner_list[count].first} "
-      FactoryGirl.create(:institution, name: partner_list[count].first,
-                                brief_name: partner_list[count][1],
-                                identifier: partner_list[count].last)
+      partner = partner_list[count]
+      FactoryGirl.create(:institution,
+                         name: partner[0],
+                         brief_name: partner[1],
+                         identifier: partner[2],
+                         dpn_uuid: partner[3])
     end
 
     user_inst.each do |user_id, inst_identifier|
