@@ -129,7 +129,86 @@ describe InstitutionsController do
     end
   end
 
-  describe ""
+  describe 'GET edit' do
+    after { inst1.destroy }
+
+    describe 'when not signed in' do
+      let(:inst1) { FactoryGirl.create(:institution) }
+      it 'should redirect to login' do
+        get :edit, institution_identifier: inst1
+        expect(response).to redirect_to root_url + 'users/sign_in'
+      end
+    end
+
+    describe 'when signed in' do
+      after { user.destroy }
+      describe 'as an institutional_user' do
+        let(:inst1) { FactoryGirl.create(:institution) }
+        let(:user) { FactoryGirl.create(:user, :institutional_user, institution_pid: inst1.id) }
+        before { sign_in user }
+        it 'should be unauthorized' do
+          get :edit, institution_identifier: inst1
+          expect(response).to redirect_to root_url
+          expect(flash[:alert]).to eq 'You are not authorized to access this page.'
+        end
+      end
+
+      describe 'as an institutional_admin' do
+        let(:inst1) { FactoryGirl.create(:institution) }
+        let(:inst2) { FactoryGirl.create(:institution) }
+        let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: inst1.id) }
+        before { sign_in user }
+        describe 'editing my own institution' do
+          it 'should show the institution edit form' do
+            get :edit, institution_identifier: inst1
+            expect(response).to be_successful
+          end
+        end
+        describe 'editing an institution other than my own' do
+          it 'should be unauthorized' do
+            get :edit, institution_identifier: inst2
+            expect(response).to redirect_to root_url
+            expect(flash[:alert]).to eq 'You are not authorized to access this page.'
+          end
+        end
+      end
+
+      describe 'as an admin' do
+        let(:inst1) { FactoryGirl.create(:institution) }
+        let(:user) { FactoryGirl.create(:user, :admin, institution_pid: inst1.id) }
+        before { sign_in user }
+        it 'should show the institution edit form' do
+          get :edit, institution_identifier: inst1
+          expect(response).to be_successful
+        end
+      end
+    end
+  end
+
+  describe 'PATCH update' do
+
+    describe 'when not signed in' do
+      let(:inst1) { FactoryGirl.create(:institution) }
+      it 'should redirect to login' do
+        patch :update, institution_identifier: inst1, institution: {name: 'Foo' }
+        expect(response).to redirect_to root_url + 'users/sign_in'
+      end
+    end
+
+    describe 'when signed in' do
+      let(:user) { FactoryGirl.create(:user, :admin) }
+      let(:inst1) { FactoryGirl.create(:institution) }
+      before {
+        sign_in user
+      }
+
+      it 'should update fields' do
+        patch :update, institution_identifier: inst1, institution: {name: 'Foo'}
+        expect(response).to redirect_to institution_path(inst1)
+        expect(assigns(:institution).name).to eq 'Foo'
+      end
+    end
+  end
 
   describe 'POST create' do
     describe 'with admin user' do
