@@ -3,25 +3,27 @@ RSpec::Core::RakeTask.new(:rspec => 'test:prepare') { |t| t.rspec_opts = ['--col
 
 namespace :fluctus do
 
+  # DPN member UUIDs are at
+  # https://docs.google.com/spreadsheets/d/1-WFK0me8dM2jETlUkI7wpmRFMOgHC5LhyYk6hgHOfIA/
   partner_list = [
         ['APTrust', 'apt', 'aptrust.org', nil],
-        ['Columbia University', 'cul', 'columbia.edu', nil],
-        ['Johns Hopkins University', 'jhu', 'jhu.edu', nil],
-        ['North Carolina State University', 'ncsu', 'ncsu.edu', nil],
-        ['Pennsylvania State University', 'pst', 'psu.edu', nil],
-        ['Syracuse University', 'syr', 'syr.edu', nil],
+        ['Columbia University', 'cul', 'columbia.edu', 'ed73acd4-93e9-4196-a1ba-7fc8031b5f0b'],
+        ['Indiana University Bloomington', 'iub', 'indiana.edu', '77abdcc5-6d50-441b-8fd7-8085ceba5f05'],
+        ['Johns Hopkins University', 'jhu', 'jhu.edu', '0ab32901-5377-4928-898c-f4c5e2cde8e1'],
+        ['North Carolina State University', 'ncsu', 'ncsu.edu', 'd3432b4f-9f82-4206-a086-89bff5c5bd1e'],
+        ['Pennsylvania State University', 'pst', 'psu.edu', 'cf153594-6c22-4b59-a12e-420e0ae5280f'],
+        ['Syracuse University', 'syr', 'syr.edu', 'd5e231ad-cf1f-4499-9afe-7045f1254eaa'],
+        ['Test University','test', 'test.edu', '9a000000-0000-4000-a000-000000000005'],
         ['University of Chicago', 'uchi', 'uchicago.edu', nil],
         ['University of Cincinnati', 'ucin', 'uc.edu', nil],
         ['University of Connecticut', 'uconn', 'uconn.edu', nil],
-        ['University of Maryland', 'mdu', 'umd.edu', nil],
-        ['University of Miami', 'um', 'miami.edu', nil],
-        ['University of Michigan', 'umich', 'umich.edu', nil],
-        ['University of North Carolina at Chapel Hill', 'unc', 'unc.edu', nil],
-        ['University of Notre Dame', 'und', 'nd.edu', nil],
-        ['University of Virginia','uva', 'virginia.edu', nil],
-        ['Virginia Tech','vatech', 'vt.edu', nil],
-        ['Test University','test', 'test.edu', '9a000000-0000-4000-a000-000000000005'],
-        ['Indiana University Bloomington', 'iub', 'indiana.edu', nil]
+        ['University of Maryland', 'mdu', 'umd.edu', 'a905b4da-cb04-43b9-8e23-ee43e02b23df'],
+        ['University of Miami', 'um', 'miami.edu', '41d34f47-ab83-4fa3-a40d-85465bc5fd14'],
+        ['University of Michigan', 'umich', 'umich.edu', '7277cbab-d539-4a81-ac1e-70cefc28fb2e'],
+        ['University of North Carolina at Chapel Hill', 'unc', 'unc.edu', 'cdd177a9-fe6b-4b75-9960-d808d1fb5570'],
+        ['University of Notre Dame', 'und', 'nd.edu', 'e25e97d2-44fe-472b-bbfe-6efc71dae268'],
+        ['University of Virginia','uva', 'virginia.edu', '63fd28df-4178-48e0-b259-343f82f04551'],
+        ['Virginia Tech','vatech', 'vt.edu', '77b67409-2966-4ea9-95f8-fef59b12ee29']
   ]
 
 
