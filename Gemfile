@@ -56,7 +56,7 @@ gem 'figaro'
 gem "pundit"
 
 #gem 'omniauth-google-oauth2'
-gem 'simple_form', '~> 3.0.2'
+gem 'simple_form', '~> 3.2.0'
 gem "hydra-role-management", "~> 0.1.0"
 gem 'phony_rails'
 gem 'inherited_resources'
