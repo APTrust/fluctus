@@ -13,7 +13,7 @@ namespace :fluctus do
         ['North Carolina State University', 'ncsu', 'ncsu.edu', 'd3432b4f-9f82-4206-a086-89bff5c5bd1e'],
         ['Pennsylvania State University', 'pst', 'psu.edu', 'cf153594-6c22-4b59-a12e-420e0ae5280f'],
         ['Syracuse University', 'syr', 'syr.edu', 'd5e231ad-cf1f-4499-9afe-7045f1254eaa'],
-        ['Test University','test', 'test.edu', '9a000000-0000-4000-a000-000000000005'],
+        ['Test University','test', 'test.edu', 'fe908327-3635-43c2-9ca6-849485febcf3'],
         ['University of Chicago', 'uchi', 'uchicago.edu', nil],
         ['University of Cincinnati', 'ucin', 'uc.edu', nil],
         ['University of Connecticut', 'uconn', 'uconn.edu', nil],
