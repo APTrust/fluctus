@@ -656,10 +656,10 @@ describe IntellectualObjectsController do
       end
 
       it 'returns all items when no other parameters are specified' do
-        get :api_index, format: :json, per_page: 100
+        get :api_index, format: :json, per_page: 1000
         assigns(:items).should include(object1)
         assigns(:items).should include(object2)
-        assigns(:items).should include(object2)
+        assigns(:items).should include(object3)
       end
 
       it 'filters down to the right records and has the right count' do

@@ -725,11 +725,11 @@ describe ProcessedItemController do
   end
 
   describe 'GET #api_index' do
-    let!(:item1) { FactoryGirl.create(:processed_item, name: 'item1.tar', stage: 'Record', institution: institutional_admin.institution.identifier) }
-    let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar', stage: 'Record', institution: institutional_admin.institution.identifier) }
-    let!(:item3) { FactoryGirl.create(:processed_item, name: '1', stage: 'Record') }
-    let!(:item4) { FactoryGirl.create(:processed_item, name: '2', stage: 'Record') }
-    let!(:item5) { FactoryGirl.create(:processed_item, name: '1234567890.tar', stage: 'Record') }
+    let!(:item1) { FactoryGirl.create(:processed_item, name: 'item1.tar', stage: 'receive', institution: institutional_admin.institution.identifier) }
+    let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar', stage: 'receive', institution: institutional_admin.institution.identifier) }
+    let!(:item3) { FactoryGirl.create(:processed_item, name: '1', stage: 'receive') }
+    let!(:item4) { FactoryGirl.create(:processed_item, name: '2', stage: 'receive') }
+    let!(:item5) { FactoryGirl.create(:processed_item, name: '1234567890.tar', stage: 'receive') }
 
     describe 'for an admin user' do
       before do
@@ -751,10 +751,10 @@ describe ProcessedItemController do
       end
 
       it 'returns the correct next and previous links and correct count' do
-        get :api_index, format: :json, per_page: 2, page: 2, stage: 'record'
-        assigns(:count).should == 5
-        assigns(:next).should == "https://repository.aptrust.org/member-api/v1/items/?page=3&page_size=2&stage=record"
-        assigns(:previous).should == "https://repository.aptrust.org/member-api/v1/items/?page=1&page_size=2&stage=record"
+        get :api_index, format: :json, per_page: 2, page: 2, stage: 'receive'
+        assigns(:count).should ==
+        assigns(:next).should == "https://repository.aptrust.org/member-api/v1/items/?page=3&page_size=2&stage=receive"
+        assigns(:previous).should == "https://repository.aptrust.org/member-api/v1/items/?page=1&page_size=2&stage=receive"
       end
     end
 

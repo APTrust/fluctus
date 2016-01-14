@@ -191,30 +191,6 @@ class ProcessedItem < ActiveRecord::Base
     return false
   end
 
-  def serializable_hash
-    data = {
-        id: id,
-        name: name,
-        etag: etag,
-        bag_date: bag_date,
-        bucket: bucket,
-        user: user,
-        institution: institution,
-        date: date,
-        note: note,
-        action: action,
-        stage: stage,
-        status: status,
-        outcome: outcome,
-        object_identifier: object_identifier,
-        generic_file_identifier: generic_file_identifier,
-        reviewed: reviewed,
-        created_at: created_at,
-        updated_at: updated_at
-    }
-    data
-  end
-
   private
 
   # ProcessedItem will not have an object identifier until
