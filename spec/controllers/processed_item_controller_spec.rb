@@ -752,7 +752,7 @@ describe ProcessedItemController do
 
       it 'returns the correct next and previous links and correct count' do
         get :api_index, format: :json, per_page: 2, page: 2, stage: 'receive'
-        assigns(:count).should ==
+        assigns(:count).should == 5
         assigns(:next).should == "https://repository.aptrust.org/member-api/v1/items/?page=3&page_size=2&stage=receive"
         assigns(:previous).should == "https://repository.aptrust.org/member-api/v1/items/?page=1&page_size=2&stage=receive"
       end
