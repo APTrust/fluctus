@@ -724,4 +724,54 @@ describe ProcessedItemController do
     end
   end
 
+  describe 'GET #api_index' do
+    let!(:item1) { FactoryGirl.create(:processed_item, name: 'item1.tar', stage: 'Record', institution: institutional_admin.institution.identifier) }
+    let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar', stage: 'Record', institution: institutional_admin.institution.identifier) }
+    let!(:item3) { FactoryGirl.create(:processed_item, name: '1', stage: 'Record') }
+    let!(:item4) { FactoryGirl.create(:processed_item, name: '2', stage: 'Record') }
+    let!(:item5) { FactoryGirl.create(:processed_item, name: '1234567890.tar', stage: 'Record') }
+
+    describe 'for an admin user' do
+      before do
+        sign_in admin_user
+      end
+
+      it 'returns all items when no other parameters are specified' do
+        get :api_index, format: :json
+        assigns(:items).should include(user_item)
+        assigns(:items).should include(item)
+        assigns(:items).should include(item1)
+      end
+
+      it 'filters down to the right records' do
+        get :api_index, format: :json, name_contains: 'item1'
+        assigns(:items).should_not include(user_item)
+        assigns(:items).should_not include(item)
+        assigns(:items).should include(item1)
+      end
+
+      it 'returns the correct next and previous links and correct count' do
+        get :api_index, format: :json, per_page: 2, page: 2, stage: 'record'
+        assigns(:count).should == 5
+        assigns(:next).should == "https://repository.aptrust.org/member-api/v1/items/?page=3&page_size=2&stage=record"
+        assigns(:previous).should == "https://repository.aptrust.org/member-api/v1/items/?page=1&page_size=2&stage=record"
+      end
+    end
+
+    describe 'for an institutional admin user' do
+      before do
+        sign_in institutional_admin
+      end
+
+      it "returns only the items within the user's institution" do
+        get :api_index, format: :json
+        assigns(:items).should include(item1)
+        assigns(:items).should include(item2)
+        assigns(:items).should_not include(item3)
+        assigns(:items).should_not include(item4)
+        assigns(:items).should_not include(item5)
+      end
+    end
+  end
+
 end

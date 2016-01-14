@@ -100,21 +100,20 @@ class ProcessedItemController < ApplicationController
     end
     authorize @items, :index?
     @items = @items.where(name: params[:name_exact]) if params[:name_exact].present?
-    @items = @items.where(:name.include?(params[:name_contains])) if params[:name_contains].present?
+    @items.each { |item| @items.delete(item) if !item.name.include?(params[:name_contains]) } if params[:name_contains].present?
     date = format_date if params[:updated_since].present?
     @items = @items.where(:updated_at >= date) if params[:updated_since].present?
-    @items = @items.where(action: params[:actions]) if params[:actions].present?
-    @items = @items.where(stage: params[:stage]) if params[:stage].present?
-    @items = @items.where(status: params[:status]) if params[:status].present?
+    @items = @items.where(action: Fluctus::Application::FLUCTUS_ACTIONS[params[:actions]]) if params[:actions].present?
+    @items = @items.where(stage: Fluctus::Application::FLUCTUS_STAGES[params[:stage]]) if params[:stage].present?
+    @items = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES[params[:status]]) if params[:status].present?
     @items = @items.where(reviewed: to_boolean(params[:reviewed])) if params[:reviewed].present?
     @count = @items.count
-    params[:page].present? ? page = params[:page] : page = 1
-    params[:per_page].present? ? per_page = params[:per_page] : per_page = 10
-    @items = @items.page(page).per(per_page)
+    params[:page] = 1 unless params[:page].present?
+    params[:per_page] = 10 unless params[:per_page].present?
+    @items = @items.page(params[:page]).per(params[:per_page])
     @next = format_next
     @previous = format_previous
     render json: {count: @count, next: @next, previous: @previous, results: [@items.map{ |item| item.serializable_hash}]}
-
   end
 
   # This is an API call for the bucket reader that queues up work for
@@ -509,11 +508,11 @@ class ProcessedItemController < ApplicationController
   end
 
   def format_next
-    if @count.to_f / params[:page_size] <= params[:page]
+    if @count.to_f / params[:per_page] <= params[:page]
       nil
     else
-      params[:page] = params[:page] + 1
-      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{params[:page]}&page_size=#{params[:per_page]}"
+      new_page = params[:page] + 1
+      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{new_page}&page_size=#{params[:per_page]}"
       new_url = add_params(new_url)
       new_url
     end
@@ -523,8 +522,8 @@ class ProcessedItemController < ApplicationController
     if params[:page] == 1
       nil
     else
-      params[:page] = params[:page] - 1
-      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{params[:page]}&page_size=#{params[:per_page]}"
+      new_page = params[:page] - 1
+      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{new_page}&page_size=#{params[:per_page]}"
       new_url = add_params(new_url)
       new_url
     end

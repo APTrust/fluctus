@@ -20,12 +20,12 @@ class InstitutionsController < ApplicationController
     @institution = current_user.institution
     authorize @institution, :index?
     if current_user.admin?
-      params[:institution].present? ? @items = IntellectualObject.where(:identifier.include?(params[:institution])) : @items = IntellectualObject.all
+      params[:institution].present? ? @items = IntellectualObject.where(is_part_of: params[:institution]) : @items = IntellectualObject.all
     else
-      @items = IntellectualObject.where(:identifier.include?(current_user.institution.identifier))
+      @items = IntellectualObject.where(is_part_of: current_user.institution.identifier)
     end
     @items = @items.where(identifier: params[:name_exact]) if params[:name_exact].present?
-    @items = @items.where(:identifier.include?(params[:name_contains])) if params[:name_contains].present?
+    @items = @items.where(desc_metadata__identifier_tesim: params[:name_contains]) if params[:name_contains].present?
     date = format_date if params[:updated_since].present?
     @items = @items.where(:modified_date >= date) if params[:updated_since].present?
     @count = @items.count
@@ -122,7 +122,7 @@ class InstitutionsController < ApplicationController
     end
 
     def format_next
-      if @count.to_f / params[:page_size] <= params[:page]
+      if @count.to_f / params[:per_page] <= params[:page]
         nil
       else
         params[:page] = params[:page] + 1
