@@ -34,6 +34,10 @@ Fluctus::Application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  # Should we show the "Send Object to DPN" button to users
+  # whose institutions are members of DPN?
+  config.show_send_to_dpn_button = true
+
   # Sets up mailing host for password resets
   Rails.application.routes.default_url_options[:host] = 'localhost:3000'
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }

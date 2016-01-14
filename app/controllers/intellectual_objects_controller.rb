@@ -135,7 +135,7 @@ class IntellectualObjectsController < ApplicationController
   def dpn
     authorize @intellectual_object
     pending = ProcessedItem.pending?(@intellectual_object.identifier)
-    if Rails.env.production? && (Fluctus::Application::DPN_STATUS == false)
+    if Fluctus::Application.config.show_send_to_dpn_button == false
       redirect_to @intellectual_object
       flash[:alert] = 'We are not currently sending objects to DPN.'
     elsif @intellectual_object.state == 'D'
