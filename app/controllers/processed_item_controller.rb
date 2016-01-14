@@ -92,6 +92,29 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def api_index
+    if current_user.admin?
+      params[:institution].present? ? @items = ProcessedItem.where(institution: params[:institution]) : @items = ProcessedItem.all
+    else
+      @items = ProcessedItem.where(institution: current_user.institution.identifier)
+    end
+    authorize @items, :index?
+    @items = @items.where(name: params[:name_exact]) if params[:name_exact].present?
+    @items = @items.where(:name.include?(params[:name_contains])) if params[:name_contains].present?
+    date = format_date if params[:updated_since].present?
+    @items = @items.where(:date >= date) if params[:updated_since].present?
+    @items = @items.where(action: params[:actions]) if params[:actions].present?
+    @items = @items.where(stage: params[:stage]) if params[:stage].present?
+    @items = @items.where(status: params[:status]) if params[:status].present?
+    @items = @items.where(reviewed: to_boolean(params[:reviewed])) if params[:reviewed].present?
+    @count = @items.count
+    params[:page].present? ? page = params[:page] : page = 1
+    params[:per_page].present? ? per_page = params[:per_page] : per_page = 10
+    @items = @items.page(page).per(per_page)
+    @next = format_next
+    @previous = format_previous
+  end
+
   # This is an API call for the bucket reader that queues up work for
   # the bag processor. It returns all of the items that have started
   # the ingest process since the specified timestamp.
@@ -471,6 +494,50 @@ class ProcessedItemController < ApplicationController
     if params[:reviewed].present? && params[:retry].is_a?(String)
       params[:reviewed] = params[:reviewed][0]
     end
+  end
+
+  def format_date
+    date = Date.parse(params[:updated_since]).
+        date.change(:usec => 0)
+    date
+  end
+
+  def to_boolean(str)
+    str == 'true'
+  end
+
+  def format_next
+    if @count.to_f / params[:page_size] <= params[:page]
+      nil
+    else
+      params[:page] = params[:page] + 1
+      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{params[:page]}&page_size=#{params[:per_page]}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def format_previous
+    if params[:page] == 1
+      nil
+    else
+      params[:page] = params[:page] - 1
+      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{params[:page]}&page_size=#{params[:per_page]}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def add_params(str)
+    str = str << "&updated_since=#{params[:updated_since]}" if params[:updated_since].present?
+    str = str << "&name_exact=#{params[:name_exact]}" if params[:name_exact].present?
+    str = str << "&name_contains=#{params[:name_contains]}" if params[:name_contains].present?
+    str = str << "&institution=#{params[:institution]}" if params[:institution].present?
+    str = str << "&actions=#{params[:actions]}" if params[:actions].present?
+    str = str << "&stage=#{params[:stage]}" if params[:stage].present?
+    str = str << "&status=#{params[:status]}" if params[:status].present?
+    str = str << "&reviewed=#{params[:reviewed]}" if params[:reviewed].present?
+    str
   end
 
 end

@@ -98,6 +98,9 @@ Fluctus::Application.routes.draw do
   get  '/api/v1/files/:generic_file_identifier', to: 'generic_files#show', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_by_identifier'
   put  '/api/v1/files/:generic_file_identifier', to: 'generic_files#update', format: 'json', generic_file_identifier: /[^\/]*/, as: 'file_update_by_identifier'
 
+  get '/member-api/v1/objects/', to: 'intellectual_objects#api_index', format: 'json', institution_identifier: institution_ptrn
+  get '/member-api/v1/items/', to: 'processed_item#api_index', format: 'json'
+
   # The pattern for generic_file_identifier is tricky, because we do not want it to
   # conflict with /files/:generic_file_id/events. The pattern is: non-slash characters,
   # followed by a period, followed by more non-slash characters. For example,
