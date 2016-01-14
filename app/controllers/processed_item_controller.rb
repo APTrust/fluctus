@@ -102,7 +102,7 @@ class ProcessedItemController < ApplicationController
     @items = @items.where(name: params[:name_exact]) if params[:name_exact].present?
     @items = @items.where(:name.include?(params[:name_contains])) if params[:name_contains].present?
     date = format_date if params[:updated_since].present?
-    @items = @items.where(:date >= date) if params[:updated_since].present?
+    @items = @items.where(:updated_at >= date) if params[:updated_since].present?
     @items = @items.where(action: params[:actions]) if params[:actions].present?
     @items = @items.where(stage: params[:stage]) if params[:stage].present?
     @items = @items.where(status: params[:status]) if params[:status].present?
@@ -113,6 +113,8 @@ class ProcessedItemController < ApplicationController
     @items = @items.page(page).per(per_page)
     @next = format_next
     @previous = format_previous
+    render json: {count: @count, next: @next, previous: @previous, results: [@items.map{ |item| item.serializable_hash}]}
+
   end
 
   # This is an API call for the bucket reader that queues up work for

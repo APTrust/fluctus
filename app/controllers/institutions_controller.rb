@@ -34,6 +34,7 @@ class InstitutionsController < ApplicationController
     @items = @items.page(page).per(per_page)
     @next = format_next
     @previous = format_previous
+    render json: {count: @count, next: @next, previous: @previous, results: [@items.map{ |item| item.serializable_hash}]}
   end
 
   def new
