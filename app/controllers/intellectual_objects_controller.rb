@@ -75,7 +75,7 @@ class IntellectualObjectsController < ApplicationController
     if params[:counter]
       # They are just updating the search counter
       search_session[:counter] = params[:counter]
-      redirect_to :action => "show", :status => 303
+      redirect_to :action => 'show', :status => 303
     else
       aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
       aggregate.update_aggregations_solr
@@ -167,7 +167,7 @@ class IntellectualObjectsController < ApplicationController
         object = JSON.parse(json_param.to_json).first
         # We might be re-ingesting a previously-deleted intellectual object,
         # or more likely, creating a new intel obj. Load or create the object.
-        identifier = object['identifier'].gsub(/%2F/i, "/")
+        identifier = object['identifier'].gsub(/%2F/i, '/')
         new_object = IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first ||
           IntellectualObject.new()
         new_object.state = 'A' # in case we just loaded a deleted object
@@ -238,7 +238,7 @@ class IntellectualObjectsController < ApplicationController
     logger.error(exception.backtrace.join("\n"))
     params.delete(:id)
     index
-    render "index", :status => 404
+    render 'index', :status => 404
   end
 
   private
@@ -328,7 +328,7 @@ class IntellectualObjectsController < ApplicationController
       @institution = @intellectual_object.institution
       params[:id] = @intellectual_object.id
     elsif params[:identifier] && params[:id].blank?
-      identifier = params[:identifier].gsub(/%2F/i, "/")
+      identifier = params[:identifier].gsub(/%2F/i, '/')
       @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first
 
       # Solr permissions handler expects params[:id] to be the object ID,

@@ -208,7 +208,7 @@ describe GenericFilesController do
       let(:obj2) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @another_institution.id) }
       let(:batch_obj) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @institution.id) }
       let(:current_dir) { File.dirname(__FILE__) }
-      let(:json_file) { File.join(current_dir, "..", "fixtures", "generic_file_batch.json") }
+      let(:json_file) { File.join(current_dir, '..', 'fixtures', 'generic_file_batch.json') }
       let(:raw_json) { File.read(json_file) }
       let(:gf_data) { JSON.parse(raw_json) }
 

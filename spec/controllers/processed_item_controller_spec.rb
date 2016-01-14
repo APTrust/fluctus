@@ -725,11 +725,11 @@ describe ProcessedItemController do
   end
 
   describe 'GET #api_index' do
-    let!(:item1) { FactoryGirl.create(:processed_item, name: 'item1.tar', stage: 'receive', institution: institutional_admin.institution.identifier) }
-    let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar', stage: 'receive', institution: institutional_admin.institution.identifier) }
-    let!(:item3) { FactoryGirl.create(:processed_item, name: '1', stage: 'receive') }
-    let!(:item4) { FactoryGirl.create(:processed_item, name: '2', stage: 'receive') }
-    let!(:item5) { FactoryGirl.create(:processed_item, name: '1234567890.tar', stage: 'receive') }
+    let!(:item1) { FactoryGirl.create(:processed_item, name: 'item1.tar', stage: 'Unpack', institution: institutional_admin.institution.identifier) }
+    let!(:item2) { FactoryGirl.create(:processed_item, name: '1238907543.tar', stage: 'Unpack', institution: institutional_admin.institution.identifier) }
+    let!(:item3) { FactoryGirl.create(:processed_item, name: '1', stage: 'Unpack') }
+    let!(:item4) { FactoryGirl.create(:processed_item, name: '2', stage: 'Unpack') }
+    let!(:item5) { FactoryGirl.create(:processed_item, name: '1234567890.tar', stage: 'Unpack') }
 
     describe 'for an admin user' do
       before do
@@ -743,18 +743,18 @@ describe ProcessedItemController do
         assigns(:items).should include(item1)
       end
 
-      it 'filters down to the right records' do
+      it 'filters down to the right records and has the right count' do
         get :api_index, format: :json, name_contains: 'item1'
         assigns(:items).should_not include(user_item)
         assigns(:items).should_not include(item)
         assigns(:items).should include(item1)
+        assigns(:count).should == 1
       end
 
-      it 'returns the correct next and previous links and correct count' do
-        get :api_index, format: :json, per_page: 2, page: 2, stage: 'receive'
-        assigns(:count).should == 5
-        assigns(:next).should == "https://repository.aptrust.org/member-api/v1/items/?page=3&page_size=2&stage=receive"
-        assigns(:previous).should == "https://repository.aptrust.org/member-api/v1/items/?page=1&page_size=2&stage=receive"
+      it 'returns the correct next and previous links' do
+        get :api_index, format: :json, per_page: 2, page: 2, stage: 'unpack'
+        assigns(:next).should == 'https://repository.aptrust.org/member-api/v1/items/?page=3&page_size=2&stage=unpack'
+        assigns(:previous).should == 'https://repository.aptrust.org/member-api/v1/items/?page=1&page_size=2&stage=unpack'
       end
     end
 

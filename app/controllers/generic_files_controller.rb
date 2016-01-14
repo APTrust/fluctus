@@ -86,7 +86,7 @@ class GenericFilesController < ApplicationController
   def not_checked_since
     datetime = Time.parse(params[:date]) rescue nil
     if datetime.nil?
-      raise ActionController::BadRequest.new(type: "date", e: "Param date is missing or invalid. Hint: Use format '2015-01-31T14:31:36Z'")
+      raise ActionController::BadRequest.new(type: 'date', e: "Param date is missing or invalid. Hint: Use format '2015-01-31T14:31:36Z'")
     end
     if current_user.admin? == false
       logger.warn("User #{current_user.email} tried to access generic_files_controller#not_checked_since")

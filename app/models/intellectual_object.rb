@@ -1,7 +1,7 @@
 class IntellectualObject < ActiveFedora::Base
 
-  has_metadata "descMetadata", type: IntellectualObjectMetadata
-  has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
+  has_metadata 'descMetadata', type: IntellectualObjectMetadata
+  has_metadata 'rightsMetadata', :type => Hydra::Datastream::RightsMetadata
   include Hydra::AccessControls::Permissions
   include Aptrust::SolrHelper
   include Auditable   # premis events
@@ -216,7 +216,7 @@ class IntellectualObject < ActiveFedora::Base
       count = objects.count if objects.count > 1
     end
     if(count > 0)
-      errors.add(:identifier, "has already been taken")
+      errors.add(:identifier, 'has already been taken')
     end
   end
 
@@ -240,7 +240,7 @@ class IntellectualObject < ActiveFedora::Base
   def set_bag_name
     return if self.identifier.nil?
     if self.bag_name.nil? || self.bag_name == ''
-      pieces = self.identifier.split("/")
+      pieces = self.identifier.split('/')
       i = 1
       while i < pieces.count do
         (i == 1) ? name = pieces[1] : name = "#{name}/#{pieces[i]}"

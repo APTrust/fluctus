@@ -7,7 +7,7 @@ FactoryGirl.define do
     identifier { "#{institution.identifier}/#{SecureRandom.uuid}" }
     access { ['consortia', 'institution', 'restricted'].sample }
     alt_identifier { [] }
-    bag_name { identifier.split("/")[1] }
+    bag_name { identifier.split('/')[1] }
 
     factory :consortial_intellectual_object, class: IntellectualObject do
       access { 'consortia' }

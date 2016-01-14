@@ -170,7 +170,7 @@ class User < ActiveRecord::Base
 
   class NilInstitution
     def name
-      "Deleted Institution"
+      'Deleted Institution'
     end
 
     def to_param
@@ -178,7 +178,7 @@ class User < ActiveRecord::Base
     end
 
     def brief_name
-      "Deleted Institution"
+      'Deleted Institution'
     end
 
     def users
@@ -197,7 +197,7 @@ class User < ActiveRecord::Base
   private
 
   def institution_pid_points_at_institution
-    errors.add(:institution_pid, "is not a valid institution") unless Institution.exists?(institution_pid)
+    errors.add(:institution_pid, 'is not a valid institution') unless Institution.exists?(institution_pid)
   end
 
 end

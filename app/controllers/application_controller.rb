@@ -42,8 +42,8 @@ class ApplicationController < ActionController::Base
     #flash[:error] = I18n.t "pundit.#{policy_name}.#{exception.query}",
                     #default: 'You are not authorized to perform this action.'
     respond_to do |format|
-      format.html { redirect_to root_url, alert: "You are not authorized to access this page." }
-      format.json { render :json => { :status => "error", :message => "You are not authorized to access this page." }, :status => :forbidden }
+      format.html { redirect_to root_url, alert: 'You are not authorized to access this page.' }
+      format.json { render :json => { :status => 'error', :message => 'You are not authorized to access this page.' }, :status => :forbidden }
     end
   end
 
@@ -62,7 +62,7 @@ class ApplicationController < ActionController::Base
     message = "URL: #{request.original_url}\n" +
       "Params: #{params.inspect}\n"
     if model.nil?
-      message += "Model object is nil."
+      message += 'Model object is nil.'
     else
       message += "Validation Errors: #{model.errors.full_messages}"
     end

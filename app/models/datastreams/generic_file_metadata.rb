@@ -20,11 +20,11 @@ module Solrizer
   end
 end
 
-class WorldNetVocabulary < RDF::Vocabulary("http://xmlns.com/wordnet/1.6/")
+class WorldNetVocabulary < RDF::Vocabulary('http://xmlns.com/wordnet/1.6/')
   property :Algorithm
 end
 
-class FileVocabulary < RDF::Vocabulary("http://downlode.org/Code/RDF/File_Properties/schema#")
+class FileVocabulary < RDF::Vocabulary('http://downlode.org/Code/RDF/File_Properties/schema#')
   property :created
   property :modified
   property :size

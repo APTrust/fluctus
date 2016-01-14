@@ -8,25 +8,25 @@ describe PremisEventsMetadata do
 
   before do
     @e_fix = subject.events.build(
-        identifier: "123",
-        type: "fixity generation",
+        identifier: '123',
+        type: 'fixity generation',
         date_time: "#{Time.now}",
-        detail:  "S3 fixity check",
-        outcome: "success",
-        outcome_detail: "",
-        outcome_information: "454c167687fc3ce46e48b62533ea70e804287c413683158c58d49f23fcca397d",
-        object: "bag_id/data/pathtoitem.item",
-        agent: "Amazon S3 Fixity App"
+        detail:  'S3 fixity check',
+        outcome: 'success',
+        outcome_detail: '',
+        outcome_information: '454c167687fc3ce46e48b62533ea70e804287c413683158c58d49f23fcca397d',
+        object: 'bag_id/data/pathtoitem.item',
+        agent: 'Amazon S3 Fixity App'
     )
     subject.events.build(
-        type: "Bag Creation",
+        type: 'Bag Creation',
         date_time: Time.now,
-        detail: "Bag created with service.",
-        outcome: "this is my outcome",
-        outcome_detail: "",
-        outcome_information: "",
-        object: "bag_id",
-        agent: "Golang Bag Script"
+        detail: 'Bag created with service.',
+        outcome: 'this is my outcome',
+        outcome_detail: '',
+        outcome_information: '',
+        object: 'bag_id',
+        agent: 'Golang Bag Script'
     )
   end
 
@@ -35,15 +35,15 @@ describe PremisEventsMetadata do
     subject.events.count.should == 2
   end
 
-  it "should have a proper fixity event" do
+  it 'should have a proper fixity event' do
     @e_fix.identifier.should == ['123']
     @e_fix.date_time.should_not be_empty
-    @e_fix.detail.should == ["S3 fixity check"]
-    @e_fix.outcome.should == ["success"]
-    @e_fix.outcome_detail.should == [""]
-    @e_fix.outcome_information.should == ["454c167687fc3ce46e48b62533ea70e804287c413683158c58d49f23fcca397d"]
-    @e_fix.object.should == ["bag_id/data/pathtoitem.item"]
-    @e_fix.agent.should == ["Amazon S3 Fixity App"]
+    @e_fix.detail.should == ['S3 fixity check']
+    @e_fix.outcome.should == ['success']
+    @e_fix.outcome_detail.should == ['']
+    @e_fix.outcome_information.should == ['454c167687fc3ce46e48b62533ea70e804287c413683158c58d49f23fcca397d']
+    @e_fix.object.should == ['bag_id/data/pathtoitem.item']
+    @e_fix.agent.should == ['Amazon S3 Fixity App']
   end
 
   it 'creates a UUID if no identifier is passed in' do

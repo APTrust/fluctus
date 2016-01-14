@@ -673,8 +673,8 @@ describe IntellectualObjectsController do
 
       it 'returns the correct next and previous links' do
         get :api_index, format: :json, per_page: 2, page: 2, updated_since: '2014-06-03T15:28:39+00:00'
-        assigns(:next).should == "https://repository.aptrust.org/member-api/v1/objects/?page=3&page_size=2&updated_since=2014-06-03T15:28:39+00:00"
-        assigns(:previous).should == "https://repository.aptrust.org/member-api/v1/objects/?page=1&page_size=2&updated_since=2014-06-03T15:28:39+00:00"
+        assigns(:next).should == 'https://repository.aptrust.org/member-api/v1/objects/?page=3&page_size=2&updated_since=2014-06-03T15:28:39+00:00'
+        assigns(:previous).should == 'https://repository.aptrust.org/member-api/v1/objects/?page=1&page_size=2&updated_since=2014-06-03T15:28:39+00:00'
       end
     end
 
