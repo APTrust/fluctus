@@ -102,7 +102,7 @@ class ProcessedItemController < ApplicationController
     @items = @items.where(name: params[:name_exact]) if params[:name_exact].present?
     @items.each { |item| @items.delete(item) if !item.name.include?(params[:name_contains]) } if params[:name_contains].present?
     date = format_date if params[:updated_since].present?
-    @items = @items.where(:updated_at >= date) if params[:updated_since].present?
+    @items.each { |item| @items.delete(item) if item.modified_date.to_s >= date } if params[:updated_since].present?
     @items = @items.where(action: Fluctus::Application::FLUCTUS_ACTIONS[params[:actions]]) if params[:actions].present?
     @items = @items.where(stage: Fluctus::Application::FLUCTUS_STAGES[params[:stage]]) if params[:stage].present?
     @items = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES[params[:status]]) if params[:status].present?
@@ -498,8 +498,9 @@ class ProcessedItemController < ApplicationController
   end
 
   def format_date
-    date = Date.parse(params[:updated_since]).
-        date.change(:usec => 0)
+    date = Date.parse(params[:updated_since])
+    date.change(:usec => 0)
+    date.to_s
     date
   end
 

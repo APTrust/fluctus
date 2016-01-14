@@ -641,4 +641,60 @@ describe IntellectualObjectsController do
     end
   end
 
+  describe 'GET #api_index' do
+
+    describe 'for an admin user' do
+      let(:user) { FactoryGirl.create(:user, :admin) }
+      let(:another_institution) { FactoryGirl.create(:institution) }
+      let!(:object1) { FactoryGirl.create(:consortial_intellectual_object, bag_name: 'item1-for-hire', institution: user.institution) }
+      let!(:object2) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '1', institution: user.institution) }
+      let!(:object3) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '2', institution: another_institution) }
+      let!(:object4) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '3', institution: another_institution) }
+      let!(:object5) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '4', institution: another_institution) }
+      before do
+        sign_in user
+      end
+
+      it 'returns all items when no other parameters are specified' do
+        get :api_index, format: :json, per_page: 100
+        assigns(:items).should include(object1)
+        assigns(:items).should include(object2)
+        assigns(:items).should include(object2)
+      end
+
+      it 'filters down to the right records and has the right count' do
+        ident_parts = object1.identifier.split('/')
+        get :api_index, format: :json, name_contains: ident_parts[1]
+        assigns(:items).should_not include(object2)
+        assigns(:items).should_not include(object3)
+        assigns(:items).should include(object1)
+        assigns(:count).should == 1
+      end
+
+      it 'returns the correct next and previous links' do
+        get :api_index, format: :json, per_page: 2, page: 2, updated_since: '2014-06-03T15:28:39+00:00'
+        assigns(:next).should == "https://repository.aptrust.org/member-api/v1/objects/?page=3&page_size=2&updated_since=2014-06-03T15:28:39+00:00"
+        assigns(:previous).should == "https://repository.aptrust.org/member-api/v1/objects/?page=1&page_size=2&updated_since=2014-06-03T15:28:39+00:00"
+      end
+    end
+
+    describe 'for an institutional admin user' do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:another_institution) { FactoryGirl.create(:institution) }
+      let!(:object1) { FactoryGirl.create(:consortial_intellectual_object, bag_name: 'item1-for-hire', institution: user.institution) }
+      let!(:object2) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '1', institution: user.institution) }
+      let!(:object3) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '2', institution: another_institution) }
+      before do
+        sign_in user
+      end
+
+      it "returns only the items within the user's institution" do
+        get :api_index, format: :json, per_page: 100
+        assigns(:items).should include(object1)
+        assigns(:items).should include(object2)
+        assigns(:items).should_not include(object3)
+      end
+    end
+  end
+
 end
