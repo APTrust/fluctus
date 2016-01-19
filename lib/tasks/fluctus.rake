@@ -243,4 +243,28 @@ namespace :fluctus do
     puts "Execution time is #{diff} seconds"
   end
 
+  desc 'Dumps objects, files, institutions and events to JSON files for auditing'
+  task :dump_data => [:environment] do
+    puts "Dumping institutions to institutions.json"
+    File.open('institutions.json', 'w') do |file|
+      Institution.all.each do |inst|
+        file.puts(inst.to_json)
+      end
+    end
+    puts "Dumping objects, files and events to objects.json"
+    File.open('objects.json', 'w') do |file|
+      IntellectualObject.find_in_batches([], batch_size: 100) do |solr_result|
+        obj_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
+        obj_list.each do |io|
+          data = io.serializable_hash(include: [:premisEvents])
+          data[:generic_files] = []
+          io.generic_files.each do |gf|
+            data[:generic_files].push(gf.serializable_hash(include: [:checksum, :premisEvents]))
+          end
+          file.puts(data.to_json)
+        end
+      end
+    end
+  end
+
 end
