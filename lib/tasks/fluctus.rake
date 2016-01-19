@@ -244,15 +244,18 @@ namespace :fluctus do
   end
 
   desc 'Dumps objects, files, institutions and events to JSON files for auditing'
-  task :dump_data => [:environment] do
-    puts "Dumping institutions to institutions.json"
-    File.open('institutions.json', 'w') do |file|
+  task :dump_data, [:data_dir] => [:environment] do |t, args|
+    data_dir = args[:data_dir] || '.'
+    inst_file = File.join(data_dir, "institutions.json")
+    puts "Dumping institutions to #{inst_file}"
+    File.open(inst_file, 'w') do |file|
       Institution.all.each do |inst|
         file.puts(inst.to_json)
       end
     end
-    puts "Dumping objects, files and events to objects.json"
-    File.open('objects.json', 'w') do |file|
+    objects_file = File.join(data_dir, 'objects.json')
+    puts "Dumping objects, files and events to #{objects_file}"
+    File.open(objects_file, 'w') do |file|
       IntellectualObject.find_in_batches([], batch_size: 100) do |solr_result|
         obj_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
         obj_list.each do |io|
