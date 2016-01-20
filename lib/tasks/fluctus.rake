@@ -256,7 +256,7 @@ namespace :fluctus do
     objects_file = File.join(data_dir, 'objects.json')
     puts "Dumping objects, files and events to #{objects_file}"
     File.open(objects_file, 'w') do |file|
-      IntellectualObject.find_in_batches([], batch_size: 100) do |solr_result|
+      IntellectualObject.find_in_batches([], batch_size: 10) do |solr_result|
         obj_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
         obj_list.each do |io|
           data = io.serializable_hash(include: [:premisEvents])
