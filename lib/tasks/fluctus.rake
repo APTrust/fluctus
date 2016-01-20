@@ -266,6 +266,11 @@ namespace :fluctus do
           end
           file.puts(data.to_json)
         end
+        obj_list.each { |io| io = nil }
+        obj_list = nil
+        solr_result = nil
+        data = nil
+        GC.start
       end
     end
   end
