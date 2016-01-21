@@ -93,8 +93,38 @@ describe ProcessedItemController do
           bag_date: '1901-01-01' }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
+
+    describe 'for institutional admin' do
+      before do
+        sign_in institutional_admin
+      end
+
+      #TODO: fix this, it can't find the item
+      # it 'restricts institutional admins from API usage' do
+      #   get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
+      #   expect(response.status).to eq 403
+      # end
+    end
   end
 
+  describe 'PUT #update' do
+    describe 'for institutional admin' do
+      before do
+        sign_in institutional_admin
+      end
+
+      it 'restricts institutional admins from API usage when updating by id' do
+        put :update, id: item.id, format: 'json', use_route: :processed_item_api_update_by_id
+        expect(response.status).to eq 403
+      end
+
+      #TODO: fix this, it can't find the item
+      # it 'restricts institutional admins from API usage when updating by etag' do
+      #   put :update, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_api_update_by_etag
+      #   expect(response.status).to eq 403
+      # end
+    end
+  end
 
   describe 'GET #get_reviewed' do
     describe 'for admin user' do
@@ -132,9 +162,13 @@ describe ProcessedItemController do
         assigns(:items).should include(user_item)
         expect(assigns(:items).count).to eq(1)
       end
+
+      it 'restricts API usage' do
+        get :get_reviewed, format: :json, use_route: :processed_item_api_get_reviewed
+        expect(response.status).to eq 403
+      end
     end
   end
-
 
   describe 'GET #items_for_restore' do
     describe 'for admin user' do
@@ -268,7 +302,6 @@ describe ProcessedItemController do
     end
   end
 
-
   describe 'GET #items_for_delete' do
     describe 'for admin user' do
       before do
@@ -340,8 +373,6 @@ describe ProcessedItemController do
     end
   end
 
-
-
   describe 'POST #delete_test_items' do
     before do
       sign_in admin_user
@@ -358,7 +389,6 @@ describe ProcessedItemController do
       expect(ProcessedItem.where(institution: 'test.edu').count).to eq 0
     end
   end
-
 
   describe 'POST #set_restoration_status' do
     describe 'for admin user' do
@@ -452,8 +482,6 @@ describe ProcessedItemController do
     end
   end
 
-
-
   describe 'Post #create' do
     describe 'for admin user' do
       let (:attributes) { FactoryGirl.attributes_for(:processed_item) }
@@ -501,6 +529,24 @@ describe ProcessedItemController do
         expect(assigns(:processed_item).reviewed).to eq(false)
       end
     end
+
+    describe 'for institutional admin' do
+      before do
+        sign_in institutional_admin
+      end
+
+      after do
+        ProcessedItem.delete_all
+      end
+
+      it 'restricts institutional admins from API usage' do
+        post :create, processed_item: {name: '123456.tar', etag: '1234567890', bag_date: Time.now.utc, user: 'Kelly Croswell', institution: institution.identifier,
+                                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
+                                                       stage: Fluctus::Application::FLUCTUS_STAGES['fetch'], status: Fluctus::Application::FLUCTUS_STATUSES['fail'], outcome: 'Outcome', reviewed: false},
+             format: 'json', use_route: :processed_item_api_create
+        expect(response.status).to eq 403
+      end
+    end
   end
 
   describe 'Post #handle_selected' do
@@ -545,7 +591,6 @@ describe ProcessedItemController do
         ProcessedItem.find(user_item.id).reviewed.should eq(true)
       end
     end
-
   end
 
   describe 'Post #review_all' do
@@ -591,9 +636,9 @@ describe ProcessedItemController do
 
   describe 'GET #ingested_since' do
     let(:user) { FactoryGirl.create(:user, :admin) }
+    let(:other_user) { FactoryGirl.create(:user, :institutional_admin) }
     before do
       10.times do FactoryGirl.create(:ingested_item) end
-      sign_in user
       get :show, id: item.id
     end
 
@@ -602,16 +647,24 @@ describe ProcessedItemController do
     end
 
     it 'admin can get items ingested since' do
+      sign_in user
       get :ingested_since, since: '2009-01-01', format: :json
       expect(response).to be_successful
       expect(assigns(:items).length).to eq 10
     end
 
     it 'missing date causes error' do
+      sign_in user
       expected = { 'error' => 'Param since must be a valid datetime' }.to_json
       get :ingested_since, since: '', format: :json
       expect(response.status).to eq 400
       expect(response.body).to eq expected
+    end
+
+    it 'non admin users can not use API ingested since route' do
+      sign_in other_user
+      get :ingested_since, since: '2009-01-01', format: :json, use_route: :processed_items_ingested_since
+      expect(response.status).to eq 403
     end
 
   end
@@ -707,6 +760,17 @@ describe ProcessedItemController do
         assigns(:items).should_not include(user_item)
         assigns(:items).should_not include(item)
         assigns(:items).should include(item1)
+      end
+
+      describe 'for institutional admin' do
+        before do
+          sign_in institutional_admin
+        end
+
+        it 'restricts institutional admins from API usage' do
+          get :api_search, format: 'json', use_route: :processed_item_api_create
+          expect(response.status).to eq 403
+        end
       end
 
     end

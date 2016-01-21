@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:delete_test_items, :ingested_since, :show_reviewed]
+  after_action :verify_authorized, :except => [:delete_test_items, :show_reviewed]
 
   def create
     authorize @processed_item
@@ -67,7 +67,7 @@ class ProcessedItemController < ApplicationController
   # Allows the API client to pass in some very specific criteria
   def api_search
     current_user.admin? ? @items = ProcessedItem.all : @items = ProcessedItem.where(institution: current_user.institution.identifier)
-    authorize @items, :search?
+    authorize @items, :admin_api?
     if Rails.env.test? || Rails.env.development?
       rewrite_params_for_sqlite
     end
@@ -132,7 +132,7 @@ class ProcessedItemController < ApplicationController
         format.json { render json: err, status: :bad_request }
       else
         @items = ProcessedItem.where("action='Ingest' and date >= ?", dtSince)
-        authorize @items, :index?
+        authorize @items, :admin_api?
         format.json { render json: @items, status: :ok }
       end
     end

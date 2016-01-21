@@ -67,21 +67,21 @@ Fluctus::Application.routes.draw do
   # Some of these routes are named because rspec cannot find them unless we explicitly name them.
   #
 
-  post '/api/v1/itemresults/', to: 'processed_item#create', format: 'json'
-  get '/api/v1/itemresults/search', to: 'processed_item#api_search', format: 'json'
+  post '/api/v1/itemresults/', to: 'processed_item#create', format: 'json', as: :processed_item_api_create
+  get '/api/v1/itemresults/search', to: 'processed_item#api_search', format: 'json', as: :processed_item_api_search
   get '/api/v1/itemresults/ingested_since/:since', to: 'processed_item#ingested_since', as: :processed_items_ingested_since
   get '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
-  put '/api/v1/itemresults/:id', to: 'processed_item#update', format: 'json'
-  put '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', name: /[^\/]*/, bag_date: /[^\/]*/
-  get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json'
-  get '/api/v1/itemresults/items_for_restore', to: 'processed_item#items_for_restore', format: 'json'
-  get '/api/v1/itemresults/items_for_dpn', to: 'processed_item#items_for_dpn', format: 'json'
-  get '/api/v1/itemresults/items_for_delete', to: 'processed_item#items_for_delete', format: 'json'
+  put '/api/v1/itemresults/:id', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_id
+  put '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
+  get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json', as: :processed_item_api_get_reviewed
+  get '/api/v1/itemresults/items_for_restore', to: 'processed_item#items_for_restore', format: 'json', as: :processed_item_api_restore
+  get '/api/v1/itemresults/items_for_dpn', to: 'processed_item#items_for_dpn', format: 'json', as: :processed_item_api_dpn
+  get '/api/v1/itemresults/items_for_delete', to: 'processed_item#items_for_delete', format: 'json', as: :processed_item_api_delete
 
   post '/api/v1/itemresults/restoration_status/:object_identifier', to: 'processed_item#set_restoration_status', as: :item_set_restoration_status, object_identifier: /.*/
-  post '/api/v1/itemresults/delete_test_items', to: 'processed_item#delete_test_items', format: 'json'
+  post '/api/v1/itemresults/delete_test_items', to: 'processed_item#delete_test_items', format: 'json', as: :processed_item_test_delete
 
-  get '/api/v1/institutions/:institution_identifier', to: 'institutions#show', format: 'json', institution_identifier: institution_ptrn
+  get '/api/v1/institutions/:institution_identifier', to: 'institutions#show', format: 'json', as: :institution_api_show, institution_identifier: institution_ptrn
 
   post '/api/v1/objects/include_nested', to: 'intellectual_objects#create_from_json', format: 'json'
   post '/api/v1/objects/:intellectual_object_identifier/files/save_batch', to: 'generic_files#save_batch', format: 'json', intellectual_object_identifier: /[^\/]*/, as: :generic_files_save_batch
