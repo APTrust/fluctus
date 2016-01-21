@@ -86,7 +86,8 @@ private
   end
 
   def init_identifier
-    self.identifier = UUIDTools::UUID.timestamp_create.to_s if self.identifier.empty?
+    #self.identifier = UUIDTools::UUID.timestamp_create.to_s if self.identifier.empty?
+    self.identifier = SecureRandom.uuid if self.identifier.empty?
   end
 
 end

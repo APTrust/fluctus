@@ -48,7 +48,8 @@ describe PremisEventsMetadata do
 
   it 'creates a UUID if no identifier is passed in' do
     stub_id = 'abcdefg'
-    UUIDTools::UUID.should_receive(:timestamp_create).and_return(stub_id)
+    #UUIDTools::UUID.should_receive(:timestamp_create).and_return(stub_id)
+    SecureRandom.should_receive(:uuid).and_return(stub_id)
 
     attrs = FactoryGirl.attributes_for(:premis_event_fixity_generation)
     attrs[:identifier].should be_nil  # Pass in nil identifier
