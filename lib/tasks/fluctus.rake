@@ -244,8 +244,18 @@ namespace :fluctus do
   end
 
   desc 'Dumps objects, files, institutions and events to JSON files for auditing'
-  task :dump_data, [:data_dir] => [:environment] do |t, args|
+  task :dump_data, [:data_dir, :since_when] => [:environment] do |t, args|
+    #
+    # Sample usage to dump all objects and institutions into /usr/local/data:
+    #
+    # bundle exec rake fluctus:dump_data[/usr/local/data]
+    #
+    # To dump objects updated since a specified time to the same directory:
+    #
+    # bundle exec rake fluctus:dump_data[/usr/local/data,'2016-01-04T20:00:48.248Z']
+    #
     data_dir = args[:data_dir] || '.'
+    since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
     inst_file = File.join(data_dir, "institutions.json")
     puts "Dumping institutions to #{inst_file}"
     File.open(inst_file, 'w') do |file|
@@ -254,25 +264,59 @@ namespace :fluctus do
       end
     end
     objects_file = File.join(data_dir, 'objects.json')
-    puts "Dumping objects, files and events to #{objects_file}"
-    File.open(objects_file, 'w') do |file|
-      IntellectualObject.find_in_batches([], batch_size: 10) do |solr_result|
-        obj_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
-        obj_list.each do |io|
-          data = io.serializable_hash(include: [:premisEvents])
-          data[:generic_files] = []
-          io.generic_files.each do |gf|
-            data[:generic_files].push(gf.serializable_hash(include: [:checksum, :premisEvents]))
+    timestamp_file = File.join(data_dir, 'timestamp.txt')
+    last_timestamp = since_when
+    proceed_to_reify = false
+    number_skipped = 0
+    puts "Dumping objects, files and events modified since #{since_when} to #{objects_file}"
+    begin
+      File.open(objects_file, 'w') do |file|
+        IntellectualObject.find_in_batches([], batch_size: 10, sort: 'system_modified_dtsi asc') do |solr_result|
+          # Don't process or even reify results we've already processed,
+          # because the reify process blows up the memory and leads
+          # to out-of-memory crashes. We have to keep track of the last
+          # intellectual object we processed, because memory leaks somewhere
+          # in the Rails/Hydra/ActiveFedora stack cause this process to crash
+          # consistently, and we need to be able to restart where we left off.
+          if proceed_to_reify == false
+            solr_result.each do |result|
+              record_modified = result['system_modified_dtsi']
+              if record_modified > since_when
+                proceed_to_reify = true
+                break
+              end
+              number_skipped += 1
+            end
           end
-          file.puts(data.to_json)
+          next if proceed_to_reify == false
+          obj_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
+          obj_list.each do |io|
+            data = io.serializable_hash(include: [:premisEvents])
+            data[:generic_files] = []
+            io.generic_files.each do |gf|
+              data[:generic_files].push(gf.serializable_hash(include: [:checksum, :premisEvents]))
+            end
+            file.puts(data.to_json)
+            last_timestamp = io.modified_date
+          end
+
+          # Do our part to remediate memory leaks
+          obj_list.each { |io| io = nil }
+          obj_list = nil
+          solr_result = nil
+          data = nil
+          GC.start
         end
-        obj_list.each { |io| io = nil }
-        obj_list = nil
-        solr_result = nil
-        data = nil
-        GC.start
       end
+    ensure
+      puts("Skipped #{number_skipped} records modified before #{since_when}.")
+      puts("Finished dumping objects with last mod date through #{last_timestamp}")
+      puts("Writing timestamp to #{timestamp_file}")
+      puts("If this process crashed, you can resume the data dump where it left off.")
+      puts("First, MOVE THE FILE #{objects_file} SO IT DOESN'T GET OVERWRITTEN.")
+      puts("Then run the following command:")
+      puts("bundle exec rake fluctus:dump_data[#{data_dir},'#{last_timestamp}']")
+      File.open(timestamp_file, 'w') { |file| file.puts(last_timestamp) }
     end
   end
-
 end
