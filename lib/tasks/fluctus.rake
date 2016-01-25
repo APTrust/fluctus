@@ -319,4 +319,17 @@ namespace :fluctus do
       File.open(timestamp_file, 'w') { |file| file.puts(last_timestamp) }
     end
   end
+
+  desc 'Dumps ProcessedItem records to JSON files for auditing'
+  task :dump_processed_items, [:data_dir, :since_when] => [:environment] do |t, args|
+    data_dir = args[:data_dir] || '.'
+    since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
+    output_file = File.join(data_dir, "processed_items.json")
+    puts "Dumping processed_items to #{output_file}"
+    File.open(output_file, 'w') do |file|
+      ProcessedItem.where("updated_at >= ?", since_when).order('updated_at asc').find_each do |item|
+        file.puts(item.to_json)
+      end
+    end
+  end
 end
