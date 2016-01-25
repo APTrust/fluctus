@@ -332,4 +332,19 @@ namespace :fluctus do
       end
     end
   end
+
+  desc 'Dumps User records to JSON files for auditing'
+  task :dump_users, [:data_dir] => [:environment] do |t, args|
+    data_dir = args[:data_dir] || '.'
+    output_file = File.join(data_dir, "users.json")
+    puts "Dumping users to #{output_file}"
+    File.open(output_file, 'w') do |file|
+      User.find_each do |user|
+        data = user.serializable_hash
+        data['encrypted_password'] = user.encrypted_password
+        data['encrypted_api_secret_key'] = user.encrypted_api_secret_key
+        file.puts(data.to_json)
+      end
+    end
+  end
 end
