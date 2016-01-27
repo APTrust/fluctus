@@ -99,11 +99,10 @@ describe ProcessedItemController do
         sign_in institutional_admin
       end
 
-      #TODO: fix this, it can't find the item
-      # it 'restricts institutional admins from API usage' do
-      #   get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
-      #   expect(response.status).to eq 403
-      # end
+      it 'allows API usage' do
+        get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
+        expect(response.status).to eq 200
+      end
     end
   end
 
@@ -118,11 +117,10 @@ describe ProcessedItemController do
         expect(response.status).to eq 403
       end
 
-      #TODO: fix this, it can't find the item
-      # it 'restricts institutional admins from API usage when updating by etag' do
-      #   put :update, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_api_update_by_etag
-      #   expect(response.status).to eq 403
-      # end
+      it 'restricts institutional admins from API usage when updating by etag' do
+        put :update, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_api_update_by_etag
+        expect(response.status).to eq 403
+      end
     end
   end
 
@@ -210,10 +208,9 @@ describe ProcessedItemController do
 
       end
 
-      it 'assigns the requested items as @items' do
+      it 'restricts access to the admin API' do
         get :items_for_restore, format: :json
-        assigns(:items).should include(user_item)
-        expect(assigns(:items).count).to eq(ProcessedItem.count)
+        expect(response.status).to eq 403
       end
     end
 
@@ -276,10 +273,9 @@ describe ProcessedItemController do
 
       end
 
-      it 'assigns the requested items as @items' do
+      it 'restricts access to the admin API' do
         get :items_for_dpn, format: :json
-        assigns(:items).should include(user_item)
-        expect(assigns(:items).count).to eq(ProcessedItem.count)
+        expect(response.status).to eq 403
       end
     end
 
@@ -341,10 +337,9 @@ describe ProcessedItemController do
                                  retry: true)
       end
 
-      it 'assigns the requested items as @items' do
+      it 'restricts access to the admin API' do
         get :items_for_delete, format: :json
-        assigns(:items).should include(user_item)
-        expect(assigns(:items).count).to eq(ProcessedItem.count)
+        expect(response.status).to eq 403
       end
     end
 
@@ -478,6 +473,24 @@ describe ProcessedItemController do
             expect(item.status).to eq(Fluctus::Application::FLUCTUS_STATUSES['pend'])
           end
         end
+      end
+    end
+
+    describe 'for institutional admin user' do
+      before do
+        sign_in institutional_admin
+        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['restore'],
+                                 stage: Fluctus::Application::FLUCTUS_STAGES['requested'],
+                                 status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                 retry: false,
+                                 object_identifier: 'ned/flanders')
+      end
+
+      it 'restricts access to the admin API' do
+        post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
+             stage: 'Resolve', status: 'Success', note: 'Lightyear', retry: true,
+             use_route: 'item_set_restoration_status')
+        expect(response.status).to eq 403
       end
     end
   end
@@ -761,18 +774,6 @@ describe ProcessedItemController do
         assigns(:items).should_not include(item)
         assigns(:items).should include(item1)
       end
-
-      describe 'for institutional admin' do
-        before do
-          sign_in institutional_admin
-        end
-
-        it 'restricts institutional admins from API usage' do
-          get :api_search, format: 'json', use_route: :processed_item_api_create
-          expect(response.status).to eq 403
-        end
-      end
-
     end
 
     describe 'for institutional admin' do
@@ -780,10 +781,9 @@ describe ProcessedItemController do
         sign_in institutional_admin
       end
 
-      it 'assigns the requested items as @items' do
-        get :api_search, format: :json
-        assigns(:items).should include(user_item)
-        assigns(:items).should_not include(item)
+      it 'restricts institutional admins from API usage' do
+        get :api_search, format: 'json', use_route: :processed_item_api_search
+        expect(response.status).to eq 403
       end
     end
   end

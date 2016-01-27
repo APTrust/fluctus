@@ -17,7 +17,7 @@ class ProcessedItemPolicy < ApplicationPolicy
   end
 
   def admin_api?
-    user.admin?
+    record.first.nil? || user.admin?
   end
 
   def show?
@@ -46,19 +46,19 @@ class ProcessedItemPolicy < ApplicationPolicy
   end
 
   def set_restoration_status?
-    record.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+    record.nil? || user.admin?
   end
 
   def items_for_delete?
-    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
+    record.first.nil? || user.admin?
   end
 
   def items_for_restore?
-    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
+    record.first.nil? || user.admin?
   end
 
   def items_for_dpn?
-    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
+    record.first.nil? || user.admin?
   end
 
   class Scope
