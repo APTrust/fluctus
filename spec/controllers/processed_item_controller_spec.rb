@@ -223,7 +223,7 @@ describe ProcessedItemController do
                                  institution: institution.identifier,
                                  retry: true)
         ProcessedItem.all.limit(2).update_all(object_identifier: 'mickey/mouse')
-        sign_in institutional_admin
+        sign_in admin_user
       end
 
       it 'should return only items with the specified object_identifier' do
@@ -288,7 +288,7 @@ describe ProcessedItemController do
                                  institution: institution.identifier,
                                  retry: true)
         ProcessedItem.all.limit(2).update_all(object_identifier: 'mickey/mouse')
-        sign_in institutional_admin
+        sign_in admin_user
       end
 
       it 'should return only items with the specified object_identifier' do
@@ -358,7 +358,7 @@ describe ProcessedItemController do
         pi = ProcessedItem.last
         pi.generic_file_identifier = 'something/else'
         pi.save
-        sign_in institutional_admin
+        sign_in admin_user
       end
 
       it 'should return only items with the specified object_identifier' do

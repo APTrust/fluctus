@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:delete_test_items, :show_reviewed]
+  after_action :verify_authorized, :except => [:delete_test_items, :show_reviewed, :ingested_since]
 
   def create
     authorize @processed_item
@@ -297,7 +297,7 @@ class ProcessedItemController < ApplicationController
                                  status: Fluctus::Application::FLUCTUS_STATUSES['success'],
                                  reviewed: true)
     @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
-    authorize @items, :index?
+    authorize @items, :admin_api?
     respond_to do |format|
       format.json { render json: @items, status: :ok }
     end
