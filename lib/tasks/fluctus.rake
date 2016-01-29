@@ -31,7 +31,7 @@ namespace :fluctus do
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
 
-    i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: 'placeholder')
+    i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: '44c450a6-8b2e-4c59-8793-3d9366bf43f5')
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     %w(admin institutional_admin institutional_user).each do |role|
