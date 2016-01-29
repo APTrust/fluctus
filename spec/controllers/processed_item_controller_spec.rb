@@ -99,9 +99,9 @@ describe ProcessedItemController do
         sign_in institutional_admin
       end
 
-      it 'allows API usage' do
+      it 'restricts API usage' do
         get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
-        expect(response.status).to eq 200
+        expect(response.status).to eq 403
       end
     end
   end
@@ -525,7 +525,7 @@ describe ProcessedItemController do
       it 'should accept good parameters via json' do
         expect {
           post :create, processed_item: {name: '123456.tar', etag: '1234567890', bag_date: Time.now.utc, user: 'Kelly Croswell', institution: institution.identifier,
-                                         bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
+                                         bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: 'Note', action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
                                          stage: Fluctus::Application::FLUCTUS_STAGES['fetch'], status: Fluctus::Application::FLUCTUS_STATUSES['fail'], outcome: 'Outcome', reviewed: false}, format: 'json'
         }.to change(ProcessedItem, :count).by(1)
         expect(response.status).to eq(201)
@@ -554,7 +554,7 @@ describe ProcessedItemController do
 
       it 'restricts institutional admins from API usage' do
         post :create, processed_item: {name: '123456.tar', etag: '1234567890', bag_date: Time.now.utc, user: 'Kelly Croswell', institution: institution.identifier,
-                                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: "Note", action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
+                                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: 'Note', action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
                                                        stage: Fluctus::Application::FLUCTUS_STAGES['fetch'], status: Fluctus::Application::FLUCTUS_STATUSES['fail'], outcome: 'Outcome', reviewed: false},
              format: 'json', use_route: :processed_item_api_create
         expect(response.status).to eq 403

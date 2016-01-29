@@ -303,7 +303,6 @@ class ProcessedItemController < ApplicationController
     end
   end
 
-
   def handle_selected
     review_list = params[:review]
     unless review_list.nil?
@@ -467,7 +466,7 @@ class ProcessedItemController < ApplicationController
         # Cursing ActiveRecord + SQLite. SQLite has all the milliseconds wrong!
         @processed_item = ProcessedItem.where(etag: params[:etag],
                                               name: params[:name])
-        @processed_item = @processed_item.where("datetime(bag_date) = datetime(?)", params[:bag_date]).first
+        @processed_item = @processed_item.where('datetime(bag_date) = datetime(?)', params[:bag_date]).first
       else
       @processed_item = ProcessedItem.where(etag: params[:etag],
                                             name: params[:name],
