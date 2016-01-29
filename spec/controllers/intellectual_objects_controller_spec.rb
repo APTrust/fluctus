@@ -176,7 +176,6 @@ describe IntellectualObjectsController do
 
   describe 'update an object' do
     let(:obj1) { FactoryGirl.create(:institutional_intellectual_object) }
-    let(:aggregate) { FactoryGirl.create(:io_aggregation, identifier: obj1.id) }
     after { obj1.destroy }
 
     describe 'when not signed in' do
@@ -223,7 +222,6 @@ describe IntellectualObjectsController do
       let(:inst_user) { FactoryGirl.create(:user, :institutional_admin) }
       before do
         sign_in inst_user
-        aggregate.save!
       end
 
       it 'should restrict API usage' do
