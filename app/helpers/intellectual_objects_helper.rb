@@ -1,6 +1,6 @@
 module IntellectualObjectsHelper
   def format_display(format)
-    format == 'all' ? 'Total content upload' : format
+    format == 'all' ? 'Total Content Upload' : format
   end
 
   def format_class(format)

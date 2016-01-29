@@ -78,8 +78,14 @@
       <dl class="dl-horizontal dl-invert">
         <dt>Files Preserved </dt>
         <dd><%= @intellectual_object.generic_files.count %></dd>
-        <dt>Total File Size<dt>
-        <dd><%= @intellectual_object.bytes_by_format()['all'] %></dd>
+        <dt>Total Content Upload</dt>
+        <dd><%= number_to_human_size(@intellectual_object.bytes_by_format()['all']) %></dd>
+        <% @intellectual_object.bytes_by_format.each do |format, bytes| %>
+            <% unless format == 'all' %>
+                <dt class="<%=format_class(format) %>"><%= format_display(format) %></dt>
+                <dd class="bytes"><%=number_to_human_size bytes %></dd>
+            <% end %>
+        <% end %>
       </dl>
     </div>
   </div>
