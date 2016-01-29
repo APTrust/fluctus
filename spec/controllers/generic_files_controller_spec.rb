@@ -8,7 +8,6 @@ describe GenericFilesController do
     @institution = FactoryGirl.create(:institution)
     @another_institution = FactoryGirl.create(:institution)
     @intellectual_object = FactoryGirl.create(:consortial_intellectual_object, institution_id: @institution.id)
-    @aggregate = FactoryGirl.create(:io_aggregation, identifier: @intellectual_object.id)
     GenericFile.delete_all
   end
 
@@ -229,7 +228,6 @@ describe GenericFilesController do
       # new, unsaved PremisEvents.
       describe 'and assigning to an object you do have access to' do
         it 'it should create or update multiple files and their events' do
-          aggregate = FactoryGirl.create(:io_aggregation, identifier: batch_obj.id)
           # First post is a create
           post(:save_batch, intellectual_object_id: batch_obj.id, generic_files: gf_data,
                format: 'json', use_route: 'generic_file_create_batch')

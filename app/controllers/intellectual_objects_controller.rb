@@ -21,9 +21,6 @@ class IntellectualObjectsController < ApplicationController
   def create
     authorize @institution, :create_through_institution?
     @intellectual_object = @institution.intellectual_objects.new(params[:intellectual_object])
-    aggregate = IoAggregation.new
-    aggregate.initialize_object(@intellectual_object.id)
-    aggregate.save!
     super
   end
 
@@ -55,8 +52,6 @@ class IntellectualObjectsController < ApplicationController
       search_session[:counter] = params[:counter]
       redirect_to :action => "show", :status => 303
     else
-      aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-      aggregate.update_aggregations_solr
       # They are updating a record. Use the method defined in RecordsControllerBehavior
       super
     end
@@ -158,9 +153,6 @@ class IntellectualObjectsController < ApplicationController
         load_institution_for_create_from_json(new_object)
         authorize @institution, :create_through_institution?
         new_object.save!
-        aggregate = IoAggregation.new
-        aggregate.initialize_object(new_object.id)
-        aggregate.save!
         # Save the ingest and other object-level events.
         state[:object_events].each { |event|
           state[:current_object] = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
@@ -243,8 +235,6 @@ class IntellectualObjectsController < ApplicationController
     new_file.state = 'A' # in case we loaded a deleted file
     # We have to save this now to get events into Solr
     new_file.save!
-    aggregate = IoAggregation.where(identifier: intel_obj.id).first
-    aggregate.update_aggregations_solr
     file_events.each { |event|
       state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
       new_file.add_event(event)

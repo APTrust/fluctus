@@ -76,16 +76,10 @@
 
     <div class="panel-body">
       <dl class="dl-horizontal dl-invert">
-        <% aggregate = IoAggregation.where(identifier: @intellectual_object.id).first %>
-        <% aggregations = @intellectual_object.aggregations_from_solr %>
         <dt>Files Preserved </dt>
-        <dd><%= aggregate.file_count %></dd>
+        <dd><%= @intellectual_object.generic_files.count %></dd>
         <dt>Total File Size<dt>
-        <dd><%= number_to_human_size(aggregate.file_size) %></dd>
-        <% aggregate.format_to_map.each do |key, value| %>
-            <dt><%= key %></dt>
-            <dd><%= value %></dd>
-        <% end %>
+        <dd><%= @intellectual_object.bytes_by_format()['all'] %></dd>
       </dl>
     </div>
   </div>

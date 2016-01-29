@@ -188,10 +188,8 @@ describe IntellectualObjectsController do
     describe 'when signed in' do
       let(:user) { FactoryGirl.create(:user, :admin) }
       let(:obj1) { FactoryGirl.create(:institutional_intellectual_object) }
-      let(:aggregate) { FactoryGirl.create(:io_aggregation, identifier: obj1.id) }
       before {
         sign_in user
-        aggregate.save!
       }
 
       it 'should update the search counter' do

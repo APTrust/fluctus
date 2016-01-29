@@ -36,8 +36,6 @@ class GenericFilesController < ApplicationController
     authorize @intellectual_object, :create_through_intellectual_object?
     @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
     @generic_file.state = 'A'
-    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    aggregate.update_aggregations_solr
     respond_to do |format|
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
@@ -182,8 +180,6 @@ class GenericFilesController < ApplicationController
           render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
       }
     end
-    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    aggregate.update_aggregations_solr
   end
 
 
@@ -191,8 +187,6 @@ class GenericFilesController < ApplicationController
     authorize @generic_file
     @generic_file.state = 'A'
     if resource.update(params_for_update)
-      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      aggregate.update_aggregations_solr
       head :no_content
     else
       log_model_error(resource)
@@ -218,8 +212,6 @@ class GenericFilesController < ApplicationController
                      agent: 'https://github.com/crowdmob/goamz',
                      outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
-      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      aggregate.update_aggregations_solr
       @generic_file.soft_delete(attributes)
       respond_to do |format|
         format.json { head :no_content }
