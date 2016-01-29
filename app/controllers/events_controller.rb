@@ -108,7 +108,7 @@ protected
 
   def only_events(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << "event_type_ssim:*"
+    solr_parameters[:fq] << 'event_type_ssim:*'
   end
 
   def sort_chronologically(solr_parameters, user_parameters)

@@ -91,7 +91,7 @@ describe Auditable do
       subject.premisEvents.events.count.should == 1
       event = subject.premisEvents.events.first
       solr_result = ActiveFedora::SolrService.query("id:#{event.identifier.first}").first
-      solr_result["intellectual_object_id_ssim"].should == [id]
+      solr_result['intellectual_object_id_ssim'].should == [id]
     end
 
   end

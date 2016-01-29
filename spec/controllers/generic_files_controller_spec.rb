@@ -3,6 +3,7 @@ require 'spec_helper'
 describe GenericFilesController do
   let(:user) { FactoryGirl.create(:user, :admin, institution_pid: @institution.pid) }
   let(:file) { FactoryGirl.create(:generic_file) }
+  let(:inst_user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @institution.pid)}
 
   before(:all) do
     @institution = FactoryGirl.create(:institution)
@@ -207,7 +208,7 @@ describe GenericFilesController do
       let(:obj2) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @another_institution.id) }
       let(:batch_obj) { FactoryGirl.create(:consortial_intellectual_object, institution_id: @institution.id) }
       let(:current_dir) { File.dirname(__FILE__) }
-      let(:json_file) { File.join(current_dir, "..", "fixtures", "generic_file_batch.json") }
+      let(:json_file) { File.join(current_dir, '..', 'fixtures', 'generic_file_batch.json') }
       let(:raw_json) { File.read(json_file) }
       let(:gf_data) { JSON.parse(raw_json) }
 
@@ -283,7 +284,7 @@ describe GenericFilesController do
     describe 'when signed in' do
       before { sign_in user }
 
-      describe "and deleteing a file you don't have access to" do
+      describe "and updating a file you don't have access to" do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
         it 'should be forbidden' do
           patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file.identifier, generic_file: {size: 99}, format: 'json', trailing_slash: true
@@ -293,7 +294,7 @@ describe GenericFilesController do
       end
 
       describe 'and you have access to the file' do
-        it 'should delete the file' do
+        it 'should update the file' do
           patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file, generic_file: {size: 99}, format: 'json', trailing_slash: true
           expect(assigns[:generic_file].size).to eq 99
           expect(response.code).to eq '204'
@@ -369,6 +370,19 @@ describe GenericFilesController do
           expect(pi.status).to eq Fluctus::Application::FLUCTUS_STATUSES['pend']
         end
 
+      end
+    end
+  end
+
+  describe 'GET #not_checked_since' do
+    describe 'when signed in as an admin user' do
+      before do
+        sign_in user
+      end
+
+      it 'allows access to the API endpoint' do
+        get :not_checked_since, date: '2015-01-31T14:31:36Z', format: :json, use_route: :files_not_checked_since
+        expect(response.status).to eq 200
       end
     end
   end

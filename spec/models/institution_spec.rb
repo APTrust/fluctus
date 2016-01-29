@@ -10,26 +10,26 @@ describe Institution do
     subject.to_solr['desc_metadata__name_tesim'].should == [subject.name]
   end
 
-  describe "#name_is_unique" do
-    it "should validate uniqueness of the name" do
-      one = FactoryGirl.create(:institution, name: "test")
-      two = FactoryGirl.build(:institution, name: "test")
+  describe '#name_is_unique' do
+    it 'should validate uniqueness of the name' do
+      one = FactoryGirl.create(:institution, name: 'test')
+      two = FactoryGirl.build(:institution, name: 'test')
       two.should_not be_valid
-      two.errors[:name].should include("has already been taken")
+      two.errors[:name].should include('has already been taken')
     end
   end
 
-  describe "#identifier_is_unique" do
-    it "should validate uniqueness of the identifier" do
-      one = FactoryGirl.create(:institution, identifier: "test.edu")
-      two = FactoryGirl.build(:institution, identifier: "test.edu")
+  describe '#identifier_is_unique' do
+    it 'should validate uniqueness of the identifier' do
+      one = FactoryGirl.create(:institution, identifier: 'test.edu')
+      two = FactoryGirl.build(:institution, identifier: 'test.edu')
       two.should_not be_valid
-      two.errors[:identifier].should include("has already been taken")
+      two.errors[:identifier].should include('has already been taken')
     end
   end
 
-  describe "bytes_by_format" do
-    it "should return a hash" do
+  describe 'bytes_by_format' do
+    it 'should return a hash' do
       expect(subject.bytes_by_format).to eq({"all"=>0})
     end
     describe 'with attached files' do
@@ -39,7 +39,7 @@ describe Institution do
       let(:intellectual_object) { FactoryGirl.create(:intellectual_object, institution: subject) }
       let!(:generic_file1) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, size: 166311750, identifier: 'test.edu/123/data/file.xml') }
       let!(:generic_file2) { FactoryGirl.create(:generic_file, intellectual_object: intellectual_object, file_format: 'audio/wav', size: 143732461, identifier: 'test.edu/123/data/file.wav') }
-      it "should return a hash" do
+      it 'should return a hash' do
         expect(subject.bytes_by_format).to eq({"all"=>310044211,
                                                'application/xml' => 166311750,
                                                'audio/wav' => 143732461})
@@ -47,9 +47,9 @@ describe Institution do
     end
   end
 
-  describe "#get_from_solr" do
+  describe '#get_from_solr' do
     subject { FactoryGirl.create(:institution) }
-    it "should grab the institution from solr and create an institution object for the data" do
+    it 'should grab the institution from solr and create an institution object for the data' do
       inst = Institution.get_from_solr(subject.id)
       inst.identifier.should == subject.identifier
       inst.name.should == subject.name
@@ -58,7 +58,7 @@ describe Institution do
     end
   end
 
-  describe "a saved instance" do
+  describe 'a saved instance' do
     before do
       subject.save
     end
@@ -66,9 +66,9 @@ describe Institution do
     after do
       subject.destroy
     end
-    describe "with an associated user" do
-      let!(:user) { FactoryGirl.create(:user, name: "Zeke", institution_pid: subject.pid)  }
-      it "should contain the appropriate User" do
+    describe 'with an associated user' do
+      let!(:user) { FactoryGirl.create(:user, name: 'Zeke', institution_pid: subject.pid)  }
+      it 'should contain the appropriate User' do
         subject.users.should eq [user]
       end
 
@@ -77,15 +77,15 @@ describe Institution do
         expect(Institution.exists?(subject.pid)).to be true
       end
 
-      describe "or two" do
-        let!(:user2) { FactoryGirl.create(:user, name: "Andrew", institution_pid: subject.pid) }
+      describe 'or two' do
+        let!(:user2) { FactoryGirl.create(:user, name: 'Andrew', institution_pid: subject.pid) }
         it 'should return users sorted by name' do
           subject.users.index(user).should > subject.users.index(user2)
         end
       end
     end
 
-    describe "with an associated intellectual object" do
+    describe 'with an associated intellectual object' do
       let!(:item) { FactoryGirl.create(:intellectual_object, institution: subject) }
       after { item.destroy }
       it 'deleting should be blocked' do

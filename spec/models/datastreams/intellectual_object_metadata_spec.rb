@@ -17,7 +17,7 @@ describe IntellectualObjectMetadata do
     @ds.title.should_not be_empty
     @ds.title = 'War and Peace'
     @ds.title.should == ['War and Peace']
-    @ds.title << "this is another title"
+    @ds.title << 'this is another title'
     @ds.title.count.should == 2
   end
 
@@ -37,7 +37,7 @@ describe IntellectualObjectMetadata do
 
   it 'should properly set acccess' do
     @ds.access.should_not be_empty
-    exp = ['consortia', 'institution', 'restricted'].sample
+    exp = %w(consortia institution restricted).sample
     @ds.access = exp
     @ds.access.should == [exp]
   end

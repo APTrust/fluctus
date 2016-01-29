@@ -175,6 +175,8 @@ describe IntellectualObjectsController do
   end
 
   describe 'update an object' do
+    let(:obj1) { FactoryGirl.create(:institutional_intellectual_object) }
+    let(:aggregate) { FactoryGirl.create(:io_aggregation, identifier: obj1.id) }
     after { obj1.destroy }
 
     describe 'when not signed in' do
@@ -185,9 +187,10 @@ describe IntellectualObjectsController do
       end
     end
 
-    describe 'when signed in' do
+    describe 'when signed in as an admin user' do
       let(:user) { FactoryGirl.create(:user, :admin) }
       let(:obj1) { FactoryGirl.create(:institutional_intellectual_object) }
+
       before {
         sign_in user
       }
@@ -215,9 +218,197 @@ describe IntellectualObjectsController do
         expect(assigns(:intellectual_object).title).to eq 'Foo'
       end
     end
+
+    describe 'when signed in as an institutional admin' do
+      let(:inst_user) { FactoryGirl.create(:user, :institutional_admin) }
+      before do
+        sign_in inst_user
+        aggregate.save!
+      end
+
+      it 'should restrict API usage' do
+        patch :update, identifier: CGI.escape(obj1.identifier), intellectual_object: {title: 'Foo'}, use_route: :object_update_by_identifier
+        expect(response.status).to eq 302
+      end
+    end
   end
 
   describe 'create an object' do
+    let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+    let(:any_institution) { FactoryGirl.create(:institution) }
+    def sample_object
+      {
+          institution_id: user.institution_pid,
+          title: 'Test Title',
+          access: 'consortia',
+          description: '',
+          identifier: 'ncsu.edu/ncsu.1840.16-388',
+          alt_identifier: [],
+          bag_name: '',
+          premisEvents: [
+              { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
+                type: 'ingest',
+                date_time: '2014-07-14T15:11:01-04:00',
+                detail: 'Copied all files to perservation bucket',
+                outcome: 'Success',
+                outcome_detail: '1 files copied',
+                object: 'Goamz S3 Client',
+                agent: 'https://github.com/crowdmob/goamz',
+                outcome_information: 'Multipart put using md5 checksum'
+              },
+              { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
+                type: 'identifier_assignment',
+                date_time: '2014-07-14T15:11:02-04:00',
+                detail: 'Assigned bag identifier',
+                outcome: 'Success',
+                outcome_detail: 'ncsu.edu/ncsu.1840.16-388',
+                object: 'APTrust bagman',
+                agent: 'https://github.com/APTrust/bagman',
+                outcome_information: 'Institution domain + tar file name'
+              }
+          ],
+          generic_files: [
+              { uri: 'https://s3.amazonaws.com/aptrust.test.preservation/47e00844-a53a-46de-5d93-d8ecff0e0e4b',
+                size: 4853,
+                created: '2014-04-25T14:06:39-04:00',
+                modified: '2014-04-25T14:06:39-04:00',
+                file_format: 'application/xml',
+                identifier: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
+                checksum: [
+                    { algorithm: 'md5',
+                      digest: '1202ef3562a201060bbdb5a7c6d37d91',
+                      datetime: '2014-04-25T14:06:39-04:00'
+                    },
+                    { algorithm: 'sha256',
+                      digest: '7a3a8623f60d5f0174d0099f851475ddbb1fb4b5aa74859e1e67dac8629cc6b6',
+                      datetime: '2014-07-14T19:10:58Z'
+                    }
+                ],
+                premisEvents: [
+                    { identifier: '155fb018-5ba0-440c-62a0-fc5dfe30dfd3',
+                      type: 'fixity_check',
+                      date_time: '2014-07-14T15:10:58-04:00',
+                      detail: 'Fixity check against registered hash',
+                      outcome: 'Success',
+                      outcome_detail: 'md5:1202ef3562a201060bbdb5a7c6d37d91',
+                      object: 'Go crypto/md5',
+                      agent: 'http://golang.org/pkg/crypto/md5/',
+                      outcome_information: 'Fixity matches'
+                    },
+                    { identifier: 'd656fd3b-5876-4e21-6449-44a3f6df3b81',
+                      type: 'ingest',
+                      date_time: '2014-07-14T15:10:58-04:00',
+                      detail: 'Completed copy to S3',
+                      outcome: 'Success',
+                      outcome_detail: '',
+                      object: 'bagman + goamz s3 client',
+                      agent: 'https://github.com/APTrust/bagman',
+                      outcome_information: 'Put using md5 checksum'
+                    },
+                    { identifier: '1f5671c6-ca2e-4b98-4847-54407338e7f6',
+                      type: 'fixity_generation',
+                      date_time: '2014-07-14T19:10:58Z',
+                      detail: 'Calculated new fixity value',
+                      outcome: 'Success',
+                      outcome_detail: 'sha256:7a3a8623f60d5f0174d0099f851475ddbb1fb4b5aa74859e1e67dac8629cc6b6',
+                      object: 'Go language crypto/sha256',
+                      agent: 'http://golang.org/pkg/crypto/sha256/',
+                      outcome_information: ''
+                    },
+                    { identifier: '9f6f4e83-e796-4a19-49af-c8feaf9fd167',
+                      type: 'identifier_assignment',
+                      date_time: '2014-07-14T19:10:58Z',
+                      detail: 'Assigned new institution.bag/path identifier',
+                      outcome: 'Success',
+                      outcome_detail: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
+                      object: 'APTrust bag processor',
+                      agent: 'https://github.com/APTrust/bagman',
+                      outcome_information: ''
+                    },
+                    { identifier: '318a6e86-8b0a-4e73-5f54-9e3ccd98a5b3',
+                      type: 'identifier_assignment',
+                      date_time: '2014-07-14T19:10:58Z',
+                      detail: 'Assigned new storage URL identifier',
+                      outcome: 'Success',
+                      outcome_detail: 'https://s3.amazonaws.com/aptrust.test.preservation/e189b329-cfe6-41be-4d9c-bac1d6e7c592',
+                      object: 'Go uuid library + goamz S3 library',
+                      agent: 'http://github.com/nu7hatch/gouuid',
+                      outcome_information: ''
+                    }
+                ]
+              },
+              { uri: 'https://s3.amazonaws.com/aptrust.test.preservation/eb41cb20-0c60-4725-4402-ba38002a79b8',
+                size: 72,
+                created: '2014-04-25T14:06:39-04:00',
+                modified: '2014-04-25T14:06:39-04:00',
+                file_format: 'text/plain',
+                identifier: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
+                checksum: [
+                    { algorithm: 'md5',
+                      digest: '3ab392455183820d9f6a5c641ec1dea7',
+                      datetime: '2014-04-25T14:06:39-04:00'
+                    },
+                    { algorithm: 'sha256',
+                      digest: 'b6458735857c41c66c26782231a963656666a1b59bdf1cc45422c15702aa4c4e',
+                      datetime: '2014-07-14T19:10:58Z'
+                    }
+                ],
+                premisEvents: [
+                    { identifier: '74eb8c26-88ab-444f-4aab-d7f9c2cef550',
+                      type: 'fixity_check',
+                      date_time: '2014-07-14T15:10:58-04:00',
+                      detail: 'Fixity check against registered hash',
+                      outcome: 'Success',
+                      outcome_detail: 'md5:3ab392455183820d9f6a5c641ec1dea7',
+                      object: 'Go crypto/md5',
+                      agent: 'http://golang.org/pkg/crypto/md5/',
+                      outcome_information: 'Fixity matches'
+                    },
+                    { identifier: '8e04d3a0-097b-4600-60fb-56e16ebba46f',
+                      type: 'ingest',
+                      date_time: '2014-07-14T15:10:58-04:00',
+                      detail: 'Completed copy to S3',
+                      outcome: 'Success',
+                      outcome_detail: '',
+                      object: 'bagman + goamz s3 client',
+                      agent: 'https://github.com/APTrust/bagman',
+                      outcome_information: 'Put using md5 checksum'
+                    },
+                    { identifier: 'ce53b4f9-9ada-4d72-695c-21cb118f5918',
+                      type: 'fixity_generation',
+                      date_time: '2014-07-14T19:10:58Z',
+                      detail: 'Calculated new fixity value',
+                      outcome: 'Success',
+                      outcome_detail: 'sha256:b6458735857c41c66c26782231a963656666a1b59bdf1cc45422c15702aa4c4e',
+                      object: 'Go language crypto/sha256',
+                      agent: 'http://golang.org/pkg/crypto/sha256/',
+                      outcome_information: ''
+                    },
+                    { identifier: '42f07e80-c025-40fe-6784-0c397be03556',
+                      type: 'identifier_assignment',
+                      date_time: '2014-07-14T19:10:58Z',
+                      detail: 'Assigned new institution.bag/path identifier',
+                      outcome: 'Success',
+                      outcome_detail: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
+                      object: 'APTrust bag processor',
+                      agent: 'https://github.com/APTrust/bagman',
+                      outcome_information: ''
+                    },
+                    { identifier: 'a517c55a-f5b8-4313-7db2-13c65ed9baa0',
+                      type: 'identifier_assignment',
+                      date_time: '2014-07-14T19:10:58Z',
+                      detail: 'Assigned new storage URL identifier',
+                      outcome: 'Success',
+                      outcome_detail: 'https://s3.amazonaws.com/aptrust.test.preservation/5925dc09-94b4-4b49-79f0-e2a9832a41be',
+                      object: 'Go uuid library + goamz S3 library',
+                      agent: 'http://github.com/nu7hatch/gouuid',
+                      outcome_information: ''
+                    }
+                ]
+              },
+          ]
+      }
+    end
 
     describe 'when not signed in' do
       it 'should redirect to login' do
@@ -228,7 +419,6 @@ describe IntellectualObjectsController do
     end
 
     describe 'when signed in' do
-      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
       before { sign_in user }
         
       it 'should only allow assigning institutions you have access to' do
@@ -259,186 +449,12 @@ describe IntellectualObjectsController do
           expect(assigns(:intellectual_object).institution_id).to eq user.institution_pid
         }.to change(IntellectualObject, :count).by(1)
       end
+
     end
 
     describe 'when signed in as an admin' do
       let(:admin_user) { FactoryGirl.create(:user, :admin) }
-      let(:any_institution) { FactoryGirl.create(:institution) }
       before { sign_in admin_user }
-
-      def sample_object
-        {
-            institution_id: any_institution.id,
-            title: 'Test Title',
-            access: 'consortia',
-            description: '',
-            identifier: 'ncsu.edu/ncsu.1840.16-388',
-            alt_identifier: [],
-            bag_name: '',
-            premisEvents: [
-              { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
-                type: 'ingest',
-                date_time: '2014-07-14T15:11:01-04:00',
-                detail: 'Copied all files to perservation bucket',
-                outcome: 'Success',
-                outcome_detail: '1 files copied',
-                object: 'Goamz S3 Client',
-                agent: 'https://github.com/crowdmob/goamz',
-                outcome_information: 'Multipart put using md5 checksum'
-              },
-              { identifier: '6b0f1c45-99e3-4636-4e46-d9498573d029',
-                type: 'identifier_assignment',
-                date_time: '2014-07-14T15:11:02-04:00',
-                detail: 'Assigned bag identifier',
-                outcome: 'Success',
-                outcome_detail: 'ncsu.edu/ncsu.1840.16-388',
-                object: 'APTrust bagman',
-                agent: 'https://github.com/APTrust/bagman',
-                outcome_information: 'Institution domain + tar file name'
-              }
-            ],
-            generic_files: [
-              { uri: 'https://s3.amazonaws.com/aptrust.test.preservation/47e00844-a53a-46de-5d93-d8ecff0e0e4b',
-                size: 4853,
-                created: '2014-04-25T14:06:39-04:00',
-                modified: '2014-04-25T14:06:39-04:00',
-                file_format: 'application/xml',
-                identifier: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
-                checksum: [
-                  { algorithm: 'md5',
-                    digest: '1202ef3562a201060bbdb5a7c6d37d91',
-                    datetime: '2014-04-25T14:06:39-04:00'
-                  },
-                  { algorithm: 'sha256',
-                    digest: '7a3a8623f60d5f0174d0099f851475ddbb1fb4b5aa74859e1e67dac8629cc6b6',
-                    datetime: '2014-07-14T19:10:58Z'
-                  }
-                ],
-                premisEvents: [
-                  { identifier: '155fb018-5ba0-440c-62a0-fc5dfe30dfd3',
-                    type: 'fixity_check',
-                    date_time: '2014-07-14T15:10:58-04:00',
-                    detail: 'Fixity check against registered hash',
-                    outcome: 'Success',
-                    outcome_detail: 'md5:1202ef3562a201060bbdb5a7c6d37d91',
-                    object: 'Go crypto/md5',
-                    agent: 'http://golang.org/pkg/crypto/md5/',
-                    outcome_information: 'Fixity matches'
-                  },
-                  { identifier: 'd656fd3b-5876-4e21-6449-44a3f6df3b81',
-                    type: 'ingest',
-                    date_time: '2014-07-14T15:10:58-04:00',
-                    detail: 'Completed copy to S3',
-                    outcome: 'Success',
-                    outcome_detail: '',
-                    object: 'bagman + goamz s3 client',
-                    agent: 'https://github.com/APTrust/bagman',
-                    outcome_information: 'Put using md5 checksum'
-                  },
-                  { identifier: '1f5671c6-ca2e-4b98-4847-54407338e7f6',
-                    type: 'fixity_generation',
-                    date_time: '2014-07-14T19:10:58Z',
-                    detail: 'Calculated new fixity value',
-                    outcome: 'Success',
-                    outcome_detail: 'sha256:7a3a8623f60d5f0174d0099f851475ddbb1fb4b5aa74859e1e67dac8629cc6b6',
-                    object: 'Go language crypto/sha256',
-                    agent: 'http://golang.org/pkg/crypto/sha256/',
-                    outcome_information: ''
-                  },
-                  { identifier: '9f6f4e83-e796-4a19-49af-c8feaf9fd167',
-                    type: 'identifier_assignment',
-                    date_time: '2014-07-14T19:10:58Z',
-                    detail: 'Assigned new institution.bag/path identifier',
-                    outcome: 'Success',
-                    outcome_detail: 'ncsu.edu/ncsu.1840.16-388/data/metadata.xml',
-                    object: 'APTrust bag processor',
-                    agent: 'https://github.com/APTrust/bagman',
-                    outcome_information: ''
-                  },
-                  { identifier: '318a6e86-8b0a-4e73-5f54-9e3ccd98a5b3',
-                    type: 'identifier_assignment',
-                    date_time: '2014-07-14T19:10:58Z',
-                    detail: 'Assigned new storage URL identifier',
-                    outcome: 'Success',
-                    outcome_detail: 'https://s3.amazonaws.com/aptrust.test.preservation/e189b329-cfe6-41be-4d9c-bac1d6e7c592',
-                    object: 'Go uuid library + goamz S3 library',
-                    agent: 'http://github.com/nu7hatch/gouuid',
-                    outcome_information: ''
-                  }
-                ]
-              },
-              { uri: 'https://s3.amazonaws.com/aptrust.test.preservation/eb41cb20-0c60-4725-4402-ba38002a79b8',
-                size: 72,
-                created: '2014-04-25T14:06:39-04:00',
-                modified: '2014-04-25T14:06:39-04:00',
-                file_format: 'text/plain',
-                identifier: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
-                checksum: [
-                  { algorithm: 'md5',
-                    digest: '3ab392455183820d9f6a5c641ec1dea7',
-                    datetime: '2014-04-25T14:06:39-04:00'
-                  },
-                  { algorithm: 'sha256',
-                    digest: 'b6458735857c41c66c26782231a963656666a1b59bdf1cc45422c15702aa4c4e',
-                    datetime: '2014-07-14T19:10:58Z'
-                  }
-                ],
-                premisEvents: [
-                  { identifier: '74eb8c26-88ab-444f-4aab-d7f9c2cef550',
-                    type: 'fixity_check',
-                    date_time: '2014-07-14T15:10:58-04:00',
-                    detail: 'Fixity check against registered hash',
-                    outcome: 'Success',
-                    outcome_detail: 'md5:3ab392455183820d9f6a5c641ec1dea7',
-                    object: 'Go crypto/md5',
-                    agent: 'http://golang.org/pkg/crypto/md5/',
-                    outcome_information: 'Fixity matches'
-                  },
-                  { identifier: '8e04d3a0-097b-4600-60fb-56e16ebba46f',
-                    type: 'ingest',
-                    date_time: '2014-07-14T15:10:58-04:00',
-                    detail: 'Completed copy to S3',
-                    outcome: 'Success',
-                    outcome_detail: '',
-                    object: 'bagman + goamz s3 client',
-                    agent: 'https://github.com/APTrust/bagman',
-                    outcome_information: 'Put using md5 checksum'
-                  },
-                  { identifier: 'ce53b4f9-9ada-4d72-695c-21cb118f5918',
-                    type: 'fixity_generation',
-                    date_time: '2014-07-14T19:10:58Z',
-                    detail: 'Calculated new fixity value',
-                    outcome: 'Success',
-                    outcome_detail: 'sha256:b6458735857c41c66c26782231a963656666a1b59bdf1cc45422c15702aa4c4e',
-                    object: 'Go language crypto/sha256',
-                    agent: 'http://golang.org/pkg/crypto/sha256/',
-                    outcome_information: ''
-                  },
-                  { identifier: '42f07e80-c025-40fe-6784-0c397be03556',
-                    type: 'identifier_assignment',
-                    date_time: '2014-07-14T19:10:58Z',
-                    detail: 'Assigned new institution.bag/path identifier',
-                    outcome: 'Success',
-                    outcome_detail: 'ncsu.edu/ncsu.1840.16-388/data/object.properties',
-                    object: 'APTrust bag processor',
-                    agent: 'https://github.com/APTrust/bagman',
-                    outcome_information: ''
-                  },
-                  { identifier: 'a517c55a-f5b8-4313-7db2-13c65ed9baa0',
-                    type: 'identifier_assignment',
-                    date_time: '2014-07-14T19:10:58Z',
-                    detail: 'Assigned new storage URL identifier',
-                    outcome: 'Success',
-                    outcome_detail: 'https://s3.amazonaws.com/aptrust.test.preservation/5925dc09-94b4-4b49-79f0-e2a9832a41be',
-                    object: 'Go uuid library + goamz S3 library',
-                    agent: 'http://github.com/nu7hatch/gouuid',
-                    outcome_information: ''
-                  }
-                ]
-              },
-            ]
-          }
-      end
 
       it 'should create all nested items when include relations flag is true' do
         expect {
@@ -466,8 +482,6 @@ describe IntellectualObjectsController do
           expect(response.code).to eq '422'
         }.to change(IntellectualObject, :count).by(0)
       end
-
-
     end
   end
 
@@ -635,6 +649,62 @@ describe IntellectualObjectsController do
                                     status: Fluctus::Application::FLUCTUS_STATUSES['pend']).count
         expect(count).to eq(1)
 
+      end
+    end
+  end
+
+  describe 'GET #api_index' do
+
+    describe 'for an admin user' do
+      let(:user) { FactoryGirl.create(:user, :admin) }
+      let(:another_institution) { FactoryGirl.create(:institution) }
+      let!(:object1) { FactoryGirl.create(:consortial_intellectual_object, bag_name: 'item1-for-hire', institution: user.institution) }
+      let!(:object2) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '1', institution: user.institution) }
+      let!(:object3) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '2', institution: another_institution) }
+      let!(:object4) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '3', institution: another_institution) }
+      let!(:object5) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '4', institution: another_institution) }
+      before do
+        sign_in user
+      end
+
+      it 'returns all items when no other parameters are specified' do
+        get :api_index, format: :json, per_page: 1000
+        assigns(:items).should include(object1)
+        assigns(:items).should include(object2)
+        assigns(:items).should include(object3)
+      end
+
+      it 'filters down to the right records and has the right count' do
+        ident_parts = object1.identifier.split('/')
+        get :api_index, format: :json, name_contains: ident_parts[1]
+        assigns(:items).should_not include(object2)
+        assigns(:items).should_not include(object3)
+        assigns(:items).should include(object1)
+        assigns(:count).should == 1
+      end
+
+      it 'returns the correct next and previous links' do
+        get :api_index, format: :json, per_page: 2, page: 2, updated_since: '2014-06-03T15:28:39+00:00'
+        assigns(:next).should == 'https://repository.aptrust.org/member-api/v1/objects/?page=3&page_size=2&updated_since=2014-06-03T15:28:39+00:00'
+        assigns(:previous).should == 'https://repository.aptrust.org/member-api/v1/objects/?page=1&page_size=2&updated_since=2014-06-03T15:28:39+00:00'
+      end
+    end
+
+    describe 'for an institutional admin user' do
+      let(:user) { FactoryGirl.create(:user, :institutional_admin) }
+      let(:another_institution) { FactoryGirl.create(:institution) }
+      let!(:object1) { FactoryGirl.create(:consortial_intellectual_object, bag_name: 'item1-for-hire', institution: user.institution) }
+      let!(:object2) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '1', institution: user.institution) }
+      let!(:object3) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '2', institution: another_institution) }
+      before do
+        sign_in user
+      end
+
+      it "returns only the items within the user's institution" do
+        get :api_index, format: :json, per_page: 100
+        assigns(:items).should include(object1)
+        assigns(:items).should include(object2)
+        assigns(:items).should_not include(object3)
       end
     end
   end

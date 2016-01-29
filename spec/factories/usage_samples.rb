@@ -3,6 +3,6 @@
 FactoryGirl.define do
   factory :usage_sample do
     institution nil
-    data "MyText"
+    data 'MyText'
   end
 end

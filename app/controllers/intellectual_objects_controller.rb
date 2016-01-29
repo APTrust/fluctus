@@ -18,6 +18,28 @@ class IntellectualObjectsController < ApplicationController
     super
   end
 
+  def api_index
+    @institution = current_user.institution
+    authorize @institution, :index?
+    if current_user.admin?
+      params[:institution].present? ? @items = IntellectualObject.where(desc_metadata__identifier_tesim: params[:institution]) : @items = IntellectualObject.all
+    else
+      @items = IntellectualObject.where(desc_metadata__identifier_tesim: current_user.institution.identifier)
+    end
+    @items = @items.where(identifier: params[:name_exact]) if params[:name_exact].present?
+    @items = @items.where(desc_metadata__identifier_tesim: params[:name_contains]) if params[:name_contains].present?
+    date = format_date if params[:updated_since].present?
+    @items.each { |item| @items.delete(item) if item.modified_date.to_s >= date.to_s } if params[:updated_since].present?
+    @count = @items.count
+    params[:page] = 1 unless params[:page].present?
+    params[:per_page] = 10 unless params[:per_page].present?
+    start = ((params[:page] * params[:per_page]) - params[:per_page])
+    @items = @items.offset(start).limit(params[:per_page])
+    @next = format_next
+    @previous = format_previous
+    render json: {count: @count, next: @next, previous: @previous, results: [@items.map{ |item| item.serializable_hash}]}
+  end
+
   def create
     authorize @institution, :create_through_institution?
     @intellectual_object = @institution.intellectual_objects.new(params[:intellectual_object])
@@ -50,7 +72,7 @@ class IntellectualObjectsController < ApplicationController
     if params[:counter]
       # They are just updating the search counter
       search_session[:counter] = params[:counter]
-      redirect_to :action => "show", :status => 303
+      redirect_to :action => 'show', :status => 303
     else
       # They are updating a record. Use the method defined in RecordsControllerBehavior
       super
@@ -140,7 +162,7 @@ class IntellectualObjectsController < ApplicationController
         object = JSON.parse(json_param.to_json).first
         # We might be re-ingesting a previously-deleted intellectual object,
         # or more likely, creating a new intel obj. Load or create the object.
-        identifier = object['identifier'].gsub(/%2F/i, "/")
+        identifier = object['identifier'].gsub(/%2F/i, '/')
         new_object = IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first ||
           IntellectualObject.new()
         new_object.state = 'A' # in case we just loaded a deleted object
@@ -208,7 +230,7 @@ class IntellectualObjectsController < ApplicationController
     logger.error(exception.backtrace.join("\n"))
     params.delete(:id)
     index
-    render "index", :status => 404
+    render 'index', :status => 404
   end
 
   private
@@ -296,7 +318,7 @@ class IntellectualObjectsController < ApplicationController
       @institution = @intellectual_object.institution
       params[:id] = @intellectual_object.id
     elsif params[:identifier] && params[:id].blank?
-      identifier = params[:identifier].gsub(/%2F/i, "/")
+      identifier = params[:identifier].gsub(/%2F/i, '/')
       @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first
 
       # Solr permissions handler expects params[:id] to be the object ID,
@@ -326,6 +348,43 @@ class IntellectualObjectsController < ApplicationController
 
   def load_institution_for_create_from_json(object)
     @institution = params[:institution_id].nil? ? object.institution : Institution.find(params[:institution_id])
+  end
+
+  def format_date
+    date = Date.parse(params[:updated_since])
+    date.change(:usec => 0)
+    date.to_s
+    date
+  end
+
+  def format_next
+    if @count.to_f / params[:per_page] <= params[:page]
+      nil
+    else
+      new_page = params[:page] + 1
+      new_url = "https://repository.aptrust.org/member-api/v1/objects/?page=#{new_page}&page_size=#{params[:per_page]}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def format_previous
+    if params[:page] == 1
+      nil
+    else
+      new_page = params[:page] - 1
+      new_url = "https://repository.aptrust.org/member-api/v1/objects/?page=#{new_page}&page_size=#{params[:per_page]}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def add_params(str)
+    str = str << "&updated_since=#{params[:updated_since]}" if params[:updated_since].present?
+    str = str << "&name_exact=#{params[:name_exact]}" if params[:name_exact].present?
+    str = str << "&name_contains=#{params[:name_contains]}" if params[:name_contains].present?
+    str = str << "&institution=#{params[:institution]}" if params[:institution].present?
+    str
   end
 
 end

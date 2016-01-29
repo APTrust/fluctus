@@ -1,8 +1,8 @@
 class GenericFile < ActiveFedora::Base
 
-  has_metadata "techMetadata", type: GenericFileMetadata
-  has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
-  has_file_datastream "content", control_group: 'E'
+  has_metadata 'techMetadata', type: GenericFileMetadata
+  has_metadata 'rightsMetadata', :type => Hydra::Datastream::RightsMetadata
+  has_file_datastream 'content', control_group: 'E'
   include Hydra::AccessControls::Permissions
   include Auditable   # premis events
 
@@ -216,7 +216,7 @@ class GenericFile < ActiveFedora::Base
     count +=1 if files.count == 1 && files.first.id != self.id
     count = files.count if files.count > 1
     if(count > 0)
-      errors.add(:identifier, "has already been taken")
+      errors.add(:identifier, 'has already been taken')
     end
   end
 

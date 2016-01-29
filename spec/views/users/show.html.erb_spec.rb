@@ -18,11 +18,11 @@ describe 'users/show.html.erb' do
     end
 
     it 'displays the API key section' do
-      rendered.should have_css("h4", text: 'API Secret Key')
+      rendered.should have_css('h4', text: 'API Secret Key')
     end
 
     it 'has a link to generate an API key' do
-      rendered.should have_link("Generate API Secret Key", href: generate_api_key_user_path(user))
+      rendered.should have_link('Generate API Secret Key', href: generate_api_key_user_path(user))
     end
   end
 
@@ -34,11 +34,11 @@ describe 'users/show.html.erb' do
     end
 
     it 'does not display the API key section' do
-      rendered.should_not have_css("h4", text: 'API Secret Key')
+      rendered.should_not have_css('h4', text: 'API Secret Key')
     end
 
     it 'has a link to generate an API key' do
-      rendered.should_not have_link("Generate API Secret Key", href: generate_api_key_user_path(user))
+      rendered.should_not have_link('Generate API Secret Key', href: generate_api_key_user_path(user))
     end
   end
 
