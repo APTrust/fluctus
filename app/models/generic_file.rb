@@ -59,10 +59,11 @@ class GenericFile < ActiveFedora::Base
   end
 
   def self.find_files_in_need_of_fixity(date, options={})
-    row = options[:rows] || 10
+    rows = options[:rows] || 10
     start = options[:start] || 0
-    files = GenericFile.where("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]").order('latest_fixity_dti asc').offset(start).limit(row)
-    files
+    files = GenericFile.find_with_conditions("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]",
+                                             sort: 'latest_fixity_dti asc', start: start, rows: rows)
+    ActiveFedora::SolrService.reify_solr_results(files)
   end
 
   # Returns a hash containing the number of bytes for each format.
