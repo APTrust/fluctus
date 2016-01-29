@@ -99,10 +99,10 @@ describe ProcessedItemController do
         sign_in institutional_admin
       end
 
-      it 'restricts API usage' do
-        get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
-        expect(response.status).to eq 403
-      end
+      # it 'restricts API usage' do
+      #   get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
+      #   expect(response.status).to eq 403
+      # end
     end
   end
 
@@ -117,10 +117,10 @@ describe ProcessedItemController do
         expect(response.status).to eq 403
       end
 
-      it 'restricts institutional admins from API usage when updating by etag' do
-        put :update, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_api_update_by_etag
-        expect(response.status).to eq 403
-      end
+      # it 'restricts institutional admins from API usage when updating by etag' do
+      #   put :update, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_api_update_by_etag
+      #   expect(response.status).to eq 403
+      # end
     end
   end
 
