@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe "Catalog" do 
-  describe "GET #index", :type => :feature do
+describe 'Catalog' do
+  describe 'GET #index', :type => :feature do
     before(:each) do 
       visit('/')
     end

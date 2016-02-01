@@ -13,7 +13,7 @@ namespace :fluctus do
         ['North Carolina State University', 'ncsu', 'ncsu.edu', 'd3432b4f-9f82-4206-a086-89bff5c5bd1e'],
         ['Pennsylvania State University', 'pst', 'psu.edu', 'cf153594-6c22-4b59-a12e-420e0ae5280f'],
         ['Syracuse University', 'syr', 'syr.edu', 'd5e231ad-cf1f-4499-9afe-7045f1254eaa'],
-        ['Test University','test', 'test.edu', '9a000000-0000-4000-a000-000000000005'],
+        ['Test University','test', 'test.edu', 'fe908327-3635-43c2-9ca6-849485febcf3'],
         ['University of Chicago', 'uchi', 'uchicago.edu', nil],
         ['University of Cincinnati', 'ucin', 'uc.edu', nil],
         ['University of Connecticut', 'uconn', 'uconn.edu', nil],
@@ -31,7 +31,7 @@ namespace :fluctus do
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
 
-    i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt')
+    i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: '44c450a6-8b2e-4c59-8793-3d9366bf43f5')
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     %w(admin institutional_admin institutional_user).each do |role|
@@ -59,7 +59,7 @@ namespace :fluctus do
   desc 'Empty the database'
   task empty_db: :environment do
     unless Rails.env.production?
-      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem, IoAggregation].each(&:destroy_all)
+      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem].each(&:destroy_all)
     end
   end
 
@@ -139,11 +139,6 @@ namespace :fluctus do
         # add processed item for intellectual object
         FactoryGirl.create(:processed_item, institution: institution.identifier, name: name, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
 
-        # add an aggregation object for the intellectual object
-        aggregate = IoAggregation.new
-        aggregate.initialize_object(item.id)
-        aggregate.save!
-
         5.times.each do |count|
           FactoryGirl.create(:processed_item, institution: institution.identifier)
         end
@@ -178,7 +173,6 @@ namespace :fluctus do
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
           f.save!
-          aggregate.update_aggregations('add', f)
         end
       end
     end
@@ -243,4 +237,108 @@ namespace :fluctus do
     puts "Execution time is #{diff} seconds"
   end
 
+  desc 'Dumps objects, files, institutions and events to JSON files for auditing'
+  task :dump_data, [:data_dir, :since_when] => [:environment] do |t, args|
+    #
+    # Sample usage to dump all objects and institutions into /usr/local/data:
+    #
+    # bundle exec rake fluctus:dump_data[/usr/local/data]
+    #
+    # To dump objects updated since a specified time to the same directory:
+    #
+    # bundle exec rake fluctus:dump_data[/usr/local/data,'2016-01-04T20:00:48.248Z']
+    #
+    data_dir = args[:data_dir] || '.'
+    since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
+    inst_file = File.join(data_dir, "institutions.json")
+    puts "Dumping institutions to #{inst_file}"
+    File.open(inst_file, 'w') do |file|
+      Institution.all.each do |inst|
+        file.puts(inst.to_json)
+      end
+    end
+    objects_file = File.join(data_dir, 'objects.json')
+    timestamp_file = File.join(data_dir, 'timestamp.txt')
+    last_timestamp = since_when
+    proceed_to_reify = false
+    number_skipped = 0
+    puts "Dumping objects, files and events modified since #{since_when} to #{objects_file}"
+    begin
+      File.open(objects_file, 'w') do |file|
+        IntellectualObject.find_in_batches([], batch_size: 10, sort: 'system_modified_dtsi asc') do |solr_result|
+          # Don't process or even reify results we've already processed,
+          # because the reify process blows up the memory and leads
+          # to out-of-memory crashes. We have to keep track of the last
+          # intellectual object we processed, because memory leaks somewhere
+          # in the Rails/Hydra/ActiveFedora stack cause this process to crash
+          # consistently, and we need to be able to restart where we left off.
+          if proceed_to_reify == false
+            solr_result.each do |result|
+              record_modified = result['system_modified_dtsi']
+              if record_modified > since_when
+                proceed_to_reify = true
+                break
+              end
+              number_skipped += 1
+            end
+          end
+          next if proceed_to_reify == false
+          obj_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
+          obj_list.each do |io|
+            data = io.serializable_hash(include: [:premisEvents])
+            data[:generic_files] = []
+            io.generic_files.each do |gf|
+              data[:generic_files].push(gf.serializable_hash(include: [:checksum, :premisEvents]))
+            end
+            file.puts(data.to_json)
+            last_timestamp = io.modified_date
+          end
+
+          # Do our part to remediate memory leaks
+          obj_list.each { |io| io = nil }
+          obj_list = nil
+          solr_result = nil
+          data = nil
+          GC.start
+        end
+      end
+    ensure
+      puts("Skipped #{number_skipped} records modified before #{since_when}.")
+      puts("Finished dumping objects with last mod date through #{last_timestamp}")
+      puts("Writing timestamp to #{timestamp_file}")
+      puts("If this process crashed, you can resume the data dump where it left off.")
+      puts("First, MOVE THE FILE #{objects_file} SO IT DOESN'T GET OVERWRITTEN.")
+      puts("Then run the following command:")
+      puts("bundle exec rake fluctus:dump_data[#{data_dir},'#{last_timestamp}']")
+      File.open(timestamp_file, 'w') { |file| file.puts(last_timestamp) }
+    end
+  end
+
+  desc 'Dumps ProcessedItem records to JSON files for auditing'
+  task :dump_processed_items, [:data_dir, :since_when] => [:environment] do |t, args|
+    data_dir = args[:data_dir] || '.'
+    since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
+    output_file = File.join(data_dir, "processed_items.json")
+    puts "Dumping processed_items to #{output_file}"
+    File.open(output_file, 'w') do |file|
+      ProcessedItem.where("updated_at >= ?", since_when).order('updated_at asc').find_each do |item|
+        file.puts(item.to_json)
+      end
+    end
+  end
+
+  desc 'Dumps User records to JSON files for auditing'
+  task :dump_users, [:data_dir] => [:environment] do |t, args|
+    data_dir = args[:data_dir] || '.'
+    output_file = File.join(data_dir, "users.json")
+    puts "Dumping users to #{output_file}"
+    File.open(output_file, 'w') do |file|
+      User.find_each do |user|
+        data = user.serializable_hash
+        data['encrypted_password'] = user.encrypted_password
+        data['encrypted_api_secret_key'] = user.encrypted_api_secret_key
+        file.puts(data.to_json)
+      end
+    end
+  end
 end

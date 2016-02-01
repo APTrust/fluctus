@@ -1,8 +1,8 @@
 class GenericFile < ActiveFedora::Base
 
-  has_metadata "techMetadata", type: GenericFileMetadata
-  has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
-  has_file_datastream "content", control_group: 'E'
+  has_metadata 'techMetadata', type: GenericFileMetadata
+  has_metadata 'rightsMetadata', :type => Hydra::Datastream::RightsMetadata
+  has_file_datastream 'content', control_group: 'E'
   include Hydra::AccessControls::Permissions
   include Auditable   # premis events
 
@@ -59,10 +59,11 @@ class GenericFile < ActiveFedora::Base
   end
 
   def self.find_files_in_need_of_fixity(date, options={})
-    row = options[:rows] || 10
+    rows = options[:rows] || 10
     start = options[:start] || 0
-    files = GenericFile.where("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]").order('latest_fixity_dti asc').offset(start).limit(row)
-    files
+    files = GenericFile.find_with_conditions("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]",
+                                             sort: 'latest_fixity_dti asc', start: start, rows: rows)
+    ActiveFedora::SolrService.reify_solr_results(files)
   end
 
   # Returns a hash containing the number of bytes for each format.
@@ -215,7 +216,7 @@ class GenericFile < ActiveFedora::Base
     count +=1 if files.count == 1 && files.first.id != self.id
     count = files.count if files.count > 1
     if(count > 0)
-      errors.add(:identifier, "has already been taken")
+      errors.add(:identifier, 'has already been taken')
     end
   end
 

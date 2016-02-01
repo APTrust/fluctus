@@ -18,12 +18,38 @@ class IntellectualObjectsController < ApplicationController
     super
   end
 
+  def api_index
+    @institution = current_user.institution
+    authorize @institution, :index?
+    if current_user.admin?
+      params[:institution].present? ? @items = IntellectualObject.where(desc_metadata__identifier_tesim: params[:institution]) : @items = IntellectualObject.all
+    else
+      @items = IntellectualObject.where(desc_metadata__identifier_tesim: current_user.institution.identifier)
+    end
+    @items = @items.where(identifier: params[:name_exact]) if params[:name_exact].present?
+    @items = @items.where(desc_metadata__identifier_tesim: params[:name_contains]) if params[:name_contains].present?
+
+    # Do not instantiate objects. Make Solr do the filtering.
+    if params[:updated_since].present?
+      date = format_date
+      @items = @items.where("system_modified_dtsi:[#{date} TO *]")
+    end
+
+    @count = @items.count
+    params[:page] = 1 unless params[:page].present?
+    params[:per_page] = 10 unless params[:per_page].present?
+    page = params[:page].to_i
+    per_page = params[:per_page].to_i
+    start = ((page - 1) * per_page)
+    @items = @items.offset(start).limit(per_page)
+    @next = format_next(page, per_page)
+    @previous = format_previous(page, per_page)
+    render json: {count: @count, next: @next, previous: @previous, results: [@items.map{ |item| item.serializable_hash}]}
+  end
+
   def create
     authorize @institution, :create_through_institution?
     @intellectual_object = @institution.intellectual_objects.new(params[:intellectual_object])
-    aggregate = IoAggregation.new
-    aggregate.initialize_object(@intellectual_object.id)
-    aggregate.save!
     super
   end
 
@@ -53,10 +79,8 @@ class IntellectualObjectsController < ApplicationController
     if params[:counter]
       # They are just updating the search counter
       search_session[:counter] = params[:counter]
-      redirect_to :action => "show", :status => 303
+      redirect_to :action => 'show', :status => 303
     else
-      aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-      aggregate.update_aggregations_solr
       # They are updating a record. Use the method defined in RecordsControllerBehavior
       super
     end
@@ -113,7 +137,7 @@ class IntellectualObjectsController < ApplicationController
   def dpn
     authorize @intellectual_object
     pending = ProcessedItem.pending?(@intellectual_object.identifier)
-    if Rails.env.production? && (Fluctus::Application::DPN_STATUS == false)
+    if Fluctus::Application.config.show_send_to_dpn_button == false
       redirect_to @intellectual_object
       flash[:alert] = 'We are not currently sending objects to DPN.'
     elsif @intellectual_object.state == 'D'
@@ -145,7 +169,7 @@ class IntellectualObjectsController < ApplicationController
         object = JSON.parse(json_param.to_json).first
         # We might be re-ingesting a previously-deleted intellectual object,
         # or more likely, creating a new intel obj. Load or create the object.
-        identifier = object['identifier'].gsub(/%2F/i, "/")
+        identifier = object['identifier'].gsub(/%2F/i, '/')
         new_object = IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first ||
           IntellectualObject.new()
         new_object.state = 'A' # in case we just loaded a deleted object
@@ -158,9 +182,6 @@ class IntellectualObjectsController < ApplicationController
         load_institution_for_create_from_json(new_object)
         authorize @institution, :create_through_institution?
         new_object.save!
-        aggregate = IoAggregation.new
-        aggregate.initialize_object(new_object.id)
-        aggregate.save!
         # Save the ingest and other object-level events.
         state[:object_events].each { |event|
           state[:current_object] = "IntellectualObject Event #{event['type']} / #{event['identifier']}"
@@ -216,7 +237,7 @@ class IntellectualObjectsController < ApplicationController
     logger.error(exception.backtrace.join("\n"))
     params.delete(:id)
     index
-    render "index", :status => 404
+    render 'index', :status => 404
   end
 
   private
@@ -243,8 +264,6 @@ class IntellectualObjectsController < ApplicationController
     new_file.state = 'A' # in case we loaded a deleted file
     # We have to save this now to get events into Solr
     new_file.save!
-    aggregate = IoAggregation.where(identifier: intel_obj.id).first
-    aggregate.update_aggregations_solr
     file_events.each { |event|
       state[:current_object] = "GenericFile Event #{event['type']} / #{event['identifier']}"
       new_file.add_event(event)
@@ -306,7 +325,7 @@ class IntellectualObjectsController < ApplicationController
       @institution = @intellectual_object.institution
       params[:id] = @intellectual_object.id
     elsif params[:identifier] && params[:id].blank?
-      identifier = params[:identifier].gsub(/%2F/i, "/")
+      identifier = params[:identifier].gsub(/%2F/i, '/')
       @intellectual_object ||= IntellectualObject.where(desc_metadata__identifier_ssim: identifier).first
 
       # Solr permissions handler expects params[:id] to be the object ID,
@@ -336,6 +355,42 @@ class IntellectualObjectsController < ApplicationController
 
   def load_institution_for_create_from_json(object)
     @institution = params[:institution_id].nil? ? object.institution : Institution.find(params[:institution_id])
+  end
+
+  # Put the date in a format Solr understands
+  def format_date
+    time = Time.parse(params[:updated_since])
+    time.utc.iso8601
+  end
+
+  def format_next(page, per_page)
+    if @count.to_f / per_page <= page
+      nil
+    else
+      new_page = page + 1
+      new_url = "#{request.base_url}/member-api/v1/objects/?page=#{new_page}&per_page=#{per_page}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def format_previous(page, per_page)
+    if page == 1
+      nil
+    else
+      new_page = page - 1
+      new_url = "#{request.base_url}/member-api/v1/objects/?page=#{new_page}&per_page=#{per_page}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def add_params(str)
+    str = str << "&updated_since=#{params[:updated_since]}" if params[:updated_since].present?
+    str = str << "&name_exact=#{params[:name_exact]}" if params[:name_exact].present?
+    str = str << "&name_contains=#{params[:name_contains]}" if params[:name_contains].present?
+    str = str << "&institution=#{params[:institution]}" if params[:institution].present?
+    str
   end
 
 end

@@ -93,4 +93,5 @@ class InstitutionsController < ApplicationController
       size['APTrust'] = total_size
       size
     end
+
 end

@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :processed_item, class: ProcessedItem do
-    name { SecureRandom.uuid + ".tar" }
+    name { SecureRandom.uuid + '.tar' }
     etag { SecureRandom.hex }
     bag_date { Time.now.utc }
     user { Faker::Name.name }
@@ -16,7 +16,7 @@ FactoryGirl.define do
   end
 
   factory :ingested_item, class: ProcessedItem do
-    name { SecureRandom.uuid + ".tar" }
+    name { SecureRandom.uuid + '.tar' }
     etag { SecureRandom.hex }
     bag_date { Time.now.utc }
     user { Faker::Name.name }
