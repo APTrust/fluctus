@@ -100,7 +100,7 @@ describe IntellectualObjectsController do
     describe 'when signed in' do
       let(:user) { FactoryGirl.create(:user, :institutional_user) }
       before { sign_in user }
-        
+
       it 'should show the object' do
         get :show, intellectual_object_identifier: obj1
         expect(response).to be_successful
@@ -199,7 +199,7 @@ describe IntellectualObjectsController do
         expect(response).to redirect_to intellectual_object_path(obj1)
         expect(session[:search][:counter]).to eq '5'
       end
-       
+
       it 'should update fields' do
         patch :update, intellectual_object_identifier: obj1, intellectual_object: {title: 'Foo'}
         expect(response).to redirect_to intellectual_object_path(obj1)
@@ -418,7 +418,7 @@ describe IntellectualObjectsController do
 
     describe 'when signed in' do
       before { sign_in user }
-        
+
       it 'should only allow assigning institutions you have access to' do
         post :create, institution_identifier: FactoryGirl.create(:institution).identifier, intellectual_object: {title: 'Foo'}, format: 'json'
         expect(response.code).to eq '403' # forbidden
@@ -683,8 +683,8 @@ describe IntellectualObjectsController do
 
       it 'returns the correct next and previous links' do
         get :api_index, format: :json, per_page: 2, page: 2, updated_since: '2014-06-03T15:28:39+00:00'
-        assigns(:next).should == 'https://repository.aptrust.org/member-api/v1/objects/?page=3&page_size=2&updated_since=2014-06-03T15:28:39+00:00'
-        assigns(:previous).should == 'https://repository.aptrust.org/member-api/v1/objects/?page=1&page_size=2&updated_since=2014-06-03T15:28:39+00:00'
+        assigns(:next).should == 'http://test.host/member-api/v1/objects/?page=3&per_page=2&updated_since=2014-06-03T15:28:39+00:00'
+        assigns(:previous).should == 'http://test.host/member-api/v1/objects/?page=1&per_page=2&updated_since=2014-06-03T15:28:39+00:00'
       end
     end
 

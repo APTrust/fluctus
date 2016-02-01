@@ -817,8 +817,8 @@ describe ProcessedItemController do
 
       it 'returns the correct next and previous links' do
         get :api_index, format: :json, per_page: 2, page: 2, stage: 'unpack'
-        assigns(:next).should == 'https://repository.aptrust.org/member-api/v1/items/?page=3&page_size=2&stage=unpack'
-        assigns(:previous).should == 'https://repository.aptrust.org/member-api/v1/items/?page=1&page_size=2&stage=unpack'
+        assigns(:next).should == 'http://test.host/member-api/v1/items/?page=3&per_page=2&stage=unpack'
+        assigns(:previous).should == 'http://test.host/member-api/v1/items/?page=1&per_page=2&stage=unpack'
       end
     end
 

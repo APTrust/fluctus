@@ -100,9 +100,19 @@ class ProcessedItemController < ApplicationController
     end
     authorize @items, :index?
     @items = @items.where(name: params[:name_exact]) if params[:name_exact].present?
-    @items.each { |item| @items.delete(item) if !item.name.include?(params[:name_contains]) } if params[:name_contains].present?
-    date = format_date if params[:updated_since].present?
-    @items.each { |item| @items.delete(item) if item.modified_date.to_s >= date } if params[:updated_since].present?
+
+    # Do not instantiate objects. Let SQL do the filtering.
+    if params[:name_contains].present?
+      pattern = '%' + params[:name_contains] + '%'
+      @items = @items.where('name LIKE ?', pattern)
+    end
+
+    # Do not instantiate objects. Let SQL do the filtering.
+    if params[:updated_since].present?
+      date = format_date
+      @items = @items.where('updated_at >= ?', date)
+    end
+
     @items = @items.where(action: Fluctus::Application::FLUCTUS_ACTIONS[params[:actions]]) if params[:actions].present?
     @items = @items.where(stage: Fluctus::Application::FLUCTUS_STAGES[params[:stage]]) if params[:stage].present?
     @items = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES[params[:status]]) if params[:status].present?
@@ -110,9 +120,11 @@ class ProcessedItemController < ApplicationController
     @count = @items.count
     params[:page] = 1 unless params[:page].present?
     params[:per_page] = 10 unless params[:per_page].present?
-    @items = @items.page(params[:page]).per(params[:per_page])
-    @next = format_next
-    @previous = format_previous
+    page = params[:page].to_i
+    per_page = params[:per_page].to_i
+    @items = @items.page(page).per(per_page)
+    @next = format_next(page, per_page)
+    @previous = format_previous(page, per_page)
     render json: {count: @count, next: @next, previous: @previous, results: [@items.map]}
   end
 
@@ -497,33 +509,31 @@ class ProcessedItemController < ApplicationController
   end
 
   def format_date
-    date = Date.parse(params[:updated_since])
-    date.change(:usec => 0)
-    date.to_s
-    date
+    time = Time.parse(params[:updated_since])
+    time.utc.iso8601
   end
 
   def to_boolean(str)
     str == 'true'
   end
 
-  def format_next
-    if @count.to_f / params[:per_page] <= params[:page]
+  def format_next(page, per_page)
+    if @count.to_f / per_page <= page
       nil
     else
-      new_page = params[:page] + 1
-      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{new_page}&page_size=#{params[:per_page]}"
+      new_page = page + 1
+      new_url = "#{request.base_url}/member-api/v1/items/?page=#{new_page}&per_page=#{per_page}"
       new_url = add_params(new_url)
       new_url
     end
   end
 
-  def format_previous
-    if params[:page] == 1
+  def format_previous(page, per_page)
+    if page == 1
       nil
     else
-      new_page = params[:page] - 1
-      new_url = "https://repository.aptrust.org/member-api/v1/items/?page=#{new_page}&page_size=#{params[:per_page]}"
+      new_page = page - 1
+      new_url = "#{request.base_url}/member-api/v1/items/?page=#{new_page}&per_page=#{per_page}"
       new_url = add_params(new_url)
       new_url
     end

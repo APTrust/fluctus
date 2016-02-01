@@ -28,15 +28,22 @@ class IntellectualObjectsController < ApplicationController
     end
     @items = @items.where(identifier: params[:name_exact]) if params[:name_exact].present?
     @items = @items.where(desc_metadata__identifier_tesim: params[:name_contains]) if params[:name_contains].present?
-    date = format_date if params[:updated_since].present?
-    @items.each { |item| @items.delete(item) if item.modified_date.to_s >= date.to_s } if params[:updated_since].present?
+
+    # Do not instantiate objects. Make Solr do the filtering.
+    if params[:updated_since].present?
+      date = format_date
+      @items = @items.where("system_modified_dtsi:[#{date} TO *]")
+    end
+
     @count = @items.count
     params[:page] = 1 unless params[:page].present?
     params[:per_page] = 10 unless params[:per_page].present?
-    start = ((params[:page] * params[:per_page]) - params[:per_page])
-    @items = @items.offset(start).limit(params[:per_page])
-    @next = format_next
-    @previous = format_previous
+    page = params[:page].to_i
+    per_page = params[:per_page].to_i
+    start = ((page - 1) * per_page)
+    @items = @items.offset(start).limit(per_page)
+    @next = format_next(page, per_page)
+    @previous = format_previous(page, per_page)
     render json: {count: @count, next: @next, previous: @previous, results: [@items.map{ |item| item.serializable_hash}]}
   end
 
@@ -350,30 +357,29 @@ class IntellectualObjectsController < ApplicationController
     @institution = params[:institution_id].nil? ? object.institution : Institution.find(params[:institution_id])
   end
 
+  # Put the date in a format Solr understands
   def format_date
-    date = Date.parse(params[:updated_since])
-    date.change(:usec => 0)
-    date.to_s
-    date
+    time = Time.parse(params[:updated_since])
+    time.utc.iso8601
   end
 
-  def format_next
-    if @count.to_f / params[:per_page] <= params[:page]
+  def format_next(page, per_page)
+    if @count.to_f / per_page <= page
       nil
     else
-      new_page = params[:page] + 1
-      new_url = "https://repository.aptrust.org/member-api/v1/objects/?page=#{new_page}&page_size=#{params[:per_page]}"
+      new_page = page + 1
+      new_url = "#{request.base_url}/member-api/v1/objects/?page=#{new_page}&per_page=#{per_page}"
       new_url = add_params(new_url)
       new_url
     end
   end
 
-  def format_previous
-    if params[:page] == 1
+  def format_previous(page, per_page)
+    if page == 1
       nil
     else
-      new_page = params[:page] - 1
-      new_url = "https://repository.aptrust.org/member-api/v1/objects/?page=#{new_page}&page_size=#{params[:per_page]}"
+      new_page = page - 1
+      new_url = "#{request.base_url}/member-api/v1/objects/?page=#{new_page}&per_page=#{per_page}"
       new_url = add_params(new_url)
       new_url
     end
