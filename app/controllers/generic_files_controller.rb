@@ -66,7 +66,7 @@ class GenericFilesController < ApplicationController
     GenericFile.find_in_batches(object_state_ssi: 'A', gf_parent_ssim: @intellectual_object.identifier) do |batch|
       batch.each do |solr_hash|
         file = {}
-        file['size'] = solr_hash['tech_metadata__size_lsi']
+        file['file_size'] = solr_hash['tech_metadata__file_size_lsi']
         file['identifier'] = solr_hash['tech_metadata__identifier_ssim'].first
         file['uri'] = solr_hash['tech_metadata__uri_ssim'].first
         data << file

@@ -87,9 +87,8 @@ class InstitutionsController < ApplicationController
       size = {}
       total_size = 0
       Institution.all.each do |inst|
-        current_size = find_size(inst)
-        size[inst.title] = current_size
-        total_size = current_size + total_size
+        size[inst.title] = inst.bytes_by_format()['all']
+        total_size = size[inst.title] + total_size
       end
       size['APTrust'] = total_size
       size

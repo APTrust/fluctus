@@ -92,8 +92,8 @@ describe IntellectualObject do
 
     describe 'with attached files' do
       before do
-        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, size: 166311750, identifier: 'test.edu/123/data/file.xml')
-        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, file_format: 'audio/wav', size: 143732461, identifier: 'test.edu/123/data/file.wav')
+        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, file_size: 166311750, identifier: 'test.edu/123/data/file.xml')
+        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, file_format: 'audio/wav', file_size: 143732461, identifier: 'test.edu/123/data/file.wav')
         subject.save!
       end
 
@@ -120,7 +120,7 @@ describe IntellectualObject do
   describe '#files_from_solr' do
     subject { FactoryGirl.create(:intellectual_object) }
     it 'should grab the objects files from solr and create generic file objects for them' do
-      gf = FactoryGirl.build(:generic_file, intellectual_object: subject, size: 53)
+      gf = FactoryGirl.build(:generic_file, intellectual_object: subject, file_size: 53)
       subject.generic_files << gf
       files = IntellectualObject.files_from_solr(subject.id)
       files[0].identifier.should == gf.identifier
@@ -173,7 +173,7 @@ describe IntellectualObject do
           expect {
             subject.soft_delete({event_type: 'delete', outcome_detail: "joe@example.com"})
           }.to change { subject.premisEvents.events.count}.by(1)
-          subject.background_deletion({type: 'delete', outcome_detail: 'joe@example.com'})
+          subject.background_deletion({event_type: 'delete', outcome_detail: 'joe@example.com'})
           expect(subject.state).to eq 'D'
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
           subject.generic_files.all?{ |file| expect(file.state).to eq 'D' }

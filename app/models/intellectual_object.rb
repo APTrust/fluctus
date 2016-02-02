@@ -63,15 +63,15 @@ class IntellectualObject < ActiveFedora::Base
 
   def bytes_by_format
     resp = ActiveFedora::SolrService.instance.conn.get 'select', :params => {
-      'q' => 'tech_metadata__size_lsi:[* TO *]',
+      'q' => 'tech_metadata__file_size_lsi:[* TO *]',
       'fq' =>[ActiveFedora::SolrService.construct_query_for_rel(:has_model => GenericFile.to_class_uri),
            "_query_:\"{!raw f=is_part_of_ssim}info:fedora/#{self.id}\""],
       'stats' => true,
       'fl' => '',
-      'stats.field' =>'tech_metadata__size_lsi',
+      'stats.field' =>'tech_metadata__file_size_lsi',
       'stats.facet' => 'tech_metadata__file_format_ssi'
                                                                }
-    stats = resp['stats']['stats_fields']['tech_metadata__size_lsi']
+    stats = resp['stats']['stats_fields']['tech_metadata__file_size_lsi']
     if stats
       cross_tab = stats['facets']['tech_metadata__file_format_ssi'].each_with_object({}) { |(k,v), obj|
         obj[k] = v['sum']

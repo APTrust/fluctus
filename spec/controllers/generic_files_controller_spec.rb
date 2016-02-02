@@ -72,16 +72,16 @@ describe GenericFilesController do
 
       active_files = {}
       @intellectual_object.active_files.each do |f|
-        key = "#{f.uri}-#{f.size}"
+        key = "#{f.uri}-#{f.file_size}"
         active_files[key] = f
       end
       response_data = JSON.parse(response.body)
       response_data.each do |file_summary|
-        key = "#{file_summary['uri']}-#{file_summary['size']}"
+        key = "#{file_summary['uri']}-#{file_summary['file_size']}"
         generic_file = active_files[key]
         expect(generic_file).not_to be_nil
         expect(file_summary['uri']).to eq generic_file.uri
-        expect(file_summary['size']).to eq generic_file.size
+        expect(file_summary['file_size']).to eq generic_file.file_size
         expect(file_summary['identifier']).to eq generic_file.identifier
       end
     end
@@ -152,7 +152,7 @@ describe GenericFilesController do
           'file_format' => ["can't be blank"],
           'identifier' => ["can't be blank"],
           'modified' => ["can't be blank"],
-          'size' => ["can't be blank"],
+          'file_size' => ["can't be blank"],
           'uri' => ["can't be blank"]})
       end
 
@@ -288,7 +288,7 @@ describe GenericFilesController do
         let(:user) { FactoryGirl.create(:user, :institutional_admin, institution_pid: @another_institution.id) }
 
         it 'should be forbidden' do
-          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file.identifier, generic_file: {size: 99}, format: 'json', trailing_slash: true
+          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file.identifier, generic_file: {file_size: 99}, format: 'json', trailing_slash: true
           expect(response.code).to eq '403' # forbidden
           expect(JSON.parse(response.body)).to eq({'status'=>'error','message'=>'You are not authorized to access this page.'})
          end
@@ -296,14 +296,14 @@ describe GenericFilesController do
 
       describe 'and you have access to the file' do
         it 'should update the file' do
-          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file, generic_file: {size: 99}, format: 'json', trailing_slash: true
-          expect(assigns[:generic_file].size).to eq 99
+          patch :update, intellectual_object_identifier: file.intellectual_object.identifier, generic_file_identifier: file, generic_file: {file_size: 99}, format: 'json', trailing_slash: true
+          expect(assigns[:generic_file].file_size).to eq 99
           expect(response.code).to eq '204'
         end
 
         it 'should update the file by identifier (API)' do
-          patch :update, generic_file_identifier: URI.escape(file.identifier), id: file.id, generic_file: {size: 99}, format: 'json', trailing_slash: true
-          expect(assigns[:generic_file].size).to eq 99
+          patch :update, generic_file_identifier: URI.escape(file.identifier), id: file.id, generic_file: {file_size: 99}, format: 'json', trailing_slash: true
+          expect(assigns[:generic_file].file_size).to eq 99
           expect(response.code).to eq '204'
         end
       end

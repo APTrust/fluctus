@@ -50,7 +50,7 @@ gem 'hydra-head', '8.0.0.beta1'
 gem 'active-fedora', '8.0.0.rc2'
 gem 'hydra-editor', '~> 0.2.2'
 
-gem 'devise', '3.3.0'
+gem 'devise', '3.5.6'
 gem 'figaro'
 # as an authorization replacement for CanCan
 gem "pundit"

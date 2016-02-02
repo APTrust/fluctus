@@ -190,7 +190,7 @@ describe InstitutionsController do
     describe 'when not signed in' do
       let(:inst1) { FactoryGirl.create(:institution) }
       it 'should redirect to login' do
-        patch :update, institution_identifier: inst1, institution: {name: 'Foo' }
+        patch :update, institution_identifier: inst1, institution: {title: 'Foo' }
         expect(response).to redirect_to root_url + 'users/sign_in'
       end
     end
@@ -203,9 +203,9 @@ describe InstitutionsController do
       }
 
       it 'should update fields' do
-        patch :update, institution_identifier: inst1, institution: {name: 'Foo'}
+        patch :update, institution_identifier: inst1, institution: {title: 'Foo'}
         expect(response).to redirect_to institution_path(inst1)
-        expect(assigns(:institution).name).to eq 'Foo'
+        expect(assigns(:institution).title).to eq 'Foo'
       end
     end
   end
