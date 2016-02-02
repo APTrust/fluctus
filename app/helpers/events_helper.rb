@@ -6,7 +6,7 @@ module EventsHelper
     elsif solr_doc['intellectual_object_id_ssim']
       intellectual_object_link(solr_doc)
     else
-      "Event"
+      'Event'
     end
   end
 
@@ -34,7 +34,7 @@ module EventsHelper
     elsif @institution
       "Events for #{@institution.title}"
     else
-      "Events"
+      'Events'
     end
   end
 

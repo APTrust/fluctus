@@ -95,6 +95,16 @@ class User < ActiveRecord::Base
     end
   end
 
+  def main_group
+    if(admin?)
+      'Admin'
+    elsif(institutional_admin?)
+      'Institutional Admin'
+    elsif(institutional_user?)
+      'Institutional User'
+    end
+  end
+
   # Since an Institution is an ActiveFedora Object, these two objects cannot be related as normal (i.e. belongs_to)
   # They will be connected through the User.institution_pid.
   def institution
@@ -160,7 +170,7 @@ class User < ActiveRecord::Base
 
   class NilInstitution
     def name
-      "Deleted Institution"
+      'Deleted Institution'
     end
 
     def to_param
@@ -168,7 +178,7 @@ class User < ActiveRecord::Base
     end
 
     def brief_name
-      "Deleted Institution"
+      'Deleted Institution'
     end
 
     def users
@@ -187,7 +197,7 @@ class User < ActiveRecord::Base
   private
 
   def institution_pid_points_at_institution
-    errors.add(:institution_pid, "is not a valid institution") unless Institution.exists?(institution_pid)
+    errors.add(:institution_pid, 'is not a valid institution') unless Institution.exists?(institution_pid)
   end
 
 end

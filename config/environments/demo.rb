@@ -30,6 +30,10 @@ Fluctus::Application.configure do
   Rails.application.routes.default_url_options[:host] = 'localhost:3000'
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
+  # Should we show the "Send Object to DPN" button to users
+  # whose institutions are members of DPN?
+  config.show_send_to_dpn_button = true
+
   # send password reset emails to a file
   config.action_mailer.default_url_options = {:host => 'test.aptrust.org'}
   config.action_mailer.delivery_method = :smtp

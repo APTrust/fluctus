@@ -43,6 +43,14 @@ Use the ``` rake secret ``` command to generate secret keys for rails and devise
 * Setup APTrust Institution object and Roles
 
 ````
+# download, install and start jetty
+rake jetty:download
+rake jetty:unzip
+rake jetty:start
+
+# create the db schema
+rake db:migrate
+
 # rake task to setup initial insitutions, roles and a default aptrust_admin user.
 rake fluctus:setup
 ````

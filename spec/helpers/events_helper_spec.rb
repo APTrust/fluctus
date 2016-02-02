@@ -91,7 +91,7 @@ describe EventsHelper do
     end
 
     it 'has a default value to fail over to' do
-      helper.event_catalog_title.should == "Events"
+      helper.event_catalog_title.should == 'Events'
     end
   end
 

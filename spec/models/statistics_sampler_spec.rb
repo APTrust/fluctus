@@ -5,7 +5,7 @@ describe StatisticsSampler do
     Institution.delete_all
     3.times {FactoryGirl.create(:institution) }
   }
-  it "should record statistics" do
+  it 'should record statistics' do
     expect{ StatisticsSampler.record_current_statistics }.to change{UsageSample.count}.by(3)
   end
 end

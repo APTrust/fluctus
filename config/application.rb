@@ -58,8 +58,11 @@ module Fluctus
         'ingest' => 'Ingest',
         'fixity' => 'Fixity Check',
         'restore' => 'Restore',
-        'delete' => 'Delete'
+        'delete' => 'Delete',
+        'dpn' => 'DPN'
     }
+
+    DPN_STATUS = false
 
     APTRUST_NAME = 'APTrust'
     APTRUST_ID = 'aptrust.org'

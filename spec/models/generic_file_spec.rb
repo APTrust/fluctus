@@ -27,7 +27,7 @@ describe GenericFile do
   it { should validate_presence_of(:modified) }
   it { should validate_presence_of(:file_format) }
   it { should validate_presence_of(:identifier)}
-  it "should validate presence of a checksum" do
+  it 'should validate presence of a checksum' do
     expect(subject.valid?).to be false
     expect(subject.errors[:filechecksum]).to eq ["can't be blank"]
     subject.filechecksum_attributes = [{digest: '1234'}]
@@ -36,16 +36,16 @@ describe GenericFile do
     expect(subject.errors[:filechecksum]).to be_empty
   end
 
-  describe "#identifier_is_unique" do
-    it "should validate uniqueness of the identifier" do
-      one = FactoryGirl.create(:generic_file, identifier: "test.edu")
-      two = FactoryGirl.build(:generic_file, identifier: "test.edu")
+  describe '#identifier_is_unique' do
+    it 'should validate uniqueness of the identifier' do
+      one = FactoryGirl.create(:generic_file, identifier: 'test.edu')
+      two = FactoryGirl.build(:generic_file, identifier: 'test.edu')
       two.should_not be_valid
-      two.errors[:identifier].should include("has already been taken")
+      two.errors[:identifier].should include('has already been taken')
     end
   end
 
-  describe "with an intellectual object" do
+  describe 'with an intellectual object' do
     before do
       subject.intellectual_object = intellectual_object
     end
@@ -53,10 +53,10 @@ describe GenericFile do
     let(:institution) { mock_model Institution, internal_uri: 'info:fedora/testing:123', title: 'Mock Name' }
     let(:intellectual_object) { mock_model IntellectualObject, institution: institution, identifier: 'info:fedora/testing:123/1234567' }
 
-    describe "#to_solr" do
+    describe '#to_solr' do
       subject { FactoryGirl.create(:generic_file) }
       let(:solr_doc) { subject.to_solr }
-      it "should index the institution, so we can do aggregations without a join query" do
+      it 'should index the institution, so we can do aggregations without a join query' do
         solr_doc['institution_uri_ssim'].should == ['info:fedora/testing:123']
         solr_doc['gf_institution_title_ssim'].should == ['Mock Name']
         solr_doc['gf_parent_ssim'].should == ['info:fedora/testing:123/1234567']
@@ -70,9 +70,9 @@ describe GenericFile do
       end
     end
 
-    describe "#file_from_solr" do
+    describe '#file_from_solr' do
       subject { FactoryGirl.create(:generic_file) }
-      it "should grab the file from solr and create a generic file object for the data" do
+      it 'should grab the file from solr and create a generic file object for the data' do
         file = GenericFile.file_from_solr(subject.id)
         file.identifier.should == subject.identifier
         file.uri.should == subject.uri
@@ -83,12 +83,12 @@ describe GenericFile do
       end
     end
 
-    describe "#find_latest_fixity_check" do
+    describe '#find_latest_fixity_check' do
       subject { FactoryGirl.create(:generic_file) }
-      it "should have a latest fixity index in solr" do
-        date = "2014-08-01T16:33:39Z"
-        date_two = "2014-11-01T16:33:39Z"
-        date_three = "2014-10-01T16:33:39Z"
+      it 'should have a latest fixity index in solr' do
+        date = '2014-08-01T16:33:39Z'
+        date_two = '2014-11-01T16:33:39Z'
+        date_three = '2014-10-01T16:33:39Z'
         subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date))
         subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date_two))
         subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date_three))
@@ -101,12 +101,12 @@ describe GenericFile do
     describe 'that is saved' do
       let(:intellectual_object) { FactoryGirl.create(:intellectual_object) }
       subject { FactoryGirl.build(:generic_file, intellectual_object: intellectual_object) }
-      describe "permissions" do
+      describe 'permissions' do
         before do
           intellectual_object.permissions = [
-            Hydra::AccessControls::Permission.new(:name=>"institutional_admin", :access=>"read", :type=>"group"),
-            Hydra::AccessControls::Permission.new(:name=>"institutional_user", :access=>"read", :type=>"group"),
-            Hydra::AccessControls::Permission.new(:name=>"Admin_At_aptrust-test_22953", :access=>"edit", :type=>"group")]
+            Hydra::AccessControls::Permission.new(:name=>'institutional_admin', :access=>'read', :type=>'group'),
+            Hydra::AccessControls::Permission.new(:name=>'institutional_user', :access=>'read', :type=>'group'),
+            Hydra::AccessControls::Permission.new(:name=>'Admin_At_aptrust-test_22953', :access=>'edit', :type=>'group')]
         end
         after do
           subject.destroy
@@ -115,12 +115,12 @@ describe GenericFile do
         it 'should copy the permissions of the intellectual object it belongs to' do
           subject.save!
           subject.permissions.should == [
-            Hydra::AccessControls::Permission.new(:name=>"institutional_admin", :access=>"read", :type=>"group"),
-            Hydra::AccessControls::Permission.new(:name=>"institutional_user", :access=>"read", :type=>"group"),
-            Hydra::AccessControls::Permission.new(:name=>"Admin_At_aptrust-test_22953", :access=>"edit", :type=>"group")]
+            Hydra::AccessControls::Permission.new(:name=>'institutional_admin', :access=>'read', :type=>'group'),
+            Hydra::AccessControls::Permission.new(:name=>'institutional_user', :access=>'read', :type=>'group'),
+            Hydra::AccessControls::Permission.new(:name=>'Admin_At_aptrust-test_22953', :access=>'edit', :type=>'group')]
         end
       end
-      describe "its intellectual_object" do
+      describe 'its intellectual_object' do
         after(:all)do # Must use after(:all) to avoid 'can't modify frozen Class' bug in rspec-mocks
           subject.destroy
           intellectual_object.destroy
@@ -133,7 +133,7 @@ describe GenericFile do
         #end
       end
 
-      describe "soft_delete" do
+      describe 'soft_delete' do
         before do
           subject.save!
           @parent_processed_item = FactoryGirl.create(:processed_item,
@@ -150,34 +150,34 @@ describe GenericFile do
 
         let(:async_job) { double('one') }
 
-        it "should set the state to deleted and index the object state" do
+        it 'should set the state to deleted and index the object state' do
           expect {
-            subject.soft_delete({event_type: 'delete', outcome_detail: "joe@example.com"})
+            subject.soft_delete({event_type: 'delete', outcome_detail: 'joe@example.com'})
           }.to change { subject.premisEvents.events.count}.by(1)
           expect(subject.state).to eq 'D'
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
         end
 
-        it "should create a ProcessedItem showing delete was requested" do
-          subject.soft_delete({event_type: 'delete', outcome_detail: "user@example.com"})
+        it 'should create a ProcessedItem showing delete was requested' do
+          subject.soft_delete({event_type: 'delete', outcome_detail: 'user@example.com'})
           pi = ProcessedItem.where(generic_file_identifier: subject.identifier).first
           expect(pi).not_to be_nil
           expect(pi.object_identifier).to eq subject.intellectual_object.identifier
           expect(pi.action).to eq Fluctus::Application::FLUCTUS_ACTIONS['delete']
           expect(pi.stage).to eq Fluctus::Application::FLUCTUS_STAGES['requested']
           expect(pi.status).to eq Fluctus::Application::FLUCTUS_STATUSES['pend']
-          expect(pi.user).to eq "user@example.com"
+          expect(pi.user).to eq 'user@example.com'
         end
 
       end
 
-      describe "serializable_hash" do
+      describe 'serializable_hash' do
         before do
         end
         after do
         end
 
-        it "should set the state to deleted and index the object state" do
+        it 'should set the state to deleted and index the object state' do
           h1 = subject.serializable_hash
           expect(h1.has_key?(:id)).to be true
           expect(h1.has_key?(:uri)).to be true
@@ -202,39 +202,39 @@ describe GenericFile do
         end
       end
 
-      describe "find_checksum_by_digest" do
+      describe 'find_checksum_by_digest' do
         let(:digest) { subject.filechecksum.last.digest.first.to_s }
-        it "should find the checksum" do
+        it 'should find the checksum' do
           expect(subject.find_checksum_by_digest(digest)).not_to be_empty
         end
-        it "should return nil for non-existent checksum" do
-          expect(subject.find_checksum_by_digest(" :-{ ")).to be_nil
+        it 'should return nil for non-existent checksum' do
+          expect(subject.find_checksum_by_digest(' :-{ ')).to be_nil
         end
       end
 
-      describe "has_checksum?" do
+      describe 'has_checksum?' do
         let(:digest) { subject.filechecksum.last.digest.first.to_s }
-        it "should return true if checksum is present" do
+        it 'should return true if checksum is present' do
           expect(subject.has_checksum?(digest)).to be true
         end
-        it "should return false if checksum is not present" do
-          expect(subject.has_checksum?(" :( ")).to be false
+        it 'should return false if checksum is not present' do
+          expect(subject.has_checksum?(' :( ')).to be false
         end
       end
 
     end
   end
 
-  describe "#find_files_in_need_of_fixity" do
+  describe '#find_files_in_need_of_fixity' do
     let(:subject) { FactoryGirl.create(:generic_file) }
     let(:subject_two) { FactoryGirl.create(:generic_file) }
     before do
       GenericFile.destroy_all
     end
-    it "should return only files with a fixity older than a given parameter" do
-      date = "2014-01-01T16:33:39Z"
-      date_two = "2014-12-12T16:33:39Z"
-      param = "2014-09-02T16:33:39Z"
+    it 'should return only files with a fixity older than a given parameter' do
+      date = '2014-01-01T16:33:39Z'
+      date_two = '2014-12-12T16:33:39Z'
+      param = '2014-09-02T16:33:39Z'
       subject.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date))
       subject.update_index
       subject_two.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check, date_time: date_two))

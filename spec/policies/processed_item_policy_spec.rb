@@ -5,7 +5,7 @@ describe ProcessedItemPolicy do
 	subject (:processed_item_policy) { ProcessedItemPolicy.new(user, processed_item) }
 	let(:institution) { FactoryGirl.create(:institution) }
     
-  context "for an admin user" do
+  context 'for an admin user' do
   	let(:user) { FactoryGirl.create(:user, :admin, institution_pid: institution.pid) }
     let(:processed_item) { FactoryGirl.create(:processed_item)}
 
@@ -20,11 +20,11 @@ describe ProcessedItemPolicy do
     end
   end
 
-  context "for an institutional admin user" do
+  context 'for an institutional admin user' do
   	let(:user) { FactoryGirl.create(:user, :institutional_admin, 
                                      institution_pid: institution.pid) }
-    describe "when the item is" do
-      describe "in my institution" do
+    describe 'when the item is' do
+      describe 'in my institution' do
         let(:processed_item) { FactoryGirl.create(:processed_item, institution: institution.identifier) }
         it do
           should_not allow_to(:create)
@@ -37,7 +37,7 @@ describe ProcessedItemPolicy do
         end
       end
 
-      describe "not in my institution" do
+      describe 'not in my institution' do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
         it do
           should_not allow_to(:create)
@@ -52,11 +52,11 @@ describe ProcessedItemPolicy do
     end
   end
 
-  context "for an institutional user" do
+  context 'for an institutional user' do
   	let(:user) { FactoryGirl.create(:user, :institutional_user, 
                                      institution_pid: institution.pid) }
-    describe "when the item is" do
-      describe "in my institution" do
+    describe 'when the item is' do
+      describe 'in my institution' do
         let(:processed_item) { FactoryGirl.create(:processed_item, institution: institution.identifier) }
     		it do
           should_not allow_to(:create)
@@ -69,7 +69,7 @@ describe ProcessedItemPolicy do
         end
     	end
 
-    	describe "not in my institution" do
+    	describe 'not in my institution' do
         let(:processed_item) { FactoryGirl.create(:processed_item)}
         it do
           should_not allow_to(:create)
@@ -84,7 +84,7 @@ describe ProcessedItemPolicy do
     end
   end
   
-  context "for an authenticated user without a user group" do
+  context 'for an authenticated user without a user group' do
     let(:user) { FactoryGirl.create(:user) }
     let(:processed_item) { FactoryGirl.create(:processed_item)}
     it do

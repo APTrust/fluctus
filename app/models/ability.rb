@@ -48,7 +48,7 @@ class Ability
       when Array
         value.each { |v| force_to_utf8(v) }
       when String
-        value.force_encoding("utf-8")  if value.respond_to?(:force_encoding)
+        value.force_encoding('utf-8')  if value.respond_to?(:force_encoding)
     end
     value
   end

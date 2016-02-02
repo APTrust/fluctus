@@ -7,7 +7,7 @@ describe 'Faceting' do
     GenericFile.destroy_all
     IntellectualObject.destroy_all
     solr = ActiveFedora::SolrService.instance.conn
-    solr.delete_by_query("*:*", params: { commit: true })
+    solr.delete_by_query('*:*', params: { commit: true })
   end
   
   describe 'Logged in as institutional_admin' do
@@ -36,11 +36,10 @@ describe 'Faceting' do
         end
   
         page.should have_css('#documents .document', count: 1)
-
-        page.should have_css("dd", text: @event2.outcome.first)
-        page.should_not have_css("dd", text: @event1.outcome.first)
-        page.should have_css("dd", text: @event2.event_type.first)
-        page.should_not have_css("dd", text: @event1.event_type.first)
+        page.should have_css('dd', text: @event2.outcome.first)
+        page.should_not have_css('dd', text: @event1.outcome.first)
+        page.should have_css('dd', text: @event2.event_type.first)
+        page.should_not have_css('dd', text: @event1.event_type.first)
       end
 
       it 'facet by event outcome' do
@@ -52,11 +51,10 @@ describe 'Faceting' do
         end
 
         page.should have_css('#documents .document', count: 1)
-
-        page.should have_css("dd", text: @event2.outcome.first)
-        page.should_not have_css("dd", text: @event1.outcome.first)
-        page.should have_css("dd", text: @event2.event_type.first)
-        page.should_not have_css("dd", text: @event1.event_type.first)
+        page.should have_css('dd', text: @event2.outcome.first)
+        page.should_not have_css('dd', text: @event1.outcome.first)
+        page.should have_css('dd', text: @event2.event_type.first)
+        page.should_not have_css('dd', text: @event1.event_type.first)
       end
     end
   end

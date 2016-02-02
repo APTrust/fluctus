@@ -1,8 +1,8 @@
 class GenericFile < ActiveFedora::Base
 
-  has_metadata "techMetadata", type: GenericFileMetadata
-  has_metadata "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
-  has_file_datastream "content", control_group: 'E'
+  has_metadata 'techMetadata', type: GenericFileMetadata
+  has_metadata 'rightsMetadata', :type => Hydra::Datastream::RightsMetadata
+  has_file_datastream 'content', control_group: 'E'
   include Hydra::AccessControls::Permissions
   include Auditable   # premis events
 
@@ -59,10 +59,34 @@ class GenericFile < ActiveFedora::Base
   end
 
   def self.find_files_in_need_of_fixity(date, options={})
-    row = options[:rows] || 10
+    rows = options[:rows] || 10
     start = options[:start] || 0
-    files = GenericFile.where("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]").order('latest_fixity_dti asc').offset(start).limit(row)
-    files
+    files = GenericFile.find_with_conditions("object_state_ssi:A AND latest_fixity_dti:[* TO #{date}]",
+                                             sort: 'latest_fixity_dti asc', start: start, rows: rows)
+    ActiveFedora::SolrService.reify_solr_results(files)
+  end
+
+  # Returns a hash containing the number of bytes for each format.
+  # TODO: Add filter params to this? See bytes_by_format in models/institition.rb
+  # for an example of how to add an 'fq' to this query.
+  def self.bytes_by_format
+    resp = ActiveFedora::SolrService.instance.conn.get 'select', :params => {
+      'q' => 'tech_metadata__size_lsi:[* TO *]',
+      'stats' => true,
+      'fl' => '',
+      'stats.field' =>'tech_metadata__size_lsi',
+      'stats.facet' => 'tech_metadata__file_format_ssi'
+    }
+    stats = resp['stats']['stats_fields']['tech_metadata__size_lsi']
+    if stats
+      cross_tab = stats['facets']['tech_metadata__file_format_ssi'].each_with_object({}) { |(k,v), obj|
+        obj[k] = v['sum']
+      }
+      cross_tab['all'] = stats['sum']
+      cross_tab
+    else
+      {'all' => 0}
+    end
   end
 
   def filter_query(query, args={})
@@ -192,7 +216,7 @@ class GenericFile < ActiveFedora::Base
     count +=1 if files.count == 1 && files.first.id != self.id
     count = files.count if files.count > 1
     if(count > 0)
-      errors.add(:identifier, "has already been taken")
+      errors.add(:identifier, 'has already been taken')
     end
   end
 

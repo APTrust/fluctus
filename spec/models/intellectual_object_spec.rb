@@ -11,7 +11,7 @@ describe IntellectualObject do
   it { should validate_presence_of(:institution) }
   it { should validate_presence_of(:access)}
 
-  describe "An instance" do
+  describe 'An instance' do
     it 'should have a descMetadata datastream' do
       subject.descMetadata.should be_kind_of IntellectualObjectMetadata
     end
@@ -59,23 +59,18 @@ describe IntellectualObject do
       subject.bag_name.should == exp
     end
 
-    it "should have terms_for_editing" do
+    it 'should have terms_for_editing' do
       expect(subject.terms_for_editing).to eq [:title, :description, :access]
     end
 
-    describe "#to_solr" do
+    describe '#to_solr' do
       subject { FactoryGirl.create(:institutional_intellectual_object) }
       before do
-        aggregate = IoAggregation.new
-        aggregate.initialize_object(subject.id)
-        aggregate.save!
         subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, file_size: 53)
         subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, file_size: 47)
-        aggregate.update_aggregations('add', subject.generic_files[0])
-        aggregate.update_aggregations('add', subject.generic_files[1])
       end
       let(:solr_doc) { subject.to_solr }
-      it "should have fields" do
+      it 'should have fields' do
         solr_doc['institution_title_ssi'].should == subject.institution.title
         solr_doc['is_part_of_ssim'].should == subject.institution.internal_uri
         # Searchable
@@ -84,17 +79,35 @@ describe IntellectualObject do
         solr_doc['desc_metadata__title_si'].should == subject.title
         solr_doc['desc_metadata__identifier_tesim'].should == [subject.identifier]
         solr_doc['desc_metadata__description_tesim'].should == [subject.description]
-        solr_doc['desc_metadata__access_sim'].should == ["institution"]
-        solr_doc['file_format_sim'].should == ["application/xml"]
-        solr_doc['active_count_ssim'].should == ["2"]
-        solr_doc['total_file_size_ssim'].should == ["100.0"]
+        solr_doc['desc_metadata__access_sim'].should == ['institution']
       end
     end
   end
 
-  describe "#get_from_solr" do
+  describe 'bytes_by_format' do
+    subject { FactoryGirl.create(:institutional_intellectual_object) }
+    it 'should return a hash' do
+      expect(subject.bytes_by_format).to eq({"all"=>0})
+    end
+
+    describe 'with attached files' do
+      before do
+        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, size: 166311750, identifier: 'test.edu/123/data/file.xml')
+        subject.generic_files << FactoryGirl.build(:generic_file, intellectual_object: subject, file_format: 'audio/wav', size: 143732461, identifier: 'test.edu/123/data/file.wav')
+        subject.save!
+      end
+
+      it 'should return a hash' do
+        expect(subject.bytes_by_format).to eq({"all"=>310044211,
+                                               'application/xml' => 166311750,
+                                               'audio/wav' => 143732461})
+      end
+    end
+  end
+
+  describe '#get_from_solr' do
     subject { FactoryGirl.create(:intellectual_object) }
-    it "should grab the object from solr and create an intellectual object for the data" do
+    it 'should grab the object from solr and create an intellectual object for the data' do
       object = IntellectualObject.get_from_solr(subject.id)
       object.identifier.should == subject.identifier
       object.bag_name.should == subject.bag_name
@@ -104,20 +117,20 @@ describe IntellectualObject do
     end
   end
 
-  describe "#files_from_solr" do
+  describe '#files_from_solr' do
     subject { FactoryGirl.create(:intellectual_object) }
-    it "should grab the objects files from solr and create generic file objects for them" do
-      gf = FactoryGirl.build(:generic_file, intellectual_object: subject, file_size: 53)
+    it 'should grab the objects files from solr and create generic file objects for them' do
+      gf = FactoryGirl.build(:generic_file, intellectual_object: subject, size: 53)
       subject.generic_files << gf
       files = IntellectualObject.files_from_solr(subject.id)
       files[0].identifier.should == gf.identifier
     end
   end
 
-  describe "A saved instance" do
+  describe 'A saved instance' do
     after { subject.destroy }
 
-    describe "with generic files" do
+    describe 'with generic files' do
       after do
         subject.generic_files.destroy_all
       end
@@ -139,10 +152,10 @@ describe IntellectualObject do
       end
 
       it 'should fill in an empty bag name with data from the identifier' do
-        expect(subject.bag_name).to eq subject.identifier.split("/")[1]
+        expect(subject.bag_name).to eq subject.identifier.split('/')[1]
       end
 
-      describe "soft_delete" do
+      describe 'soft_delete' do
         before {
           @processed_item = FactoryGirl.create(:processed_item,
                                                object_identifier: subject.identifier,
@@ -156,17 +169,19 @@ describe IntellectualObject do
         let(:intellectual_object_delete_job) { double('intellectual object') }
         let(:generic_file_delete_job) { double('file') }
 
-        it "should set the state to deleted and index the object state" do
+        it 'should set the state to deleted and index the object state' do
           expect {
             subject.soft_delete({event_type: 'delete', outcome_detail: "joe@example.com"})
           }.to change { subject.premisEvents.events.count}.by(1)
+          subject.background_deletion({type: 'delete', outcome_detail: 'joe@example.com'})
           expect(subject.state).to eq 'D'
-          subject.generic_files.all?{ |file| expect(file.state).to eq 'D' }
           expect(subject.to_solr['object_state_ssi']).to eq 'D'
+          subject.generic_files.all?{ |file| expect(file.state).to eq 'D' }
         end
 
-        it "should set the state to deleted and index the object state" do
-          subject.soft_delete({event_type: 'delete', outcome_detail: "user@example.com"})
+        it 'should set the state to deleted and index the object state' do
+          subject.soft_delete({event_type: 'delete', outcome_detail: 'user@example.com'})
+          subject.background_deletion({event_type: 'delete', outcome_detail: 'user@example.com'})
           subject.generic_files.all?{ |file|
             pi = ProcessedItem.where(generic_file_identifier: file.identifier).first
             expect(pi).not_to be_nil
@@ -174,25 +189,25 @@ describe IntellectualObject do
             expect(pi.action).to eq Fluctus::Application::FLUCTUS_ACTIONS['delete']
             expect(pi.stage).to eq Fluctus::Application::FLUCTUS_STAGES['requested']
             expect(pi.status).to eq Fluctus::Application::FLUCTUS_STATUSES['pend']
-            expect(pi.user).to eq "user@example.com"
+            expect(pi.user).to eq 'user@example.com'
           }
         end
 
       end
     end
 
-    describe "indexes groups" do
+    describe 'indexes groups' do
       let(:inst_pid) { clean_for_solr(subject.institution.pid) }
-      describe "with consortial access" do
+      describe 'with consortial access' do
         subject { FactoryGirl.create(:consortial_intellectual_object) }
         it 'should properly set groups' do
           expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
-          expect(subject.read_groups).to match_array ['institutional_user', 'institutional_admin']
+          expect(subject.read_groups).to match_array %w(institutional_user institutional_admin)
           expect(subject.discover_groups).to eq []
         end
       end
 
-      describe "with institutional access" do
+      describe 'with institutional access' do
         subject { FactoryGirl.create(:institutional_intellectual_object) }
         it 'should properly set groups' do
           expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
@@ -201,7 +216,7 @@ describe IntellectualObject do
         end
       end
 
-      describe "with restricted access" do
+      describe 'with restricted access' do
         subject { FactoryGirl.create(:restricted_intellectual_object) }
         it 'should properly set groups' do
           expect(subject.edit_groups).to eq ["Admin_At_#{inst_pid}"]
@@ -210,12 +225,12 @@ describe IntellectualObject do
         end
       end
 
-      describe "#identifier_is_unique" do
-        it "should validate uniqueness of the identifier" do
-          one = FactoryGirl.create(:intellectual_object, identifier: "test.edu/234")
-          two = FactoryGirl.build(:intellectual_object, identifier: "test.edu/234")
+      describe '#identifier_is_unique' do
+        it 'should validate uniqueness of the identifier' do
+          one = FactoryGirl.create(:intellectual_object, identifier: 'test.edu/234')
+          two = FactoryGirl.build(:intellectual_object, identifier: 'test.edu/234')
           two.should_not be_valid
-          two.errors[:identifier].should include("has already been taken")
+          two.errors[:identifier].should include('has already been taken')
         end
       end
     end

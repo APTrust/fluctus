@@ -2,7 +2,7 @@ class GenericFilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :filter_parameters, only: [:create, :update]
   before_filter :load_generic_file, only: [:show, :update, :destroy]
-  before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index]
+  before_filter :load_intellectual_object, only: [:update, :create, :save_batch, :index, :file_summary]
   after_action :verify_authorized, :except => [:create, :index, :not_checked_since]
 
   include Aptrust::GatedSearch
@@ -36,8 +36,6 @@ class GenericFilesController < ApplicationController
     authorize @intellectual_object, :create_through_intellectual_object?
     @generic_file = @intellectual_object.generic_files.new(params[:generic_file])
     @generic_file.state = 'A'
-    aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    aggregate.update_aggregations_solr
     respond_to do |format|
       if @generic_file.save
         format.json { render json: object_as_json, status: :created }
@@ -48,13 +46,45 @@ class GenericFilesController < ApplicationController
     end
   end
 
+  # GET /file_summary/intellectual_object_identifier/
+  #
+  # This method handles a special case for PivotalTracker bug #92961148.
+  # ActiveFedora has a hard-coded limit of 1000 on the number of related
+  # objects it will return (see http://bit.ly/1K9CSoq), so we cannot get
+  # all of an objects files through intellectual_object.generic_files.
+  # In addition, reifying the Solr result through ActiveFedora::SolrService.reify_solr_result
+  # is way too slow. Returning a list of 20k files + checksums may take over
+  # an hour. So this method gives us a summary list of an object's files,
+  # with just the information we need to restore the object. For about 10k files,
+  # this method takes ~2 seconds, vs. ~60 minutes using full-blown ActiveFedora objects.
+  #
+  # This method is for the API only, so there is no HTML response.
+  # The restoration service code calls this. No one else really needs it.
+  def file_summary
+    authorize @intellectual_object
+    data = []
+    GenericFile.find_in_batches(object_state_ssi: 'A', gf_parent_ssim: @intellectual_object.identifier) do |batch|
+      batch.each do |solr_hash|
+        file = {}
+        file['size'] = solr_hash['tech_metadata__size_lsi']
+        file['identifier'] = solr_hash['tech_metadata__identifier_ssim'].first
+        file['uri'] = solr_hash['tech_metadata__uri_ssim'].first
+        data << file
+      end
+    end
+    respond_to do |format|
+      format.json { render json: data }
+      format.html { super }
+    end
+  end
+
   # /api/v1/files/not_checked_since?date=2015-01-01T00:00:00Z&start=100&rows=20
   # Returns a list of GenericFiles that have not had a fixity
   # check since the specified date.
   def not_checked_since
     datetime = Time.parse(params[:date]) rescue nil
     if datetime.nil?
-      raise ActionController::BadRequest.new(type: "date", e: "Param date is missing or invalid. Hint: Use format '2015-01-31T14:31:36Z'")
+      raise ActionController::BadRequest.new(type: 'date', e: "Param date is missing or invalid. Hint: Use format '2015-01-31T14:31:36Z'")
     end
     if current_user.admin? == false
       logger.warn("User #{current_user.email} tried to access generic_files_controller#not_checked_since")
@@ -143,18 +173,16 @@ class GenericFilesController < ApplicationController
         end
       end
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
-    # rescue Exception => ex
-    #   logger.error("save_batch failed on #{current_object}")
-    #   log_exception(ex)
-    #   generic_files.each do |gf|
-    #     gf.destroy
-    #   end
-    #   respond_to { |format| format.json {
-    #       render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
-    #   }
+    rescue Exception => ex
+      logger.error("save_batch failed on #{current_object}")
+      log_exception(ex)
+      generic_files.each do |gf|
+        gf.destroy
+      end
+      respond_to { |format| format.json {
+          render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
+      }
     end
-    # aggregate = IoAggregation.where(identifier: @intellectual_object.id).first
-    # aggregate.update_aggregations_solr
   end
 
 
@@ -162,8 +190,6 @@ class GenericFilesController < ApplicationController
     authorize @generic_file
     @generic_file.state = 'A'
     if resource.update(params_for_update)
-      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      aggregate.update_aggregations_solr
       head :no_content
     else
       log_model_error(resource)
@@ -189,8 +215,6 @@ class GenericFilesController < ApplicationController
                      agent: 'https://github.com/crowdmob/goamz',
                      outcome_information: "Action requested by user from #{current_user.institution_pid}"
       }
-      aggregate = IoAggregation.where(identifier: @generic_file.intellectual_object.id).first
-      aggregate.update_aggregations_solr
       @generic_file.soft_delete(attributes)
       respond_to do |format|
         format.json { head :no_content }

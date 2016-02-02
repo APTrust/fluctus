@@ -6,7 +6,7 @@ class ProcessedItemController < ApplicationController
   before_filter :init_from_params, only: :create
   before_filter :find_and_update, only: :update
 
-  after_action :verify_authorized, :except => [:delete_test_items, :ingested_since, :show_reviewed]
+  after_action :verify_authorized, :except => [:delete_test_items, :show_reviewed, :ingested_since]
 
   def create
     authorize @processed_item
@@ -59,6 +59,7 @@ class ProcessedItemController < ApplicationController
     set_filter_values
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
+    set_counts
     page_count
   end
 
@@ -66,7 +67,7 @@ class ProcessedItemController < ApplicationController
   # Allows the API client to pass in some very specific criteria
   def api_search
     current_user.admin? ? @items = ProcessedItem.all : @items = ProcessedItem.where(institution: current_user.institution.identifier)
-    authorize @items, :search?
+    authorize @items, :admin_api?
     if Rails.env.test? || Rails.env.development?
       rewrite_params_for_sqlite
     end
@@ -91,6 +92,42 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  def api_index
+    if current_user.admin?
+      params[:institution].present? ? @items = ProcessedItem.where(institution: params[:institution]) : @items = ProcessedItem.all
+    else
+      @items = ProcessedItem.where(institution: current_user.institution.identifier)
+    end
+    authorize @items, :index?
+    @items = @items.where(name: params[:name_exact]) if params[:name_exact].present?
+
+    # Do not instantiate objects. Let SQL do the filtering.
+    if params[:name_contains].present?
+      pattern = '%' + params[:name_contains] + '%'
+      @items = @items.where('name LIKE ?', pattern)
+    end
+
+    # Do not instantiate objects. Let SQL do the filtering.
+    if params[:updated_since].present?
+      date = format_date
+      @items = @items.where('updated_at >= ?', date)
+    end
+
+    @items = @items.where(action: Fluctus::Application::FLUCTUS_ACTIONS[params[:actions]]) if params[:actions].present?
+    @items = @items.where(stage: Fluctus::Application::FLUCTUS_STAGES[params[:stage]]) if params[:stage].present?
+    @items = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES[params[:status]]) if params[:status].present?
+    @items = @items.where(reviewed: to_boolean(params[:reviewed])) if params[:reviewed].present?
+    @count = @items.count
+    params[:page] = 1 unless params[:page].present?
+    params[:per_page] = 10 unless params[:per_page].present?
+    page = params[:page].to_i
+    per_page = params[:per_page].to_i
+    @items = @items.page(page).per(per_page)
+    @next = format_next(page, per_page)
+    @previous = format_previous(page, per_page)
+    render json: {count: @count, next: @next, previous: @previous, results: [@items.map]}
+  end
+
   # This is an API call for the bucket reader that queues up work for
   # the bag processor. It returns all of the items that have started
   # the ingest process since the specified timestamp.
@@ -107,7 +144,7 @@ class ProcessedItemController < ApplicationController
         format.json { render json: err, status: :bad_request }
       else
         @items = ProcessedItem.where("action='Ingest' and date >= ?", dtSince)
-        authorize @items, :index?
+        authorize @items, :admin_api?
         format.json { render json: @items, status: :ok }
       end
     end
@@ -130,6 +167,34 @@ class ProcessedItemController < ApplicationController
     authorize @items
     # Get items for a single object, which may consist of multiple bags.
     # Return anything for that object identifier with action=Restore and retry=true
+    if !request[:object_identifier].blank?
+      @items = @items.where(object_identifier: request[:object_identifier])
+    else
+      # If user is not looking for a single bag, return all requested/pending items.
+      @items = @items.where(stage: requested, status: pending, retry: true)
+    end
+    respond_to do |format|
+      format.json { render json: @items, status: :ok }
+    end
+  end
+
+  # get '/api/v1/itemresults/items_for_dpn'
+  # Returns a list of items the users have requested
+  # to be queued for DPN. These will always be
+  # IntellectualObjects. If param object_identifier is supplied,
+  # it returns all DPN requests for the object. Otherwise,
+  # it returns pending requests for all objects where retry is true.
+  # (This is because retry gets set to false when the requestor encounters
+  # some fatal error. There is no sense in reprocessing those requests.)
+  def items_for_dpn
+    dpn = Fluctus::Application::FLUCTUS_ACTIONS['dpn']
+    requested = Fluctus::Application::FLUCTUS_STAGES['requested']
+    pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    @items = ProcessedItem.where(action: dpn)
+    @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
+    authorize @items
+    # Get items for a single object, which may consist of multiple bags.
+    # Return anything for that object identifier with action=DPN and retry=true
     if !request[:object_identifier].blank?
       @items = @items.where(object_identifier: request[:object_identifier])
     else
@@ -193,13 +258,8 @@ class ProcessedItemController < ApplicationController
   # This is an API call for the bag restoration service.
   #
   # Sets the status of items that the user has requested be restored.
-  # A single object can have multiple bags and hence multiple processed
-  # item records. When restorations starts, succeeds, or fails, we
-  # need to update all processed items for that object at once.
-  # We must update only those items that the user requested for restoration,
-  # avoiding any older items that map to previous versions of the same
-  # intellectual object, and avoiding newer items that may represent bags
-  # that have not yet completed the ingest process.
+  # Since an item can be restored multiple times, we want to update
+  # only the most recent restoration request for the item.
   #
   # Expects param :object_identifier in URL and :stage, :status, :retry
   # in post body.
@@ -208,17 +268,20 @@ class ProcessedItemController < ApplicationController
   def set_restoration_status
     # Fix Apache/Passenger passthrough of %2f-encoded slashes in identifier
     params[:object_identifier] = params[:object_identifier].gsub(/%2F/i, "/")
-    @items = ProcessedItem.where(object_identifier: params[:object_identifier],
-                                 action: Fluctus::Application::FLUCTUS_ACTIONS['restore'])
-    authorize @items
-    results = @items.map { |item| item.update_attributes(params_for_status_update) }
+    restore = Fluctus::Application::FLUCTUS_ACTIONS['restore']
+    @item = ProcessedItem.where(object_identifier: params[:object_identifier],
+                                 action: restore).order(created_at: :desc).first
+    authorize @item || ProcessedItem.new  # avoids Pundit NilClass exception
+    if @item
+      succeeded = @item.update_attributes(params_for_status_update)
+    end
     respond_to do |format|
-      if @items.count == 0
+      if @item.nil?
         error = { error: "No items for object identifier #{params[:object_identifier]}" }
         format.json { render json: error, status: :not_found }
       end
-      if results.include?(false)
-        errors = @items.first.errors.full_messages
+      if succeeded == false
+        errors = @item.errors.full_messages
         format.json { render json: errors, status: :bad_request }
       else
         format.json { render json: {result: 'OK'}, status: :ok }
@@ -246,12 +309,11 @@ class ProcessedItemController < ApplicationController
                                  status: Fluctus::Application::FLUCTUS_STATUSES['success'],
                                  reviewed: true)
     @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
-    authorize @items, :index?
+    authorize @items, :admin_api?
     respond_to do |format|
       format.json { render json: @items, status: :ok }
     end
   end
-
 
   def handle_selected
     review_list = params[:review]
@@ -378,8 +440,28 @@ class ProcessedItemController < ApplicationController
     params[:id] = @institution.id
     @items = @filtered_items.page(params[:page]).per(10)
     authorize @items, :index?
+    set_counts
     page_count
     session[:purge_datetime] = Time.now.utc if params[:page] == 1 || params[:page].nil?
+  end
+
+  # Sets the count for each status/stage/action/institution.
+  # Assumes @items has been set first.
+  def set_counts
+    items = @filtered_items || @processed_items
+    @counts = {}
+    @statuses.each do |status|
+      @counts[status] = items.where(status: status).count()
+    end
+    @stages.each do |stage|
+      @counts[stage] = items.where(stage: stage).count()
+    end
+    @actions.each do |action|
+      @counts[action] = items.where(action: action).count()
+    end
+    @institutions.each do |institution|
+      @counts[institution] = items.where(institution: institution).count()
+    end
   end
 
   # Users can hit the show route via /id or /etag/name/bag_date.
@@ -396,7 +478,7 @@ class ProcessedItemController < ApplicationController
         # Cursing ActiveRecord + SQLite. SQLite has all the milliseconds wrong!
         @processed_item = ProcessedItem.where(etag: params[:etag],
                                               name: params[:name])
-        @processed_item = @processed_item.where("datetime(bag_date) = datetime(?)", params[:bag_date]).first
+        @processed_item = @processed_item.where('datetime(bag_date) = datetime(?)', params[:bag_date]).first
       else
       @processed_item = ProcessedItem.where(etag: params[:etag],
                                             name: params[:name],
@@ -424,6 +506,49 @@ class ProcessedItemController < ApplicationController
     if params[:reviewed].present? && params[:retry].is_a?(String)
       params[:reviewed] = params[:reviewed][0]
     end
+  end
+
+  def format_date
+    time = Time.parse(params[:updated_since])
+    time.utc.iso8601
+  end
+
+  def to_boolean(str)
+    str == 'true'
+  end
+
+  def format_next(page, per_page)
+    if @count.to_f / per_page <= page
+      nil
+    else
+      new_page = page + 1
+      new_url = "#{request.base_url}/member-api/v1/items/?page=#{new_page}&per_page=#{per_page}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def format_previous(page, per_page)
+    if page == 1
+      nil
+    else
+      new_page = page - 1
+      new_url = "#{request.base_url}/member-api/v1/items/?page=#{new_page}&per_page=#{per_page}"
+      new_url = add_params(new_url)
+      new_url
+    end
+  end
+
+  def add_params(str)
+    str = str << "&updated_since=#{params[:updated_since]}" if params[:updated_since].present?
+    str = str << "&name_exact=#{params[:name_exact]}" if params[:name_exact].present?
+    str = str << "&name_contains=#{params[:name_contains]}" if params[:name_contains].present?
+    str = str << "&institution=#{params[:institution]}" if params[:institution].present?
+    str = str << "&actions=#{params[:actions]}" if params[:actions].present?
+    str = str << "&stage=#{params[:stage]}" if params[:stage].present?
+    str = str << "&status=#{params[:status]}" if params[:status].present?
+    str = str << "&reviewed=#{params[:reviewed]}" if params[:reviewed].present?
+    str
   end
 
 end

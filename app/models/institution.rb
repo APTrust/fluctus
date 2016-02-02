@@ -1,13 +1,13 @@
 class Institution < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
 
-  # NOTE with rdf datastreams must query like so ins = Institution.where(desc_metadata__title_tesim: "APTrust")
-  has_metadata "rightsMetadata", type: Hydra::Datastream::RightsMetadata
+  # NOTE with rdf datastreams must query like so ins = Institution.where(desc_metadata__name_tesim: "APTrust")
+  has_metadata 'rightsMetadata', type: Hydra::Datastream::RightsMetadata
   has_metadata 'descMetadata', type: InstitutionMetadata
 
   has_many :intellectual_objects, property: :is_part_of
 
-  has_attributes :title, :brief_name, :identifier, datastream: 'descMetadata', multiple: false
+  has_attributes :title, :brief_name, :identifier,:dpn_uuid, datastream: 'descMetadata', multiple: false
 
   validates :title, :identifier, presence: true
   validate :title_is_unique
@@ -25,7 +25,7 @@ class Institution < ActiveFedora::Base
   end
 
   def serializable_hash(options={})
-    { pid: pid, title: title, brief_name: brief_name, identifier: identifier }
+    { pid: pid, title: title, brief_name: brief_name, identifier: identifier, dpn_uuid: dpn_uuid }
   end
 
   def self.get_from_solr(pid)
@@ -69,7 +69,7 @@ class Institution < ActiveFedora::Base
   # we must remove self from the array before testing for uniqueness.
   def title_is_unique
     return if self.title.nil?
-    errors.add(:title, "has already been taken") if Institution.where(desc_metadata__title_ssim: self.title).reject{|r| r == self}.any?
+    errors.add(:title, 'has already been taken') if Institution.where(desc_metadata__title_ssim: self.title).reject{|r| r == self}.any?
   end
 
   def identifier_is_unique
@@ -79,10 +79,10 @@ class Institution < ActiveFedora::Base
     count +=1 if insts.count == 1 && insts.first.id != self.id
     count = insts.count if insts.count > 1
     if(count > 0)
-      errors.add(:identifier, "has already been taken")
+      errors.add(:identifier, 'has already been taken')
     end
     unless self.identifier.include?('.')
-      errors.add(:identifier, "must be a valid domain name")
+      errors.add(:identifier, 'must be a valid domain name')
     end
     unless self.identifier.include?('com') || self.identifier.include?('org') || self.identifier.include?('edu')
       errors.add(:identifier, "must end in '.com', '.org', or '.edu'")

@@ -5,7 +5,7 @@ require 'uuidtools'
 # NOTE official examples of use found in http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CCsQFjAA&url=http%3A%2F%2Fwww.oclc.org%2Fresearch%2Fprojects%2Fpmwg%2Fpremis-examples.pdf&ei=JzCOUuuOAufLsASTgIKACA&usg=AFQjCNF3rVZ8JTF2IQEdWHCWZFC9eivcVQ&bvm=bv.56988011,d.cWc&cad=rja
 
 # Note serialize via obj.serialize
-class EventVocabulary < RDF::Vocabulary("http://multimedialab.elis.ugent.be/users/samcoppe/ontologies/Premis/premis.owl#")
+class EventVocabulary < RDF::Vocabulary('http://multimedialab.elis.ugent.be/users/samcoppe/ontologies/Premis/premis.owl#')
 
   property :eventIdentifier
   property :eventType
@@ -87,7 +87,8 @@ private
   end
 
   def init_identifier
-    self.identifier = UUIDTools::UUID.timestamp_create.to_s if self.identifier.empty?
+    #self.identifier = UUIDTools::UUID.timestamp_create.to_s if self.identifier.empty?
+    self.identifier = SecureRandom.uuid if self.identifier.empty?
   end
 
 end

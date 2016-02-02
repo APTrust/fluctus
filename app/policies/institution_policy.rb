@@ -24,7 +24,7 @@ class InstitutionPolicy < ApplicationPolicy
 	end
 
 	def show?
-		user.admin? ||  (user.institution_pid == record.pid)
+		record.nil? || user.admin? ||  (user.institution_pid == record.pid)
 	end
 
 	def edit?

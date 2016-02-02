@@ -31,6 +31,10 @@
       <% @generic_file.filechecksum.each do |checksum| %>
       <dd><strong><%= checksum.algorithm.first %>:</strong><%= checksum.digest.first %> generated <%= time_ago_in_words(checksum.datetime.first) %> ago</dd>
       <% end %>
+      <% if @generic_file.state == 'D' %>
+          <dt><i><b>State</b></i></dt>
+          <dd><i>This object has been deleted.</i></dd>
+      <% end %>
     </dl>
   </section>
   <section class="object_events">

@@ -1,14 +1,14 @@
 class ProcessedItemPolicy < ApplicationPolicy
 
-	def create?
-		user.admin?
-	end
+  def create?
+    user.admin?
+  end
 
-	def new?
-		create?
-	end
+  def new?
+    create?
+  end
 
-	def index?
+  def index?
     record.first.nil? || user.admin? ||  (user.institution.identifier == record.first.institution)
   end
 
@@ -16,20 +16,24 @@ class ProcessedItemPolicy < ApplicationPolicy
     record.first.nil? || user.admin? || (user.institution.identifier == record.first.institution)
   end
 
-	def show?
-		record.nil? || user.admin? || (user.institution.identifier == record.institution)
-	end
+  def admin_api?
+    record.first.nil? || user.admin?
+  end
 
-	def update?
-		user.admin? ||
-		(user.institutional_admin? && (user.institution.identifier == record.institution))
-	end
+  def show?
+    record.nil? || user.admin? || (user.institution.identifier == record.institution)
+  end
 
-	def edit?
-		update?
-	end
+  def update?
+    user.admin? ||
+      (user.institutional_admin? && (user.institution.identifier == record.institution))
+  end
 
-	def mark_as_reviewed?
+  def edit?
+    update?
+  end
+
+  def mark_as_reviewed?
     user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
   end
 
@@ -37,23 +41,27 @@ class ProcessedItemPolicy < ApplicationPolicy
     record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
   end
 
-	def destroy?
-		false
+  def destroy?
+    false
   end
 
   def set_restoration_status?
-    user.admin? || (user.institutional_admin? && (user.institution.identifier == record.institution))
+    record.nil? || user.admin?
   end
 
   def items_for_delete?
-    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
+    record.first.nil? || user.admin?
   end
 
   def items_for_restore?
-    record.first.nil? || user.admin? || (user.institutional_admin? && (user.institution.identifier == record.first.institution))
+    record.first.nil? || user.admin?
   end
 
-	class Scope
+  def items_for_dpn?
+    record.first.nil? || user.admin?
+  end
+
+  class Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)

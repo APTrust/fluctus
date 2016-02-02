@@ -5,7 +5,7 @@ class UsageSample < ActiveRecord::Base
 
   def institution
     unless institution_id
-      $stderr.puts "No institution_id set"
+      $stderr.puts 'No institution_id set'
       return nil
     end
     @institution ||= Institution.find(institution_id)

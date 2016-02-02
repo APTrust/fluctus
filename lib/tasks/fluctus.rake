@@ -3,25 +3,27 @@ RSpec::Core::RakeTask.new(:rspec => 'test:prepare') { |t| t.rspec_opts = ['--col
 
 namespace :fluctus do
 
+  # DPN member UUIDs are at
+  # https://docs.google.com/spreadsheets/d/1-WFK0me8dM2jETlUkI7wpmRFMOgHC5LhyYk6hgHOfIA/
   partner_list = [
-        ['APTrust', 'apt', 'aptrust.org'],
-        ['Columbia University', 'cul', 'columbia.edu'],
-        ['Johns Hopkins University', 'jhu', 'jhu.edu'],
-        ['North Carolina State University', 'ncsu', 'ncsu.edu'],
-        ['Pennsylvania State University', 'psu', 'psu.edu'],
-        ['Syracuse University', 'syr', 'syr.edu'],
-        ['University of Chicago', 'uchi', 'uchicago.edu'],
-        ['University of Cincinnati', 'ucin', 'uc.edu'],
-        ['University of Connecticut', 'uconn', 'uconn.edu'],
-        ['University of Maryland', 'mdu', 'umd.edu'],
-        ['University of Miami', 'um', 'miami.edu'],
-        ['University of Michigan', 'umich', 'umich.edu'],
-        ['University of North Carolina at Chapel Hill', 'unc', 'unc.edu'],
-        ['University of Notre Dame', 'und', 'nd.edu'],
-        ['University of Virginia','uva', 'virginia.edu'],
-        ['Virginia Tech','vatech', 'vt.edu'],
-        ['Test University','test', 'test.edu'],
-        ['Indiana University Bloomington', 'iub', 'indiana.edu']
+        ['APTrust', 'apt', 'aptrust.org', nil],
+        ['Columbia University', 'cul', 'columbia.edu', 'ed73acd4-93e9-4196-a1ba-7fc8031b5f0b'],
+        ['Indiana University Bloomington', 'iub', 'indiana.edu', '77abdcc5-6d50-441b-8fd7-8085ceba5f05'],
+        ['Johns Hopkins University', 'jhu', 'jhu.edu', '0ab32901-5377-4928-898c-f4c5e2cde8e1'],
+        ['North Carolina State University', 'ncsu', 'ncsu.edu', 'd3432b4f-9f82-4206-a086-89bff5c5bd1e'],
+        ['Pennsylvania State University', 'pst', 'psu.edu', 'cf153594-6c22-4b59-a12e-420e0ae5280f'],
+        ['Syracuse University', 'syr', 'syr.edu', 'd5e231ad-cf1f-4499-9afe-7045f1254eaa'],
+        ['Test University','test', 'test.edu', 'fe908327-3635-43c2-9ca6-849485febcf3'],
+        ['University of Chicago', 'uchi', 'uchicago.edu', nil],
+        ['University of Cincinnati', 'ucin', 'uc.edu', nil],
+        ['University of Connecticut', 'uconn', 'uconn.edu', nil],
+        ['University of Maryland', 'mdu', 'umd.edu', 'a905b4da-cb04-43b9-8e23-ee43e02b23df'],
+        ['University of Miami', 'um', 'miami.edu', '41d34f47-ab83-4fa3-a40d-85465bc5fd14'],
+        ['University of Michigan', 'umich', 'umich.edu', '7277cbab-d539-4a81-ac1e-70cefc28fb2e'],
+        ['University of North Carolina at Chapel Hill', 'unc', 'unc.edu', 'cdd177a9-fe6b-4b75-9960-d808d1fb5570'],
+        ['University of Notre Dame', 'und', 'nd.edu', 'e25e97d2-44fe-472b-bbfe-6efc71dae268'],
+        ['University of Virginia','uva', 'virginia.edu', '63fd28df-4178-48e0-b259-343f82f04551'],
+        ['Virginia Tech','vatech', 'vt.edu', '77b67409-2966-4ea9-95f8-fef59b12ee29']
   ]
 
 
@@ -29,7 +31,7 @@ namespace :fluctus do
   task setup: :environment do
     desc "Creating an initial institution names 'APTrust'..."
 
-    i = Institution.create!(title: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt')
+    i = Institution.create!(title: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: '44c450a6-8b2e-4c59-8793-3d9366bf43f5')
 
     desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
     %w(admin institutional_admin institutional_user).each do |role|
@@ -57,7 +59,7 @@ namespace :fluctus do
   desc 'Empty the database'
   task empty_db: :environment do
     unless Rails.env.production?
-      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem, IoAggregation].each(&:destroy_all)
+      [User, GenericFile, IntellectualObject, Institution, Role, ProcessedItem].each(&:destroy_all)
     end
   end
 
@@ -107,8 +109,9 @@ namespace :fluctus do
     puts "Creating #{num_insts} Institutions"
     num_insts.times.each do |count|
       puts "== Creating number #{count+1} of #{num_insts}: #{partner_list[count+1].first} "
-      FactoryGirl.create(:institution, title: partner_list[count+1].first, brief_name: partner_list[count+1][1],
-                         identifier: partner_list[count+1].last)
+      partner = partner_list[count+1]
+      i = FactoryGirl.create(:institution, title: partner[0], brief_name: partner[1],
+                         identifier: partner[2], dpn_uuid: partner[3])
     end
 
     puts 'Creating Users for each Institution'
@@ -135,11 +138,6 @@ namespace :fluctus do
 
         # add processed item for intellectual object
         FactoryGirl.create(:processed_item, institution: institution.identifier, name: name, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
-
-        # add an aggregation object for the intellectual object
-        aggregate = IoAggregation.new
-        aggregate.initialize_object(item.id)
-        aggregate.save!
 
         5.times.each do |count|
           FactoryGirl.create(:processed_item, institution: institution.identifier)
@@ -175,7 +173,6 @@ namespace :fluctus do
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
           f.save!
-          aggregate.update_aggregations('add', f)
         end
       end
     end
@@ -202,9 +199,12 @@ namespace :fluctus do
     puts 'Creating Institutions'
     partner_list.count.times.each do |count|
       puts "== Creating number #{count+1} of #{partner_list.count}: #{partner_list[count].first} "
-      FactoryGirl.create(:institution, title: partner_list[count].first,
-                                brief_name: partner_list[count][1],
-                                identifier: partner_list[count].last)
+      partner = partner_list[count]
+      FactoryGirl.create(:institution,
+                         title: partner[0],
+                         brief_name: partner[1],
+                         identifier: partner[2],
+                         dpn_uuid: partner[3])
     end
 
     user_inst.each do |user_id, inst_identifier|
@@ -237,4 +237,108 @@ namespace :fluctus do
     puts "Execution time is #{diff} seconds"
   end
 
+  desc 'Dumps objects, files, institutions and events to JSON files for auditing'
+  task :dump_data, [:data_dir, :since_when] => [:environment] do |t, args|
+    #
+    # Sample usage to dump all objects and institutions into /usr/local/data:
+    #
+    # bundle exec rake fluctus:dump_data[/usr/local/data]
+    #
+    # To dump objects updated since a specified time to the same directory:
+    #
+    # bundle exec rake fluctus:dump_data[/usr/local/data,'2016-01-04T20:00:48.248Z']
+    #
+    data_dir = args[:data_dir] || '.'
+    since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
+    inst_file = File.join(data_dir, 'institutions.json')
+    puts "Dumping institutions to #{inst_file}"
+    File.open(inst_file, 'w') do |file|
+      Institution.all.each do |inst|
+        file.puts(inst.to_json)
+      end
+    end
+    objects_file = File.join(data_dir, 'objects.json')
+    timestamp_file = File.join(data_dir, 'timestamp.txt')
+    last_timestamp = since_when
+    proceed_to_reify = false
+    number_skipped = 0
+    puts "Dumping objects, files and events modified since #{since_when} to #{objects_file}"
+    begin
+      File.open(objects_file, 'w') do |file|
+        IntellectualObject.find_in_batches([], batch_size: 10, sort: 'system_modified_dtsi asc') do |solr_result|
+          # Don't process or even reify results we've already processed,
+          # because the reify process blows up the memory and leads
+          # to out-of-memory crashes. We have to keep track of the last
+          # intellectual object we processed, because memory leaks somewhere
+          # in the Rails/Hydra/ActiveFedora stack cause this process to crash
+          # consistently, and we need to be able to restart where we left off.
+          if proceed_to_reify == false
+            solr_result.each do |result|
+              record_modified = result['system_modified_dtsi']
+              if record_modified > since_when
+                proceed_to_reify = true
+                break
+              end
+              number_skipped += 1
+            end
+          end
+          next if proceed_to_reify == false
+          obj_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
+          obj_list.each do |io|
+            data = io.serializable_hash(include: [:premisEvents])
+            data[:generic_files] = []
+            io.generic_files.each do |gf|
+              data[:generic_files].push(gf.serializable_hash(include: [:checksum, :premisEvents]))
+            end
+            file.puts(data.to_json)
+            last_timestamp = io.modified_date
+          end
+
+          # Do our part to remediate memory leaks
+          obj_list.each { |io| io = nil }
+          obj_list = nil
+          solr_result = nil
+          data = nil
+          GC.start
+        end
+      end
+    ensure
+      puts("Skipped #{number_skipped} records modified before #{since_when}.")
+      puts("Finished dumping objects with last mod date through #{last_timestamp}")
+      puts("Writing timestamp to #{timestamp_file}")
+      puts('If this process crashed, you can resume the data dump where it left off.')
+      puts("First, MOVE THE FILE #{objects_file} SO IT DOESN'T GET OVERWRITTEN.")
+      puts('Then run the following command:')
+      puts("bundle exec rake fluctus:dump_data[#{data_dir},'#{last_timestamp}']")
+      File.open(timestamp_file, 'w') { |file| file.puts(last_timestamp) }
+    end
+  end
+
+  desc 'Dumps ProcessedItem records to JSON files for auditing'
+  task :dump_processed_items, [:data_dir, :since_when] => [:environment] do |t, args|
+    data_dir = args[:data_dir] || '.'
+    since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
+    output_file = File.join(data_dir, 'processed_items.json')
+    puts "Dumping processed_items to #{output_file}"
+    File.open(output_file, 'w') do |file|
+      ProcessedItem.where('updated_at >= ?', since_when).order('updated_at asc').find_each do |item|
+        file.puts(item.to_json)
+      end
+    end
+  end
+
+  desc 'Dumps User records to JSON files for auditing'
+  task :dump_users, [:data_dir] => [:environment] do |t, args|
+    data_dir = args[:data_dir] || '.'
+    output_file = File.join(data_dir, 'users.json')
+    puts "Dumping users to #{output_file}"
+    File.open(output_file, 'w') do |file|
+      User.find_each do |user|
+        data = user.serializable_hash
+        data['encrypted_password'] = user.encrypted_password
+        data['encrypted_api_secret_key'] = user.encrypted_api_secret_key
+        file.puts(data.to_json)
+      end
+    end
+  end
 end

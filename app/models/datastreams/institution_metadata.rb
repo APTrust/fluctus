@@ -8,4 +8,7 @@ class InstitutionMetadata < ActiveFedora::RdfxmlRDFDatastream
   property :identifier, predicate: RDF::DC.identifier do |index|
     index.as :stored_searchable, :symbol
   end
+  property :dpn_uuid, predicate: RDF::DC11.identifier do |index|
+    index.as :stored_searchable, :symbol
+  end
 end

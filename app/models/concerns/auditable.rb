@@ -2,7 +2,7 @@ module Auditable
   extend ActiveSupport::Concern
 
   included do
-    has_metadata "premisEvents", type: PremisEventsMetadata
+    has_metadata 'premisEvents', type: PremisEventsMetadata
   end
 
   def add_event(attributes)
@@ -25,7 +25,7 @@ module Auditable
     end
 
     if self.respond_to?(:intellectual_object_id)
-      Solrizer.insert_field(solr_doc, "intellectual_object_id", self.intellectual_object_id, :symbol)
+      Solrizer.insert_field(solr_doc, 'intellectual_object_id', self.intellectual_object_id, :symbol)
     end
 
     ActiveFedora::SolrService.add(solr_doc)

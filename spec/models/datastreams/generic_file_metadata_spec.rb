@@ -4,7 +4,7 @@ describe GenericFileMetadata do
 
   before do
     #noinspection RubyArgCount
-    subject.stub(:pid).and_return("fake:123")
+    subject.stub(:pid).and_return('fake:123')
   end
 
   it 'should set a a proper format' do
@@ -19,7 +19,7 @@ describe GenericFileMetadata do
   end
 
   it 'should set an identifier' do
-    ident = "test.edu/12345678/data/filename.xml"
+    ident = 'test.edu/12345678/data/filename.xml'
     subject.identifier = ident
     subject.identifier.should == [ident]
   end
@@ -54,13 +54,13 @@ describe GenericFileMetadata do
     subject.filechecksum.last.digest.should == [exp[:digest]]
   end
 
-  describe "#to_solr" do
+  describe '#to_solr' do
     subject { FactoryGirl.build(:generic_file, file_size: 128774003000 ).to_solr }
-    it "should have size indexed as a long" do
+    it 'should have size indexed as a long' do
       expect(subject['tech_metadata__file_size_lsi']).to eq '128774003000'
     end
-    it "should have mime type indexed " do
-      expect(subject['tech_metadata__file_format_ssi']).to eq "application/xml"
+    it 'should have mime type indexed ' do
+      expect(subject['tech_metadata__file_format_ssi']).to eq 'application/xml'
     end
   end
 end

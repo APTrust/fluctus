@@ -12,7 +12,7 @@ class InstitutionsController < ApplicationController
       @institutions = policy_scope(Institution)
       @sizes = find_all_sizes
       format.json { render json: @institutions.map { |inst| inst.serializable_hash } }
-      format.html { render "index" }
+      format.html { render 'index' }
     end
   end
 
@@ -28,8 +28,22 @@ class InstitutionsController < ApplicationController
   end
 
   def show
-    authorize @institution
-    show!
+    authorize @institution || Institution.new
+    if @institution.nil? || @institution.state == 'D'
+      respond_to do |format|
+        format.json {render :nothing => true, :status => 404}
+        format.html {
+          redirect_to root_path
+          flash[:alert] = 'The institution you requested does not exist or has been deleted.'
+        }
+      end
+    else
+      set_recent_objects
+      respond_to do |format|
+        format.json { render json: @institution }
+        format.html
+      end
+    end
   end
 
   def edit
@@ -47,49 +61,26 @@ class InstitutionsController < ApplicationController
   private
     def load_institution
       @institution = params[:institution_identifier].nil? ? current_user.institution : Institution.where(desc_metadata__identifier_ssim: params[:institution_identifier]).first
-      set_recent_objects
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def build_resource_params
-      params[:action] == 'new' ? [] : [params.require(:institution).permit(:title, :identifier)]
+      params[:action] == 'new' ? [] : [params.require(:institution).permit(:title, :identifier, :brief_name, :dpn_uuid)]
     end
 
     def set_recent_objects
       if current_user.admin? && current_user.institution.identifier == @institution.identifier
         @items = ProcessedItem.order('date').limit(10).reverse_order
-        @size = find_apt_size
+        @size = GenericFile.bytes_by_format['all']
         @item_count = ProcessedItem.all.count
         @object_count = IntellectualObject.all.count
       else
         @items = ProcessedItem.where(institution: @institution.identifier).order('date').limit(10).reverse_order
-        @size = find_size(@institution)
+        @size = @institution.bytes_by_format()['all']
         @item_count = ProcessedItem.where(institution: @institution.identifier).count
         @object_count = @institution.intellectual_objects.count
       end
       @failed = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES['fail'])
-    end
-
-    def find_size(institution)
-      size = 0
-      institution.intellectual_objects.each do |object|
-        query = "id\:#{RSolr.escape(object.id)}"
-        solr_result = ActiveFedora::SolrService.query(query).first
-        new_size = solr_result['total_file_size_ssim'].nil? ? 0 : solr_result['total_file_size_ssim'].first
-        size = size + new_size.to_i
-      end
-      size
-    end
-
-    def find_apt_size
-      size = 0
-      IntellectualObject.all.each do |obj|
-        query = "id\:#{RSolr.escape(obj.id)}"
-        solr_result = ActiveFedora::SolrService.query(query).first
-        new_size = solr_result['total_file_size_ssim'].nil? ? 0 :solr_result['total_file_size_ssim'].first
-        size = size + new_size.to_i
-      end
-      size
     end
 
     def find_all_sizes
@@ -103,4 +94,5 @@ class InstitutionsController < ApplicationController
       size['APTrust'] = total_size
       size
     end
+
 end

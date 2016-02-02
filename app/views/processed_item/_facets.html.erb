@@ -1,5 +1,5 @@
 <div id="facets" class="facets sidenav">
-  <h3> Filter: </h3>
+  <h3> Filter:</h3>
 
   <div id="facet-panel-collapse" class="collapse panel-group">
 
@@ -13,6 +13,7 @@
             <% @statuses.each do |status| %>
                 <li>
                   <span class="facet-label"><a href="<%= current_path('status', status) %>" ><%= status %></a></span>
+                  <span class="facet-count"><%= @counts[status] %></span>
                 </li>
             <% end %>
             <% unless @selected[:status].nil? %>
@@ -33,6 +34,7 @@
             <% @stages.each do |stage| %>
                 <li>
                   <span class="facet-label"><a href="<%= current_path('stage', stage) %>" ><%= stage %></a></span>
+                  <span class="facet-count"><%= @counts[stage] %></span>
                 </li>
             <% end %>
             <% unless @selected[:stage].nil? %>
@@ -53,6 +55,7 @@
             <% @actions.each do |action| %>
                 <li>
                   <span class="facet-label"><a href="<%= current_path('actions', action) %>" ><%= action %></a></span>
+                  <span class="facet-count"><%= @counts[action] %></span>
                 </li>
             <% end %>
             <% unless @selected[:actions].nil? %>
@@ -74,6 +77,7 @@
                 <% @institutions.each do |inst| %>
                     <li>
                       <span class="facet-label"><a href="<%= current_path('institution', inst) %>" ><%= inst %></a></span>
+                      <span class="facet-count"><%= @counts[inst] %></span>
                     </li>
                 <% end %>
                 <% unless @selected[:institution].nil? %>

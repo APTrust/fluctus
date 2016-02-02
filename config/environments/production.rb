@@ -82,6 +82,10 @@ Fluctus::Application.configure do
   Rails.application.routes.default_url_options[:host] = 'repository.aptrust.org'
   Rails.application.routes.default_url_options[:protocol] = 'https'
 
+  # Should we show the "Send Object to DPN" button to users
+  # whose institutions are members of DPN?
+  config.show_send_to_dpn_button = true
+
   # send password reset emails to a file
   config.action_mailer.default_url_options = {
     :host => 'repository.aptrust.org',

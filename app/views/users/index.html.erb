@@ -8,7 +8,7 @@
       <th>Name</th>
       <th>Email</th>
       <th>Institution</th>
-      <th>Groups</th>
+      <th>Group</th>
     </tr>
   </thead>
 
@@ -18,7 +18,7 @@
         <td><%= user.name %></td>
         <td><%= user.email %></td>
         <td><%= user.institution.title %></td>
-        <td><%= user.groups.sort.map(&:titleize).join(", ") %> </td>
+        <td><%= user.main_group %> </td>
         <td><%= show_link user %> <%= edit_link user %> <%= destroy_link user %></td>
       </tr>
     <% end %>
