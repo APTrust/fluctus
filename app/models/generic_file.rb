@@ -154,7 +154,8 @@ class GenericFile < ActiveFedora::Base
       {
         algorithm: cs.algorithm.first,
         digest: cs.digest.first,
-        datetime: Time.parse(cs.datetime.first).iso8601,
+        #datetime: Time.parse(cs.datetime.first).iso8601
+        datetime: cs.datetime.first
       }
     end
   end
@@ -200,10 +201,10 @@ class GenericFile < ActiveFedora::Base
     else
       algorithms = Array.new
       filechecksum.each do |cs|
-        if (algorithms.include? cs)
+        if (algorithms.include? cs.algorithm.first)
           errors.add(:filechecksum, "can't have multiple checksums with same algorithm")
         else
-          algorithms.push(cs)
+          algorithms.push(cs.algorithm.first)
         end
       end
     end

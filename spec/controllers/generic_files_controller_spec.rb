@@ -261,6 +261,9 @@ describe GenericFilesController do
           expect(return_data[1]['file_format']).to eq 'text/orange'
           expect(return_data[0]['premisEvents'].count).to eq 2
           expect(return_data[1]['premisEvents'].count).to eq 2
+
+          puts "Data: #{return_data}"
+
           expect(return_data[0]['filechecksum'].count).to eq 2
           expect(return_data[1]['filechecksum'].count).to eq 2
         end

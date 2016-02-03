@@ -117,23 +117,23 @@ class GenericFilesController < ApplicationController
   #
   # Saving 200 generic files required 1400 HTTP calls. Now it requires 1.
   #
-  # NOTE: The API client submits checksums in a param called :checksum.
+  # NOTE: The API client submits checksums in a param called :filechecksum.
   # The remove_existing_checksums method below renames that param to
-  # :checksum_attributes. See the doc below on remove_existing_checksums.
+  # :filechecksum_attributes. See the doc below on remove_existing_checksums.
   #
-  # We have to rewrite the params here so that checksum becomes
-  # checksum_attributes. When serializing generic files back to the
-  # API client, this app always uses generic_file.checksum. Other
-  # contollers, such as the intellectual_object controller, also
-  # use generic_file.checksum for both input and output. However, Rails
-  # nested resources expects generic_file.checksum_attributes. That
+  # We have to rewrite the params here so that filechecksum becomes
+  # filechecksum_attributes. When serializing generic files back to the
+  # API client, this app always uses generic_file.filechecksum. Other
+  # controllers, such as the intellectual_object controller, also
+  # use generic_file.filechecksum for both input and output. However, Rails
+  # nested resources expects generic_file.filechecksum_attributes. That
   # means the API has to serialize generic files differently, depending
   # on which endpoint it's talking to, and Rails will reject the same
   # JSON it just sent to the API client.
   #
   # Instead of making the API client guess which JSON format Rails wants,
   # let's make consistent and use generic_file.checksum. We'll change it
-  # to checksum_attributes here to satisfy nested resources.
+  # to filechecksum_attributes here to satisfy nested resources.
   def save_batch
     generic_files = []
     current_object = nil
@@ -157,9 +157,7 @@ class GenericFilesController < ApplicationController
         generic_file.intellectual_object = @intellectual_object if generic_file.intellectual_object.nil?
         if generic_file.id.present?
           # This is an update
-          puts "HEREEEEE"
           gf_clean_data = remove_existing_checksums(generic_file, gf_without_events)
-          puts "HERE. Cleaned up: #{gf_clean_data[:filechecksum_attributes]}"
           generic_file.update(gf_clean_data)
         else
           # New GenericFile
@@ -169,20 +167,19 @@ class GenericFilesController < ApplicationController
         gf[:premisEvents].each do |event|
           current_object = "Event #{event[:event_type]} id #{event[:identifier]} for #{gf[:identifier]}"
           generic_file.add_event(event)
-          puts "Here. Checksum: #{generic_file.filechecksum.first.digest}"
         end
       end
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
-    rescue Exception => ex
-      logger.error("save_batch failed on #{current_object}")
-      log_exception(ex)
-      generic_files.each do |gf|
-        gf.destroy
-      end
-      respond_to { |format| format.json {
-          render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
-      }
-    end
+    # rescue Exception => ex
+    #   logger.error("save_batch failed on #{current_object}")
+    #   log_exception(ex)
+    #   generic_files.each do |gf|
+    #     gf.destroy
+    #   end
+    #   respond_to { |format| format.json {
+    #       render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
+    #   }
+     end
   end
 
 
