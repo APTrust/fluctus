@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe IntellectualObjectsController do
+
+  after do
+    Institution.destroy_all
+  end
+
   describe 'search' do
 
     before(:all) do

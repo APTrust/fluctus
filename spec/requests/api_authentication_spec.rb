@@ -16,6 +16,9 @@ describe 'API Authentication: Editing an Intellectual Object via API request' do
   let(:invalid_key) { '456' }
   let(:user) { FactoryGirl.create :user, :institutional_admin, institution_pid: inst.pid, api_secret_key: valid_key }
 
+  after do
+    Institution.destroy_all
+  end
 
   describe 'Valid login' do
     let(:login_headers) {{ 'X-Fluctus-API-User' => user.email, 'X-Fluctus-API-Key' => valid_key }}
