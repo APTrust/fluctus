@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe 'Catalog' do
+
+  after do
+    Institution.destroy_all
+  end
+
   describe 'GET #index', :type => :feature do
     before(:each) do 
       visit('/')
