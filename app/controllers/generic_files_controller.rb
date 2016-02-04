@@ -159,26 +159,28 @@ class GenericFilesController < ApplicationController
           # This is an update
           gf_clean_data = remove_existing_checksums(generic_file, gf_without_events)
           generic_file.update(gf_clean_data)
+          generic_file.remove_empty_checksums
+          generic_file.save!
         else
           # New GenericFile
           generic_file.save!
         end
         generic_files.push(generic_file)
         gf[:premisEvents].each do |event|
-          current_object = "Event #{event[:event_type]} id #{event[:identifier]} for #{gf[:identifier]}"
+          current_object = "Event #{event[':type']} id #{event[:identifier]} for #{gf[:identifier]}"
           generic_file.add_event(event)
         end
       end
       respond_to { |format| format.json { render json: array_as_json(generic_files), status: :created } }
-    # rescue Exception => ex
-    #   logger.error("save_batch failed on #{current_object}")
-    #   log_exception(ex)
-    #   generic_files.each do |gf|
-    #     gf.destroy
-    #   end
-    #   respond_to { |format| format.json {
-    #       render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
-    #   }
+    rescue Exception => ex
+      logger.error("save_batch failed on #{current_object}")
+      log_exception(ex)
+      generic_files.each do |gf|
+        gf.destroy
+      end
+      respond_to { |format| format.json {
+          render json: { error: "#{ex.message} : #{current_object}" }, status: :unprocessable_entity }
+      }
      end
   end
 
@@ -288,10 +290,8 @@ class GenericFilesController < ApplicationController
   # This prevents duplicate checksums from accumulating in the metadata.
   def remove_existing_checksums(generic_file, gf_params)
     copy_of_params = gf_params.deep_dup
-    generic_file.filechecksum.each do |existing_checksum|
-      copy_of_params[:filechecksum_attributes].delete_if do |submitted_checksum|
-        generic_file.has_checksum?(submitted_checksum[:digest])
-      end
+    copy_of_params[:filechecksum_attributes].delete_if do |submitted_checksum|
+      generic_file.has_checksum?(submitted_checksum[:digest]) || submitted_checksum[:digest].nil?
     end
     copy_of_params
   end

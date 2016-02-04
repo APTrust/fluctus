@@ -21,6 +21,7 @@ class GenericFile < ActiveFedora::Base
   validate :identifier_is_unique
 
   before_save :copy_permissions_from_intellectual_object
+  #before_save :remove_empty_checksums
   after_save :update_parent_index
 
   delegate :institution, to: :intellectual_object
@@ -176,6 +177,12 @@ class GenericFile < ActiveFedora::Base
   # Returns true if the GenericFile has a checksum with the specified digest.
   def has_checksum?(digest)
     find_checksum_by_digest(digest).nil? == false
+  end
+
+  def remove_empty_checksums
+    filechecksum.each do |cs|
+      filechecksum.delete(cs) if cs.algorithm.first.nil?
+    end
   end
 
   private
