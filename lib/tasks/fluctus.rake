@@ -165,14 +165,16 @@ namespace :fluctus do
               identifier: "#{item.identifier}/data/#{name}#{file_count}.#{format[:ext]}",
           }
           f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, file_format: attrs[:file_format], uri: attrs[:uri], identifier: attrs[:identifier])
-
-          f.save!
+         # f.save!
 
           f.add_event(FactoryGirl.attributes_for(:premis_event_validation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_ingest))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
           f.save!
+          f.filechecksum.each do |cs|
+            puts "Checksum check: #{cs.algorithm.first}"
+          end
         end
       end
     end
@@ -288,7 +290,7 @@ namespace :fluctus do
             data = io.serializable_hash(include: [:premisEvents])
             data[:generic_files] = []
             io.generic_files.each do |gf|
-              data[:generic_files].push(gf.serializable_hash(include: [:checksum, :premisEvents]))
+              data[:generic_files].push(gf.serializable_hash(include: [:filechecksum, :premisEvents]))
             end
             file.puts(data.to_json)
             last_timestamp = io.modified_date
