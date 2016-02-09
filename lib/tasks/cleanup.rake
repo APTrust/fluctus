@@ -108,9 +108,11 @@ namespace :cleanup do
         pi.status = 'Success'
         pi.outcome = 'Success'
         pi.note = "Item ingest was completed by APTrust admin after audit " +
-          "and cleanup process, Feb. 9, 2016."
+          "and cleanup process, Feb. 9, 2016. As part of the audit/cleanup process, " +
+          "any duplicate S3 files were deleted, and files missing from Glacier were " +
+          "added, and these add/delete operations were recorded as PREMIS events."
         puts(pi.inspect)
-        # pi.save
+        pi.save
       end
     end
   end
