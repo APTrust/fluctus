@@ -26,18 +26,18 @@ namespace :cleanup do
       end
       copied_at = row['action_completed_at']
       uuid = row['uuid']
+      puts("Ingest event for #{identifier}")
       event = {
         identifier: SecureRandom.uuid,
         type: 'ingest',
         outcome: 'Success',
-        outcome_detail: 'Ingested to replication storage and assigned replication URL identifier',
-        outcome_information: 'https://s3.amazonaws.com/aptrust.preservation.oregon/',
+        outcome_detail: 'Ingested to replication storage and assigned replication URL identifier as part of audit001/cleanup',
+        outcome_information: "https://s3.amazonaws.com/aptrust.preservation.oregon/#{uuid}",
         date_time: copied_at,
         detail: "https://s3.amazonaws.com/aptrust.preservation.oregon/#{uuid}",
         object: 'APTrust audit and cleanup scripts for audit_001',
         agent: 'https://github.com/APTrust/auditing/blob/1.0/cleanup_001.py'
       }
-      #puts(event)
       generic_file.add_event(event)
       generic_file.save()
     end
@@ -58,7 +58,28 @@ namespace :cleanup do
         where f.action = 'delete' and f.action_completed_at is not null
     )
     run_query(query) do |row|
-      puts(row['file_identifier'])
+      identifier = row['file_identifier']
+      generic_file = GenericFile.where(tech_metadata__identifier_ssim: identifier).first
+      if generic_file.nil?
+        puts("#{identifier} not found")
+        next
+      end
+      deleted_at = row['action_completed_at']
+      uuid = row['uuid']
+      puts("Delete event for #{identifier}")
+      event = {
+        identifier: SecureRandom.uuid,
+        type: 'delete',
+        outcome: 'Success',
+        outcome_detail: 'Deleted duplicate S3 copy as part of audit001/cleanup',
+        outcome_information: "Deleted https://s3.amazonaws.com/aptrust.preservation.storage/#{uuid}",
+        date_time: deleted_at,
+        detail: "APTrust admin deleted https://s3.amazonaws.com/aptrust.preservation.storage/#{uuid} as part of audit001/cleanup because this file was stored twice in S3 under two different uuids.",
+        object: 'APTrust audit and cleanup scripts for audit_001',
+        agent: 'https://github.com/APTrust/auditing/blob/1.0/cleanup_001.py'
+      }
+      generic_file.add_event(event)
+      generic_file.save()
     end
   end
 
