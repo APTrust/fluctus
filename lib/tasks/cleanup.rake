@@ -111,6 +111,7 @@ namespace :cleanup do
           "and cleanup process, Feb. 9, 2016. As part of the audit/cleanup process, " +
           "any duplicate S3 files were deleted, and files missing from Glacier were " +
           "added, and these add/delete operations were recorded as PREMIS events."
+        pi.object_identifier = row['identifier']
         puts(pi.inspect)
         pi.save
       end
