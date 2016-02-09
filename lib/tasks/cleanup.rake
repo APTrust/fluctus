@@ -18,7 +18,28 @@ namespace :cleanup do
         where f.action = 'add' and f.action_completed_at is not null
     )
     run_query(query) do |row|
-      puts(row['file_identifier'])
+      identifier = row['file_identifier']
+      generic_file = GenericFile.where(tech_metadata__identifier_ssim: identifier).first
+      if generic_file.nil?
+        puts("#{identifier} not found")
+        next
+      end
+      copied_at = row['action_completed_at']
+      uuid = row['uuid']
+      event = {
+        identifier: SecureRandom.uuid,
+        type: 'ingest',
+        outcome: 'Success',
+        outcome_detail: 'Ingested to replication storage and assigned replication URL identifier',
+        outcome_information: 'https://s3.amazonaws.com/aptrust.preservation.oregon/',
+        date_time: copied_at,
+        detail: "https://s3.amazonaws.com/aptrust.preservation.oregon/#{uuid}",
+        object: 'APTrust audit and cleanup scripts for audit_001',
+        agent: 'https://github.com/APTrust/auditing/blob/1.0/cleanup_001.py'
+      }
+      #puts(event)
+      generic_file.add_event(event)
+      generic_file.save()
     end
   end
 
@@ -58,6 +79,30 @@ namespace :cleanup do
       puts(row['file_identifier'])
     end
   end
+
+  desc 'Updated ProcessedItems that were fixed after the audit'
+  task :update_processed_items => [:environment] do
+    # Mark all of the relevant ProcessedItem records as fixed
+    query = 'select id, name, identifier from bags'
+    run_query(query) do |row|
+      bag_name = row['name']
+      pi = ProcessedItem.where(name: bag_name,
+                               status: 'Failed',
+                               stage: 'Record').first
+      if pi.nil?
+        puts("Item for #{bag_name} not found.")
+      else
+        pi.stage = 'Cleanup'
+        pi.status = 'Success'
+        pi.outcome = 'Success'
+        pi.note = "Item ingest was completed by APTrust admin after audit " +
+          "and cleanup process, Feb. 9, 2016."
+        puts(pi.inspect)
+        # pi.save
+      end
+    end
+  end
+
 
   def run_query(query, &block)
     if File.exist?('audit001_summary.db')
