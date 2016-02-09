@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe EventsController do
 
+  after do
+    Institution.destroy_all
+  end
+
   let(:object) { FactoryGirl.create(:intellectual_object, institution: user.institution, access: 'institution') }
   let(:file) { FactoryGirl.create(:generic_file, intellectual_object: object) }
   let(:event_attrs) { FactoryGirl.attributes_for(:premis_event_fixity_generation) }

@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe 'Users' do
+
+  after do
+    Institution.destroy_all
+  end
+
   describe 'DELETE users', :type => :feature do
     before do
       @user = FactoryGirl.create(:user, :admin)
