@@ -50,54 +50,45 @@ namespace :cleanup do
     # delete files from Glacier, because audit results show no duplicates
     # were ever stored in Glacier. The actual deletions were completed
     # and recored by the script cleanup_001.py in the auditing repo.
+    # All of these files have a corrected URL.
     query = %q(
         select b.identifier as bag_identifier, f.identifier as file_identifier,
-        f.key as uuid, f.action_completed_at
+        f.key as uuid, f.action_completed_at, u.old_url, u.new_url
         from aws_files f
         inner join bags b on f.bag_id = b.id
+        inner join urls u on f.identifier = u.identifier
         where f.action = 'delete' and f.action_completed_at is not null
     )
     run_query(query) do |row|
       identifier = row['file_identifier']
       generic_file = GenericFile.where(tech_metadata__identifier_ssim: identifier).first
       if generic_file.nil?
-        puts("#{identifier} not found")
+        puts("--> #{identifier} not found")
+        next
+      end
+      new_url = row['new_url']
+      if new_url.nil?
+        puts("--> No new URL for #{identifier}")
         next
       end
       deleted_at = row['action_completed_at']
       uuid = row['uuid']
-      puts("Delete event for #{identifier}")
+      puts("Adding delete event and correcting URL for #{identifier}")
       event = {
         identifier: SecureRandom.uuid,
         type: 'delete',
         outcome: 'Success',
         outcome_detail: 'Deleted duplicate S3 copy as part of audit001/cleanup',
-        outcome_information: "Deleted https://s3.amazonaws.com/aptrust.preservation.storage/#{uuid}",
+        outcome_information: "Deleted https://s3.amazonaws.com/aptrust.preservation.storage/#{uuid}. Correct file url set to #{new_url}",
         date_time: deleted_at,
-        detail: "APTrust admin deleted https://s3.amazonaws.com/aptrust.preservation.storage/#{uuid} as part of audit001/cleanup because this file was stored twice in S3 under two different uuids.",
+        detail: "APTrust admin deleted https://s3.amazonaws.com/aptrust.preservation.storage/#{uuid} as part of audit001/cleanup because this file was stored twice in S3 under two different uuids. Correct file uri set to #{new_url}",
         object: 'APTrust audit and cleanup scripts for audit_001',
         agent: 'https://github.com/APTrust/auditing/blob/1.0/cleanup_001.py'
       }
+      #puts(event)
       generic_file.add_event(event)
+      generic_file.uri = new_url
       generic_file.save()
-    end
-  end
-
-  desc 'Changes file URLs and adds PREMIS events for items ingested more than once'
-  task :change_file_urls => [:environment] do
-    # These bags were ingested more than once. In one ingest, we managed to save
-    # both the S3 and Glacier copies, but the URL points to a file that exists
-    # only in S3. This changes the URL to point to the UUID that was stored in
-    # both S3 and Glacier. These changes are made by the rake task, not by
-    # cleanup_001.py.
-    query = %q(
-        select b.identifier as bag_identifier, u.identifier as file_identifier,
-        u.old_url, u.new_url
-        from urls u
-        inner join bags b on u.bag_id = b.id
-    )
-    run_query(query) do |row|
-      puts(row['file_identifier'])
     end
   end
 
