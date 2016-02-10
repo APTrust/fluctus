@@ -165,16 +165,19 @@ namespace :fluctus do
               identifier: "#{item.identifier}/data/#{name}#{file_count}.#{format[:ext]}",
           }
           f.techMetadata.attributes = FactoryGirl.attributes_for(:generic_file_tech_metadata, file_format: attrs[:file_format], uri: attrs[:uri], identifier: attrs[:identifier])
-         # f.save!
+          f.save!
 
           f.add_event(FactoryGirl.attributes_for(:premis_event_validation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_ingest))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_generation))
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
+          f.filechecksum.first.algorithm = ['md5']
+          f.filechecksum.first.digest = [SecureRandom.hex]
+          f.filechecksum.first.datetime = [Time.now.to_s]
+          f.filechecksum.last.algorithm = ['sha256']
+          f.filechecksum.last.digest = [SecureRandom.hex]
+          f.filechecksum.last.datetime = [Time.now.to_s]
           f.save!
-          f.filechecksum.each do |cs|
-            puts "Checksum check: #{cs.algorithm}"
-          end
         end
       end
     end
