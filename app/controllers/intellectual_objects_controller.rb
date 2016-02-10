@@ -196,19 +196,19 @@ class IntellectualObjectsController < ApplicationController
         @intellectual_object = new_object
         @institution = @intellectual_object.institution
         respond_to { |format| format.json { render json: object_as_json, status: :created } }
-      # rescue Exception => ex
-      #   log_exception(ex)
-      #   if !new_object.nil?
-      #     new_object.generic_files.each do |gf|
-      #       gf.destroy
-      #     end
-      #     new_object.destroy
-      #   end
-      #   respond_to { |format| format.json {
-      #       render json: { error: "#{ex.message} : #{state[:current_object]}" },
-      #       status: :unprocessable_entity
-      #     }
-      #   }
+      rescue Exception => ex
+        log_exception(ex)
+        if !new_object.nil?
+          new_object.generic_files.each do |gf|
+            gf.destroy
+          end
+          new_object.destroy
+        end
+        respond_to { |format| format.json {
+            render json: { error: "#{ex.message} : #{state[:current_object]}" },
+            status: :unprocessable_entity
+          }
+        }
       end
     end
   end
