@@ -196,19 +196,19 @@ class IntellectualObjectsController < ApplicationController
         @intellectual_object = new_object
         @institution = @intellectual_object.institution
         respond_to { |format| format.json { render json: object_as_json, status: :created } }
-      rescue Exception => ex
-        log_exception(ex)
-        if !new_object.nil?
-          new_object.generic_files.each do |gf|
-            gf.destroy
-          end
-          new_object.destroy
-        end
-        respond_to { |format| format.json {
-            render json: { error: "#{ex.message} : #{state[:current_object]}" },
-            status: :unprocessable_entity
-          }
-        }
+      # rescue Exception => ex
+      #   log_exception(ex)
+      #   if !new_object.nil?
+      #     new_object.generic_files.each do |gf|
+      #       gf.destroy
+      #     end
+      #     new_object.destroy
+      #   end
+      #   respond_to { |format| format.json {
+      #       render json: { error: "#{ex.message} : #{state[:current_object]}" },
+      #       status: :unprocessable_entity
+      #     }
+      #   }
       end
     end
   end
@@ -270,6 +270,7 @@ class IntellectualObjectsController < ApplicationController
       new_file.add_event(event)
     }
     # We have to save again to get events back from Fedora!
+    new_file = explicit_checksum_build(new_file, filechecksums)
     new_file.save!
   end
 
@@ -286,6 +287,19 @@ class IntellectualObjectsController < ApplicationController
     else
       new_object[attr_name.to_s] = attr_value.to_s
     end
+  end
+
+  # For some reason, Fedora will not save checksums unless they are explicitly
+  # built this way. So, build checksums again with original attributes before final
+  # saving to ensure checksums don't end up empty.
+  def explicit_checksum_build(file, checksums)
+    file.filechecksum.first.algorithm = [checksums.first['algorithm']]
+    file.filechecksum.first.digest = [checksums.first['digest']]
+    file.filechecksum.first.datetime = [checksums.first['datetime']]
+    file.filechecksum.last.algorithm = [checksums.last['algorithm']]
+    file.filechecksum.last.digest = [checksums.last['digest']]
+    file.filechecksum.last.datetime = [checksums.last['datetime']]
+    file
   end
 
   # Set the search params for the page return based on the insitution.

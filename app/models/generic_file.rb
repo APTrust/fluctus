@@ -21,7 +21,6 @@ class GenericFile < ActiveFedora::Base
   validate :identifier_is_unique
 
   before_save :copy_permissions_from_intellectual_object
-  #before_save :remove_empty_checksums
   after_save :update_parent_index
 
   delegate :institution, to: :intellectual_object
@@ -208,7 +207,9 @@ class GenericFile < ActiveFedora::Base
     else
       algorithms = Array.new
       filechecksum.each do |cs|
-        if (algorithms.include? cs.algorithm.first)
+        if (cs.algorithm.first.nil?)
+          errors.add(:filechecksum, "can't be empty")
+        elsif (algorithms.include? cs.algorithm.first)
           errors.add(:filechecksum, "can't have multiple checksums with same algorithm")
         else
           algorithms.push(cs.algorithm.first)
