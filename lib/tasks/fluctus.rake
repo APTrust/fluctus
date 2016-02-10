@@ -173,7 +173,7 @@ namespace :fluctus do
           f.add_event(FactoryGirl.attributes_for(:premis_event_fixity_check))
           f.save!
           f.filechecksum.each do |cs|
-            puts "Checksum check: #{cs.algorithm.first}"
+            puts "Checksum check: #{cs.algorithm}"
           end
         end
       end
