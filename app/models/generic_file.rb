@@ -207,9 +207,7 @@ class GenericFile < ActiveFedora::Base
     else
       algorithms = Array.new
       filechecksum.each do |cs|
-        if (cs.algorithm.first.nil?)
-          errors.add(:filechecksum, "can't be empty")
-        elsif (algorithms.include? cs.algorithm.first)
+        if (algorithms.include? cs.algorithm.first)
           errors.add(:filechecksum, "can't have multiple checksums with same algorithm")
         else
           algorithms.push(cs.algorithm.first)
