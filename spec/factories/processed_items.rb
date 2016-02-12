@@ -30,4 +30,25 @@ FactoryGirl.define do
     outcome { Faker::Lorem.sentence }
     reviewed { false }
   end
+
+  factory :processed_item_with_state, class: ProcessedItem do
+    name { SecureRandom.uuid + '.tar' }
+    etag { SecureRandom.hex }
+    bag_date { Time.now.utc }
+    user { Faker::Name.name }
+    institution { FactoryGirl.create(:institution).pid }
+    bucket { "aptrust.receiving.#{institution}" }
+    date { Time.now.utc }
+    note { Faker::Lorem.sentence }
+    action { Fluctus::Application::FLUCTUS_ACTIONS.values.sample }
+    stage { Fluctus::Application::FLUCTUS_STAGES.values.sample }
+    status { Fluctus::Application::FLUCTUS_STATUSES.values.sample }
+    outcome { Faker::Lorem.sentence }
+    reviewed { false }
+    state { Faker::Lorem.sentence }
+    node { Faker::Internet.ip_v4_address }
+    last_touched { DateTime.now }
+    attempt_number { 0 }
+  end
+
 end

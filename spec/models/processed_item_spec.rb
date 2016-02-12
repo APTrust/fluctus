@@ -166,6 +166,26 @@ describe ProcessedItem do
     subject.object_identifier.should == 'hardknocks.edu/sesame.street'
   end
 
+  it 'should set queue state fields' do
+    ts = Time.now
+    setup_item(subject)
+    subject.action = ingest
+    subject.stage = record
+    subject.status = pending
+    subject.state = '{ some: "blob", of: "json" }'
+    subject.node = "10.11.12.13"
+    subject.last_touched = ts
+    subject.attempt_number = 17
+
+    subject.save!
+    subject.reload
+
+    subject.state.should == '{ some: "blob", of: "json" }'
+    subject.node.should == "10.11.12.13"
+    subject.last_touched.should == ts
+    subject.attempt_number.should == 17
+  end
+
   describe 'work queue methods' do
     ingest_date = Time.parse('2014-06-01')
     before do

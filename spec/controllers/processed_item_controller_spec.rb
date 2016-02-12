@@ -107,6 +107,19 @@ describe ProcessedItemController do
   end
 
   describe 'PUT #update' do
+
+    describe 'for admin' do
+      before do
+        sign_in admin_user
+      end
+
+      it 'accepts extended queue data - state, node, last_touched, attempt_number' do
+        pi_hash = FactoryGirl.create(:processed_item_with_state).attributes
+        put :update, id: item.id, format: 'json', processed_item: pi_hash, use_route: :processed_item_api_update_by_id
+        expect(response.status).to eq 200
+      end
+    end
+
     describe 'for institutional admin' do
       before do
         sign_in institutional_admin

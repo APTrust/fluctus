@@ -417,11 +417,13 @@ class ProcessedItemController < ApplicationController
   def processed_item_params
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
-                                           :stage, :status, :outcome, :retry, :reviewed)
+                                           :stage, :status, :outcome, :retry, :reviewed,
+                                           :state, :node, :last_touched, :attempt_number)
   end
 
   def params_for_status_update
-    params.permit(:object_identifier, :stage, :status, :note, :retry)
+    params.permit(:object_identifier, :stage, :status, :note, :retry,
+                  :state, :node, :last_touched, :attempt_number)
   end
 
   def set_items
