@@ -44,7 +44,7 @@ class IntellectualObjectsController < ApplicationController
     @items = @items.offset(start).limit(per_page)
     @next = format_next(page, per_page)
     @previous = format_previous(page, per_page)
-    render json: {count: @count, next: @next, previous: @previous, results: [@items.map{ |item| item.serializable_hash}]}
+    render json: {count: @count, next: @next, previous: @previous, results: @items.map{ |item| item.serializable_hash}}
   end
 
   def create
