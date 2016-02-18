@@ -125,7 +125,7 @@ class ProcessedItemController < ApplicationController
     @items = @items.page(page).per(per_page)
     @next = format_next(page, per_page)
     @previous = format_previous(page, per_page)
-    render json: {count: @count, next: @next, previous: @previous, results: [@items.map]}
+    render json: {count: @count, next: @next, previous: @previous, results: @items.to_a}
   end
 
   # This is an API call for the bucket reader that queues up work for
