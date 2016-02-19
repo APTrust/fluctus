@@ -49,7 +49,9 @@ module RecordsControllerBehavior
     respond_to do |format|
       if resource.save
         format.html { redirect_to redirect_after_update, notice: 'Object was successfully updated.' }
-        format.json { head :no_content }
+        # Passenger bug. Until we can upgrade, don't return :no_content.
+        # https://github.com/phusion/passenger/issues/1595
+        format.json { render json: object_as_json, status: :ok }
       else
         format.html { render 'records/edit' }
         format.json { render json: resource.errors, status: :unprocessable_entity }
@@ -59,9 +61,9 @@ module RecordsControllerBehavior
 
   protected
 
-  def object_as_json 
+  def object_as_json
     # ActiveFedora::Base#to_json causes a circular reference (before 7.0).  Do something easy
-    resource.terms_for_editing.each_with_object({}) { |term, h|  h[term] = resource[term] } 
+    resource.terms_for_editing.each_with_object({}) { |term, h|  h[term] = resource[term] }
   end
 
   # Override this method if you want to set different metadata on the object
@@ -93,7 +95,7 @@ module RecordsControllerBehavior
 
   def initialize_fields
     resource.terms_for_editing.each do |key|
-      # if value is empty, we create an one element array to loop over for output 
+      # if value is empty, we create an one element array to loop over for output
       resource[key] = [''] if resource[key].empty?
     end
   end
