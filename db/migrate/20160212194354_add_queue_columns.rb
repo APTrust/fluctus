@@ -24,6 +24,13 @@ class AddQueueColumns < ActiveRecord::Migration
     # a microservice asks about items needing processing and
     # cleared when the microservice confirms or denies it can process
     # an item by sending back the processed_item.id with a yes or no.
-    add_column :processed_items, :assignment_pending_since, :datetime, null: true
+    add_column :processed_items, :assignment_pending_since, :datetime, null: false, default: '0001-01-01T00:00:00Z'
+
+    # Does this item need admin review? If so, processing should
+    # stop until it's cleared.
+    add_column :processed_items, :needs_admin_review, :boolean, null: false, default: false
+
+    ProcessedItem.where("last_touched is null").update_all(last_touched: "0001-01-01T00:00:00Z")
+    ProcessedItem.where("needs_admin_review is null").update_all(needs_admin_review: false)
   end
 end

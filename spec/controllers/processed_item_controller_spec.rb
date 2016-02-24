@@ -812,14 +812,14 @@ describe ProcessedItemController do
         assigns(:items).should_not include(item1)
       end
 
-      it 'sorts up' do # xxxxx
+      it 'sorts up' do
         get(:api_search, format: :json, order_by: 'created_at', limit: 1)
         assigns(:items).should include(item)           # oldest
         assigns(:items).should_not include(user_item)  # middle
         assigns(:items).should_not include(item1)      # newest
       end
 
-      it 'sorts down' do # xxxxx
+      it 'sorts down' do
         get(:api_search, format: :json, order_by: 'created_at desc', limit: 1)
         assigns(:items).should_not include(item)       # oldest
         assigns(:items).should_not include(user_item)  # middle

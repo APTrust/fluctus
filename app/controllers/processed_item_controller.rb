@@ -73,7 +73,7 @@ class ProcessedItemController < ApplicationController
     end
     search_fields = [:name, :etag, :bag_date, :stage, :status, :institution,
                      :retry, :reviewed, :object_identifier, :generic_file_identifier,
-                     :node, :last_touched, :attempt_number]
+                     :node, :last_touched, :attempt_number, :needs_admin_review]
     search_fields.each do |field|
       if params[field].present?
         if field == :bag_date && (Rails.env.test? || Rails.env.development?)
@@ -84,6 +84,8 @@ class ProcessedItemController < ApplicationController
           @items = @items.where("attempt_number <= ?", params[:attempt_number])
         elsif field == :node and params[field] == "null"
           @items = @items.where("node is null")
+        elsif field == :assignment_pending_since and params[field] == "null"
+          @items = @items.where("assignment_pending_since is null")
         else
           @items = @items.where(field => params[field])
         end
@@ -433,12 +435,14 @@ class ProcessedItemController < ApplicationController
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
                                            :stage, :status, :outcome, :retry, :reviewed,
-                                           :state, :node, :last_touched, :attempt_number)
+                                           :state, :node, :last_touched, :attempt_number,
+                                           :needs_admin_review)
   end
 
   def params_for_status_update
     params.permit(:object_identifier, :stage, :status, :note, :retry,
-                  :state, :node, :last_touched, :attempt_number)
+                  :state, :node, :last_touched, :attempt_number,
+                  :needs_admin_review)
   end
 
   def set_items
