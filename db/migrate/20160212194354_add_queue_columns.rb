@@ -26,11 +26,18 @@ class AddQueueColumns < ActiveRecord::Migration
     # an item by sending back the processed_item.id with a yes or no.
     add_column :processed_items, :assignment_pending_since, :datetime, null: false, default: '0001-01-01T00:00:00Z'
 
+    # Use this field to note when processing should be delayed. The Go workers
+    # will set this value. For example, if we have a pending delete request and
+    # a pending (re)ingest request for the same bag, the delete needs to happen
+    # first, and the Go workers will push back the ingest by an hour or so.
+    add_column :processed_items, :process_after, :datetime, null: false, default: '0001-01-01T00:00:00Z'
+
     # Does this item need admin review? If so, processing should
     # stop until it's cleared.
     add_column :processed_items, :needs_admin_review, :boolean, null: false, default: false
 
     ProcessedItem.where("last_touched is null").update_all(last_touched: "0001-01-01T00:00:00Z")
+    ProcessedItem.where("process_after is null").update_all(process_after: "0001-01-01T00:00:00Z")
     ProcessedItem.where("needs_admin_review is null").update_all(needs_admin_review: false)
   end
 end

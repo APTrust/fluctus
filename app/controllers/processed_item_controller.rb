@@ -73,13 +73,24 @@ class ProcessedItemController < ApplicationController
     end
     search_fields = [:name, :etag, :bag_date, :stage, :status, :institution,
                      :retry, :reviewed, :object_identifier, :generic_file_identifier,
-                     :node, :last_touched, :attempt_number, :needs_admin_review]
+                     :node, :last_touched, :attempt_number, :needs_admin_review,
+                     :process_after]
     search_fields.each do |field|
       if params[field].present?
         if field == :bag_date && (Rails.env.test? || Rails.env.development?)
           @items = @items.where("datetime(bag_date) = datetime(?)", params[:bag_date])
-        elsif field == :last_touched && (Rails.env.test? || Rails.env.development?)
-          @items = @items.where("datetime(last_touched) >= datetime(?)", params[:last_touched])
+        elsif field == :last_touched
+          if (Rails.env.test? || Rails.env.development?)
+            @items = @items.where("datetime(last_touched) >= datetime(?)", params[:last_touched])
+          else
+            @items = @items.where("datetime(last_touched) >= ?", params[:last_touched])
+          end
+        elsif field == :process_after
+          if (Rails.env.test? || Rails.env.development?)
+            @items = @items.where("datetime(process_after) <= datetime(?)", params[:process_after])
+          else
+            @items = @items.where("process_after <= ?", params[:process_after])
+          end
         elsif field == :attempt_number
           @items = @items.where("attempt_number <= ?", params[:attempt_number])
         elsif field == :node and params[field] == "null"
@@ -435,14 +446,15 @@ class ProcessedItemController < ApplicationController
     params.require(:processed_item).permit(:name, :etag, :bag_date, :bucket,
                                            :institution, :date, :note, :action,
                                            :stage, :status, :outcome, :retry, :reviewed,
-                                           :state, :node, :last_touched, :attempt_number,
+                                           :state, :node, :last_touched,
+                                           :attempt_number, :process_after,
                                            :needs_admin_review)
   end
 
   def params_for_status_update
     params.permit(:object_identifier, :stage, :status, :note, :retry,
                   :state, :node, :last_touched, :attempt_number,
-                  :needs_admin_review)
+                  :process_after, :needs_admin_review)
   end
 
   def set_items
