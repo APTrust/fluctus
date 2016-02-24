@@ -82,6 +82,8 @@ class ProcessedItemController < ApplicationController
           @items = @items.where("datetime(last_touched) >= datetime(?)", params[:last_touched])
         elsif field == :attempt_number
           @items = @items.where("attempt_number <= ?", params[:attempt_number])
+        elsif field == :node and params[field] == "null"
+          @items = @items.where("node is null")
         else
           @items = @items.where(field => params[field])
         end

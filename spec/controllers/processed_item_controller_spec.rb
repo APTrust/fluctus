@@ -798,6 +798,13 @@ describe ProcessedItemController do
         assigns(:items).should include(item1)
       end
 
+      it 'filters down to null nodes' do
+        get(:api_search, format: :json, node: 'null')
+        assigns(:items).should include(user_item)
+        assigns(:items).should include(item)
+        assigns(:items).should_not include(item1)
+      end
+
       it 'pages' do
         get(:api_search, format: :json, limit: 1)
         assigns(:items).should include(item)
