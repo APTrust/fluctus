@@ -72,16 +72,29 @@ class ProcessedItemController < ApplicationController
       rewrite_params_for_sqlite
     end
     search_fields = [:name, :etag, :bag_date, :stage, :status, :institution,
-                     :retry, :reviewed, :object_identifier, :generic_file_identifier]
+                     :retry, :reviewed, :object_identifier, :generic_file_identifier,
+                     :node, :last_touched, :attempt_number]
     search_fields.each do |field|
       if params[field].present?
         if field == :bag_date && (Rails.env.test? || Rails.env.development?)
           @items = @items.where("datetime(bag_date) = datetime(?)", params[:bag_date])
+        elsif field == :last_touched && (Rails.env.test? || Rails.env.development?)
+          @items = @items.where("datetime(last_touched) >= datetime(?)", params[:last_touched])
+        elsif field == :attempt_number
+          @items = @items.where("attempt_number <= ?", params[:attempt_number])
         else
           @items = @items.where(field => params[field])
         end
       end
     end
+
+    if params[:order_by]
+      @items = @items.order(params[:order_by])
+    end
+    if params[:limit] and params[:limit].to_i != 0
+      @items = @items.limit(params[:limit].to_i)
+    end
+
     # Fix for Rails overwriting params[:action] with name of controller
     # action: Use param :item_action instead of :action
     if params[:item_action].present?

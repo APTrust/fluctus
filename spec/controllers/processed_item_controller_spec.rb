@@ -754,9 +754,12 @@ describe ProcessedItemController do
                                       retry: true,
                                       reviewed: false,
                                       bag_date: '2014-10-17 14:56:56Z',
+                                      last_touched: '2014-10-21 10:00:14Z',
                                       action: 'Ingest',
                                       stage: 'Record',
                                       status: 'Success',
+                                      node: '10.11.12.13',
+                                      attempt_number: 1,
                                       object_identifier: 'test.edu/item1',
                                       generic_file_identifier: 'test.edu/item1/file1.pdf') }
 
@@ -787,6 +790,35 @@ describe ProcessedItemController do
         assigns(:items).should_not include(item)
         assigns(:items).should include(item1)
       end
+
+      it 'filters on queue fields' do
+        get(:api_search, format: :json, node: '10.11.12.13', attempt_number: 1)
+        assigns(:items).should_not include(user_item)
+        assigns(:items).should_not include(item)
+        assigns(:items).should include(item1)
+      end
+
+      it 'pages' do
+        get(:api_search, format: :json, limit: 1)
+        assigns(:items).should include(item)
+        assigns(:items).should_not include(user_item)
+        assigns(:items).should_not include(item1)
+      end
+
+      it 'sorts up' do # xxxxx
+        get(:api_search, format: :json, order_by: 'created_at', limit: 1)
+        assigns(:items).should include(item)           # oldest
+        assigns(:items).should_not include(user_item)  # middle
+        assigns(:items).should_not include(item1)      # newest
+      end
+
+      it 'sorts down' do # xxxxx
+        get(:api_search, format: :json, order_by: 'created_at desc', limit: 1)
+        assigns(:items).should_not include(item)       # oldest
+        assigns(:items).should_not include(user_item)  # middle
+        assigns(:items).should include(item1)          # newest
+      end
+
     end
 
     describe 'for institutional admin' do
