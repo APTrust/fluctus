@@ -113,7 +113,7 @@ describe ProcessedItemController do
         sign_in admin_user
       end
 
-      it 'accepts extended queue data - state, node, last_touched, attempt_number' do
+      it 'accepts extended queue data - state, node, pid' do
         pi_hash = FactoryGirl.create(:processed_item_with_state).attributes
         put :update, id: item.id, format: 'json', processed_item: pi_hash, use_route: :processed_item_api_update_by_id
         expect(response.status).to eq 200
@@ -754,12 +754,10 @@ describe ProcessedItemController do
                                       retry: true,
                                       reviewed: false,
                                       bag_date: '2014-10-17 14:56:56Z',
-                                      last_touched: '2014-10-21 10:00:14Z',
                                       action: 'Ingest',
                                       stage: 'Record',
                                       status: 'Success',
                                       node: '10.11.12.13',
-                                      attempt_number: 1,
                                       object_identifier: 'test.edu/item1',
                                       generic_file_identifier: 'test.edu/item1/file1.pdf') }
 
@@ -791,8 +789,8 @@ describe ProcessedItemController do
         assigns(:items).should include(item1)
       end
 
-      it 'filters on queue fields' do
-        get(:api_search, format: :json, node: '10.11.12.13', attempt_number: 1)
+      it 'filters on new fields' do
+        get(:api_search, format: :json, node: '10.11.12.13', needs_admin_review: false)
         assigns(:items).should_not include(user_item)
         assigns(:items).should_not include(item)
         assigns(:items).should include(item1)
@@ -804,28 +802,6 @@ describe ProcessedItemController do
         assigns(:items).should include(item)
         assigns(:items).should_not include(item1)
       end
-
-      it 'pages' do
-        get(:api_search, format: :json, limit: 1)
-        assigns(:items).should include(item)
-        assigns(:items).should_not include(user_item)
-        assigns(:items).should_not include(item1)
-      end
-
-      it 'sorts up' do
-        get(:api_search, format: :json, order_by: 'created_at', limit: 1)
-        assigns(:items).should include(item)           # oldest
-        assigns(:items).should_not include(user_item)  # middle
-        assigns(:items).should_not include(item1)      # newest
-      end
-
-      it 'sorts down' do
-        get(:api_search, format: :json, order_by: 'created_at desc', limit: 1)
-        assigns(:items).should_not include(item)       # oldest
-        assigns(:items).should_not include(user_item)  # middle
-        assigns(:items).should include(item1)          # newest
-      end
-
     end
 
     describe 'for institutional admin' do

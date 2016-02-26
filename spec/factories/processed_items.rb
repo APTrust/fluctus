@@ -47,8 +47,7 @@ FactoryGirl.define do
     reviewed { false }
     state { Faker::Lorem.sentence }
     node { Faker::Internet.ip_v4_address }
-    last_touched { DateTime.now }
-    attempt_number { 0 }
+    pid { Random::rand(5000) }
   end
 
 end
