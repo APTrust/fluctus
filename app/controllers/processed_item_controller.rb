@@ -19,13 +19,30 @@ class ProcessedItemController < ApplicationController
     end
   end
 
+  # Show for all by admin API. Don't show :state, :node, :pid in json to non-admin users.
+  # The HTML template includes logic to show those attributes to APTrust admin,
+  # but not to other users.
   def show
+    authorize @processed_item
+    respond_to do |format|
+      format.json { render json: @processed_item.serializable_hash(except: [:state, :node, :pid]) }
+      format.html
+    end
+  end
+
+  # Show for admin API users. Includes :state, :node, :pid
+  def api_show
+    @processed_item = ProcessedItem.find(params[:id])
+    authorize @processed_item, :admin_show?
     respond_to do |format|
       format.json { render json: @processed_item }
       format.html
     end
   end
 
+  # Note that this method is available through the admin API, but is
+  # not accessible to members. If we ever make it accessible to members,
+  # we MUST NOT allow them to update :state, :node, or :pid!
   def update
     authorize @processed_item
     respond_to do |format|

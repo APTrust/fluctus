@@ -85,6 +85,14 @@ describe ProcessedItemController do
         assigns(:institution).should eq( admin_user.institution)
       end
 
+      it 'does not expose :state, :node, or :pid through public #show' do
+        get :show, id: item.id, format: :json
+        data = JSON.parse(response.body)
+        expect(data).to_not have_key("state")
+        expect(data).to_not have_key("node")
+        expect(data).to_not have_key("pid")
+      end
+
       it 'returns 404, not 500, for item not found' do
         expect {
           get :show,
@@ -103,6 +111,35 @@ describe ProcessedItemController do
       #   get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
       #   expect(response.status).to eq 403
       # end
+    end
+  end
+
+
+  # Special show method for the admin API that exposes some attributes
+  # of ProcessedItem that we don't want to show to normal users.
+  describe 'GET #api_show' do
+    describe 'for admin user' do
+      before do
+        sign_in admin_user
+      end
+
+      it 'does expose :state, :node, or :pid through admin #api_show' do
+        get :api_show, id: item.id, format: :json
+        data = JSON.parse(response.body)
+        expect(data).to have_key("state")
+        expect(data).to have_key("node")
+        expect(data).to have_key("pid")
+      end
+    end
+    describe 'for institutional admin' do
+      before do
+        sign_in institutional_admin
+      end
+
+      it 'restricts API usage' do
+        get :api_show, id: item.id, format: :json
+        expect(response.status).to eq 403
+      end
     end
   end
 

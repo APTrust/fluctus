@@ -71,6 +71,7 @@ Fluctus::Application.routes.draw do
   get '/api/v1/itemresults/search', to: 'processed_item#api_search', format: 'json', as: :processed_item_api_search
   get '/api/v1/itemresults/ingested_since/:since', to: 'processed_item#ingested_since', as: :processed_items_ingested_since
   get '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
+  get '/api/v1/itemresults/:id', to: 'processed_item#api_show', format: 'json', as: :processed_item_api_show
   put '/api/v1/itemresults/:id', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_id
   put '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
   get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json', as: :processed_item_api_get_reviewed

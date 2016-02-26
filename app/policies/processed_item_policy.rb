@@ -20,6 +20,10 @@ class ProcessedItemPolicy < ApplicationPolicy
     record.first.nil? || user.admin?
   end
 
+  def admin_show?
+    user.admin?
+  end
+
   def show?
     record.nil? || user.admin? || (user.institution.identifier == record.institution)
   end

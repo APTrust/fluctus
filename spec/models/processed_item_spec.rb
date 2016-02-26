@@ -174,16 +174,45 @@ describe ProcessedItem do
     subject.status = pending
     subject.state = '{ some: "blob", of: "json" }'
     subject.node = "10.11.12.13"
-    subject.last_touched = ts
-    subject.attempt_number = 17
+    subject.pid = 808
+    subject.needs_admin_review = true
 
     subject.save!
     subject.reload
 
     subject.state.should == '{ some: "blob", of: "json" }'
     subject.node.should == "10.11.12.13"
-    subject.last_touched.should == ts
-    subject.attempt_number.should == 17
+    subject.pid.should == 808
+    subject.needs_admin_review.should == true
+  end
+
+  it 'pretty_state should not choke on nil' do
+    setup_item(subject)
+    subject.state = nil
+    subject.pretty_state.should == nil
+  end
+
+  it 'pretty_state should not choke on empty string' do
+    setup_item(subject)
+    subject.state = ''
+    subject.pretty_state.should == nil
+  end
+
+  it 'pretty_state should produce formatted JSON' do
+    setup_item(subject)
+    subject.state = '{ "here": "is", "some": ["j","s","o","n"] }'
+    pretty_json = <<-eos
+{
+  "here": "is",
+  "some": [
+    "j",
+    "s",
+    "o",
+    "n"
+  ]
+}
+eos
+    subject.pretty_state.should == pretty_json.strip
   end
 
   describe 'work queue methods' do

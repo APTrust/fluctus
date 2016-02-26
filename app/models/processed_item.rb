@@ -170,6 +170,14 @@ class ProcessedItem < ActiveRecord::Base
     self.reviewed = false if self.reviewed.nil?
   end
 
+  # :state may contain a blob of JSON text from our micorservices.
+  # If it does, it's stored without extra whitespace, but we want
+  # to display it in a readable format.
+  def pretty_state
+    return nil if self.state.nil? || self.state.strip == ''
+    return JSON.pretty_generate(JSON.parse(self.state))
+  end
+
   def ingested?
     ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
     record = Fluctus::Application::FLUCTUS_STAGES['record']
