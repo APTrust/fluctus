@@ -447,7 +447,7 @@ class ProcessedItemController < ApplicationController
 
   def params_for_status_update
     params.permit(:object_identifier, :stage, :status, :note, :retry,
-                  :state, :node, :needs_admin_review)
+                  :state, :node, :pid, :needs_admin_review)
   end
 
   def set_items

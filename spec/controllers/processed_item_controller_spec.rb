@@ -485,6 +485,35 @@ describe ProcessedItemController do
              use_route: 'item_set_restoration_status')
         expect(response.status).to eq(400)
       end
+
+      it 'updates node, state, pid and needs_admin_review' do
+        post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
+             stage: 'Resolve', status: 'Success', note: 'Lightyear', retry: true,
+             node: '10.11.12.13', state: '{JSON data}', pid: 4321, needs_admin_review: true,
+             use_route: 'item_set_restoration_status')
+        expect(response).to be_success
+        pi = ProcessedItem.where(object_identifier: 'ned/flanders',
+                                 action: Fluctus::Application::FLUCTUS_ACTIONS['restore']).order(created_at: :desc).first
+        expect(pi.node).to eq('10.11.12.13')
+        expect(pi.state).to eq('{JSON data}')
+        expect(pi.pid).to eq(4321)
+        expect(pi.needs_admin_review).to eq(true)
+      end
+
+      it 'clears node, pid and needs_admin_review, updates state' do
+        post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
+             stage: 'Resolve', status: 'Success', note: 'Lightyear', retry: true,
+             node: nil, pid: 0, state: '{new JSON data}', needs_admin_review: false,
+             use_route: 'item_set_restoration_status')
+        expect(response).to be_success
+        pi = ProcessedItem.where(object_identifier: 'ned/flanders',
+                                 action: Fluctus::Application::FLUCTUS_ACTIONS['restore']).order(created_at: :desc).first
+        expect(pi.node).to eq(nil)
+        expect(pi.state).to eq('{new JSON data}')
+        expect(pi.pid).to eq(0)
+        expect(pi.needs_admin_review).to eq(false)
+      end
+
     end
 
     describe 'for admin user - with duplicate entries' do

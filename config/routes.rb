@@ -71,13 +71,15 @@ Fluctus::Application.routes.draw do
   get '/api/v1/itemresults/search', to: 'processed_item#api_search', format: 'json', as: :processed_item_api_search
   get '/api/v1/itemresults/ingested_since/:since', to: 'processed_item#ingested_since', as: :processed_items_ingested_since
   get '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
-  get '/api/v1/itemresults/:id', to: 'processed_item#api_show', format: 'json', as: :processed_item_api_show
   put '/api/v1/itemresults/:id', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_id
   put '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
   get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json', as: :processed_item_api_get_reviewed
   get '/api/v1/itemresults/items_for_restore', to: 'processed_item#items_for_restore', format: 'json', as: :processed_item_api_restore
   get '/api/v1/itemresults/items_for_dpn', to: 'processed_item#items_for_dpn', format: 'json', as: :processed_item_api_dpn
   get '/api/v1/itemresults/items_for_delete', to: 'processed_item#items_for_delete', format: 'json', as: :processed_item_api_delete
+  # This route must come after all other /api/v1/itemresults routes
+  # because it's so general, it will catch everything.
+  get '/api/v1/itemresults/:id', to: 'processed_item#api_show', format: 'json', id: /\d+/, as: :processed_item_api_show
 
   post '/api/v1/itemresults/restoration_status/:object_identifier', to: 'processed_item#set_restoration_status', as: :item_set_restoration_status, object_identifier: /.*/
   post '/api/v1/itemresults/delete_test_items', to: 'processed_item#delete_test_items', format: 'json', as: :processed_item_test_delete
