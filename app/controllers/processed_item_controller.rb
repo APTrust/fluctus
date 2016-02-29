@@ -25,7 +25,12 @@ class ProcessedItemController < ApplicationController
   def show
     authorize @processed_item
     respond_to do |format|
-      format.json { render json: @processed_item.serializable_hash(except: [:state, :node, :pid]) }
+      if current_user.admin?
+        item = @processed_item.serializable_hash
+      else
+        item = @processed_item.serializable_hash(except: [:state, :node, :pid])
+      end
+      format.json { render json: item }
       format.html
     end
   end

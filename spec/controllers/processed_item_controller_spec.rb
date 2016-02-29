@@ -85,12 +85,12 @@ describe ProcessedItemController do
         assigns(:institution).should eq( admin_user.institution)
       end
 
-      it 'does not expose :state, :node, or :pid through public #show' do
+      it 'exposes :state, :node, or :pid for the admin user' do
         get :show, id: item.id, format: :json
         data = JSON.parse(response.body)
-        expect(data).to_not have_key("state")
-        expect(data).to_not have_key("node")
-        expect(data).to_not have_key("pid")
+        expect(data).to have_key("state")
+        expect(data).to have_key("node")
+        expect(data).to have_key("pid")
       end
 
       it 'returns 404, not 500, for item not found' do
@@ -111,6 +111,15 @@ describe ProcessedItemController do
       #   get :show, etag: item.etag, name: item.name, bag_date: item.bag_date, format: 'json', use_route: :processed_item_by_etag
       #   expect(response.status).to eq 403
       # end
+
+      it 'does not expose :state, :node, or :pid to non-admins' do
+        get :show, id: item.id, format: :json
+        data = JSON.parse(response.body)
+        expect(data).to_not have_key("state")
+        expect(data).to_not have_key("node")
+        expect(data).to_not have_key("pid")
+      end
+
     end
   end
 
