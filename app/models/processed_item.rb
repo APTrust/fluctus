@@ -235,7 +235,8 @@ class ProcessedItem < ActiveRecord::Base
   #
   # If we haven't started processing the first ingest
   # request, cancel it, because it's superseded by the
-  # second.
+  # second. If the older ingest request is already being
+  # processed, let it go.
   def cancel_prior_ingest_requests
     ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
     receive = Fluctus::Application::FLUCTUS_STAGES['receive']
