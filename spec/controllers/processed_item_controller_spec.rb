@@ -542,11 +542,14 @@ describe ProcessedItemController do
       # record (the latest). None of the older restore requests should
       # be touched.
       it 'updates the correct @items' do
-        post(:set_restoration_status, format: :json, object_identifier: 'ned/flanders',
-             stage: 'Resolve', status: 'Success', note: 'Aldrin', retry: true,
+        post(:set_restoration_status, format: :json,
+             object_identifier: 'ned/flanders',
+             stage: 'Resolve', status: 'Success',
+             note: 'Aldrin', retry: true,
              use_route: 'item_set_restoration_status')
         update_count = ProcessedItem.where(object_identifier: 'ned/flanders',
-                                           stage: 'Resolve', status: 'Success', retry: true).count
+                                           stage: 'Resolve', status: 'Success',
+                                           retry: true).count
         # Should be only one item updated...
         expect(update_count).to eq(1)
         # ... and it should be the most recent
@@ -601,9 +604,13 @@ describe ProcessedItemController do
       end
 
       it 'should reject a status, stage or action that is not allowed' do
-        post :create, processed_item: {name: '123456.tar', etag: '1234567890', bag_date: Time.now.utc, user: 'Kelly Croswell', institution: institution.identifier,
-                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: 'Note', action: 'File',
-                                       stage: "Entry", status: 'Finalized', outcome: 'Outcome', reviewed: false}, format: 'json'
+        post :create, processed_item: {name: '123456.tar', etag: '1234567890',
+          bag_date: Time.now.utc, user: 'Kelly Croswell',
+          institution: institution.identifier,
+          bucket: "aptrust.receiving.#{institution.identifier}",
+          date: Time.now.utc, note: 'Note', action: 'File',
+          stage: "Entry", status: 'Finalized', outcome: 'Outcome',
+          reviewed: false}, format: 'json'
         expect(response.code).to eq '422' #Unprocessable Entity
         expect(JSON.parse(response.body)).to eq( { 'status' => ['Status is not one of the allowed options'],
                                                    'stage' => ['Stage is not one of the allowed options'],
@@ -612,9 +619,15 @@ describe ProcessedItemController do
 
       it 'should accept good parameters via json' do
         expect {
-          post :create, processed_item: {name: '123456.tar', etag: '1234567890', bag_date: Time.now.utc, user: 'Kelly Croswell', institution: institution.identifier,
-                                         bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: 'Note', action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
-                                         stage: Fluctus::Application::FLUCTUS_STAGES['fetch'], status: Fluctus::Application::FLUCTUS_STATUSES['fail'], outcome: 'Outcome', reviewed: false}, format: 'json'
+          post :create, processed_item: {name: '123456.tar',
+            etag: '1234567890', bag_date: Time.now.utc,
+            user: 'Kelly Croswell', institution: institution.identifier,
+            bucket: "aptrust.receiving.#{institution.identifier}",
+            date: Time.now.utc, note: 'Note',
+            action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
+            stage: Fluctus::Application::FLUCTUS_STAGES['fetch'],
+            status: Fluctus::Application::FLUCTUS_STATUSES['fail'],
+            outcome: 'Outcome', reviewed: false}, format: 'json'
         }.to change(ProcessedItem, :count).by(1)
         expect(response.status).to eq(201)
         assigns[:processed_item].should be_kind_of ProcessedItem
@@ -622,12 +635,45 @@ describe ProcessedItemController do
       end
 
       it 'should fix an item with a null reviewed flag' do
-        post :create, processed_item: {name: '123456.tar', etag: '1234567890', bag_date: Time.now.utc, user: 'Kelly Croswell', institution: institution.identifier,
-                                       bucket: "aptrust.receiving.#{institution.identifier}", date: Time.now.utc, note: 'Note', action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
-                                       stage: Fluctus::Application::FLUCTUS_STAGES['fetch'], status: Fluctus::Application::FLUCTUS_STATUSES['fail'], outcome: 'Outcome', reviewed: nil}, format: 'json'
+        post :create, processed_item: {name: '123456.tar',
+          etag: '1234567890', bag_date: Time.now.utc,
+          user: 'Kelly Croswell', institution: institution.identifier,
+          bucket: "aptrust.receiving.#{institution.identifier}",
+          date: Time.now.utc, note: 'Note',
+          action: Fluctus::Application::FLUCTUS_ACTIONS['fixity'],
+          stage: Fluctus::Application::FLUCTUS_STAGES['fetch'],
+          status: Fluctus::Application::FLUCTUS_STATUSES['fail'],
+          outcome: 'Outcome', reviewed: nil}, format: 'json'
         expect(response.status).to eq(201)
         assigns[:processed_item].should be_kind_of ProcessedItem
         expect(assigns(:processed_item).reviewed).to eq(false)
+      end
+
+      it 'should reject a duplicate ingest request' do
+        # A duplicate request has same bucket name, tar file name,
+        # etag and bag_date.
+        ingest_item =FactoryGirl.create(:processed_item,
+                                        action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                        status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                        stage: Fluctus::Application::FLUCTUS_STAGES['receive'])
+        duplicate = ingest_item.dup
+        post :create, processed_item: duplicate.serializable_hash, format: :json
+        expect(response.status).to eq(409)
+      end
+
+      it 'should cancel outdated ingest requests' do
+        # A newer request has a different bag_date and etag.
+        ingest_item =FactoryGirl.create(:processed_item,
+                                        action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
+                                        status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
+                                        stage: Fluctus::Application::FLUCTUS_STAGES['receive'])
+        duplicate = ingest_item.dup
+        duplicate.etag = SecureRandom.hex
+        duplicate.bag_date = Time.now.utc
+        post :create, processed_item: duplicate.serializable_hash, format: :json
+        expect(response.status).to eq(201)
+        ingest_item.reload
+        expect(ingest_item.status).to eq(Fluctus::Application::FLUCTUS_STATUSES['cancel'])
       end
     end
 

@@ -74,11 +74,18 @@ class ProcessedItem < ActiveRecord::Base
   # * Stage is Clean or (Stage is Record and Status is Success)
   # * Has the latest date of any record with the above characteristics
   def self.last_ingested_version(intellectual_object_identifier)
-    items = ProcessedItem.where(object_identifier: intellectual_object_identifier, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                                stage: Fluctus::Application::FLUCTUS_STAGES['clean']).order('date DESC').limit(1).first
+    ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
+    clean = Fluctus::Application::FLUCTUS_STAGES['clean']
+    record = Fluctus::Application::FLUCTUS_STAGES['record']
+    success = Fluctus::Application::FLUCTUS_STATUSES['success']
+    items = ProcessedItem.where(object_identifier: intellectual_object_identifier,
+                                action: ingest,
+                                stage: clean).order('date DESC').limit(1).first
     if items.nil?
-      items = ProcessedItem.where(object_identifier: intellectual_object_identifier, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                                  stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success']).order('date DESC').limit(1).first
+      items = ProcessedItem.where(object_identifier: intellectual_object_identifier,
+                                  action: ingest,
+                                  stage: record,
+                                  status: success).order('date DESC').limit(1).first
     end
     items
   end
@@ -183,7 +190,6 @@ class ProcessedItem < ActiveRecord::Base
     record = Fluctus::Application::FLUCTUS_STAGES['record']
     clean = Fluctus::Application::FLUCTUS_STAGES['clean']
     success = Fluctus::Application::FLUCTUS_STATUSES['success']
-
     if self.action.blank? == false && self.action != ingest
       # we're past ingest
       return true
@@ -197,6 +203,68 @@ class ProcessedItem < ActiveRecord::Base
     # if we get here, we're in some stage of the ingest process,
     # but ingest is not yet complete
     return false
+  end
+
+
+  # Does an ingest request already exist for this exact
+  # version of this bag?
+  #
+  # We don't want to add ProcessedItem requests if the
+  # same request for the same object already exists.
+  # Currently, the bucket_reader cron job checks to make
+  # sure we don't already have an ingest request for the
+  # bag it wants to add. Let's put that logic here, so
+  # the bucket reader doesn't have to keep checking.
+  def ingest_request_exists?
+    items = self.ingest_items_like_this
+    return items.count > 0
+  end
+
+  # This case occurs during times of heavy ingest:
+  #
+  # 1. Depositor uploads a bag.
+  # 2. We put it in the processed item queue.
+  # 3. Before we start ingesting it, the depositor
+  #    rebags their item and uploads it again with
+  #    the same name, but now it has a different
+  #    bag_date and etag.
+  # 4. Now we have two ingest requests for the
+  #    same bag, only the initial version no longer
+  #    exists in the receiving bucket, because the
+  #    new version overwrote it.
+  #
+  # If we haven't started processing the first ingest
+  # request, cancel it, because it's superseded by the
+  # second.
+  def cancel_prior_ingest_requests
+    ingest = Fluctus::Application::FLUCTUS_ACTIONS['ingest']
+    receive = Fluctus::Application::FLUCTUS_STAGES['receive']
+    pending = Fluctus::Application::FLUCTUS_STATUSES['pend']
+    cancel = Fluctus::Application::FLUCTUS_STATUSES['cancel']
+    items = ProcessedItem.where(bucket: self.bucket,
+                                name: self.name,
+                                action: ingest,
+                                stage: receive,
+                                status: pending)
+    items = items.where("id != ?", self.id) if self.id?
+    items.update_all(status: cancel,
+                     note: "Ingest cancelled because the bag was " +
+                     "overwritten with a newer version in the receiving " +
+                     "bucket, with etag '#{self.etag}'")
+  end
+
+  # Returns a list of ProcessedItems with the same bucket,
+  # name, etag, and bag_date as this ingest request.
+  # Ideally, we'd have a unique constraint here, but it
+  # really only apples when action == ingest.
+  def ingest_items_like_this
+    items = ProcessedItem.where(bucket: self.bucket,
+                                name: self.name,
+                                etag: self.etag,
+                                bag_date: self.bag_date,
+                                action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'])
+    items = items.where("id != ?", self.id) if self.id?
+    items
   end
 
   private
