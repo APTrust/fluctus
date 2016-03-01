@@ -29,30 +29,28 @@ namespace :fluctus do
 
   desc 'Setup Fluctus'
   task setup: :environment do
-    desc "Creating an initial institution names 'APTrust'..."
+         aptrust_institution = Institution.where(desc_metadata__name_tesim: 'APTrust')
+         if aptrust_institution.count == 1
+           desc "Setup seems to have run already. Quitting."
+         else
+            desc "Creating an initial institution names 'APTrust'..."
 
-    i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: '44c450a6-8b2e-4c59-8793-3d9366bf43f5')
+            i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: '44c450a6-8b2e-4c59-8793-3d9366bf43f5')
 
-    desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
-    %w(admin institutional_admin institutional_user).each do |role|
-      Role.create!(name: role)
-    end
+            desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
+            %w(admin institutional_admin institutional_user).each do |role|
+              Role.create!(name: role)
+            end
 
-    desc 'Create an initial Super-User for APTrust...'
-    STDOUT.puts 'What is your name?'
-    name = STDIN.gets.strip
+            desc 'Create an initial Super-User for APTrust...'
+            name= "APTrustAdmin"
+            email= "ops@aptrust.org"
+            phone_number="4341234567"
+            password="password"
 
-    STDOUT.puts 'What is your email?'
-    email = STDIN.gets.strip
-
-    STDOUT.puts 'What is your phone number?'
-    phone_number = STDIN.gets.strip
-
-    STDOUT.puts 'Create a password.'
-    password = STDIN.gets.strip
-
-    User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
-                 role_ids: [Role.where(name: 'admin').first.id])
+            User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
+                         role_ids: [Role.where(name: 'admin').first.id])
+        end
   end
 
   # Restricted only to non-production environments
