@@ -244,6 +244,10 @@ eos
       pi.user.should == 'mikey@example.com'
       pi.retry.should == true
       pi.reviewed.should == false
+      pi.state.should be_nil
+      pi.node.should be_nil
+      pi.pid.should == 0
+      pi.needs_admin_review.should == false
       pi.id.should_not be_nil
     end
 
@@ -257,6 +261,10 @@ eos
       pi.user.should == 'mikey@example.com'
       pi.retry.should == true
       pi.reviewed.should == false
+      pi.state.should be_nil
+      pi.node.should be_nil
+      pi.pid.should == 0
+      pi.needs_admin_review.should == false
       pi.id.should_not be_nil
     end
 
@@ -271,6 +279,10 @@ eos
       pi.retry.should == true
       pi.reviewed.should == false
       pi.generic_file_identifier.should == 'abc/123/doc.pdf'
+      pi.state.should be_nil
+      pi.node.should be_nil
+      pi.pid.should == 0
+      pi.needs_admin_review.should == false
       pi.id.should_not be_nil
     end
 

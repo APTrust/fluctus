@@ -101,6 +101,10 @@ class ProcessedItem < ActiveRecord::Base
     restore_item.retry = true
     restore_item.reviewed = false
     restore_item.date = Time.now
+    restore_item.state = nil
+    restore_item.node = nil
+    restore_item.pid = 0
+    restore_item.needs_admin_review = false
     restore_item.save!
     restore_item
   end
@@ -120,6 +124,10 @@ class ProcessedItem < ActiveRecord::Base
     dpn_item.retry = true
     dpn_item.reviewed = false
     dpn_item.date = Time.now
+    dpn_item.state = nil
+    dpn_item.node = nil
+    dpn_item.pid = 0
+    dpn_item.needs_admin_review = false
     dpn_item.save!
     dpn_item
   end
@@ -143,6 +151,10 @@ class ProcessedItem < ActiveRecord::Base
     delete_item.reviewed = false
     delete_item.date = Time.now
     delete_item.generic_file_identifier = generic_file_identifier
+    delete_item.state = nil
+    delete_item.node = nil
+    delete_item.pid = 0
+    delete_item.needs_admin_review = false
     delete_item.save!
     delete_item
   end
