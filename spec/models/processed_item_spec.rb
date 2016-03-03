@@ -273,44 +273,6 @@ eos
       pi.generic_file_identifier.should == 'abc/123/doc.pdf'
       pi.id.should_not be_nil
     end
-  end
-
-  describe 'work queue methods' do
-    ingest_date = Time.parse('2014-06-01')
-    before do
-      ingest_date = ingest_date + 1.days
-      FactoryGirl.create(:processed_item,
-                         action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                         stage: Fluctus::Application::FLUCTUS_STAGES['receive'],
-                         status: Fluctus::Application::FLUCTUS_STATUSES['pend'],
-                         date: ingest_date)
-    end
-
-    it 'should give me a list of all existing ingest requests for this item' do
-      original = ProcessedItem.first
-      first_copy = original.dup
-      first_copy.save
-      second_copy = original.dup
-      second_copy.ingest_items_like_this.should include(original, first_copy)
-    end
-
-    it 'should tell me if an ingest requests already exists for this item' do
-      original = ProcessedItem.first
-      first_copy = original.dup
-      first_copy.ingest_request_exists?.should == true
-    end
-
-    it 'should cancel prior ingest requests when I ask it to' do
-      original = ProcessedItem.first
-      first_copy = original.dup
-      first_copy.save
-      second_copy = original.dup
-      second_copy.cancel_prior_ingest_requests
-      original.reload
-      first_copy.reload
-      original.status.should == Fluctus::Application::FLUCTUS_STATUSES['cancel']
-      first_copy.status.should == Fluctus::Application::FLUCTUS_STATUSES['cancel']
-    end
 
   end
 end

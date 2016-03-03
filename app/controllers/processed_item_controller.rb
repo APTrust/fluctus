@@ -11,19 +11,6 @@ class ProcessedItemController < ApplicationController
   def create
     authorize @processed_item
     respond_to do |format|
-      if @processed_item.action == Fluctus::Application::FLUCTUS_ACTIONS['ingest']
-        if @processed_item.ingest_request_exists?
-          # Don't save this, because we already have an ingest
-          # request for this exact bag.
-          conflicting_item = @processed_item.ingest_items_like_this.first
-          format.json { render json: conflicting_item, status: :conflict }
-        elsif @processed_item.valid?
-          # Cancel any unstarted ingest requests for older versions
-          # of this bag. Older versions have a different bag_date
-          # and etag.
-          @processed_item.cancel_prior_ingest_requests
-        end
-      end
       if @processed_item.save
         format.json { render json: @processed_item, status: :created }
       else
