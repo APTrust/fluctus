@@ -325,24 +325,6 @@ class ProcessedItemController < ApplicationController
     end
   end
 
-  # This is an API call. The Go code will periodically get a list
-  # of reviewed items and delete the original uploaded files
-  # from the reveiving bucket.
-  #
-  # TODO: Rename this? It's returning only reviewed items where
-  # the bag has been successfully ingested and the original tar
-  # file can be deleted from the receiving bucket.
-  def get_reviewed
-    @items = ProcessedItem.where(action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                                 stage: Fluctus::Application::FLUCTUS_STAGES['record'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['success'],
-                                 reviewed: true)
-    @items = @items.where(institution: current_user.institution.identifier) unless current_user.admin?
-    authorize @items, :admin_api?
-    respond_to do |format|
-      format.json { render json: @items, status: :ok }
-    end
-  end
 
   def handle_selected
     review_list = params[:review]

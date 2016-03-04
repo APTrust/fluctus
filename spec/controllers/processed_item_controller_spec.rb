@@ -191,49 +191,6 @@ describe ProcessedItemController do
     end
   end
 
-  describe 'GET #get_reviewed' do
-    describe 'for admin user' do
-      before do
-        sign_in admin_user
-        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                                 stage: Fluctus::Application::FLUCTUS_STAGES['record'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['success'],
-                                 reviewed: true)
-      end
-
-      it 'responds successfully with an HTTP 200 status code' do
-        get :get_reviewed, format: :json
-        expect(response).to be_success
-      end
-
-      it 'assigns the correct @items' do
-        get :get_reviewed, format: :json
-        expect(assigns(:items).count).to eq(ProcessedItem.count)
-      end
-
-    end
-
-    describe 'for institutional admin' do
-      before do
-        sign_in institutional_admin
-        ProcessedItem.update_all(action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'],
-                                 stage: Fluctus::Application::FLUCTUS_STAGES['record'],
-                                 status: Fluctus::Application::FLUCTUS_STATUSES['success'],
-                                 reviewed: true)
-      end
-
-      it 'assigns the requested items as @items' do
-        get :get_reviewed, format: :json
-        assigns(:items).should include(user_item)
-        expect(assigns(:items).count).to eq(1)
-      end
-
-      it 'restricts API usage' do
-        get :get_reviewed, format: :json, use_route: :processed_item_api_get_reviewed
-        expect(response.status).to eq 403
-      end
-    end
-  end
 
   describe 'GET #items_for_restore' do
     describe 'for admin user' do

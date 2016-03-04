@@ -49,7 +49,6 @@ Fluctus::Application.routes.draw do
   get '/itemresults/search', to: 'processed_item#search', as: :processed_item_search
   post '/itemresults/search', to: 'processed_item#search'
   get 'itemresults/', to: 'processed_item#index', as: :processed_items
-  get '/itemresults/get_reviewed', to: 'processed_item#get_reviewed', as: :processed_items_get_reviewed
   get 'itemresults/:id', to: 'processed_item#show', as: :processed_item
   post '/itemresults/review_all', to: 'processed_item#review_all'
   post '/itemresults/handle_selected', to: 'processed_item#handle_selected', as: :handle_selected
@@ -73,7 +72,6 @@ Fluctus::Application.routes.draw do
   get '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#show', as: :processed_item_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
   put '/api/v1/itemresults/:id', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_id
   put '/api/v1/itemresults/:etag/:name/:bag_date', to: 'processed_item#update', format: 'json', as: :processed_item_api_update_by_etag, name: /[^\/]*/, bag_date: /[^\/]*/
-  get '/api/v1/itemresults/get_reviewed', to: 'processed_item#get_reviewed', format: 'json', as: :processed_item_api_get_reviewed
   get '/api/v1/itemresults/items_for_restore', to: 'processed_item#items_for_restore', format: 'json', as: :processed_item_api_restore
   get '/api/v1/itemresults/items_for_dpn', to: 'processed_item#items_for_dpn', format: 'json', as: :processed_item_api_dpn
   get '/api/v1/itemresults/items_for_delete', to: 'processed_item#items_for_delete', format: 'json', as: :processed_item_api_delete
