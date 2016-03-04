@@ -164,6 +164,14 @@ describe ProcessedItemController do
         put :update, id: item.id, format: 'json', processed_item: pi_hash, use_route: :processed_item_api_update_by_id
         expect(response.status).to eq 200
       end
+
+      it 'sets node to "" when params[:node] == ""' do
+        pi_hash = FactoryGirl.create(:processed_item_with_state).attributes
+        pi_hash[:node] = ""
+        put :update, id: item.id, format: 'json', processed_item: pi_hash, use_route: :processed_item_api_update_by_id
+        expect(assigns(:processed_item).node).to eq('')
+      end
+
     end
 
     describe 'for institutional admin' do
