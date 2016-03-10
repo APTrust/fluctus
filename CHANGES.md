@@ -1,6 +1,6 @@
 # Change Log
 
-## 2016-03-10
+## 2016-03-10 (Commit d01fbbf)
 
 * Added state, node, pid, and needs_admin_review to ProcessedItem. (REQUIRES MIGRATION)
 * ProcessedItem.state stores JSON data describing the current state of a bag in process.
