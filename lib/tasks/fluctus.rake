@@ -30,8 +30,10 @@ namespace :fluctus do
   desc 'Setup Fluctus'
   task setup: :environment do
          aptrust_institution = Institution.where(desc_metadata__name_tesim: 'APTrust')
-         if aptrust_institution.count == 1
-           desc "Setup seems to have run already. Quitting."
+         admintest = User.where(name: 'APTrustAdmin')
+
+         if !admintest.nil?
+            desc "Setup seems to have run already. Admin user exist. Exiting."
          else
             desc "Creating an initial institution names 'APTrust'..."
 
