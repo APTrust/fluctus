@@ -55,6 +55,12 @@ rake db:migrate
 rake fluctus:setup
 ````
 
+The default admin user that is being setup as follows:
+    name= "APTrustAdmin"
+    email= "ops@aptrust.org"
+    phone_number="4341234567"
+    password="password"
+
 * Use Proper Solr Configuration
 
 The ```schema.xml``` file in ```solr_conf/conf``` is customized for Fluctus so be sure to use it, or look at the commit
