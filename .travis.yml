@@ -10,11 +10,13 @@ env:
 notifications:
   email:
     recipients:
-      - "scott.turnbull@aptrust.org"
-      - "kelly.croswell@aptrust.org"
-      - "andrew.diamond@aptrust.org"
-    on_success: "change"
-    on_failure: "always"
+      - kelly.croswell@aptrust.org
+      - andrew.diamond@aptrust.org
+      - christian.dahlhausen@aptrust.org
+    on_success: change
+    on_failure: always
+  slack:
+    secure: pelbY7cgZtxgujDDqxD7LB6qZ0g0zZ8XVqebY9cfjPTsYMO9n7h5k0Hrw7DWUJlEb5jWsfIMgPy0+CUnCbM9KBGGiK1gz7MLTNlh1XWBhg4uWWZStsTX5RksIoJ+YEElGkeB3MIbq2sQzsPZwtrsUVtbUH+BfZ4YKy/pVeUvt2w=
 branches:
   only:
     - master
@@ -23,4 +25,3 @@ before_install:
   - gem install bundler
 before_script:
   - bundle exec rake db:migrate RAILS_ENV=test
-
