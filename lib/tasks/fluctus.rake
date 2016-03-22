@@ -29,30 +29,27 @@ namespace :fluctus do
 
   desc 'Setup Fluctus'
   task setup: :environment do
-         aptrust_institution = Institution.where(desc_metadata__name_tesim: 'APTrust')
-         admintest = User.where(name: 'APTrustAdmin')
+    admintest = User.where(name: 'APTrust Admin')
 
-         if !admintest.nil?
-            desc "Setup seems to have run already. Admin user exist. Exiting."
-         else
-            desc "Creating an initial institution names 'APTrust'..."
+    if admintest.name != 'APTrust Admin'
+      puts "Creating an initial institution named 'APTrust'..."
+      i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: '44c450a6-8b2e-4c59-8793-3d9366bf43f5')
 
-            i = Institution.create!(name: 'APTrust', identifier: 'aptrust.org', brief_name: 'apt', dpn_uuid: '44c450a6-8b2e-4c59-8793-3d9366bf43f5')
+      puts "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
+      %w(admin institutional_admin institutional_user).each do |role|
+        Role.create!(name: role)
+      end
 
-            desc "Creating required roles of 'admin', 'institutional_admin', and 'institutional_user'..."
-            %w(admin institutional_admin institutional_user).each do |role|
-              Role.create!(name: role)
-            end
-
-            desc 'Create an initial Super-User for APTrust...'
-            name= "APTrustAdmin"
-            email= "ops@aptrust.org"
-            phone_number="4341234567"
-            password="password"
-
-            User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
-                         role_ids: [Role.where(name: 'admin').first.id])
-        end
+      puts 'Create an initial Super-User for APTrust...'
+      name = 'APTrust Admin'
+      email = 'ops@aptrust.org'
+      phone_number = '4341234567'
+      password = 'password'
+      User.create!(name: name, email: email, password: password, phone_number: phone_number, institution_pid: i.pid,
+                   role_ids: [Role.where(name: 'admin').first.id])
+    else
+      puts 'Setup seems to have run already. Admin user exists. Exiting.'
+    end
   end
 
   # Restricted only to non-production environments
@@ -250,7 +247,7 @@ namespace :fluctus do
     #
     data_dir = args[:data_dir] || '.'
     since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
-    inst_file = File.join(data_dir, "institutions.json")
+    inst_file = File.join(data_dir, 'institutions.json')
     puts "Dumping institutions to #{inst_file}"
     File.open(inst_file, 'w') do |file|
       Institution.all.each do |inst|
@@ -306,9 +303,9 @@ namespace :fluctus do
       puts("Skipped #{number_skipped} records modified before #{since_when}.")
       puts("Finished dumping objects with last mod date through #{last_timestamp}")
       puts("Writing timestamp to #{timestamp_file}")
-      puts("If this process crashed, you can resume the data dump where it left off.")
+      puts('If this process crashed, you can resume the data dump where it left off.')
       puts("First, MOVE THE FILE #{objects_file} SO IT DOESN'T GET OVERWRITTEN.")
-      puts("Then run the following command:")
+      puts('Then run the following command:')
       puts("bundle exec rake fluctus:dump_data[#{data_dir},'#{last_timestamp}']")
       File.open(timestamp_file, 'w') { |file| file.puts(last_timestamp) }
     end
@@ -318,10 +315,10 @@ namespace :fluctus do
   task :dump_processed_items, [:data_dir, :since_when] => [:environment] do |t, args|
     data_dir = args[:data_dir] || '.'
     since_when = args[:since_when] || DateTime.new(1900,1,1).iso8601
-    output_file = File.join(data_dir, "processed_items.json")
+    output_file = File.join(data_dir, 'processed_items.json')
     puts "Dumping processed_items to #{output_file}"
     File.open(output_file, 'w') do |file|
-      ProcessedItem.where("updated_at >= ?", since_when).order('updated_at asc').find_each do |item|
+      ProcessedItem.where('updated_at >= ?', since_when).order('updated_at asc').find_each do |item|
         file.puts(item.to_json)
       end
     end
@@ -330,7 +327,7 @@ namespace :fluctus do
   desc 'Dumps User records to JSON files for auditing'
   task :dump_users, [:data_dir] => [:environment] do |t, args|
     data_dir = args[:data_dir] || '.'
-    output_file = File.join(data_dir, "users.json")
+    output_file = File.join(data_dir, 'users.json')
     puts "Dumping users to #{output_file}"
     File.open(output_file, 'w') do |file|
       User.find_each do |user|

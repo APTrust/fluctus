@@ -23,6 +23,7 @@ class IntellectualObjectsController < ApplicationController
     authorize @institution, :index?
     if current_user.admin?
       params[:institution].present? ? @items = IntellectualObject.where(desc_metadata__identifier_tesim: params[:institution]) : @items = IntellectualObject.all
+
     else
       @items = IntellectualObject.where(desc_metadata__identifier_tesim: current_user.institution.identifier)
     end
