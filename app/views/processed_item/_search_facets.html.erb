@@ -53,12 +53,12 @@
           <ul class="facet-values list-unstyle">
             <% @actions.each do |action| %>
                 <li>
-                  <span class="facet-label"><a href="<%= current_path('actions', action) %>" ><%= action %></a></span>
+                  <span class="facet-label"><a href="<%= current_path('item_action', action) %>" ><%= action %></a></span>
                   <span class="facet-count"><%= @counts[action] %></span>
                 </li>
             <% end %>
-            <% unless @selected[:actions].nil? %>
-                <script>selected("action", "<%= @selected[:actions] %>", "<%=url_for(params.except :actions)%>")</script>
+            <% unless @selected[:item_action].nil? %>
+                <script>selected("action", "<%= @selected[:item_action] %>", "<%=url_for(params.except :item_action)%>")</script>
             <% end %>
           </ul>
         </div>

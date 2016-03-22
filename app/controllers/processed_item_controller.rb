@@ -141,7 +141,7 @@ class ProcessedItemController < ApplicationController
       @items = @items.where('updated_at >= ?', date)
     end
 
-    @items = @items.where(action: Fluctus::Application::FLUCTUS_ACTIONS[params[:actions]]) if params[:actions].present?
+    @items = @items.where(action: Fluctus::Application::FLUCTUS_ACTIONS[params[:item_action]]) if params[:item_action].present?
     @items = @items.where(stage: Fluctus::Application::FLUCTUS_STAGES[params[:stage]]) if params[:stage].present?
     @items = @items.where(status: Fluctus::Application::FLUCTUS_STATUSES[params[:status]]) if params[:status].present?
     @items = @items.where(reviewed: to_boolean(params[:reviewed])) if params[:reviewed].present?
@@ -400,9 +400,9 @@ class ProcessedItemController < ApplicationController
       @filtered_items = @filtered_items.where(stage: params[:stage])
       @selected[:stage] = params[:stage]
     end
-    if params[:actions].present?
-      @filtered_items = @filtered_items.where(action: params[:actions])
-      @selected[:actions] = params[:actions]
+    if params[:item_action].present?
+      @filtered_items = @filtered_items.where(action: params[:item_action])
+      @selected[:item_action] = params[:item_action]
     end
     if params[:institution].present?
       @filtered_items = @filtered_items.where(institution: params[:institution])
@@ -557,7 +557,7 @@ class ProcessedItemController < ApplicationController
     str = str << "&name_exact=#{params[:name_exact]}" if params[:name_exact].present?
     str = str << "&name_contains=#{params[:name_contains]}" if params[:name_contains].present?
     str = str << "&institution=#{params[:institution]}" if params[:institution].present?
-    str = str << "&actions=#{params[:actions]}" if params[:actions].present?
+    str = str << "&actions=#{params[:item_action]}" if params[:item_action].present?
     str = str << "&stage=#{params[:stage]}" if params[:stage].present?
     str = str << "&status=#{params[:status]}" if params[:status].present?
     str = str << "&reviewed=#{params[:reviewed]}" if params[:reviewed].present?
