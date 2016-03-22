@@ -29,6 +29,7 @@ class IntellectualObjectsController < ApplicationController
     end
     @items = @items.where(identifier: params[:name_exact]) if params[:name_exact].present?
     @items = @items.where(desc_metadata__identifier_tesim: params[:name_contains]) if params[:name_contains].present?
+    @items = @items.where(object_state_ssi: params[:state]) if params[:state].present?
 
     # Do not instantiate objects. Make Solr do the filtering.
     if params[:updated_since].present?
@@ -391,6 +392,7 @@ class IntellectualObjectsController < ApplicationController
     str = str << "&name_exact=#{params[:name_exact]}" if params[:name_exact].present?
     str = str << "&name_contains=#{params[:name_contains]}" if params[:name_contains].present?
     str = str << "&institution=#{params[:institution]}" if params[:institution].present?
+    str = str << "&state=#{params[:state]}" if params[:state].present?
     str
   end
 
