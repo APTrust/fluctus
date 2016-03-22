@@ -152,6 +152,10 @@ class IntellectualObject < ActiveFedora::Base
         end
       end
       data.merge!(premisEvents: serialize_events) if options[:include].include?(:premisEvents)
+      if options[:include].include(:etag)
+        item = ProcessedItem.last_ingested_version(self.identifier)
+        data.merge!(etag: item.etag) unless item.nil?
+      end
     end
     data
   end
