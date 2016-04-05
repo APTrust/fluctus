@@ -8,7 +8,7 @@
   </section>
 
   <section class="queue">
-    <table class="table">
+    <table class="table proc_item">
       <tbody>
         <tr>
           <tr>
@@ -29,12 +29,12 @@
           </tr>
           <tr>
             <th>Object Identifier</th>
-            <th><%= @processed_item.object_identifier %></th>
+            <td class="identifier"><%= @processed_item.object_identifier %></td>
           </tr>
           <% unless @processed_item.generic_file_identifier.nil? %>
             <tr>
               <th>Generic File Identifier</th>
-              <th><%= @processed_item.generic_file_identifier %></th>
+              <td class="identifier"><%= @processed_item.generic_file_identifier %></td>
             </tr>
           <% end %>
           <tr>
@@ -55,7 +55,7 @@
           </tr>
           <tr class="<%= @processed_item.status %>">
             <th>Status</th>
-            <td><%= @processed_item.status %></td>
+            <td class="status"><%= @processed_item.status %></td>
           </tr>
           <tr>
             <th>Retry</th>

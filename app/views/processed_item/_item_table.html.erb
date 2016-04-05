@@ -18,13 +18,21 @@
         <td><% if item.status == Fluctus::Application::FLUCTUS_STATUSES['success'] || item.status == Fluctus::Application::FLUCTUS_STATUSES['fail'] %>
           <input type="checkbox" class="review" name="reviewed" value="reviewed" id="r_<%= item.id %>" >
         <% end %></td>
-        <td><a href="<%= processed_item_path(id: item.id) %>" ><%= item.name %></a></td>
-        <td><%= item.etag %></td>
+        <td class="name"><% if item.action == Fluctus::Application::FLUCTUS_ACTIONS['delete'] %>
+              <% unless item.generic_file_identifier.nil? %>
+                  <a href="<%= processed_item_path(id: item.id) %>" ><%= truncate(item.generic_file_identifier, length: 45) %></a>
+              <% else %>
+                  <a href="<%= processed_item_path(id: item.id) %>" ><%= truncate(item.object_identifier, length: 45) %></a>
+              <% end %>
+          <% else %>
+              <a href="<%= processed_item_path(id: item.id) %>" ><%= truncate(item.object_identifier, length: 45) %></a>
+          <% end %></td>
+        <td class="etag"><%= item.etag %></td>
         <td><%= item.institution %></td>
         <td><%= time_ago_in_words item.date %></td>
         <td><%= item.action %></td>
         <td><%= item.stage %></td>
-        <td><%= item.status %></td>
+        <td class="status"><%= item.status %></td>
         <td><%= item.reviewed.to_s.capitalize %></td>
       </tr>
   <% end %>

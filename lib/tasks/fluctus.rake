@@ -134,7 +134,7 @@ namespace :fluctus do
         item.add_event(FactoryGirl.attributes_for(:premis_event_identifier, outcome_detail: item.pid, outcome_information: 'Assigned by Fedora.'))
 
         # add processed item for intellectual object
-        FactoryGirl.create(:processed_item, institution: institution.identifier, name: name, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
+        FactoryGirl.create(:processed_item, institution: institution.identifier, name: bag_name, action: Fluctus::Application::FLUCTUS_ACTIONS['ingest'], stage: Fluctus::Application::FLUCTUS_STAGES['record'], status: Fluctus::Application::FLUCTUS_STATUSES['success'])
 
         5.times.each do |count|
           FactoryGirl.create(:processed_item, institution: institution.identifier)

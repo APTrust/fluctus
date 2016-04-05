@@ -25,7 +25,10 @@
 
 tr.Failed { background-color: #f2dede; }
 tr.Success { background-color: #dff0d8; }
-td.Started, td.Cancelled, td.Pending { text-style: italic; }
+tr.Started td.status, tr.Cancelled td.status, tr.Pending td.status { font-style: italic; }
+td.identifier { font-weight: bold; }
+
+table.proc_item td { width: 80%; }
 
 #remove {
   display: block;
