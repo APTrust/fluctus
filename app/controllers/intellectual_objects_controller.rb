@@ -27,7 +27,7 @@ class IntellectualObjectsController < ApplicationController
     else
       @items = IntellectualObject.where(desc_metadata__identifier_tesim: current_user.institution.identifier)
     end
-    @items = @items.where(identifier: params[:name_exact]) if params[:name_exact].present?
+    @items = @items.where(desc_metadata__identifier_ssim: params[:name_exact]) if params[:name_exact].present?
     @items = @items.where(desc_metadata__identifier_tesim: params[:name_contains]) if params[:name_contains].present?
     @items = @items.where(object_state_ssi: params[:state]) if params[:state].present?
 
