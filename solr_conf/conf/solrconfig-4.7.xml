@@ -19,7 +19,8 @@
 
   <updateHandler class="solr.DirectUpdateHandler2">
      <autoCommit>
-       <maxTime>30000</maxTime>
+       <maxDocs>10000</maxDocs> <!-- maximum uncommited docs before autocommit triggered -->
+       <maxTime>15000</maxTime>
        <openSearcher>false</openSearcher>
      </autoCommit>
 
@@ -233,7 +234,7 @@
          warming searcher and use it.  If "false" then all requests
          will block until the first searcher is done warming.
       -->
-    <useColdSearcher>false</useColdSearcher>
+    <useColdSearcher>true</useColdSearcher>
 
     <!-- Max Warming Searchers
 
@@ -244,7 +245,7 @@
          Recommend values of 1-2 for read-only slaves, higher for
          masters w/o cache warming.
       -->
-    <maxWarmingSearchers>5</maxWarmingSearchers>
+    <maxWarmingSearchers>2</maxWarmingSearchers>
 
   </query>
 
