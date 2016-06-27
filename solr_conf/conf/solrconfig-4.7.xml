@@ -18,14 +18,19 @@
 </indexConfig>
 
   <updateHandler class="solr.DirectUpdateHandler2">
+ <!-- Limit the number of deletions Solr will buffer during doc updating. Setting this lower can help 
+	bound memory use during indexing.
+    -->
+    <maxPendingDeletes>100000</maxPendingDeletes>
+
      <autoCommit>
        <maxDocs>10000</maxDocs> <!-- maximum uncommited docs before autocommit triggered -->
-       <maxTime>15000</maxTime>
+       <maxTime>30000</maxTime>
        <openSearcher>false</openSearcher>
      </autoCommit>
 
      <autoSoftCommit>
-       <maxTime>30000</maxTime>
+       <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime>
      </autoSoftCommit>
   </updateHandler>
 
@@ -250,6 +255,6 @@
   </query>
 
 
-
+<JMX/>
 
 </config>
