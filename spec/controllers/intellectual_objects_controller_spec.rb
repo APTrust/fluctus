@@ -664,8 +664,6 @@ describe IntellectualObjectsController do
       let!(:object1) { FactoryGirl.create(:consortial_intellectual_object, bag_name: 'item1-for-hire', institution: user.institution) }
       let!(:object2) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '1', institution: user.institution) }
       let!(:object3) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '2', institution: another_institution) }
-      let!(:object4) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '3', institution: another_institution) }
-      let!(:object5) { FactoryGirl.create(:consortial_intellectual_object, bag_name: '4', institution: another_institution) }
       before do
         sign_in user
       end
