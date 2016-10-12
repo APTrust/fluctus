@@ -213,7 +213,6 @@ namespace :fluctus do
     end
   end
 
-
   desc 'Deletes test.edu data from Go integration tests'
   task :delete_go_data => [:environment] do
     if Rails.env.production?
@@ -338,4 +337,117 @@ namespace :fluctus do
       end
     end
   end
+
+  desc 'Dump all repository data to SQLite for transfer to Pharos'
+  task :dump_repository => :environment do
+    require sqlite3
+    db = SQLite3::Database.new 'fedora_export.db'
+    result = db.execute
+      'CREATE TABLE users (
+         id INTEGER PRIMARY KEY,
+         email TEXT,
+         encrypted_password TEXT,
+         reset_password_token TEXT,
+         reset_password_sent_at TEXT,
+         remember_created_at TEXT,
+         sign_in_count INTEGER,
+         current_sign_in_at TEXT,
+         last_sign_in_at TEXT,
+         current_sign_in_ip TEXT,
+         last_sign_in_ip TEXT,
+         created_at TEXT,
+         updated_at TEXT,
+         name TEXT,
+         phone_number TEXT,
+         institution_pid TEXT,
+         encrypted_api_secret_key TEXT
+      );
+      CREATE TABLE institutions (
+         id INTEGER PRIMARY KEY,
+         name TEXT,
+         brief_name TEXT,
+         identifier TEXT,
+         dpn_uuid TEXT,
+         created_at TEXT,
+         updated_at TEXT
+      );
+      CREATE TABLE intellectual_objects (
+         id INTEGER PRIMARY KEY,
+         identifier TEXT,
+         title TEXT,
+         description TEXT,
+         alt_identifier TEXT,
+         access TEXT,
+         bag_name TEXT,
+         institution_id INTEGER,
+         state TEXT,
+         created_at TEXT,
+         updated_at TEXT
+      );
+      CREATE TABLE generic_files (
+         id INTEGER PRIMARY KEY,
+         file_format TEXT,
+         uri TEXT,
+         size REAL,
+         checksum_ids TEXT,
+         intellectual_object_id INTEGER,
+         identifier TEXT,
+         created_at TEXT,
+         updated_at TEXT
+      );
+      CREATE TABLE premis_events (
+         id INTEGER PRIMARY KEY,
+         intellectual_object_id INTEGER,
+         generic_file_id INTEGER,
+         institution_id INTEGER,
+         intellectual_object_identifier TEXT,
+         generic_file_identifier TEXT,
+         identifier TEXT,
+         event_type TEXT,
+         date_time TEXT,
+         detail TEXT,
+         outcome TEXT,
+         outcome_detail TEXT,
+         outcome_information TEXT,
+         object TEXT,
+         agent TEXT,
+         created_at TEXT,
+         updated_at TEXT
+      );
+      CREATE TABLE checksums (
+         id INTEGER PRIMARY KEY,
+         algorithm TEXT,
+         datetime TEXT,
+         digest TEXT,
+         generic_file_id INTEGER,
+         created_at TEXT,
+         updated_at TEXT
+      );
+      CREATE TABLE processed_items (
+         id INTEGER PRIMARY KEY,
+         created_at TEXT,
+         updated_at TEXT,
+         name TEXT,
+         etag TEXT,
+         bucket TEXT,
+         user TEXT,
+         institution TEXT,
+         note TEXT,
+         action TEXT,
+         stage TEXT,
+         status TEXT,
+         outcome TEXT,
+         bag_date TEXT,
+         date TEXT,
+         retry NUMERIC,
+         reviewed NUMERIC,
+         object_identifier TEXT,
+         generic_file_identifier TEXT,
+         state TEXT,
+         node TEXT,
+         pid INTEGER,
+         needs_admin_review NUMERIC
+      );'
+  end
+
 end
