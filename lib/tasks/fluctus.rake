@@ -367,9 +367,7 @@ namespace :fluctus do
          name TEXT,
          brief_name TEXT,
          identifier TEXT,
-         dpn_uuid TEXT,
-         created_at TEXT,
-         updated_at, TEXT
+         dpn_uuid TEXT
       );')
     db.execute(
       'CREATE TABLE intellectual_objects (
@@ -380,7 +378,7 @@ namespace :fluctus do
          alt_identifier TEXT,
          access TEXT,
          bag_name TEXT,
-         institution_id INTEGER,
+         institution_id TEXT,
          state TEXT,
          created_at TEXT,
          updated_at TEXT
@@ -391,16 +389,16 @@ namespace :fluctus do
          file_format TEXT,
          uri TEXT,
          size REAL,
-         intellectual_object_id INTEGER,
+         intellectual_object_id TEXT,
          identifier TEXT,
          created_at TEXT,
          updated_at TEXT
       );')
     db.execute(
       'CREATE TABLE premis_events (
-         intellectual_object_id INTEGER,
-         generic_file_id INTEGER,
-         institution_id INTEGER,
+         intellectual_object_id TEXT,
+         generic_file_id TEXT,
+         institution_id TEXT,
          intellectual_object_identifier TEXT,
          generic_file_identifier TEXT,
          identifier TEXT,
@@ -420,7 +418,7 @@ namespace :fluctus do
          algorithm TEXT,
          datetime TEXT,
          digest TEXT,
-         generic_file_id INTEGER,
+         generic_file_id TEXT,
          created_at TEXT,
          updated_at TEXT
       );')
@@ -451,10 +449,12 @@ namespace :fluctus do
          needs_admin_review NUMERIC
       );')
     User.all.each do |user|
-      db.execute('INSERT INTO users (id, email, encrypted_password, created_at, updated_at, name, phone_number, institution_pid,
-                  encrypted_api_secret_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', user.id, user.email,
-                  user.encrypted_password, user.created_at.to_s, user.updated_at.to_s, user.name, user.phone_number, user.institution_pid,
-                  user.encrypted_api_secret_key)
+      db.execute('INSERT INTO users (id, email, encrypted_password, reset_password_token, reset_password_sent_at, remember_created_at,
+                  sign_in_count, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, created_at, updated_at,
+                  name, phone_number, institution_pid, encrypted_api_secret_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                  user.id, user.email, user.encrypted_password, user.reset_password_token.to_s, user.reset_password_sent_at.to_s, user.remember_created_at.to_s,
+                  user.sign_in_count, user.current_sign_in_at.to_s, user.last_sign_in_at.to_s, user.current_sign_in_ip.to_s, user.last_sign_in_ip.to_s,
+                  user.created_at.to_s, user.updated_at.to_s, user.name, user.phone_number, user.institution_pid, user.encrypted_api_secret_key)
     end
 
     Institution.all.each do |inst|
@@ -483,23 +483,22 @@ namespace :fluctus do
                     event.event_type, event.event_date_time.to_s, event.event_detail, event.event_outcome, event.event_outcome_detail, event.event_outcome_information,
                     event.event_object, event.event_agent, event.created_at.to_s, event.updated_at.to_s)
       end
-    end
-
-    GenericFile.all.each do |file| #FIND BETTER WAY TO BATCH
-      db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
+      object.generic_files.each do |file|
+        db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)', file.id, file.file_format, file.uri, file.size, file.intellectual_object.id, file.identifier,
-                  file.created.to_s, file.modified.to_s)
-      file.premisEvents.events.each do |event|
-        db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+                   file.created.to_s, file.modified.to_s)
+        file.premisEvents.events.each do |event|
+          db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                     generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
                     agent, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event.intellectual_object_id,
-                    event.generic_file_id, event.institution_id, event.intellectual_object_identifier, event.generic_file_identifier, event.identifier,
-                    event.event_type, event.event_date_time.to_s, event.event_detail, event.event_outcome, event.event_outcome_detail, event.event_outcome_information,
-                    event.event_object, event.event_agent, event.created_at.to_s, event.updated_at.to_s)
-      end
-      file.checksum.each do |ck|
-        db.execute('INSERT INTO checksums (algorithm, datetime, digest, generic_file_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-                    ck.algorithm.first, ck.datetime.first.to_s, ck.digest.first, ck.generic_file_id, ck.created_at.to_s, ck.updated_at.to_s)
+                     event.generic_file_id, event.institution_id, event.intellectual_object_identifier, event.generic_file_identifier, event.identifier,
+                     event.event_type, event.event_date_time.to_s, event.event_detail, event.event_outcome, event.event_outcome_detail, event.event_outcome_information,
+                     event.event_object, event.event_agent, event.created_at.to_s, event.updated_at.to_s)
+        end
+        file.checksum.each do |ck|
+          db.execute('INSERT INTO checksums (algorithm, datetime, digest, generic_file_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+                     ck.algorithm.first, ck.datetime.first.to_s, ck.digest.first, ck.generic_file_id, ck.created_at.to_s, ck.updated_at.to_s)
+        end
       end
     end
 
