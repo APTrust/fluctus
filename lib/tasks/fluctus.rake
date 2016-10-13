@@ -342,7 +342,7 @@ namespace :fluctus do
   task :dump_repository => :environment do
     require sqlite3
     db = SQLite3::Database.new 'fedora_export.db'
-    result = db.execute
+    result = db.execute(
       'CREATE TABLE users (
          id INTEGER PRIMARY KEY,
          email TEXT,
@@ -389,7 +389,6 @@ namespace :fluctus do
          file_format TEXT,
          uri TEXT,
          size REAL,
-         checksum_ids TEXT,
          intellectual_object_id INTEGER,
          identifier TEXT,
          created_at TEXT,
@@ -448,6 +447,61 @@ namespace :fluctus do
          pid INTEGER,
          needs_admin_review NUMERIC
       );'
+    )
+    User.all.each do |user|
+      db.execute('INSERT INTO users (id, email, encrypted_password, reset_password_token, reset_password_sent_at, remember_created_at,
+                  sign_in_count, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, created_at, updated_at, name,
+                  phone_number, institution_pid, encrypted_api_secret_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                  user.id, user.email, user.encrypted_password, user.reset_password_token, user.reset_password_sent_at, user.remember_created_at,
+                  user.sign_in_count, user.current_sign_in_at, user.last_sign_in_at, user.current_sign_in_ip, user.last_sign_in_ip, user.created_at,
+                  user.updated_at, user.name, user.phone_number, user.institution_pid, user.encrypted_api_secret_key)
+    end
+
+    Institution.all.each do |inst|
+      db.execute('INSERT INTO institutions (id, name, brief_name, identifier, dpn_uuid, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                  inst.id, inst.name, inst.brief_name, inst.identifier, inst.dpn_uuid, inst.created_at, inst.updated_at)
+    end
+
+    ProcessedItem.all.each do |pi|
+      db.execute('INSERT INTO processed_items (id, created_at, updated_at, name, etag, bucket, user, institution, note, action, stage, status,
+                  outcome, bag_date, date, retry, reviewed, object_identifier, generic_file_identifier, state, node, pid, needs_admin_review)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', pi.id, pi.created_at, pi.updated_at, pi.name,
+                  pi.etag, pi.bucket, pi.user, pi.institution, pi.note, pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date, pi.date, pi.retry,
+                  pi.reviewed, pi.object_identifier, pi.generic_file_identifier, pi.state, pi.node, pi.pid, pi.needs_admin_review)
+    end
+
+    IntellectualObject.all.each do |object| #FIND BETTER WAY TO BATCH
+      db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, alt_identifier, access, bag_name, institution_id,
+                  state, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
+                  object.description, object.alt_identifier, object.access, object.bag_name, object.institution.id, object.state,
+                  object.created_at, object.updated_at)
+      object.premisEvents.events.each do |event|
+        db.execute('INSERT INTO premis_events (id, intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+                    generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
+                    agent, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event.id, event.intellectual_object_id,
+                    event.generic_file_id, event.institution_id, event.intellectual_object_identifier, event.generic_file_identifier, event.identifier,
+                    event.event_type, event.event_date_time, event.event_detail, event.event_outcome, event.event_outcome_detail, event.event_outcome_information,
+                    event.event_object, event.event_agent, event.created_at, event.updated_at)
+      end
+    end
+
+    GenericFile.all.each do |file| #FIND BETTER WAY TO BATCH
+      db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)', file.id, file.file_format, file.uri, file.size, file.intellectual_object.id, file.identifier,
+                  file.created, file.modified)
+      file.premisEvents.events.each do |event|
+        db.execute('INSERT INTO premis_events (id, intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+                    generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
+                    agent, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event.id, event.intellectual_object_id,
+                    event.generic_file_id, event.institution_id, event.intellectual_object_identifier, event.generic_file_identifier, event.identifier,
+                    event.event_type, event.event_date_time, event.event_detail, event.event_outcome, event.event_outcome_detail, event.event_outcome_information,
+                    event.event_object, event.event_agent, event.created_at, event.updated_at)
+      end
+      file.checksum.each do |ck|
+        db.execute('INSERT INTO checksums (id, algorithm, datetime, digest, generic_file_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    ck.id, ck.algorithm.first, ck.datetime.first, ck.digest.first, ck.generic_file_id, ck.created_at, ck.updated_at)
+      end
+    end
   end
 
 end
