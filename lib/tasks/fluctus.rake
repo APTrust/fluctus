@@ -379,9 +379,7 @@ namespace :fluctus do
          access TEXT,
          bag_name TEXT,
          institution_id TEXT,
-         state TEXT,
-         created_at TEXT,
-         updated_at TEXT
+         state TEXT
       );')
     db.execute(
       'CREATE TABLE generic_files (
@@ -409,18 +407,14 @@ namespace :fluctus do
          outcome_detail TEXT,
          outcome_information TEXT,
          object TEXT,
-         agent TEXT,
-         created_at TEXT,
-         updated_at TEXT
+         agent TEXT
       );')
     db.execute(
       'CREATE TABLE checksums (
          algorithm TEXT,
          datetime TEXT,
          digest TEXT,
-         generic_file_id TEXT,
-         created_at TEXT,
-         updated_at TEXT
+         generic_file_id TEXT
       );')
     db.execute(
       'CREATE TABLE processed_items (
@@ -439,15 +433,19 @@ namespace :fluctus do
          outcome TEXT,
          bag_date TEXT,
          date TEXT,
-         retry NUMERIC,
-         reviewed NUMERIC,
+         retry TEXT,
+         reviewed TEXT,
          object_identifier TEXT,
          generic_file_identifier TEXT,
          state TEXT,
          node TEXT,
          pid INTEGER,
-         needs_admin_review NUMERIC
+         needs_admin_review TEXT
       );')
+
+    event_count = 0
+    ck_count = 0
+
     User.all.each do |user|
       db.execute('INSERT INTO users (id, email, encrypted_password, reset_password_token, reset_password_sent_at, remember_created_at,
                   sign_in_count, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, created_at, updated_at,
@@ -460,46 +458,47 @@ namespace :fluctus do
     Institution.all.each do |inst|
       db.execute('INSERT INTO institutions (id, name, brief_name, identifier, dpn_uuid) VALUES (?, ?, ?, ?, ?)',
                   inst.id, inst.name, inst.brief_name, inst.identifier, inst.dpn_uuid)
+      inst.intellectual_objects.each do |object|
+        db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, alt_identifier, access, bag_name, institution_id,
+                  state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
+                   object.description, object.alt_identifier, object.access, object.bag_name, object.institution.id, object.state)
+        object.premisEvents.events.each do |event|
+          db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+                    generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
+                    agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id,
+                     event.generic_file.id, inst.id, object.identifier, event.generic_file.identifier, event.identifier,
+                     event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
+                     event.object, event.agent)
+          event_count = event_count + 1
+        end
+        object.generic_files.each do |file|
+          db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)', file.id, file.file_format, file.uri, file.size, object.id, file.identifier,
+                     file.created.to_s, file.modified.to_s)
+          file.premisEvents.events.each do |event|
+            db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+                    generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
+                    agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id,
+                       file.id, inst.id, object.identifier, file.identifier, event.identifier,
+                       event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
+                       event.object, event.agent)
+            event_count = event_count + 1
+          end
+          file.checksum.each do |ck|
+            db.execute('INSERT INTO checksums (algorithm, datetime, digest, generic_file_id) VALUES (?, ?, ?, ?)',
+                       ck.algorithm.first, ck.datetime.first.to_s, ck.digest.first, file.id)
+            ck_count = ck_count + 1
+          end
+        end
+      end
     end
 
     ProcessedItem.all.each do |pi|
       db.execute('INSERT INTO processed_items (id, created_at, updated_at, name, etag, bucket, user, institution, note, action, stage, status,
                   outcome, bag_date, date, retry, reviewed, object_identifier, generic_file_identifier, state, node, pid, needs_admin_review)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', pi.id, pi.created_at.to_s, pi.updated_at.to_s, pi.name,
-                  pi.etag, pi.bucket, pi.user, pi.institution, pi.note, pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date.to_s, pi.date.to_s, pi.retry,
-                  pi.reviewed, pi.object_identifier, pi.generic_file_identifier, pi.state, pi.node, pi.pid, pi.needs_admin_review)
-    end
-
-    IntellectualObject.all.each do |object| #FIND BETTER WAY TO BATCH
-      db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, alt_identifier, access, bag_name, institution_id,
-                  state, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
-                  object.description, object.alt_identifier, object.access, object.bag_name, object.institution.id, object.state,
-                  object.created_at.to_s, object.updated_at.to_s)
-      object.premisEvents.events.each do |event|
-        db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
-                    generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
-                    agent, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event.intellectual_object_id,
-                    event.generic_file_id, event.institution_id, event.intellectual_object_identifier, event.generic_file_identifier, event.identifier,
-                    event.event_type, event.event_date_time.to_s, event.event_detail, event.event_outcome, event.event_outcome_detail, event.event_outcome_information,
-                    event.event_object, event.event_agent, event.created_at.to_s, event.updated_at.to_s)
-      end
-      object.generic_files.each do |file|
-        db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)', file.id, file.file_format, file.uri, file.size, file.intellectual_object.id, file.identifier,
-                   file.created.to_s, file.modified.to_s)
-        file.premisEvents.events.each do |event|
-          db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
-                    generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
-                    agent, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event.intellectual_object_id,
-                     event.generic_file_id, event.institution_id, event.intellectual_object_identifier, event.generic_file_identifier, event.identifier,
-                     event.event_type, event.event_date_time.to_s, event.event_detail, event.event_outcome, event.event_outcome_detail, event.event_outcome_information,
-                     event.event_object, event.event_agent, event.created_at.to_s, event.updated_at.to_s)
-        end
-        file.checksum.each do |ck|
-          db.execute('INSERT INTO checksums (algorithm, datetime, digest, generic_file_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-                     ck.algorithm.first, ck.datetime.first.to_s, ck.digest.first, ck.generic_file_id, ck.created_at.to_s, ck.updated_at.to_s)
-        end
-      end
+                  pi.etag, pi.bucket, pi.user, pi.institution, pi.note, pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date.to_s, pi.date.to_s, pi.retry.to_s,
+                  pi.reviewed.to_s, pi.object_identifier, pi.generic_file_identifier, pi.state, pi.node, pi.pid, pi.needs_admin_review.to_s)
     end
 
     puts "Number of users in Fluctus: #{User.all.count}"
@@ -527,13 +526,11 @@ namespace :fluctus do
       puts "Number of file rows in new db: #{row[0]}"
     end
 
-    puts "Number of premis events in Fluctus: #{PremisEventsMetadata.all.count}"
+    puts "Number of premis events in Fluctus: #{event_count}"
     db.execute 'SELECT COUNT(*) FROM premis_events' do |row|
       puts "Number of event rows in new db: #{row[0]}"
     end
 
-    ck_count = 0
-    GenericFile.all.each { |file| ck_count = ck_count + file.checksums.count }
     puts "Number of checksums in Fluctus: #{ck_count}"
     db.execute 'SELECT COUNT(*) FROM checksums' do |row|
       puts "Number of checksum rows in new db: #{row[0]}"
