@@ -446,6 +446,7 @@ namespace :fluctus do
     event_count = 0
     ck_count = 0
 
+    puts 'Users'
     User.all.each do |user|
       db.execute('INSERT INTO users (id, email, encrypted_password, reset_password_token, reset_password_sent_at, remember_created_at,
                   sign_in_count, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, created_at, updated_at,
@@ -453,9 +454,11 @@ namespace :fluctus do
                   user.id, user.email, user.encrypted_password, user.reset_password_token.to_s, user.reset_password_sent_at.to_s, user.remember_created_at.to_s,
                   user.sign_in_count, user.current_sign_in_at.to_s, user.last_sign_in_at.to_s, user.current_sign_in_ip.to_s, user.last_sign_in_ip.to_s,
                   user.created_at.to_s, user.updated_at.to_s, user.name, user.phone_number, user.institution_pid, user.encrypted_api_secret_key)
+    puts '.'
     end
 
     Institution.all.each do |inst|
+      puts "Institution: #{inst.name}"
       db.execute('INSERT INTO institutions (id, name, brief_name, identifier, dpn_uuid) VALUES (?, ?, ?, ?, ?)',
                   inst.id, inst.name, inst.brief_name, inst.identifier, inst.dpn_uuid)
       inst.intellectual_objects.each do |object|
@@ -490,15 +493,18 @@ namespace :fluctus do
             ck_count = ck_count + 1
           end
         end
+        puts '.'
       end
     end
 
+    puts 'Processed Items'
     ProcessedItem.all.each do |pi|
       db.execute('INSERT INTO processed_items (id, created_at, updated_at, name, etag, bucket, user, institution, note, action, stage, status,
                   outcome, bag_date, date, retry, reviewed, object_identifier, generic_file_identifier, state, node, pid, needs_admin_review)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', pi.id, pi.created_at.to_s, pi.updated_at.to_s, pi.name,
                   pi.etag, pi.bucket, pi.user, pi.institution, pi.note, pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date.to_s, pi.date.to_s, pi.retry.to_s,
                   pi.reviewed.to_s, pi.object_identifier, pi.generic_file_identifier, pi.state, pi.node, pi.pid, pi.needs_admin_review.to_s)
+    puts '.'
     end
 
     puts "Number of users in Fluctus: #{User.all.count}"
@@ -535,6 +541,11 @@ namespace :fluctus do
     db.execute 'SELECT COUNT(*) FROM checksums' do |row|
       puts "Number of checksum rows in new db: #{row[0]}"
     end
+
+    # db.execute 'SELECT identifier, event_type FROM premis_events' do |row|
+    #   puts "Double checking values: #{row[0]}"
+    #   puts "Double checking values: #{row[1]}"
+    # end
   end
 
 end
