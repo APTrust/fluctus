@@ -340,6 +340,9 @@ namespace :fluctus do
 
   desc 'Dump all repository data to SQLite for transfer to Pharos'
   task :dump_repository => :environment do
+    start = Time.now
+    puts "Starting time: #{start}"
+
     db = SQLite3::Database.new 'fedora_export.db'
     db.execute(
       'CREATE TABLE users (
@@ -445,6 +448,7 @@ namespace :fluctus do
 
     event_count = 0
     ck_count = 0
+    counter = 1
 
     puts 'Users'
     User.all.each do |user|
@@ -457,14 +461,21 @@ namespace :fluctus do
     puts '.'
     end
 
+    puts 'Institutions'
     Institution.all.each do |inst|
-      puts "Institution: #{inst.name}"
       db.execute('INSERT INTO institutions (id, name, brief_name, identifier, dpn_uuid) VALUES (?, ?, ?, ?, ?)',
                   inst.id, inst.name, inst.brief_name, inst.identifier, inst.dpn_uuid)
-      inst.intellectual_objects.each do |object|
+      puts '.'
+    end
+
+    puts 'Intellectual Objects, in batches of ten, with associated files, events, and checksums'
+    IntellectualObject.find_in_batches([], batch_size: 1) do |batch|
+      batch.each do |solr_hash|
+        object = IntellectualObject.get_from_solr(solr_hash['id'])
+        inst = object.institution
         db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, alt_identifier, access, bag_name, institution_id,
                   state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
-                   object.description, object.alt_identifier, object.access, object.bag_name, object.institution.id, object.state)
+                   object.description, object.alt_identifier, object.access, object.bag_name, inst.id, object.state)
         object.premisEvents.events.each do |event|
           db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                     generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
@@ -493,7 +504,8 @@ namespace :fluctus do
             ck_count = ck_count + 1
           end
         end
-        puts '.'
+        puts counter
+        counter = counter + 1
       end
     end
 
@@ -546,6 +558,9 @@ namespace :fluctus do
     #   puts "Double checking values: #{row[0]}"
     #   puts "Double checking values: #{row[1]}"
     # end
+
+    end_time = Time.now
+    puts "Ending time: #{end_time}"
   end
 
 end
