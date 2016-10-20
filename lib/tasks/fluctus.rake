@@ -467,7 +467,7 @@ namespace :fluctus do
                   inst.id, inst.name, inst.brief_name, inst.identifier, inst.dpn_uuid)
     end
 
-    puts 'Intellectual Objects, in batches of #{BATCH_SIZE}, with associated files, events, and checksums'
+    puts "Intellectual Objects, in batches of #{BATCH_SIZE}, with associated files, events, and checksums"
     IntellectualObject.find_in_batches([], batch_size: BATCH_SIZE) do |batch|
       batch.each do |solr_hash|
         object = IntellectualObject.get_from_solr(solr_hash['id'])
