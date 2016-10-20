@@ -446,6 +446,7 @@ namespace :fluctus do
          needs_admin_review TEXT
       );')
 
+    BATCH_SIZE = 10
     event_count = 0
     ck_count = 0
     counter = 1
@@ -458,18 +459,16 @@ namespace :fluctus do
                   user.id, user.email, user.encrypted_password, user.reset_password_token.to_s, user.reset_password_sent_at.to_s, user.remember_created_at.to_s,
                   user.sign_in_count, user.current_sign_in_at.to_s, user.last_sign_in_at.to_s, user.current_sign_in_ip.to_s, user.last_sign_in_ip.to_s,
                   user.created_at.to_s, user.updated_at.to_s, user.name, user.phone_number, user.institution_pid, user.encrypted_api_secret_key)
-    puts '.'
     end
 
     puts 'Institutions'
     Institution.all.each do |inst|
       db.execute('INSERT INTO institutions (id, name, brief_name, identifier, dpn_uuid) VALUES (?, ?, ?, ?, ?)',
                   inst.id, inst.name, inst.brief_name, inst.identifier, inst.dpn_uuid)
-      puts '.'
     end
 
-    puts 'Intellectual Objects, in batches of ten, with associated files, events, and checksums'
-    IntellectualObject.find_in_batches([], batch_size: 1) do |batch|
+    puts 'Intellectual Objects, in batches of #{BATCH_SIZE}, with associated files, events, and checksums'
+    IntellectualObject.find_in_batches([], batch_size: BATCH_SIZE) do |batch|
       batch.each do |solr_hash|
         object = IntellectualObject.get_from_solr(solr_hash['id'])
         inst = object.institution
@@ -480,7 +479,7 @@ namespace :fluctus do
           db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                     generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
                     agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id,
-                     event.generic_file.id, inst.id, object.identifier, event.generic_file.identifier, event.identifier,
+                     nil, inst.id, object.identifier, nil, event.identifier,
                      event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
                      event.object, event.agent)
           event_count = event_count + 1
@@ -504,8 +503,8 @@ namespace :fluctus do
             ck_count = ck_count + 1
           end
         end
-        puts counter
         counter = counter + 1
+        puts counter if counter % BATCH_SIZE == 0
       end
     end
 
@@ -516,7 +515,6 @@ namespace :fluctus do
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', pi.id, pi.created_at.to_s, pi.updated_at.to_s, pi.name,
                   pi.etag, pi.bucket, pi.user, pi.institution, pi.note, pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date.to_s, pi.date.to_s, pi.retry.to_s,
                   pi.reviewed.to_s, pi.object_identifier, pi.generic_file_identifier, pi.state, pi.node, pi.pid, pi.needs_admin_review.to_s)
-    puts '.'
     end
 
     puts "Number of users in Fluctus: #{User.all.count}"
