@@ -40,3 +40,6 @@
 
 # Ignore the ansible playbook directory
 /ansible-playbooks
+
+# Export db
+fedora_export.db
