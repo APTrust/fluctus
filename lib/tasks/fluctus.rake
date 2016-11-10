@@ -449,7 +449,7 @@ namespace :fluctus do
     BATCH_SIZE = 10
     event_count = 0
     ck_count = 0
-    counter = 1
+    counter = 0
 
     puts 'Users'
     User.all.each do |user|
