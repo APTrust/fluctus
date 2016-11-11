@@ -473,9 +473,9 @@ namespace :fluctus do
         #batch.each do |solr_hash|
           #object = IntellectualObject.get_from_solr(solr_hash['id'])
           #inst = object.institution
-        db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, alt_identifier, access, bag_name, institution_id,
-                    state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
-                    object.description, object.alt_identifier, object.access, object.bag_name, inst.id, object.state)
+        db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, access, bag_name, institution_id, state,
+                    alt_identifier) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
+                    object.description, object.access, object.bag_name, inst.id, object.state, object.alt_identifier)
         object.premisEvents.events.each do |event|
           db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                       generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
