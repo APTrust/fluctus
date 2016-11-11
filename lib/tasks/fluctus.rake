@@ -477,12 +477,14 @@ namespace :fluctus do
                     state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
                     object.description, object.alt_identifier, object.access, object.bag_name, inst.id, object.state)
         object.premisEvents.events.each do |event|
-          db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+          if event.generic_file_id.nil?
+            db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                       generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
                       agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, nil, inst.id, object.identifier, nil, event.identifier,
-                      event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
-                      event.object, event.agent)
-          event_count = event_count + 1
+                       event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
+                       event.object, event.agent)
+            event_count = event_count + 1
+          end
         end
         object.generic_files.each do |file|
           db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
@@ -492,7 +494,7 @@ namespace :fluctus do
             db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                         generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
                         agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id,
-                        event.generic_file.id, inst.id, object.identifier, event.generic_file.identifier, event.identifier,
+                        file.id, inst.id, object.identifier, file.identifier, event.identifier,
                         event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
                         event.object, event.agent)
             event_count = event_count + 1
