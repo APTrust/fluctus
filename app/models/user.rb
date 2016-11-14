@@ -38,6 +38,16 @@ class User < ActiveRecord::Base
     super + institution_groups
   end
 
+  def roles_for_transition
+    if admin?
+      'Admin'
+    elsif institutional_admin?
+      'Inst_Admin'
+    elsif institutional_user?
+      'Inst_User'
+    end
+  end
+
   def institution_groups
     if institutional_admin?
       ["Admin_At_#{institution_group_suffix}"]
