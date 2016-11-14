@@ -362,7 +362,8 @@ namespace :fluctus do
          name TEXT,
          phone_number TEXT,
          institution_pid TEXT,
-         encrypted_api_secret_key TEXT
+         encrypted_api_secret_key TEXT,
+         roles TEXT
       );')
     db.execute(
       'CREATE TABLE institutions (
@@ -455,10 +456,10 @@ namespace :fluctus do
     User.all.each do |user|
       db.execute('INSERT INTO users (id, email, encrypted_password, reset_password_token, reset_password_sent_at, remember_created_at,
                   sign_in_count, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, created_at, updated_at,
-                  name, phone_number, institution_pid, encrypted_api_secret_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                  name, phone_number, institution_pid, encrypted_api_secret_key, roles) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                   user.id, user.email, user.encrypted_password, user.reset_password_token.to_s, user.reset_password_sent_at.to_s, user.remember_created_at.to_s,
                   user.sign_in_count, user.current_sign_in_at.to_s, user.last_sign_in_at.to_s, user.current_sign_in_ip.to_s, user.last_sign_in_ip.to_s,
-                  user.created_at.to_s, user.updated_at.to_s, user.name, user.phone_number, user.institution_pid, user.encrypted_api_secret_key)
+                  user.created_at.to_s, user.updated_at.to_s, user.name, user.phone_number, user.institution_pid, user.encrypted_api_secret_key, user.institution_groups)
     end
 
     puts 'Institutions'
