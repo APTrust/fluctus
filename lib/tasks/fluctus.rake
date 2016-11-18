@@ -491,6 +491,7 @@ namespace :fluctus do
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)', file.id, file.file_format, file.uri, file.size, object.id, file.identifier,
                       file.created.to_s, file.modified.to_s)
           ck_count = ck_count + file.checksum.count
+          event_count = event_count + file.premisEvents.events.count
           file.premisEvents.events.each do |event|
             db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                         generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
