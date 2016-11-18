@@ -448,8 +448,6 @@ namespace :fluctus do
       );')
 
     BATCH_SIZE = 10
-    event_count = 0
-    ck_count = 0
     counter = 1
 
     puts 'Users'
@@ -484,7 +482,6 @@ namespace :fluctus do
                       agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, nil, inst.id, object.identifier, nil, event.identifier,
                       event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
                       event.object, event.agent)
-          event_count = event_count + 1
         end
         object.generic_files.each do |file|
           db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
@@ -497,18 +494,21 @@ namespace :fluctus do
                         file.id, inst.id, object.identifier, file.identifier, event.identifier,
                         event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
                         event.object, event.agent)
-            event_count = event_count + 1
           end
           file.checksum.each do |ck|
             db.execute('INSERT INTO checksums (algorithm, datetime, digest, generic_file_id) VALUES (?, ?, ?, ?)',
                         ck.algorithm.first, ck.datetime.first.to_s, ck.digest.first, file.id)
-            ck_count = ck_count + 1
           end
         end
         counter = counter + 1
         puts counter if counter % BATCH_SIZE == 0
       end
     end
+
+    event_count = 0
+    ck_count = 0
+    IntellectualObject.all.each { |io| event_count = event_count + io.premisEvents.events.count }
+    GenericFile.all.each { |gf| ck_count = ck_count + gf.checksum.count }
 
     puts 'Processed Items'
     ProcessedItem.all.each do |pi|
@@ -553,11 +553,6 @@ namespace :fluctus do
     db.execute 'SELECT COUNT(*) FROM checksums' do |row|
       puts "Number of checksum rows in new db: #{row[0]}"
     end
-
-    # db.execute 'SELECT identifier, event_type FROM premis_events' do |row|
-    #   puts "Double checking values: #{row[0]}"
-    #   puts "Double checking values: #{row[1]}"
-    # end
 
     end_time = Time.now
     puts "Ending time: #{end_time}"
