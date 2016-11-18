@@ -449,6 +449,8 @@ namespace :fluctus do
 
     BATCH_SIZE = 10
     counter = 1
+    event_count = 0
+    ck_count = 0
 
     puts 'Users'
     User.all.each do |user|
@@ -476,6 +478,7 @@ namespace :fluctus do
         db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, access, bag_name, institution_id, state,
                     alt_identifier) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
                     object.description, object.access, object.bag_name, inst.id, object.state, object.alt_identifier)
+        event_count = event_count + object.premisEvents.events.count
         object.premisEvents.events.each do |event|
           db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                       generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
@@ -487,6 +490,7 @@ namespace :fluctus do
           db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)', file.id, file.file_format, file.uri, file.size, object.id, file.identifier,
                       file.created.to_s, file.modified.to_s)
+          ck_count = ck_count + file.checksum.count
           file.premisEvents.events.each do |event|
             db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
                         generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
@@ -504,11 +508,6 @@ namespace :fluctus do
         puts counter if counter % BATCH_SIZE == 0
       end
     end
-
-    event_count = 0
-    ck_count = 0
-    IntellectualObject.all.each { |io| event_count = event_count + io.premisEvents.events.count }
-    GenericFile.all.each { |gf| ck_count = ck_count + gf.checksum.count }
 
     puts 'Processed Items'
     ProcessedItem.all.each do |pi|
