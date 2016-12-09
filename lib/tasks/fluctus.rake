@@ -213,7 +213,6 @@ namespace :fluctus do
     end
   end
 
-
   desc 'Deletes test.edu data from Go integration tests'
   task :delete_go_data => [:environment] do
     if Rails.env.production?
@@ -338,4 +337,225 @@ namespace :fluctus do
       end
     end
   end
+
+  desc 'Dump all repository data to SQLite for transfer to Pharos'
+  task :dump_repository => :environment do
+    start = Time.now
+    puts "Starting time: #{start}"
+
+    db = SQLite3::Database.new 'fedora_export.db'
+    db.execute(
+      'CREATE TABLE users (
+         id INTEGER PRIMARY KEY,
+         email TEXT,
+         encrypted_password TEXT,
+         reset_password_token TEXT,
+         reset_password_sent_at TEXT,
+         remember_created_at TEXT,
+         sign_in_count INTEGER,
+         current_sign_in_at TEXT,
+         last_sign_in_at TEXT,
+         current_sign_in_ip TEXT,
+         last_sign_in_ip TEXT,
+         created_at TEXT,
+         updated_at TEXT,
+         name TEXT,
+         phone_number TEXT,
+         institution_pid TEXT,
+         encrypted_api_secret_key TEXT,
+         roles TEXT
+      );')
+    db.execute(
+      'CREATE TABLE institutions (
+         id TEXT PRIMARY KEY,
+         name TEXT,
+         brief_name TEXT,
+         identifier TEXT,
+         dpn_uuid TEXT
+      );')
+    db.execute(
+      'CREATE TABLE intellectual_objects (
+         id TEXT PRIMARY KEY,
+         identifier TEXT,
+         title TEXT,
+         description TEXT,
+         alt_identifier TEXT,
+         access TEXT,
+         bag_name TEXT,
+         institution_id TEXT,
+         state TEXT
+      );')
+    db.execute(
+      'CREATE TABLE generic_files (
+         id TEXT PRIMARY KEY,
+         file_format TEXT,
+         uri TEXT,
+         size REAL,
+         intellectual_object_id TEXT,
+         identifier TEXT,
+         created_at TEXT,
+         updated_at TEXT
+      );')
+    db.execute(
+      'CREATE TABLE premis_events (
+         intellectual_object_id TEXT,
+         generic_file_id TEXT,
+         institution_id TEXT,
+         intellectual_object_identifier TEXT,
+         generic_file_identifier TEXT,
+         identifier TEXT,
+         event_type TEXT,
+         date_time TEXT,
+         detail TEXT,
+         outcome TEXT,
+         outcome_detail TEXT,
+         outcome_information TEXT,
+         object TEXT,
+         agent TEXT
+      );')
+    db.execute(
+      'CREATE TABLE checksums (
+         algorithm TEXT,
+         datetime TEXT,
+         digest TEXT,
+         generic_file_id TEXT
+      );')
+    db.execute(
+      'CREATE TABLE processed_items (
+         id INTEGER PRIMARY KEY,
+         created_at TEXT,
+         updated_at TEXT,
+         name TEXT,
+         etag TEXT,
+         bucket TEXT,
+         user TEXT,
+         institution TEXT,
+         note TEXT,
+         action TEXT,
+         stage TEXT,
+         status TEXT,
+         outcome TEXT,
+         bag_date TEXT,
+         date TEXT,
+         retry TEXT,
+         reviewed TEXT,
+         object_identifier TEXT,
+         generic_file_identifier TEXT,
+         state TEXT,
+         node TEXT,
+         pid INTEGER,
+         needs_admin_review TEXT
+      );')
+
+    BATCH_SIZE = 10
+    counter = 1
+    event_count = 0
+    ck_count = 0
+
+    puts 'Users'
+    User.all.each do |user|
+      db.execute('INSERT INTO users (id, email, encrypted_password, reset_password_token, reset_password_sent_at, remember_created_at,
+                  sign_in_count, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, created_at, updated_at,
+                  name, phone_number, institution_pid, encrypted_api_secret_key, roles) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                  user.id, user.email, user.encrypted_password, user.reset_password_token.to_s, user.reset_password_sent_at.to_s, user.remember_created_at.to_s,
+                  user.sign_in_count, user.current_sign_in_at.to_s, user.last_sign_in_at.to_s, user.current_sign_in_ip.to_s, user.last_sign_in_ip.to_s,
+                  user.created_at.to_s, user.updated_at.to_s, user.name, user.phone_number, user.institution_pid, user.encrypted_api_secret_key, user.roles_for_transition)
+    end
+
+    puts 'Institutions'
+    Institution.all.each do |inst|
+      db.execute('INSERT INTO institutions (id, name, brief_name, identifier, dpn_uuid) VALUES (?, ?, ?, ?, ?)',
+                  inst.id, inst.name, inst.brief_name, inst.identifier, inst.dpn_uuid)
+      puts '.'
+    end
+
+    puts "Intellectual Objects, in batches of #{BATCH_SIZE}, with associated files, events, and checksums"
+    IntellectualObject.find_in_batches([], batch_size: BATCH_SIZE) do |batch|
+    #inst.intellectual_objects.each do |object|
+      batch.each do |solr_hash|
+        object = IntellectualObject.get_from_solr(solr_hash['id'])
+        inst = object.institution
+        db.execute('INSERT INTO intellectual_objects (id, identifier, title, description, access, bag_name, institution_id, state,
+                    alt_identifier) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, object.identifier, object.title,
+                    object.description, object.access, object.bag_name, inst.id, object.state, object.alt_identifier)
+        event_count = event_count + object.premisEvents.events.count
+        object.premisEvents.events.each do |event|
+          db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+                      generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
+                      agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id, nil, inst.id, object.identifier, nil, event.identifier,
+                      event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
+                      event.object, event.agent)
+        end
+        object.generic_files.each do |file|
+          db.execute('INSERT INTO generic_files (id, file_format, uri, size, intellectual_object_id, identifier, created_at, updated_at)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)', file.id, file.file_format, file.uri, file.size, object.id, file.identifier,
+                      file.created.to_s, file.modified.to_s)
+          ck_count = ck_count + file.checksum.count
+          event_count = event_count + file.premisEvents.events.count
+          file.premisEvents.events.each do |event|
+            db.execute('INSERT INTO premis_events (intellectual_object_id, generic_file_id, institution_id, intellectual_object_identifier,
+                        generic_file_identifier, identifier, event_type, date_time, detail, outcome, outcome_detail, outcome_information, object,
+                        agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', object.id,
+                        file.id, inst.id, object.identifier, file.identifier, event.identifier,
+                        event.type, event.date_time.to_s, event.detail, event.outcome, event.outcome_detail, event.outcome_information,
+                        event.object, event.agent)
+          end
+          file.checksum.each do |ck|
+            db.execute('INSERT INTO checksums (algorithm, datetime, digest, generic_file_id) VALUES (?, ?, ?, ?)',
+                        ck.algorithm.first, ck.datetime.first.to_s, ck.digest.first, file.id)
+          end
+        end
+        counter = counter + 1
+        puts counter if counter % BATCH_SIZE == 0
+      end
+    end
+
+    puts 'Processed Items'
+    ProcessedItem.all.each do |pi|
+      db.execute('INSERT INTO processed_items (id, created_at, updated_at, name, etag, bucket, user, institution, note, action, stage, status,
+                  outcome, bag_date, date, retry, reviewed, object_identifier, generic_file_identifier, state, node, pid, needs_admin_review)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', pi.id, pi.created_at.to_s, pi.updated_at.to_s, pi.name,
+                  pi.etag, pi.bucket, pi.user, pi.institution, pi.note, pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date.to_s, pi.date.to_s, pi.retry.to_s,
+                  pi.reviewed.to_s, pi.object_identifier, pi.generic_file_identifier, pi.state, pi.node, pi.pid, pi.needs_admin_review.to_s)
+    end
+
+    puts "Number of users in Fluctus: #{User.all.count}"
+    db.execute 'SELECT COUNT(*) FROM users' do |row|
+      puts "Number of user rows in new db: #{row[0]}"
+    end
+
+    puts "Number of institutions in Fluctus: #{Institution.all.count}"
+    db.execute 'SELECT COUNT(*) FROM institutions' do |row|
+      puts "Number of institution rows in new db: #{row[0]}"
+    end
+
+    puts "Number of processed items in Fluctus: #{ProcessedItem.all.count}"
+    db.execute 'SELECT COUNT(*) FROM processed_items' do |row|
+      puts "Number of processed item rows in new db: #{row[0]}"
+    end
+
+    puts "Number of intellectual objects in Fluctus: #{IntellectualObject.all.count}"
+    db.execute 'SELECT COUNT(*) FROM intellectual_objects' do |row|
+      puts "Number of object rows in new db: #{row[0]}"
+    end
+
+    puts "Number of generic files in Fluctus: #{GenericFile.all.count}"
+    db.execute 'SELECT COUNT(*) FROM generic_files' do |row|
+      puts "Number of file rows in new db: #{row[0]}"
+    end
+
+    puts "Number of premis events in Fluctus: #{event_count}"
+    db.execute 'SELECT COUNT(*) FROM premis_events' do |row|
+      puts "Number of event rows in new db: #{row[0]}"
+    end
+
+    puts "Number of checksums in Fluctus: #{ck_count}"
+    db.execute 'SELECT COUNT(*) FROM checksums' do |row|
+      puts "Number of checksum rows in new db: #{row[0]}"
+    end
+
+    end_time = Time.now
+    puts "Ending time: #{end_time}"
+  end
+
 end
