@@ -44,19 +44,25 @@ namespace :export do
   end
 
   def export_processed_items(db)
-	ProcessedItem.all.each do |pi|
-	  db.execute('INSERT INTO processed_items (id, created_at, updated_at, ' +
-				 'name, etag, bucket, user, institution, note, action, ' +
-				 'stage, status, outcome, bag_date, date, retry, reviewed, ' +
-				 'object_identifier, generic_file_identifier, state, node, ' +
-				 'pid, needs_admin_review) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ' +
-				 '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-				 pi.id, pi.created_at.to_s, pi.updated_at.to_s, pi.name,
-				 pi.etag, pi.bucket, pi.user, pi.institution, pi.note,
-				 pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date.to_s,
-				 pi.date.to_s, pi.retry.to_s, pi.reviewed.to_s,
-				 pi.object_identifier, pi.generic_file_identifier, pi.state,
-				 pi.node, pi.pid, pi.needs_admin_review.to_s)
+	batch_size = 100
+	start_at = 0
+	while start_at < ProcessedItem.count do
+	  ProcessedItem.limit(batch_size).offset(start_at).each do |pi|
+		db.execute('INSERT INTO processed_items (id, created_at, updated_at, ' +
+				   'name, etag, bucket, user, institution, note, action, ' +
+				   'stage, status, outcome, bag_date, date, retry, reviewed, ' +
+				   'object_identifier, generic_file_identifier, state, node, ' +
+				   'pid, needs_admin_review) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ' +
+				   '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+				   pi.id, pi.created_at.to_s, pi.updated_at.to_s, pi.name,
+				   pi.etag, pi.bucket, pi.user, pi.institution, pi.note,
+				   pi.action, pi.stage, pi.status, pi.outcome, pi.bag_date.to_s,
+				   pi.date.to_s, pi.retry.to_s, pi.reviewed.to_s,
+				   pi.object_identifier, pi.generic_file_identifier, pi.state,
+				   pi.node, pi.pid, pi.needs_admin_review.to_s)
+	  end
+	  start_at += batch_size
+	  puts "Exported #{start_at} processed items..."
 	end
 	puts "Exported #{ProcessedItem.count} processed items"
   end
@@ -70,7 +76,7 @@ namespace :export do
 		count += 1
 	  end
 	  if count % 100 == 0
-		puts "Exported #{count} objects"
+		puts "Exported #{count} objects..."
 	  end
 	end
   end
@@ -149,6 +155,7 @@ namespace :export do
 	puts "SQLite objects: #{get_count(db, 'intellectual_objects')}"
 	puts "Fedora files: #{GenericFile.count}"
 	puts "SQLite files: #{get_count(db, 'generic_files')}"
+	puts ""
 	puts "SQLite checksums: #{get_count(db, 'checksums')}"
 	puts "SQLite events: #{get_count(db, 'premis_events')}"
   end
