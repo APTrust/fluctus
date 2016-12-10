@@ -156,7 +156,7 @@ namespace :export do
 
   def record_error(parent, obj, exception)
     begin
-      db.execute('insert into errors(parent, object, occurred_at, message) values (?,?,?)',
+      db.execute('insert into errors(parent, object, occurred_at, message) values (?,?,?,?)',
                  parent.inspect, obj.inspect, Time.now.utc, exception.backtrace)
     rescue Exception => ex
       puts "Error recording exception."
