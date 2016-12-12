@@ -3,6 +3,8 @@ namespace :export do
 
   task :export_repo, [:db_file] => [:environment] do |t, args|
     db_file = args[:db_file] || print_usage
+    log_file = db_file.sub(/\.db$/, '.log')
+    @log = File.open(log_file, 'w')
     db = SQLite3::Database.new(db_file)
     create_tables(db)
     export_users(db)
@@ -10,6 +12,7 @@ namespace :export do
     export_processed_items(db)
     export_objects(db)
     print_counts(db)
+    @log.close
   end
 
   def export_users(db)
@@ -91,7 +94,7 @@ namespace :export do
                  obj.description, obj.access, obj.bag_name, inst.id,
                  obj.state, obj.alt_identifier)
     rescue Exception => ex
-      record_error(nil, obj, ex)
+      record_error(db, nil, obj, ex)
     end
 
     obj.premisEvents.events.each do |event|
@@ -107,7 +110,7 @@ namespace :export do
                    event.detail, event.outcome, event.outcome_detail,
                    event.outcome_information, event.object, event.agent)
       rescue Exception => ex
-        record_error(obj, event, ex)
+        record_error(db, obj, event, ex)
       end
     end
     obj.generic_files.each do |gf|
@@ -123,7 +126,7 @@ namespace :export do
                  gf.id, gf.file_format, gf.uri, gf.size, obj.id, gf.identifier,
                  gf.created.to_s, gf.modified.to_s)
     rescue Exception => ex
-      record_error(obj, gf, ex)
+      record_error(db, obj, gf, ex)
     end
 
     gf.premisEvents.events.each do |event|
@@ -139,7 +142,7 @@ namespace :export do
                    event.outcome, event.outcome_detail, event.outcome_information,
                    event.object, event.agent)
       rescue Exception => ex
-        record_error(gf, event, ex)
+        record_error(db, gf, event, ex)
       end
     end
     gf.checksum.each do |ck|
@@ -149,22 +152,25 @@ namespace :export do
                    ck.algorithm.first, ck.datetime.first.to_s,
                    ck.digest.first, gf.id)
       rescue Exception => ex
-        record_error(gf, ck, ex)
+        record_error(db, gf, ck, ex)
       end
     end
   end
 
-  def record_error(parent, obj, exception)
+  def record_error(db, parent, obj, exception)
+    now = DateTime.now.utc.iso8601
+    parent_data = parent.nil? ? 'nil' : parent.inspect
+    obj_data = obj.nil? ? 'nil' : obj.inspect
+    ex_data = exception.nil? ? 'nil' : exception.backtrace.join("\n")
     begin
       db.execute('insert into errors(parent, object, occurred_at, message) values (?,?,?,?)',
-                 parent.inspect, obj.inspect, Time.now.utc, exception.backtrace)
+                 parent_data, obj_data, now, ex_data)
     rescue Exception => ex
-      puts "Error recording exception."
-      puts "[#{Time.now.utc}] Parent - #{parent.inspect}"
-      puts "Object - #{obj.inspect}"
-      puts "Stack Trace - #{ex.backtrace}"
-      puts '-' * 60
+      puts "Error recording exception: #{ex}"
     end
+    @log.write("[#{now}] Parent - #{parent_data}\n")
+    @log.write("Object - #{obj_data}\n")
+    @log.write("Stack Trace - #{ex_data}\n\n")
   end
 
   def get_count(db, table)
