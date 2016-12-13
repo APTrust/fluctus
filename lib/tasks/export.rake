@@ -159,18 +159,17 @@ namespace :export do
 
   def record_error(db, parent, obj, exception)
     now = DateTime.now.utc.iso8601
-    parent_data = parent.nil? ? 'nil' : parent.inspect
-    obj_data = obj.nil? ? 'nil' : obj.inspect
-    ex_data = exception.nil? ? 'nil' : exception.backtrace.join("\n")
+    parent_id = parent.nil? ? 'nil' : parent.identifier
+    obj_id = obj.nil? ? 'nil' : obj.identifier
+    ex_data = exception.nil? ? 'nil' : exception.message + "\n" + exception.backtrace.join("\n")
     begin
       db.execute('insert into errors(parent, object, occurred_at, message) values (?,?,?,?)',
-                 parent_data, obj_data, now, ex_data)
+                 parent_id, obj_id, now, ex_data)
     rescue Exception => ex
       puts "Error recording exception: #{ex}"
     end
-    @log.write("[#{now}] Parent - #{parent_data}\n")
-    @log.write("Object - #{obj_data}\n")
-    @log.write("Stack Trace - #{ex_data}\n\n")
+    @log.write("[#{now}] Parent - #{parent.class.name} #{parent_id}, Object - #{obj.class.name} #{obj_id}\n")
+    @log.write("Error - #{ex_data}\n\n")
   end
 
   def get_count(db, table)
