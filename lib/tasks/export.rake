@@ -126,7 +126,7 @@ namespace :export do
     begin
       db.execute('INSERT INTO generic_files (id, file_format, uri, size, ' +
                  'intellectual_object_id, identifier, state, created_at, ' +
-                 'updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                 'updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                  gf.id, gf.file_format, gf.uri, gf.size, obj.id, gf.identifier,
                  gf.state, gf.created.to_s, gf.modified.to_s)
     rescue Exception => ex
