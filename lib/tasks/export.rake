@@ -121,10 +121,10 @@ namespace :export do
   def export_file(db, obj, inst, gf)
     begin
       db.execute('INSERT INTO generic_files (id, file_format, uri, size, ' +
-                 'intellectual_object_id, identifier, created_at, updated_at) ' +
-                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                 'intellectual_object_id, identifier, state, created_at, ' +
+                 'updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                  gf.id, gf.file_format, gf.uri, gf.size, obj.id, gf.identifier,
-                 gf.created.to_s, gf.modified.to_s)
+                 gf.state, gf.created.to_s, gf.modified.to_s)
     rescue Exception => ex
       record_error(db, obj, gf, ex)
     end
@@ -250,6 +250,7 @@ namespace :export do
          size REAL,
          intellectual_object_id TEXT,
          identifier TEXT,
+         state TEXT,
          created_at TEXT,
          updated_at TEXT
       );')
