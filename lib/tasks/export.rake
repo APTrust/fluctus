@@ -117,8 +117,14 @@ namespace :export do
     # only the first 1000 files, no matter how many actually
     # exist.
     # obj.generic_files.each do |gf|
-    GenericFile.where(gf_parent_ssim: obj.identifier).each do |gf|
-      export_file(db, obj, inst, gf)
+    #GenericFile.where(gf_parent_ssim: obj.identifier).each do |gf|
+    #  export_file(db, obj, inst, gf)
+    #end
+    GenericFile.find_in_batches([gf_parent_ssim: obj.identifier], batch_size: 50, sort: 'system_modified_dtsi asc') do |solr_result|
+      gf_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
+      gf_list.each do |gf|
+        export_file(db, obj, inst, gf)
+      end
     end
   end
 
