@@ -1,6 +1,7 @@
 require 'sqlite3'
 namespace :export do
 
+  desc 'Exports all records from the Fedora repo to a SQLite DB'
   task :export_repo, [:db_file] => [:environment] do |t, args|
     db_file = args[:db_file] || print_usage
     log_file = db_file.sub(/\.db$/, '.log')
@@ -14,6 +15,26 @@ namespace :export do
     print_counts(db)
     @log.close
   end
+
+  # The export_repo task has problems with the scale of data
+  # in the production repository. This exports checksums and
+  # a few other easy items, while other scripts in the fedora-export
+  # repo take care of objects, files, and events by getting
+  # them directly from Solr.
+  desc 'Creates the SQLite db and exports checksums and a few other items, but no objects, files, or events'
+  task :export_checksums, [:db_file] => [:environment] do |t, args|
+    db_file = args[:db_file] || print_usage
+    log_file = db_file.sub(/\.db$/, '.log')
+    @log = File.open(log_file, 'w')
+    db = SQLite3::Database.new(db_file)
+    create_tables(db)
+    export_users(db)
+    export_institutions(db)
+    export_processed_items(db)
+    export_checksums(db)
+    @log.close
+  end
+
 
   def export_users(db)
     User.all.each do |user|
@@ -68,6 +89,27 @@ namespace :export do
       puts "Exported #{start_at} processed items..."
     end
     puts "Exported #{ProcessedItem.count} processed items"
+  end
+
+  # This is used only by the export_checksums task. In the export_repo
+  # task, checksums are exported as part of the export_file method.
+  def export_checksums(db)
+    count = 0
+    GenericFile.find_in_batches([], batch_size: 100, sort: 'system_modified_dtsi asc') do |solr_result|
+      gf_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
+      gf_list.each do |gf|
+        gf.checksum.each do |ck|
+          begin
+            db.execute('INSERT INTO checksums (algorithm, datetime, digest, ' +
+                       'generic_file_id) VALUES (?, ?, ?, ?)',
+                       ck.algorithm.first, ck.datetime.first.to_s,
+                       ck.digest.first, gf.id)
+          rescue Exception => ex
+            record_error(db, gf, ck, ex)
+          end
+        end
+      end
+    end
   end
 
   def export_objects(db)
@@ -209,7 +251,7 @@ namespace :export do
 
   def create_tables(db)
     db.execute(
-      'CREATE TABLE users (
+      'CREATE TABLE IF NOT EXISTS users (
          id INTEGER PRIMARY KEY,
          email TEXT,
          encrypted_password TEXT,
@@ -230,7 +272,7 @@ namespace :export do
          roles TEXT
       );')
     db.execute(
-      'CREATE TABLE institutions (
+      'CREATE TABLE IF NOT EXISTS institutions (
          id TEXT PRIMARY KEY,
          name TEXT,
          brief_name TEXT,
@@ -238,7 +280,7 @@ namespace :export do
          dpn_uuid TEXT
       );')
     db.execute(
-      'CREATE TABLE intellectual_objects (
+      'CREATE TABLE IF NOT EXISTS intellectual_objects (
          id TEXT PRIMARY KEY,
          identifier TEXT,
          title TEXT,
@@ -250,7 +292,7 @@ namespace :export do
          state TEXT
       );')
     db.execute(
-      'CREATE TABLE generic_files (
+      'CREATE TABLE IF NOT EXISTS generic_files (
          id TEXT PRIMARY KEY,
          file_format TEXT,
          uri TEXT,
@@ -262,7 +304,7 @@ namespace :export do
          updated_at TEXT
       );')
     db.execute(
-      'CREATE TABLE premis_events (
+      'CREATE TABLE IF NOT EXISTS premis_events (
          intellectual_object_id TEXT,
          generic_file_id TEXT,
          institution_id TEXT,
@@ -279,14 +321,14 @@ namespace :export do
          agent TEXT
       );')
     db.execute(
-      'CREATE TABLE checksums (
+      'CREATE TABLE IF NOT EXISTS checksums (
          algorithm TEXT,
          datetime TEXT,
          digest TEXT,
          generic_file_id TEXT
       );')
     db.execute(
-      'CREATE TABLE processed_items (
+      'CREATE TABLE IF NOT EXISTS processed_items (
          id INTEGER PRIMARY KEY,
          created_at TEXT,
          updated_at TEXT,
@@ -312,7 +354,7 @@ namespace :export do
          needs_admin_review TEXT
       );')
     db.execute(
-      'CREATE TABLE errors (
+      'CREATE TABLE IF NOT EXISTS errors (
          id INTEGER PRIMARY KEY,
          parent TEXT,
          object TEXT,
