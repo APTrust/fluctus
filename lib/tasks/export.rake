@@ -95,19 +95,21 @@ namespace :export do
   # task, checksums are exported as part of the export_file method.
   def export_checksums(db)
     count = 0
+    statement = db.prepare('INSERT INTO checksums (algorithm, datetime, digest, ' +
+                           'generic_file_id) VALUES (?, ?, ?, ?)')
     GenericFile.find_in_batches([], batch_size: 100, sort: 'system_modified_dtsi asc') do |solr_result|
       gf_list = ActiveFedora::SolrService.reify_solr_results(solr_result)
+      db.transaction
       gf_list.each do |gf|
         gf.checksum.each do |ck|
-          begin
-            db.execute('INSERT INTO checksums (algorithm, datetime, digest, ' +
-                       'generic_file_id) VALUES (?, ?, ?, ?)',
-                       ck.algorithm.first, ck.datetime.first.to_s,
-                       ck.digest.first, gf.id)
-          rescue Exception => ex
-            record_error(db, gf, ck, ex)
-          end
+          statement.execute(ck.algorithm.first, ck.datetime.first.to_s,
+                            ck.digest.first, gf.id)
         end
+      end
+      begin
+        db.commit
+      rescue Exception => ex
+        record_error(db, gf, nil, ex)
       end
       count += gf_list.count
       puts "Checksums: #{count}"
