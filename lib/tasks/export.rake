@@ -109,6 +109,8 @@ namespace :export do
           end
         end
       end
+      count += gf_list.count
+      puts "Checksums: #{count}"
     end
   end
 
