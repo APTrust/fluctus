@@ -27,6 +27,10 @@ class UserPolicy < ApplicationPolicy
 		(user.institutional_admin? && (user.institution_pid == record.institution_pid))
 	end
 
+  def static_page?
+		true
+	end
+
 	# institutional_admin cannot generate key for institutional user
 	def generate_api_key?
 		user.admin? || user == record 

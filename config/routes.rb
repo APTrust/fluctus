@@ -108,6 +108,9 @@ Fluctus::Application.routes.draw do
   # virginia.edu.bagname/data/file.txt will not conflict with urn:mace:aptrust:12345
   post '/api/v1/files/:generic_file_identifier/events(.:format)', to: 'events#create', format: 'json', generic_file_identifier: /[^\/]*\.[^\/]*/, as: 'events_by_file_identifier'
 
+  #Static Page for Move to Pharos
+  get '/moving', to: 'static#index', format: [:json, :html]
+
   #
   # End of API routes
   # ----------------------------------------------------------------------
@@ -117,8 +120,10 @@ Fluctus::Application.routes.draw do
   mount Hydra::RoleManagement::Engine => '/'
 
   authenticated :user do
-    root to: 'institutions#show', as: 'authenticated_root'
+    #root to: 'institutions#show', as: 'authenticated_root'
+    root :to => 'static#index', as: 'authenticated_root'
   end
 
-  root :to => 'catalog#index'
+  #root :to => 'catalog#index'
+  root :to => 'static#index'
 end

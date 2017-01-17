@@ -28,6 +28,8 @@ class ApplicationController < ActionController::Base
   # return 403 Forbidden if permission is denied
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  before_filter :redirect_to_move_page
+
   def after_sign_in_path_for(resource)
     session[:purge_datetime] = Time.now.utc
     session[:show_reviewed] = false
@@ -35,6 +37,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def redirect_to_move_page
+    redirect_to authenticated_root_path unless params[:controller] == 'static'
+  end
 
   def user_not_authorized(exception)
     #policy_name = exception.policy.class.to_s.underscore
